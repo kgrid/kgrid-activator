@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
+import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 
 
@@ -19,11 +20,11 @@ public class ObjectTellerInterface  {
 	private String OBJECTTELLER_PATH;
 	
 	
-	public KnowledgeObjectDTO checkOutByArkId(String objectArkId) throws OTExecutionStackException{
+	public KnowledgeObjectDTO checkOutByArkId(ArkId arkId) throws OTExecutionStackException{
 		RestTemplate rt = new RestTemplate();
 
 		ResponseEntity<KnowledgeObjectDTO> response = rt.getForEntity(
-				OBJECTTELLER_PATH+"/knowledgeObject/"+objectArkId+"/complete",
+				OBJECTTELLER_PATH+"/knowledgeObject/"+arkId.getArkId()+"/complete",
 
 				KnowledgeObjectDTO.class);
 		

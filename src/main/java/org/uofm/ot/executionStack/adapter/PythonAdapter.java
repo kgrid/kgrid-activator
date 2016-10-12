@@ -7,12 +7,13 @@ import org.python.core.PyDictionary;
 import org.python.core.PyException;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
+import org.springframework.stereotype.Component;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.DataType;
 import org.uofm.ot.executionStack.transferObjects.Result;
 
 
-
+@Component
 public class PythonAdapter {
 
 	private static final Logger logger = Logger.getLogger(PythonAdapter.class);
@@ -72,10 +73,12 @@ public class PythonAdapter {
 				throw exception;
 			}
 
-		} catch(PyException ex){
+		} catch(PyException ex) {
 			logger.error("Exception occured while executing python code "+ex.getMessage());
 			resObj.setErrorMessage(ex.getMessage());
 			resObj.setSuccess(0);
+		} finally {
+			interpreter.close();
 		}
 
 		return resObj;
