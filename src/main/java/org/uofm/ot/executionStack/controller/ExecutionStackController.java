@@ -1,28 +1,19 @@
 package org.uofm.ot.executionStack.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
-import org.uofm.ot.executionStack.transferObjects.ArkId;
-import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
-import org.uofm.ot.executionStack.transferObjects.EngineType;
-import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.executionStack.transferObjects.*;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
-import org.uofm.ot.executionStack.transferObjects.Result;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -39,7 +30,7 @@ public class ExecutionStackController {
 	@Autowired
 	private PythonAdapter adapter;
 
-	@PutMapping(path="/execution-stack/ark:/{naan}/{name}/check-out")
+	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<String> checkOutObject(ArkId arkId) {
 		try {
 			KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
@@ -54,12 +45,12 @@ public class ExecutionStackController {
 
 
 
-	@GetMapping(path="/execution-stack/checked-out-objects")
+	@GetMapping(path={"/knowledgeObject", "/shelf"})
 	public ResponseEntity<Map<ArkId,KnowledgeObjectDTO>> retrieveObjectsOnShelf() {
 		return new ResponseEntity<Map<ArkId,KnowledgeObjectDTO>>(shelf,HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/execution-stack/ark:/{naan}/{name}/result", method = RequestMethod.POST,
+	@RequestMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result", method = RequestMethod.POST,
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Result> getResultByArkId(@RequestBody Map<String,Object> content,ArkId arkId) throws OTExecutionStackException  {
