@@ -1,29 +1,21 @@
 package org.uofm.ot.executionStack.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
-import org.uofm.ot.executionStack.transferObjects.ArkId;
-import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
-import org.uofm.ot.executionStack.transferObjects.EngineType;
-import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.executionStack.transferObjects.*;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
-import org.uofm.ot.executionStack.transferObjects.Result;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -74,10 +66,20 @@ public class ExecutionStackController {
 		
 	}
 
+	@RequestMapping(value = "/rest/getResult", method = RequestMethod.POST,
+			consumes = {MediaType.APPLICATION_JSON_VALUE},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	@CrossOrigin
+	public ResponseEntity<Result> getResult(@RequestBody InputObject io) {
+		ArkId arkId = new ArkId(io.getObjectName());
+
+		return getResultByArkId(io.getParams(), arkId) ;
+
+	}
 	@PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Result> getResultByArkId(@RequestBody Map<String,Object> content,ArkId arkId) throws OTExecutionStackException  {
+	public ResponseEntity<Result> getResultByArkId(@RequestBody Map<String,Object> content,ArkId arkId)  {
 
 		KnowledgeObjectDTO object ;
 		try {

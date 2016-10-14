@@ -1,6 +1,6 @@
 package org.uofm.ot.executionStack.exception;
 
-public class OTExecutionStackException extends Exception {
+public class OTExecutionStackException extends RuntimeException {
 
 	public OTExecutionStackException() {
 		super();
