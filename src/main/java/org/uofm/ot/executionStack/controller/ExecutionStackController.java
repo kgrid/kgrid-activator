@@ -1,19 +1,29 @@
 package org.uofm.ot.executionStack.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
-import org.uofm.ot.executionStack.transferObjects.*;
+import org.uofm.ot.executionStack.transferObjects.ArkId;
+import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
+import org.uofm.ot.executionStack.transferObjects.EngineType;
+import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
+import org.uofm.ot.executionStack.transferObjects.Result;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 @RestController
@@ -31,42 +41,63 @@ public class ExecutionStackController {
 	private PythonAdapter adapter;
 
 	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-	public ResponseEntity<String> checkOutObject(ArkId arkId) {
+	public ResponseEntity<String> checkOutObject(ArkId arkId) throws OTExecutionStackException{
 		try {
 			KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
 			shelf.put(arkId, dto);
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 			return result;
-		} catch (OTExecutionStackException e) {
-			ResponseEntity<String> result = new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			return result;
+		} catch(Exception e) {
+			throw new OTExecutionStackException("Not able to find the object. ", e);
 		}
 	}
 
 
 
 	@GetMapping(path={"/knowledgeObject", "/shelf"})
-	public ResponseEntity<Map<ArkId,KnowledgeObjectDTO>> retrieveObjectsOnShelf() {
-		return new ResponseEntity<Map<ArkId,KnowledgeObjectDTO>>(shelf,HttpStatus.OK);
+	public List <Map<String,String>> retrieveObjectsOnShelf()  {
+		List<Map<String,String>> objectsOnTheShelf = new ArrayList<Map<String,String>>();
+		
+		for (ArkId arkId : shelf.keySet()) {
+			Map <String,String> shelfEntry = new HashMap<String,String>();
+			shelfEntry.put("ArkId", arkId.getArkId());
+			
+			String objectURL = objTellerInterface.getOBJECTTELLER_PATH()+"/knowledgeObject/" +arkId.getArkId();
+			shelfEntry.put("URL", objectURL);
+			
+			objectsOnTheShelf.add(shelfEntry);
+			
+		}
+		
+		return objectsOnTheShelf ; 
+		
+		
 	}
 
-	@RequestMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result", method = RequestMethod.POST,
+	@PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Result> getResultByArkId(@RequestBody Map<String,Object> content,ArkId arkId) throws OTExecutionStackException  {
 
-		if (!shelf.containsKey(arkId) ) {
-			KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
-			shelf.put(arkId, dto);
+		KnowledgeObjectDTO object ;
+		try {
+			if (!shelf.containsKey(arkId) ) {
+				KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
+				shelf.put(arkId, dto);
+			}
+
+			object = shelf.get(arkId);
+		} catch(Exception e) {
+			throw new OTExecutionStackException("Not able to find the object. ", e);
 		}
-		
-		KnowledgeObjectDTO object = shelf.get(arkId);
-		
+
 		Result result = calculate(content, object);
+		
 		
 		result.setSource(arkId.getArkId());
 
 		return new ResponseEntity<Result>(result, HttpStatus.OK);
+		
 	}
 
 	private Result calculate(Map<String,Object> map , KnowledgeObjectDTO object) throws OTExecutionStackException  {

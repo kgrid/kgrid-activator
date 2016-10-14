@@ -2,11 +2,9 @@ package org.uofm.ot.executionStack.objectTellerLayer;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
@@ -20,7 +18,7 @@ public class ObjectTellerInterface  {
 	private String OBJECTTELLER_PATH;
 	
 	
-	public KnowledgeObjectDTO checkOutByArkId(ArkId arkId) throws OTExecutionStackException{
+	public KnowledgeObjectDTO checkOutByArkId(ArkId arkId) {
 		RestTemplate rt = new RestTemplate();
 
 		ResponseEntity<KnowledgeObjectDTO> response = rt.getForEntity(
@@ -28,9 +26,15 @@ public class ObjectTellerInterface  {
 
 				KnowledgeObjectDTO.class);
 		
+			
 		KnowledgeObjectDTO object = response.getBody() ; 
 
 		return object;
+	}
+
+
+	public String getOBJECTTELLER_PATH() {
+		return OBJECTTELLER_PATH;
 	}
 
 }
