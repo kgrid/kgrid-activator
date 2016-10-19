@@ -33,7 +33,7 @@ public class ExecutionStackController {
 	private PythonAdapter adapter;
 
 	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-	public ResponseEntity<String> checkOutObject(ArkId arkId) throws OTExecutionStackException{
+	public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException{
 		try {
 			KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
 			shelf.put(arkId, dto);
@@ -45,6 +45,17 @@ public class ExecutionStackController {
 	}
 
 
+	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
+	@RequestMapping (consumes = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<String> checkOutObject(ArkId arkId, KnowledgeObjectDTO dto ) throws OTExecutionStackException{
+		try {
+			shelf.put(arkId, dto);
+			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
+			return result;
+		} catch(Exception e) {
+			throw new OTExecutionStackException("Not able to find the object. ", e);
+		}
+	}
 
 	@GetMapping(path={"/knowledgeObject", "/shelf"})
 	public List <Map<String,String>> retrieveObjectsOnShelf()  {
@@ -76,6 +87,7 @@ public class ExecutionStackController {
 		return getResultByArkId(io.getParams(), arkId) ;
 
 	}
+	
 	@PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -99,6 +111,18 @@ public class ExecutionStackController {
 		result.setSource(arkId.getArkId());
 
 		return new ResponseEntity<Result>(result, HttpStatus.OK);
+		
+	}
+	
+	@DeleteMapping(value ={ "/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
+	public ResponseEntity<String> getResultByArkId(ArkId arkId)  {
+
+		if(shelf.containsKey(arkId)){
+			shelf.remove(arkId);
+			return new ResponseEntity<String>("Object is removed from the Shelf", HttpStatus.GONE);
+		} else {
+			return new ResponseEntity<String>("Object with Ark Id "+arkId+" is not on the shelf. ", HttpStatus.BAD_REQUEST);
+		}
 		
 	}
 
