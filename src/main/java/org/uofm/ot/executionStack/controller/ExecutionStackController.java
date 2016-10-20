@@ -19,6 +19,7 @@ import java.util.Map;
 
 
 @RestController
+@CrossOrigin
 public class ExecutionStackController {
 
 	private Map<ArkId,KnowledgeObjectDTO> shelf = new HashMap<ArkId,KnowledgeObjectDTO>();
@@ -45,9 +46,10 @@ public class ExecutionStackController {
 	}
 
 
-	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-	@RequestMapping (consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<String> checkOutObject(ArkId arkId, KnowledgeObjectDTO dto ) throws OTExecutionStackException{
+	
+	@PutMapping (consumes = {MediaType.APPLICATION_JSON_VALUE}, 
+			value={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
+	public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObjectDTO dto ) throws OTExecutionStackException{
 		try {
 			shelf.put(arkId, dto);
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
@@ -80,7 +82,6 @@ public class ExecutionStackController {
 	@RequestMapping(value = "/rest/getResult", method = RequestMethod.POST,
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	@CrossOrigin
 	public ResponseEntity<Result> getResult(@RequestBody InputObject io) {
 		ArkId arkId = new ArkId(io.getObjectName());
 
