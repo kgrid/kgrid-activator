@@ -79,15 +79,6 @@ public class ExecutionStackController {
 		
 	}
 
-	@RequestMapping(value = "/rest/getResult", method = RequestMethod.POST,
-			consumes = {MediaType.APPLICATION_JSON_VALUE},
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<Result> getResult(@RequestBody InputObject io) {
-		ArkId arkId = new ArkId(io.getObjectName());
-
-		return getResultByArkId(io.getParams(), arkId) ;
-
-	}
 	
 	@PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
