@@ -1,6 +1,7 @@
 package org.uofm.ot.executionStack.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +13,7 @@ import org.uofm.ot.executionStack.transferObjects.*;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -160,6 +158,27 @@ public class ExecutionStackController {
 		return result ; 
 	}
 
+	@Value("${env}")
+	private String environment;
+
+	@Value("${spring.profiles.active}")
+	private String spring_profiles_active;
+
+	@Value("${dev.prop.1}")
+	private String dev_prop_1;
+
+	@GetMapping("/config")
+	public Properties getConfigurationProps() {
+
+		Properties properties = new Properties();
+
+		properties.setProperty("foo", "bar");
+		properties.setProperty("env", environment);
+		properties.setProperty("spring.profiles.active", spring_profiles_active);
+		properties.setProperty("dev.prop.1", dev_prop_1);
+
+		return properties;
+	}
 
 
 
