@@ -162,5 +162,39 @@ public class ExecutionStackController {
 
 
 
+	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
+	public ResponseEntity<KnowledgeObjectDTO> retrieveObjectOnShelf(ArkId arkId)  {
+		 
+		if(shelf.containsKey(arkId)){
+			KnowledgeObjectDTO dto = shelf.get(arkId);
+			return new ResponseEntity<KnowledgeObjectDTO>(dto, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<KnowledgeObjectDTO>( HttpStatus.NOT_FOUND);
+		}
+	}
 
+	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}/payload", "/shelf/ark:/{naan}/{name}/payload"})
+	public ResponseEntity<Payload> retrieveObjectPayload(ArkId arkId)  {
+		 
+		if(shelf.containsKey(arkId)){
+			KnowledgeObjectDTO dto = shelf.get(arkId);
+			return new ResponseEntity<Payload>(dto.payload, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Payload>( HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}/payload/content", "/shelf/ark:/{naan}/{name}/payload/content"})
+	public ResponseEntity<String> retrievePayloadContent(ArkId arkId)  {
+		 
+		if(shelf.containsKey(arkId)){
+			KnowledgeObjectDTO dto = shelf.get(arkId);
+			if(dto.payload != null)
+				return new ResponseEntity<String>(dto.payload.content, HttpStatus.OK);
+			else
+				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<String>( HttpStatus.NOT_FOUND);
+		}
+	}
 }
