@@ -160,8 +160,6 @@ public class ExecutionStackController {
 		return result ; 
 	}
 
-
-
 	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<KnowledgeObjectDTO> retrieveObjectOnShelf(ArkId arkId)  {
 		 
@@ -197,4 +195,5 @@ public class ExecutionStackController {
 			return new ResponseEntity<String>( HttpStatus.NOT_FOUND);
 		}
 	}
+
 }
