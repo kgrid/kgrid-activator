@@ -12,6 +12,7 @@ import org.uofm.ot.executionStack.transferObjects.*;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,19 +68,17 @@ public class ExecutionStackController {
 			Map <String,String> shelfEntry = new HashMap<String,String>();
 			shelfEntry.put("ArkId", arkId.getArkId());
 			
-			String objectURL = objTellerInterface.getOBJECTTELLER_PATH()+"/knowledgeObject/" +arkId.getArkId();
+			String objectURL = objTellerInterface.getAbsoluteObjectUrl(arkId);
 			shelfEntry.put("URL", objectURL);
 			
 			objectsOnTheShelf.add(shelfEntry);
 			
 		}
 		
-		return objectsOnTheShelf ; 
-		
-		
+		return objectsOnTheShelf ;
 	}
 
-	
+
 	@PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
 			consumes = {MediaType.APPLICATION_JSON_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -194,6 +193,19 @@ public class ExecutionStackController {
 		} else {
 			return new ResponseEntity<String>( HttpStatus.NOT_FOUND);
 		}
+	}
+
+
+	@GetMapping("/whereami")
+	public Map<String, String> where(HttpServletRequest req) {
+
+		Map<String, String> here = new HashMap<>();
+
+//		here.put("req.getRequestURL()",req.getRequestURL().toString());
+
+		here.put("objTellerInterface.where()", objTellerInterface.getLibraryPath());
+
+		return here;
 	}
 
 }

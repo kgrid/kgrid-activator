@@ -5,22 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 
 
 @Service
 public class ObjectTellerInterface  {
-	
-	@Value(value = "${OBJECTTELLER_PATH}")
-	private String OBJECTTELLER_PATH;
-	
-	
+
 	public KnowledgeObjectDTO checkOutByArkId(ArkId arkId) {
 		RestTemplate rt = new RestTemplate();
 
 		ResponseEntity<KnowledgeObjectDTO> response = rt.getForEntity(
-				OBJECTTELLER_PATH+"/knowledgeObject/"+arkId.getArkId()+"/complete",
+				getAbsoluteObjectUrl(arkId)+"/complete",
 				KnowledgeObjectDTO.class);
 		
 			
@@ -30,8 +27,29 @@ public class ObjectTellerInterface  {
 	}
 
 
-	public String getOBJECTTELLER_PATH() {
-		return OBJECTTELLER_PATH;
+	@Value("${library.absolutePath:}")
+	String libraryAbsolutePath;
+
+	@Value("${library.relativePath:/ObjectTeller}")
+	String libraryRelativePath;
+
+	public String getLibraryPath() {
+
+		String path;
+
+		ServletUriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+
+		if (libraryAbsolutePath.isEmpty()) {
+			path = uriBuilder.replacePath(libraryRelativePath).toUriString();
+		} else {
+			path = libraryAbsolutePath;
+		}
+
+		return path;
 	}
 
+
+	public String getAbsoluteObjectUrl(ArkId arkId) {
+		return getLibraryPath()+"/knowledgeObject/" +arkId.getArkId();
+	}
 }
