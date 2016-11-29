@@ -22,6 +22,8 @@ public class ObjectTellerInterface  {
 		
 			
 		KnowledgeObjectDTO object = response.getBody() ; 
+		
+		object.url = getAbsoluteObjectUrl(arkId) ; 
 
 		return object;
 	}

@@ -8,6 +8,7 @@ public class KnowledgeObjectDTO {
 	
 	public Payload payload;
 	
+	public String url;
 	
 	public KnowledgeObjectDTO() {
 		// TODO Auto-generated constructor stub
@@ -16,7 +17,7 @@ public class KnowledgeObjectDTO {
 	@Override
 	public String toString() {
 		return "KnowledgeObjectDTO [inputMessage=" + inputMessage + ", outputMessage=" + outputMessage + ", payload="
-				+ payload + "]";
+				+ payload + ", url=" + url + "]";
 	}
 
 	public class Payload {

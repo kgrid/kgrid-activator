@@ -33,6 +33,8 @@ public class ExecutionStackController {
 
 	@Autowired
 	private PythonAdapter adapter;
+	
+	private static final String NAME_TO_THING_ADD = "http://n2t.net/";
 
 	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException{
@@ -42,7 +44,7 @@ public class ExecutionStackController {
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 			return result;
 		} catch(Exception e) {
-			throw new OTExecutionStackException("Not able to find the object. ", e);
+			throw new OTExecutionStackException("Not able to find the object with ArkId: "+arkId, e);
 		}
 	}
 
@@ -52,11 +54,12 @@ public class ExecutionStackController {
 			value={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObjectDTO dto ) throws OTExecutionStackException{
 		try {
+			dto.url = NAME_TO_THING_ADD + arkId ; 
 			shelf.put(arkId, dto);
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 			return result;
 		} catch(Exception e) {
-			throw new OTExecutionStackException("Not able to find the object. ", e);
+			throw new OTExecutionStackException("Not able to find the object with ArkId: "+arkId, e);
 		}
 	}
 
@@ -66,10 +69,9 @@ public class ExecutionStackController {
 		
 		for (ArkId arkId : shelf.keySet()) {
 			Map <String,String> shelfEntry = new HashMap<String,String>();
-			shelfEntry.put("ArkId", arkId.getArkId());
-			
-			String objectURL = objTellerInterface.getAbsoluteObjectUrl(arkId);
-			shelfEntry.put("URL", objectURL);
+
+			shelfEntry.put("ArkId", arkId.getArkId());			
+			shelfEntry.put("URL", shelf.get(arkId).url);
 			
 			objectsOnTheShelf.add(shelfEntry);
 			
@@ -93,7 +95,7 @@ public class ExecutionStackController {
 
 			object = shelf.get(arkId);
 		} catch(Exception e) {
-			throw new OTExecutionStackException("Not able to find the object. ", e);
+			throw new OTExecutionStackException("Not able to find the object with ArkId: "+arkId, e);
 		}
 
 		Result result = calculate(content, object);
@@ -110,7 +112,7 @@ public class ExecutionStackController {
 
 		if(shelf.containsKey(arkId)){
 			shelf.remove(arkId);
-			return new ResponseEntity<String>("Object is removed from the Shelf", HttpStatus.GONE);
+			return new ResponseEntity<String>("Object with ArkId "+arkId+" is removed from the Shelf", HttpStatus.GONE);
 		} else {
 			return new ResponseEntity<String>("Object with Ark Id "+arkId+" is not on the shelf. ", HttpStatus.BAD_REQUEST);
 		}
@@ -189,9 +191,9 @@ public class ExecutionStackController {
 			if(dto.payload != null)
 				return new ResponseEntity<String>(dto.payload.content, HttpStatus.OK);
 			else
-				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<String>("Object with ArkId "+arkId+" is on the shelf with no payload.", HttpStatus.NOT_FOUND);
 		} else {
-			return new ResponseEntity<String>( HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Object with ArkId "+arkId+" is not on the shelf.", HttpStatus.NOT_FOUND);
 		}
 	}
 
