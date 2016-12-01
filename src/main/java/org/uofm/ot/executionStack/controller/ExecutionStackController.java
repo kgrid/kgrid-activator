@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
+import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
 import org.uofm.ot.executionStack.transferObjects.*;
@@ -17,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 @RestController
@@ -25,6 +30,8 @@ public class ExecutionStackController {
 
 	private Map<ArkId,KnowledgeObjectDTO> shelf = new HashMap<ArkId,KnowledgeObjectDTO>();
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private ObjectTellerInterface objTellerInterface;
 
@@ -38,14 +45,12 @@ public class ExecutionStackController {
 
 	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException{
-		try {
-			KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
-			shelf.put(arkId, dto);
-			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
-			return result;
-		} catch(Exception e) {
-			throw new OTExecutionStackException("Not able to find the object with ArkId: "+arkId, e);
-		}
+
+		KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
+		shelf.put(arkId, dto);
+		ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
+		return result;
+
 	}
 
 
@@ -126,9 +131,11 @@ public class ExecutionStackController {
 
 		if( map != null &&  map.size() > 0){
 
-
+			log.info("Object Input Message and Output Message sent for conversion of RDF .  ");
 			CodeMetadata metadata = convertor.covertInputOutputMessageToCodeMetadata(object.inputMessage, object.outputMessage);
-
+			log.info("Object Input Message and Output Message conversion complete . Code Metadtata for Input and Output Message ");
+			
+			
 			if(metadata != null){
 				errormessage = metadata.verifyInput( map);
 				if(errormessage == null){
@@ -139,17 +146,22 @@ public class ExecutionStackController {
 
 					if( chunk != null) {
 						if( EngineType.PYTHON.toString().equalsIgnoreCase(payload.engineType)){
+							log.info("Object payload is sent to Paython Adator for execution.  ");
 							result = adapter.executeString(chunk, payload.functionName,map,metadata.getReturntype());
 						}
-					} else 
+					} else {
 						errormessage = "Unable to retrieve content of object. ";
+						log.error("Payload content is NULL for object with Object ");
+					}
 				}
-			} else 
+			} else {
 				errormessage = "Unable to convert RDF metadata for object .";
-
-		} else
-			errormessage = "Either object id or parameter map is missing";
-
+				log.error("Unable to convert RDF Metadata for object with Object ");
+			}
+		} else {
+			errormessage = "Either parameter map is missing";
+			log.error("Parameter map is missing  in the input resquest");
+		}
 		if(errormessage != null || result == null){ // errormessaage has a value
 			result = new Result();
 			result.setErrorMessage(errormessage);
@@ -210,4 +222,17 @@ public class ExecutionStackController {
 		return here;
 	}
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(OTExecutionStackException.class)
+	@ResponseBody String
+	handleBadRequest(HttpServletRequest req, Exception ex) {
+	    return req.getRequestURL() + " " +ex.getMessage();
+	}
+	
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(OTExecutionStackEntityNotFoundException.class)
+	@ResponseBody String
+	handleEntityNotFound(HttpServletRequest req, Exception ex) {
+	    return req.getRequestURL() +" " + ex.getMessage();
+	} 
 }

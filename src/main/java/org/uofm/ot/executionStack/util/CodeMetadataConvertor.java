@@ -26,6 +26,7 @@ public class CodeMetadataConvertor {
 	public static final String OT_NAMESPACE =  "http://uofm.org/objectteller/";
 
 	public CodeMetadata covertInputOutputMessageToCodeMetadata(String inputMessage, String outputMessage) {
+		
 		CodeMetadata codeMetadata = new CodeMetadata();
 
 		Model modelInput = ModelFactory.createDefaultModel();
@@ -79,8 +80,6 @@ public class CodeMetadataConvertor {
 		codeMetadata.setParams(paramList);
 
 		Model modelOutput = ModelFactory.createDefaultModel();
-
-		
 
 		InputStream streamOutput = new ByteArrayInputStream(outputMessage.getBytes(StandardCharsets.UTF_8));
 

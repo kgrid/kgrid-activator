@@ -2,7 +2,7 @@ package org.uofm.ot.executionStack.adapter;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+
 import org.python.core.PyDictionary;
 import org.python.core.PyException;
 import org.python.core.PyObject;
@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.DataType;
 import org.uofm.ot.executionStack.transferObjects.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Component
 public class PythonAdapter {
 
-	private static final Logger logger = Logger.getLogger(PythonAdapter.class);
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public Result executeString(String chunk,String functionName,Map<String,Object> params, DataType returntype) throws OTExecutionStackException {
 
@@ -68,19 +70,19 @@ public class PythonAdapter {
 					}
 				}
 			} else {
-				logger.error(functionName + " function not found in object payload ");
+				log.error(functionName + " function not found in object payload ");
 				OTExecutionStackException exception = new OTExecutionStackException(functionName + " function not found in object payload ");
 				throw exception;
 			}
 
 		} catch(PyException ex) {
-			logger.error("Exception occured while executing python code "+ex.getMessage());
+			log.error("Exception occured while executing python code "+ex.getMessage());
 			resObj.setErrorMessage(ex.getMessage());
 			resObj.setSuccess(0);
 		} finally {
 			interpreter.close();
 		}
-
+		
 		return resObj;
 	}
 }
