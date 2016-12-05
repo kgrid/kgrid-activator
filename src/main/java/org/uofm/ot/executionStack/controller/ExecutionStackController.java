@@ -10,6 +10,7 @@ import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
+import org.uofm.ot.executionStack.reposity.Shelf;
 import org.uofm.ot.executionStack.transferObjects.*;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
@@ -34,6 +35,9 @@ public class ExecutionStackController {
 	
 	@Autowired
 	private ObjectTellerInterface objTellerInterface;
+	
+	@Autowired
+	private Shelf localStorage ; 
 
 	@Autowired
 	private CodeMetadataConvertor convertor;
@@ -45,10 +49,14 @@ public class ExecutionStackController {
 
 	@PutMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
 	public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException{
+		ResponseEntity<String> result = null; 
 
 		KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
+		localStorage.saveObject(dto, arkId);
 		shelf.put(arkId, dto);
-		ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
+
+		result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
+
 		return result;
 
 	}
@@ -60,6 +68,7 @@ public class ExecutionStackController {
 	public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObjectDTO dto ) throws OTExecutionStackException{
 		try {
 			dto.url = NAME_TO_THING_ADD + arkId ; 
+			localStorage.saveObject(dto, arkId);
 			shelf.put(arkId, dto);
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 			return result;
@@ -95,6 +104,7 @@ public class ExecutionStackController {
 		try {
 			if (!shelf.containsKey(arkId) ) {
 				KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
+				localStorage.saveObject(dto, arkId);
 				shelf.put(arkId, dto);
 			}
 
@@ -117,6 +127,7 @@ public class ExecutionStackController {
 
 		if(shelf.containsKey(arkId)){
 			shelf.remove(arkId);
+			localStorage.deleteObject(arkId);
 			return new ResponseEntity<String>("Object with ArkId "+arkId+" is removed from the Shelf", HttpStatus.GONE);
 		} else {
 			return new ResponseEntity<String>("Object with Ark Id "+arkId+" is not on the shelf. ", HttpStatus.BAD_REQUEST);
