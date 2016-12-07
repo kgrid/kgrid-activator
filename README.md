@@ -9,7 +9,7 @@ Steps to install python execution stack
         then python execution stack would look for objectTeller library at http://localhost:8080/
    - library.username = ObjectTeller library API Key or username assigned to you (Not implemented yet. ) (default value - )
    - library.password = ObjectTeller password (Not implemented yet. ) (default value - )
-   - executionStack.localStoragePath = Path at which knowledgeObjects would be stored locally (Not implemented yet. ) (default value - )
+   - executionStack.localStoragePath = By default it will be temp folder of the operating system given by java.io.tmpdir property. You can customize this property. 
    
    All the configurations can overwritten by supplying your own configaration file while installing python execution stack. 
 
