@@ -4,7 +4,11 @@ public class OTExecutionStackEntityNotFoundException  extends OTExecutionStackEx
 
 	public OTExecutionStackEntityNotFoundException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
+	public OTExecutionStackEntityNotFoundException(Throwable cause) {
+		super(cause);
+	}
+
+	
 }

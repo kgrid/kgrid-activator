@@ -138,4 +138,13 @@ public class ArkId {
 
     }
 
+	public ArkId(String naan, String name) {
+		super();
+		this.naan = naan;
+		this.name = name;
+		this.arkId = getArkId();
+	}
+    
+    
+
 }

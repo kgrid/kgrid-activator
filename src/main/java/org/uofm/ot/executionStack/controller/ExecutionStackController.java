@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 @CrossOrigin
 public class ExecutionStackController {
 
-	private Map<ArkId,KnowledgeObjectDTO> shelf = new HashMap<ArkId,KnowledgeObjectDTO>();
-
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
@@ -53,7 +51,7 @@ public class ExecutionStackController {
 
 		KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
 		localStorage.saveObject(dto, arkId);
-		shelf.put(arkId, dto);
+		
 
 		result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 
@@ -69,7 +67,6 @@ public class ExecutionStackController {
 		try {
 			dto.url = NAME_TO_THING_ADD + arkId ; 
 			localStorage.saveObject(dto, arkId);
-			shelf.put(arkId, dto);
 			ResponseEntity<String> result = new ResponseEntity<String>("Object Added on the shelf",HttpStatus.OK);
 			return result;
 		} catch(Exception e) {
@@ -79,19 +76,7 @@ public class ExecutionStackController {
 
 	@GetMapping(path={"/knowledgeObject", "/shelf"})
 	public List <Map<String,String>> retrieveObjectsOnShelf()  {
-		List<Map<String,String>> objectsOnTheShelf = new ArrayList<Map<String,String>>();
-		
-		for (ArkId arkId : shelf.keySet()) {
-			Map <String,String> shelfEntry = new HashMap<String,String>();
-
-			shelfEntry.put("ArkId", arkId.getArkId());			
-			shelfEntry.put("URL", shelf.get(arkId).url);
-			
-			objectsOnTheShelf.add(shelfEntry);
-			
-		}
-		
-		return objectsOnTheShelf ;
+		return localStorage.getAllObjects();
 	}
 
 
@@ -100,22 +85,23 @@ public class ExecutionStackController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Result> getResultByArkId(@RequestBody Map<String,Object> content,ArkId arkId)  {
 
-		KnowledgeObjectDTO object ;
-		try {
-			if (!shelf.containsKey(arkId) ) {
-				KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
-				localStorage.saveObject(dto, arkId);
-				shelf.put(arkId, dto);
-			}
+		KnowledgeObjectDTO dto ;
 
-			object = shelf.get(arkId);
-		} catch(Exception e) {
-			throw new OTExecutionStackException("Not able to find the object with ArkId: "+arkId, e);
+		try {
+			
+			dto = localStorage.getObject(arkId);
+			
+		}catch(OTExecutionStackEntityNotFoundException e) {
+			
+			dto = objTellerInterface.checkOutByArkId(arkId);
+			localStorage.saveObject(dto, arkId);
 		}
 
-		Result result = calculate(content, object);
-		
-		
+
+
+		Result result = calculate(content, dto);
+
+
 		result.setSource(arkId.getArkId());
 
 		return new ResponseEntity<Result>(result, HttpStatus.OK);
@@ -123,16 +109,14 @@ public class ExecutionStackController {
 	}
 	
 	@DeleteMapping(value ={ "/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
-	public ResponseEntity<String> getResultByArkId(ArkId arkId)  {
-
-		if(shelf.containsKey(arkId)){
-			shelf.remove(arkId);
-			localStorage.deleteObject(arkId);
+	public ResponseEntity<String> deleteObjectOnTheShelfByArkId(ArkId arkId)  {
+		
+		if(localStorage.deleteObject(arkId)) {
 			return new ResponseEntity<String>("Object with ArkId "+arkId+" is removed from the Shelf", HttpStatus.GONE);
 		} else {
-			return new ResponseEntity<String>("Object with Ark Id "+arkId+" is not on the shelf. ", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("Unable to delete Object with Ark Id "+arkId+".", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
 
 	private Result calculate(Map<String,Object> map , KnowledgeObjectDTO object) throws OTExecutionStackException  {
@@ -185,39 +169,29 @@ public class ExecutionStackController {
 	}
 
 	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-	public ResponseEntity<KnowledgeObjectDTO> retrieveObjectOnShelf(ArkId arkId)  {
-		 
-		if(shelf.containsKey(arkId)){
-			KnowledgeObjectDTO dto = shelf.get(arkId);
-			return new ResponseEntity<KnowledgeObjectDTO>(dto, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<KnowledgeObjectDTO>( HttpStatus.NOT_FOUND);
-		}
+	public KnowledgeObjectDTO retrieveObjectOnShelf(ArkId arkId)  { 
+		return localStorage.getObject(arkId);
 	}
 
 	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}/payload", "/shelf/ark:/{naan}/{name}/payload"})
-	public ResponseEntity<Payload> retrieveObjectPayload(ArkId arkId)  {
+	public Payload retrieveObjectPayload(ArkId arkId)  {
 		 
-		if(shelf.containsKey(arkId)){
-			KnowledgeObjectDTO dto = shelf.get(arkId);
-			return new ResponseEntity<Payload>(dto.payload, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Payload>( HttpStatus.NOT_FOUND);
+		KnowledgeObjectDTO dto = retrieveObjectOnShelf(arkId);
+		if( dto.payload == null) {
+			throw new OTExecutionStackException("Payload is null for object with Ark Id:  "+arkId);
 		}
+		return dto.payload;
 	}
 	
 	@GetMapping(path={"/knowledgeObject/ark:/{naan}/{name}/payload/content", "/shelf/ark:/{naan}/{name}/payload/content"})
-	public ResponseEntity<String> retrievePayloadContent(ArkId arkId)  {
+	public String retrievePayloadContent(ArkId arkId)  {
 		 
-		if(shelf.containsKey(arkId)){
-			KnowledgeObjectDTO dto = shelf.get(arkId);
-			if(dto.payload != null)
-				return new ResponseEntity<String>(dto.payload.content, HttpStatus.OK);
-			else
-				return new ResponseEntity<String>("Object with ArkId "+arkId+" is on the shelf with no payload.", HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<String>("Object with ArkId "+arkId+" is not on the shelf.", HttpStatus.NOT_FOUND);
+		Payload payload = retrieveObjectPayload(arkId);
+		if( payload.content == null) {
+			throw new OTExecutionStackException("Content is null for object with Ark Id:  "+arkId);
 		}
+		return payload.content;	
+
 	}
 
 
