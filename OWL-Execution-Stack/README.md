@@ -18,6 +18,47 @@ for demonstration
 4. Accept : application/json
 5. Expected output 200 OK ( refer result.json)
 
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Changing input values of the Patient
+
+Change xml in the request body to change these values. 
+e.g. HighCVDRiskFlag - 0 or 1 - 
+ 
+    for example : 
+
+    <owl:NamedIndividual rdf:about="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#patient-0001">
+        <rdf:type rdf:resource="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#Patient"/>
+        <domain-jnc7-hypertension-model-plus-individuals:hasSelfCheck rdf:resource="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#patientSelfCheck01"/>
+        <domain-jnc7-hypertension-model-plus-individuals:CauseOfResistantHypertionVal>The patient took excess sodium during the testing period</domain-jnc7-hypertension-model-plus-individuals:CauseOfResistantHypertionVal>
+        <domain-jnc7-hypertension-model-plus-individuals:ChrKidnyDisFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</domain-jnc7-hypertension-model-plus-individuals:ChrKidnyDisFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:DiabetesFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</domain-jnc7-hypertension-model-plus-individuals:DiabetesFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:HeartFailureFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</domain-jnc7-hypertension-model-plus-individuals:HeartFailureFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:HighCVDRiskFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</domain-jnc7-hypertension-model-plus-individuals:HighCVDRiskFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:InitialTherapyOptionFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</domain-jnc7-hypertension-model-plus-individuals:InitialTherapyOptionFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:LifestyleModificationVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1001</domain-jnc7-hypertension-model-plus-individuals:LifestyleModificationVal>
+        <domain-jnc7-hypertension-model-plus-individuals:MRN-Jnc7>charles01</domain-jnc7-hypertension-model-plus-individuals:MRN-Jnc7>
+        <domain-jnc7-hypertension-model-plus-individuals:PostMyoInfarFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</domain-jnc7-hypertension-model-plus-individuals:PostMyoInfarFlagVal>
+        <domain-jnc7-hypertension-model-plus-individuals:RecStrokePrevFlagVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</domain-jnc7-hypertension-model-plus-individuals:RecStrokePrevFlagVal>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#patientSelfCheck01">
+        <rdf:type rdf:resource="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#SelfCheck"/>
+        <domain-jnc7-hypertension-model-plus-individuals:DiastolicBPVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">98</domain-jnc7-hypertension-model-plus-individuals:DiastolicBPVal>
+        <domain-jnc7-hypertension-model-plus-individuals:SystolicBPVal rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">150</domain-jnc7-hypertension-model-plus-individuals:SystolicBPVal>
+    </owl:NamedIndividual>
+    
+    You can use Protege to modify , analyse these files. 
+    
+    
+
+
+
+
+
+
+
+
 
  
 
