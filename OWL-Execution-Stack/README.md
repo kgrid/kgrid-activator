@@ -50,6 +50,8 @@ e.g. HighCVDRiskFlag - 0 or 1 -
     
     You can use Protege to modify , analyse these files. 
     
+    Note: <owl:NamedIndividual rdf:about="http://med.umich.edu/cci/ontologies/domain-jnc7-hypertension-model-plus-individuals#patient-0001> named individual should be
+    always patient-001 as it is hardcoded at the back end.
     
 
 
