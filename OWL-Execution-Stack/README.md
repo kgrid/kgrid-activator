@@ -4,7 +4,7 @@ Currently OWL execution stack is part of ObjectTeller but we need to sepearate i
 OWL Object: 
 We have one object for JNC7-Hypertension Guideline ( Ref: https://www.nhlbi.nih.gov/files/docs/resources/heart/phycard.pdf )
 Payload of the object is in: https://git.umms.med.umich.edu/LHS/dlhs-objects/blob/master/jnc7-hypertension-owl-model/src/jnc7-hypertension-model-payload.owl
-Sample input ( request body to demo OWL functionality )  is in: requestBody.xml
+Sample input ( request body to demo OWL functionality )  is in: (https://git.umms.med.umich.edu/LHS/dlhs-objects/blob/master/jnc7-hypertension-owl-model/src/jnc7-hypertension-input-patient.owl)
 Expected output (for given payload and given input ) is in : result.json
 
 No input message or output message are required. 
