@@ -1,12 +1,9 @@
 package org.uofm.ot.executionStack.reposity;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
@@ -14,10 +11,12 @@ import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -27,7 +26,10 @@ public class Shelf {
 	
 	@Value("${executionStack.localStoragePath:}")
 	private String localStoragePath;
-	
+
+	@Value("${executionStack.shelfName:shelf}")
+	private String shelfName;
+
 	public void saveObject(KnowledgeObjectDTO dto, ArkId arkId) throws OTExecutionStackException {
 		
 		try {
@@ -35,13 +37,13 @@ public class Shelf {
 			ObjectMapper mapper = new ObjectMapper();
 			ObjectWriter writer = mapper.writer();
 			
-			File folderPath = new File(localStoragePath) ;
+			File folderPath = new File(localStoragePath, shelfName) ;
 			
 			if(folderPath.exists() == false){
 				folderPath.mkdirs();
 			}
 			
-			File resultFile = new File(localStoragePath, arkId.getFedoraPath()); 
+			File resultFile = new File(folderPath, arkId.getFedoraPath());
 
 			writer.writeValue(resultFile, dto);
 			inMemoryShelf.put(arkId, dto);
@@ -62,9 +64,11 @@ public class Shelf {
 		try {
 
 			if(!inMemoryShelf.containsKey(arkId) ){
-				ObjectMapper mapper = new ObjectMapper();	
+				ObjectMapper mapper = new ObjectMapper();
 
-				File resultFile = new File(localStoragePath, arkId.getFedoraPath()); 
+				File folderPath = new File(localStoragePath, shelfName) ;
+
+				File resultFile = new File(folderPath, arkId.getFedoraPath());
 
 				dto = (KnowledgeObjectDTO) mapper.readValue(resultFile, KnowledgeObjectDTO.class);
 			} else
@@ -83,9 +87,10 @@ public class Shelf {
 
 	public boolean deleteObject( ArkId arkId)  {
 		
-		boolean success = false ; 
-		
-		File resultFile = new File(localStoragePath, arkId.getFedoraPath()); 
+		boolean success = false ;
+		File folderPath = new File(localStoragePath, shelfName) ;
+
+		File resultFile = new File(folderPath, arkId.getFedoraPath());
 		success = resultFile.delete();
 		if(success) {
 			if(inMemoryShelf.containsKey(arkId)) {
@@ -96,7 +101,7 @@ public class Shelf {
 	}
 	
 	public List<Map<String,String>> getAllObjects(){
-		File folderPath = new File(localStoragePath) ;
+		File folderPath = new File(localStoragePath, shelfName) ;
 		
 		List<Map<String,String>> objectsOnTheShelf = new ArrayList<Map<String,String>>();
 		
