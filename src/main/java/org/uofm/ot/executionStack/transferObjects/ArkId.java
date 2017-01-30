@@ -139,10 +139,9 @@ public class ArkId {
     }
 
 	public ArkId(String naan, String name) {
-		super();
 		this.naan = naan;
 		this.name = name;
-		this.arkId = getArkId();
+		this.arkId = getArkId(); // pre-compute ark id, TODO: why is this needed if the getter lazy loads?
 	}
     
     

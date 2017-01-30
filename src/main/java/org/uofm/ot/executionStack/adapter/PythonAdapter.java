@@ -20,7 +20,7 @@ public class PythonAdapter {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public Result executeString(String chunk,String functionName,Map<String,Object> params, DataType returntype) throws OTExecutionStackException {
+	public Result execute(String chunk, String functionName, Map<String,Object> params, DataType returntype) throws OTExecutionStackException {
 
 
 		PythonInterpreter interpreter = new PythonInterpreter();

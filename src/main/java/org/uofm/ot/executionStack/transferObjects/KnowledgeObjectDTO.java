@@ -1,5 +1,8 @@
 package org.uofm.ot.executionStack.transferObjects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KnowledgeObjectDTO {
 	
 	public String inputMessage; 
