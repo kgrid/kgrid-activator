@@ -21,117 +21,117 @@ import java.util.Map;
 
 @Service
 public class Shelf {
-	
-	private Map<ArkId,KnowledgeObjectDTO> inMemoryShelf = new HashMap<ArkId,KnowledgeObjectDTO>(); 
-	
-	@Value("${stack.localStoragePath:.}")
-	private String localStoragePath;
 
-	@Value("${stack.shelfName:shelf}")
-	private String shelfName;
+    private Map<ArkId, KnowledgeObjectDTO> inMemoryShelf = new HashMap<ArkId, KnowledgeObjectDTO>();
 
-	public void saveObject(KnowledgeObjectDTO dto, ArkId arkId) throws OTExecutionStackException {
-		
-		try {
+    @Value("${stack.localStoragePath:.}")
+    private String localStoragePath;
 
-			ObjectMapper mapper = new ObjectMapper();
-			ObjectWriter writer = mapper.writer();
-			
-			File folderPath = new File(localStoragePath, shelfName) ;
-			
-			if(folderPath.exists() == false){
-				folderPath.mkdirs();
-			}
-			
-			File resultFile = new File(folderPath, arkId.getFedoraPath());
+    @Value("${stack.shelfName:shelf}")
+    private String shelfName;
 
-			writer.writeValue(resultFile, dto);
-			inMemoryShelf.put(arkId, dto);
+    public void saveObject(KnowledgeObjectDTO dto, ArkId arkId) throws OTExecutionStackException {
 
-		} catch (JsonGenerationException e) {
-			throw new OTExecutionStackException(e);
-		} catch (JsonMappingException e) {
-			throw new OTExecutionStackException(e);
-		} catch (IOException e) {
-			throw new OTExecutionStackException(e);
-		}
-		
-	}
-	
-	
-	public KnowledgeObjectDTO getObject( ArkId arkId) throws OTExecutionStackException {
-		KnowledgeObjectDTO dto = null;
-		try {
+        try {
 
-			if(!inMemoryShelf.containsKey(arkId) ){
-				ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectWriter writer = mapper.writer();
 
-				File folderPath = new File(localStoragePath, shelfName) ;
+            File folderPath = new File(localStoragePath, shelfName);
 
-				File resultFile = new File(folderPath, arkId.getFedoraPath());
+            if (folderPath.exists() == false) {
+                folderPath.mkdirs();
+            }
 
-				dto = (KnowledgeObjectDTO) mapper.readValue(resultFile, KnowledgeObjectDTO.class);
-			} else
-				dto = inMemoryShelf.get(arkId);
-		} catch (JsonGenerationException e) {
-			throw new OTExecutionStackException(e);
-		} catch (JsonMappingException e) {
-			throw new OTExecutionStackException(e);
-		} catch (IOException e) {
-			throw new OTExecutionStackEntityNotFoundException(e);
-		}
-		 
-		return dto;
-	}
-	
+            File resultFile = new File(folderPath, arkId.getFedoraPath());
 
-	public boolean deleteObject( ArkId arkId)  {
-		
-		boolean success = false ;
-		File folderPath = new File(localStoragePath, shelfName) ;
+            writer.writeValue(resultFile, dto);
+            inMemoryShelf.put(arkId, dto);
 
-		File resultFile = new File(folderPath, arkId.getFedoraPath());
-		success = resultFile.delete();
-		if(success) {
-			if(inMemoryShelf.containsKey(arkId)) {
-				inMemoryShelf.remove(arkId);
-			}
-		}
-		return success;
-	}
-	
-	public List<Map<String,String>> getAllObjects(){
-		File folderPath = new File(localStoragePath, shelfName) ;
-		
-		List<Map<String,String>> objectsOnTheShelf = new ArrayList<Map<String,String>>();
-		
-		ObjectMapper mapper = new ObjectMapper();	
-		
-		if(folderPath.exists()){
-			File[] objects = folderPath.listFiles();
-			for (File file : objects) {
-				String objectName = file.getName();
-				String[] parts = objectName.split("-");
-				ArkId arkId = new ArkId(parts[0], parts[1]);
-				if(!inMemoryShelf.containsKey(arkId)){
-					try {
-						KnowledgeObjectDTO dto = (KnowledgeObjectDTO) mapper.readValue(file, KnowledgeObjectDTO.class);
-						inMemoryShelf.put(arkId, dto);
-					} catch (IOException e) {
-						throw new OTExecutionStackException(e);					
-					}
-				}
-			}
-			
-			for (ArkId arkId : inMemoryShelf.keySet()) {
-				Map <String,String> shelfEntry = new HashMap<String,String>();
+        } catch (JsonGenerationException e) {
+            throw new OTExecutionStackException(e);
+        } catch (JsonMappingException e) {
+            throw new OTExecutionStackException(e);
+        } catch (IOException e) {
+            throw new OTExecutionStackException(e);
+        }
 
-				shelfEntry.put("ArkId", arkId.getArkId());			
-				shelfEntry.put("URL", inMemoryShelf.get(arkId).url);
-				
-				objectsOnTheShelf.add(shelfEntry);
-			}	
-		}
-		return objectsOnTheShelf;
-	}
+    }
+
+
+    public KnowledgeObjectDTO getObject(ArkId arkId) throws OTExecutionStackException {
+        KnowledgeObjectDTO dto = null;
+        try {
+
+            if (!inMemoryShelf.containsKey(arkId)) {
+                ObjectMapper mapper = new ObjectMapper();
+
+                File folderPath = new File(localStoragePath, shelfName);
+
+                File resultFile = new File(folderPath, arkId.getFedoraPath());
+
+                dto = (KnowledgeObjectDTO) mapper.readValue(resultFile, KnowledgeObjectDTO.class);
+            } else
+                dto = inMemoryShelf.get(arkId);
+        } catch (JsonGenerationException e) {
+            throw new OTExecutionStackException(e);
+        } catch (JsonMappingException e) {
+            throw new OTExecutionStackException(e);
+        } catch (IOException e) {
+            throw new OTExecutionStackEntityNotFoundException(e);
+        }
+
+        return dto;
+    }
+
+
+    public boolean deleteObject(ArkId arkId) {
+
+        boolean success = false;
+        File folderPath = new File(localStoragePath, shelfName);
+
+        File resultFile = new File(folderPath, arkId.getFedoraPath());
+        success = resultFile.delete();
+        if (success) {
+            if (inMemoryShelf.containsKey(arkId)) {
+                inMemoryShelf.remove(arkId);
+            }
+        }
+        return success;
+    }
+
+    public List<Map<String, String>> getAllObjects() {
+        File folderPath = new File(localStoragePath, shelfName);
+
+        List<Map<String, String>> objectsOnTheShelf = new ArrayList<Map<String, String>>();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (folderPath.exists()) {
+            File[] objects = folderPath.listFiles();
+            for (File file : objects) {
+                String objectName = file.getName();
+                String[] parts = objectName.split("-");
+                ArkId arkId = new ArkId(parts[0], parts[1]);
+                if (!inMemoryShelf.containsKey(arkId)) {
+                    try {
+                        KnowledgeObjectDTO dto = (KnowledgeObjectDTO) mapper.readValue(file, KnowledgeObjectDTO.class);
+                        inMemoryShelf.put(arkId, dto);
+                    } catch (IOException e) {
+                        throw new OTExecutionStackException(e);
+                    }
+                }
+            }
+
+            for (ArkId arkId : inMemoryShelf.keySet()) {
+                Map<String, String> shelfEntry = new HashMap<String, String>();
+
+                shelfEntry.put("ArkId", arkId.getArkId());
+                shelfEntry.put("URL", inMemoryShelf.get(arkId).url);
+
+                objectsOnTheShelf.add(shelfEntry);
+            }
+        }
+        return objectsOnTheShelf;
+    }
 }
