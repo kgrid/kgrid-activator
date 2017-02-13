@@ -52,11 +52,8 @@ public class ObjectTellerInterface  {
 	}
 
 
-	@Value("${library.absolutePath:}")
+	@Value("${library.url:}")
 	String libraryAbsolutePath;
-
-	@Value("${library.relativePath:/ObjectTeller}")
-	String libraryRelativePath;
 
 	public String getLibraryPath() {
 
@@ -65,7 +62,7 @@ public class ObjectTellerInterface  {
 		ServletUriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
 
 		if (libraryAbsolutePath.isEmpty()) {
-			path = uriBuilder.replacePath(libraryRelativePath).toUriString();
+			path = uriBuilder.replacePath("").toUriString();
 		} else {
 			path = libraryAbsolutePath;
 		}

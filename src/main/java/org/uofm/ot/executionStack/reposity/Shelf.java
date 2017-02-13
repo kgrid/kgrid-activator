@@ -24,10 +24,10 @@ public class Shelf {
 
     private Map<ArkId, KnowledgeObjectDTO> inMemoryShelf = new HashMap<ArkId, KnowledgeObjectDTO>();
 
-    @Value("${stack.localStoragePath:.}")
+    @Value("${stack.shelf.path:.}")
     private String localStoragePath;
 
-    @Value("${stack.shelfName:shelf}")
+    @Value("${stack.shelf.name:shelf}")
     private String shelfName;
 
     public void saveObject(KnowledgeObjectDTO dto, ArkId arkId) throws OTExecutionStackException {
