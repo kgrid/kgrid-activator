@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
@@ -21,6 +23,8 @@ import java.util.Map;
 
 @Service
 public class Shelf {
+
+    private final Logger log = LoggerFactory.getLogger(Shelf.class);
 
     private Map<ArkId, KnowledgeObjectDTO> inMemoryShelf = new HashMap<ArkId, KnowledgeObjectDTO>();
 
@@ -46,7 +50,11 @@ public class Shelf {
             File resultFile = new File(folderPath, arkId.getFedoraPath());
 
             writer.writeValue(resultFile, dto);
+            log.info("Object written to shelf: " + resultFile.getAbsolutePath());
+
+
             inMemoryShelf.put(arkId, dto);
+
 
         } catch (JsonGenerationException e) {
             throw new OTExecutionStackException(e);
@@ -92,6 +100,8 @@ public class Shelf {
 
         File resultFile = new File(folderPath, arkId.getFedoraPath());
         success = resultFile.delete();
+        log.info("Object deleted from shelf: " + resultFile.getAbsolutePath());
+
         if (success) {
             if (inMemoryShelf.containsKey(arkId)) {
                 inMemoryShelf.remove(arkId);
@@ -102,6 +112,7 @@ public class Shelf {
 
     public List<Map<String, String>> getAllObjects() {
         File folderPath = new File(localStoragePath, shelfName);
+        log.info("Reloading shelf: " + folderPath.getAbsolutePath());
 
         List<Map<String, String>> objectsOnTheShelf = new ArrayList<Map<String, String>>();
 

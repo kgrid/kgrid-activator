@@ -5,6 +5,7 @@
     git clone https://github.com/kgrid/python-execution-stack.git
 
     cd python-execution-stack
+
 Build and deploy the execution stack (the executable `.war` file can be run as a standard jar file):
 
     mvn clean package
