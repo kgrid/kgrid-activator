@@ -19,7 +19,7 @@ bare jar file.  It is not required when the war file is deployed in a container.
 The following properties can be configured as system defaults on the command line using '`-Doption=value`:
 
 
-    -Dlibrary.absolutePath=http://dlhs-fedora-dev-a.umms.med.umich.edu:8080/ObjectTeller    # Default is no external library
+    -library.url=http://dlhs-fedora-dev-a.umms.med.umich.edu:8080/ObjectTeller    # Default is no external library
 
     -Dstack.shelf.path=/Users/kgrid/ko/    # Default is system property 'java.io.tmpdir'
 
