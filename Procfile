@@ -1,1 +1,1 @@
-web:    java -Dpython.import.site=false -jar target/python-execution-stack.jar
+java -Dpython.import.site=false -Dserver.port=$PORT $JAVA_OPTS -jar target*.jar
