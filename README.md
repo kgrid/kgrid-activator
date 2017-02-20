@@ -15,6 +15,8 @@ Build and deploy the execution stack (the executable `.war` file can be run as a
 Or the same `.war` file can be deployed in a Tomcat 8+ container. (The `-Dpython.import.site=false` is required when running as a
 bare jar file.  It is not required when the war file is deployed in a container.)
 
+Release version (milestone releases) are available here: https://github.com/kgrid/python-execution-stack/releases
+
 
 The following properties can be configured as system defaults on the command line using '`-Doption=value`:
 
@@ -34,7 +36,7 @@ as parameters on startup, or any of the typical Tomcat property config methods.
 
 It is also possible to supply the location of an external application properties file:
 
-    -Dspring.config.location=file:/path/to/config/folder'
+    -Dspring.config.location=file:/path/to/config/folder
 
  by default it will load configuration from application.properties
     or you can supply different application properties file using
