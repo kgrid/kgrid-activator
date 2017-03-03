@@ -1,38 +1,35 @@
 package org.uofm.ot.executionStack.adapter;
 
-import java.util.Map;
-
-
 import org.python.core.PyDictionary;
 import org.python.core.PyException;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.DataType;
 import org.uofm.ot.executionStack.transferObjects.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 
 @Component
 public class PythonAdapter {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public Result execute(String chunk, String functionName, Map<String,Object> params, DataType returntype) throws OTExecutionStackException {
+	public Result execute(String code, String functionName, Map<String, Object> params, DataType returntype) throws OTExecutionStackException {
 
+		// locally setting python environment for Jython standalone (only reads system properties)
+		System.getProperties().put("python.import.site", "false");
 
 		PythonInterpreter interpreter = new PythonInterpreter();
 
 		Result resObj = new Result();
 
-
 		PyDictionary dictionary = new PyDictionary();
-		dictionary.putAll(params);		
-		interpreter.exec(chunk);
-
-
+		dictionary.putAll(params);
+		interpreter.exec(code);
 
 		try {
 			PyObject someFunc = interpreter.get(functionName);
@@ -82,7 +79,7 @@ public class PythonAdapter {
 		} finally {
 			interpreter.close();
 		}
-		
+
 		return resObj;
 	}
 }
