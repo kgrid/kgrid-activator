@@ -1,0 +1,11 @@
+[Unit]
+Description=Python Execution Stack
+After=syslog.target
+
+[Service]
+User=kgrid
+ExecStart=/var/kgrid/python-execution-stack.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
