@@ -20,9 +20,6 @@ public class PythonAdapter {
 
 	public Result execute(String code, String functionName, Map<String, Object> params, DataType returntype) throws OTExecutionStackException {
 
-		// locally setting python environment for Jython standalone (only reads system properties)
-		System.getProperties().put("python.import.site", "false");
-
 		PythonInterpreter interpreter = new PythonInterpreter();
 
 		Result resObj = new Result();
