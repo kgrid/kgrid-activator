@@ -5,7 +5,7 @@
 	<groupId>edu.umich.lhs</groupId>
 	<artifactId>python-execution-stack</artifactId>
 	<version>0.5.2-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>${packaging.type}</packaging>
 
 	<name>python-execution-stack</name>
 	<description>KGrid: Python Execution Stack</description>
@@ -29,7 +29,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <context.path>/ExecutionStack</context.path> <!-- for mvn tomcat7 deployments -->
-		<executable>false</executable>
+		<executable>true</executable>
+		<packaging.type>jar</packaging.type>
 	</properties>
 
 	<dependencies>
@@ -41,7 +42,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<!--<scope>provided</scope>-->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -63,11 +64,6 @@
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7.1b3</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.scijava</groupId>-->
-			<!--<artifactId>jython-shaded</artifactId>-->
-			<!--<version>2.7.0</version>-->
-		<!--</dependency>-->
 
 	</dependencies>
 
@@ -99,8 +95,10 @@
 				</configuration>
 			</plugin>
 			<!--
-			mvn release:prepare;
-			[upload the war and publish the release]
+			For non-maven-repository releases
+			mvn release:prepare
+			[This builds a versioned artifact and tags it in the repo.
+			Then upload the war and publish the release, say on github]
 			mvn release:clean
 			 -->
 			<plugin>
