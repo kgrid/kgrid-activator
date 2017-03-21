@@ -5,7 +5,7 @@
 	<groupId>edu.umich.lhs</groupId>
 	<artifactId>python-execution-stack</artifactId>
 	<version>0.5.2-SNAPSHOT</version>
-	<packaging>${packaging.type}</packaging>
+	<packaging>${packaging}</packaging>
 
 	<name>python-execution-stack</name>
 	<description>KGrid: Python Execution Stack</description>
@@ -23,18 +23,11 @@
 	</scm>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <context.path>/ExecutionStack</context.path> <!-- for mvn tomcat7 deployments -->
-		<executable>true</executable>
-		<packaging.type>jar</packaging.type>
+		<java.version>1.8</java.version> <!-- override spring boot parent; sets java source & target -->
+		<packaging>war</packaging> <!-- default is standard war file -->
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -42,7 +35,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+			<scope>provided</scope> <!-- only for spring-boot executable jar -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -64,51 +57,71 @@
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7.1b3</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>
-		<finalName>python-execution-stack</finalName>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<!--properties set from settings.xml or the command line-->
-					<server>${tomcat-server}</server>
-					<url>${tomcat-url}</url>
-					<path>${context.path}</path>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<executable>${executable}</executable>
-						<requiresUnpack>
-							<dependency>
-								<groupId>org.python</groupId>
-								<artifactId>jython-standalone</artifactId>
-							</dependency>
-						</requiresUnpack>
-				</configuration>
-			</plugin>
-			<!--
-			For non-maven-repository releases
-			mvn release:prepare
-			[This builds a versioned artifact and tags it in the repo.
-			Then upload the war and publish the release, say on github]
-			mvn release:clean
-			 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--
+            For non-maven-repository releases
+            mvn release:prepare
+            [This builds a versioned artifact and tags it in the repo.
+            Then upload the war and publish the release, say on github].
+            Use mvn release:clean afterward
+             -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<!-- Default context path is: '/${project.artifactId}'. -->
+				<!-- Use 'mvn tomcat7:deploy -Dmaven.tomcat.path=/xxx' to change -->
+				<configuration>
+					<!--properties from settings.xml or the command line-->
+					<server>${tomcat-server}</server>
+					<url>${tomcat-url}</url>
+				</configuration>
+			</plugin>
 		</plugins>
 		
 	</build>
+
+	<profiles>
+		<profile>
+            <!-- if 'mvn package -Dpackaging=jar', make executable and unpack jython jar -->
+			<id>executable-jar</id>
+			<activation>
+				<property>
+					<name>packaging</name>
+					<value>jar</value>
+				</property>
+			</activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <executable>true</executable>
+                            <requiresUnpack>
+                                <dependency>
+                                    <groupId>org.python</groupId>
+                                    <artifactId>jython-standalone</artifactId>
+                                </dependency>
+                            </requiresUnpack>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+		</profile>
+	</profiles>
 
 
 </project>
