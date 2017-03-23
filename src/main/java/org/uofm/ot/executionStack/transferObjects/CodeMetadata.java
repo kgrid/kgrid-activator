@@ -2,6 +2,7 @@ package org.uofm.ot.executionStack.transferObjects;
 
 import java.util.ArrayList;
 import java.util.Map;
+import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 
 
 public class CodeMetadata {
@@ -54,12 +55,15 @@ public class CodeMetadata {
 					errorMessage= " Input parameter "+param.getName()+" is missing.";
 				else
 					errorMessage = errorMessage + " Input parameter "+param.getName()+" is missing.";
-				break;
 			}
 		}
 
 		if(errorMessage == null)
 			errorMessage = verifyParameters(ipParams);
+
+		//if (errorMessage != null) {
+			//throw new OTExecutionStackException("Error in converting RDF metadata for ko: " + errorMessage);
+		//}
 
 		return errorMessage;
 	}
