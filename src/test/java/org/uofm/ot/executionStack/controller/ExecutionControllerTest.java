@@ -4,11 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -74,7 +71,7 @@ public class ExecutionControllerTest {
     KnowledgeObjectDTO ko = new KnowledgeObjectDTO();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("test", "test");
-    Result expectedResult = new Result(0, null, " Input parameter rxcui is missing.");
+    Result expectedResult = new Result(null);
     expectedResult.setSource(null);
     ko.inputMessage = INPUT_SPEC;
     ko.outputMessage = OUTPUT_SPEC;
@@ -87,7 +84,7 @@ public class ExecutionControllerTest {
     KnowledgeObjectDTO ko = new KnowledgeObjectDTO();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222 2101 10767");
-    Result expectedResult = new Result(0, null, null);
+    Result expectedResult = new Result(null);
     expectedResult.setSource(null);
     ko.inputMessage = INPUT_SPEC;
     ko.outputMessage = OUTPUT_SPEC;
