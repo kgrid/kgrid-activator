@@ -14,6 +14,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
 import org.uofm.ot.executionStack.transferObjects.DataType;
+import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.ParamDescription;
 
 
@@ -25,15 +26,19 @@ public class CodeMetadataConvertor {
 	
 	public static final String OT_NAMESPACE =  "http://uofm.org/objectteller/";
 
-	public CodeMetadata covertInputOutputMessageToCodeMetadata(String inputMessage, String outputMessage) {
-		
+	public CodeMetadata covertInputOutputMessageToCodeMetadata(KnowledgeObjectDTO ko) {
+
+		if(ko == null || ko.inputMessage == null || ko.outputMessage == null) {
+			return null;
+		}
+
 		CodeMetadata codeMetadata = new CodeMetadata();
 
 		Model modelInput = ModelFactory.createDefaultModel();
 
 		
 
-		InputStream streamInput = new ByteArrayInputStream(inputMessage.getBytes(StandardCharsets.UTF_8));
+		InputStream streamInput = new ByteArrayInputStream(ko.inputMessage.getBytes(StandardCharsets.UTF_8));
 
 		modelInput.read(streamInput,null);
 
@@ -81,7 +86,7 @@ public class CodeMetadataConvertor {
 
 		Model modelOutput = ModelFactory.createDefaultModel();
 
-		InputStream streamOutput = new ByteArrayInputStream(outputMessage.getBytes(StandardCharsets.UTF_8));
+		InputStream streamOutput = new ByteArrayInputStream(ko.outputMessage.getBytes(StandardCharsets.UTF_8));
 
 		modelOutput.read(streamOutput,null);
 
