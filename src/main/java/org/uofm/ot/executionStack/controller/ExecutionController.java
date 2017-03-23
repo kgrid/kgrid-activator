@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
-import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
 import org.uofm.ot.executionStack.reposity.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
@@ -75,28 +73,23 @@ public class ExecutionController {
    */
   private boolean isInputAndPayloadValid(Map<String, Object> inputs, Payload payload, CodeMetadata metadata) throws OTExecutionStackException {
 
-    log.info("Checking for any inputs");
     if(inputs == null || inputs.size() < 1) {
       throw new OTExecutionStackException("No inputs given.");
     }
 
-    log.info("Checking knowledge object against inputs " + inputs.toString());
     if (metadata == null) {
       throw new OTExecutionStackException("Unable to convert RDF metadata for ko.");
     }
 
-    log.info("Checking meteadata for errors");
     String errorMessage = metadata.verifyInput(inputs);
     if (errorMessage != null) {
       throw new OTExecutionStackException("Error in converting RDF metadata for ko: " + errorMessage);
     }
 
-    log.info("Checking payload for content");
     if (payload == null || payload.content == null) {
       throw new OTExecutionStackException("Payload content is NULL for ko");
     }
 
-    log.info("Checking payload language");
     if (!EngineType.PYTHON.toString().equalsIgnoreCase(payload.engineType)) {
       throw new OTExecutionStackException("Expected Python payload but instead got " + payload.engineType);
     }
