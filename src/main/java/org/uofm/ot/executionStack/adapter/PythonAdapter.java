@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.DataType;
+import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 import org.uofm.ot.executionStack.transferObjects.Result;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ public class PythonAdapter {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public Result execute(String code, String functionName, Map<String, Object> params, DataType returntype) throws OTExecutionStackException {
+	public Result execute(Map<String, Object> params, Payload payload, DataType returntype) throws OTExecutionStackException {
 
 		PythonInterpreter interpreter = new PythonInterpreter();
 
@@ -26,10 +27,10 @@ public class PythonAdapter {
 
 		PyDictionary dictionary = new PyDictionary();
 		dictionary.putAll(params);
-		interpreter.exec(code);
+		interpreter.exec(payload.content);
 
 		try {
-			PyObject someFunc = interpreter.get(functionName);
+			PyObject someFunc = interpreter.get(payload.functionName);
 			if(someFunc != null) {
 				PyObject result = someFunc.__call__(dictionary);
 
@@ -64,8 +65,8 @@ public class PythonAdapter {
 					}
 				}
 			} else {
-				log.error(functionName + " function not found in object payload ");
-				OTExecutionStackException exception = new OTExecutionStackException(functionName + " function not found in object payload ");
+				log.error(payload.functionName + " function not found in object payload ");
+				OTExecutionStackException exception = new OTExecutionStackException(payload.functionName + " function not found in object payload ");
 				throw exception;
 			}
 
