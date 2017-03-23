@@ -1,28 +1,29 @@
 package org.uofm.ot.executionStack.transferObjects;
 
 public class Result {
-	
+
+  @Deprecated
 	private int success;
 	
 	private Object result;
-	
+
+	@Deprecated
 	private String errorMessage;
 	
 	private String source;
 		public Result(){}
 
-	public Result(int success, String result, String errorMessage) {
+	public Result(String result) {
 		super();
-		this.success = success;
 		this.result = result;
-		this.errorMessage = errorMessage;
 	}
 
-	
+	@Deprecated
 	public int getSuccess() {
 		return success;
 	}
 
+	@Deprecated
 	public void setSuccess(int success) {
 		this.success = success;
 	}
@@ -35,10 +36,12 @@ public class Result {
 		this.result = result;
 	}
 
+	@Deprecated
 	public String getErrorMessage() {
 		return errorMessage;
 	}
 
+	@Deprecated
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
