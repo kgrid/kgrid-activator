@@ -16,6 +16,13 @@ public class KnowledgeObjectDTO {
 	public KnowledgeObjectDTO() {
 		// TODO Auto-generated constructor stub
 	}
+
+	public void genPayload(String content, String engineType, String functionName) {
+		this.payload = new Payload();
+		this.payload.content = content;
+		this.payload.engineType = engineType;
+		this.payload.functionName = functionName;
+	}
 	
 	@Override
 	public String toString() {
@@ -40,7 +47,7 @@ public class KnowledgeObjectDTO {
 			return "Payload [content=" + content + ", engineType=" + engineType + ", functionName=" + functionName
 					+ "]";
 		}
-		
-		
+
+
 	}
 }
