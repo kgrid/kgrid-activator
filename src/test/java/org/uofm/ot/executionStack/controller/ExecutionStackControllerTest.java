@@ -24,10 +24,10 @@ public class ExecutionStackControllerTest {
     @Test
     public void whenInputIsNullReturnError() {
 
-        ExecutionStackController ex = new ExecutionStackController();
+        ShelfController ex = new ShelfController();
 
-            Result result = ex.calculate(null, null);
-            assertNotNull(result.getErrorMessage());
+            //Result result = ex.validateAndExecute(null, null);
+            //assertNotNull(result.getErrorMessage());
 // i remember doing something like that, but it escapes me now. i am sure stackoverflow will answer
 //        Assert.assertEquals(error,result);
     }
