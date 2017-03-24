@@ -12,7 +12,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.springframework.stereotype.Service;
-import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
+import org.uofm.ot.executionStack.transferObjects.ioSpec;
 import org.uofm.ot.executionStack.transferObjects.DataType;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.ParamDescription;
@@ -26,13 +26,13 @@ public class CodeMetadataConvertor {
 	
 	public static final String OT_NAMESPACE =  "http://uofm.org/objectteller/";
 
-	public CodeMetadata covertInputOutputMessageToCodeMetadata(KnowledgeObjectDTO ko) {
+	public ioSpec covertInputOutputMessageToCodeMetadata(KnowledgeObjectDTO ko) {
 
 		if(ko == null || ko.inputMessage == null || ko.outputMessage == null) {
 			return null;
 		}
 
-		CodeMetadata codeMetadata = new CodeMetadata();
+		ioSpec codeMetadata = new ioSpec();
 
 		Model modelInput = ModelFactory.createDefaultModel();
 
