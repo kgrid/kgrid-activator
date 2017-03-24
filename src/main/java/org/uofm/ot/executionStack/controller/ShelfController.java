@@ -68,12 +68,7 @@ public class ShelfController {
     @DeleteMapping(value = {"/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
     public ResponseEntity<String> deleteObjectOnTheShelfByArkId(ArkId arkId) {
 
-        if (localStorage.deleteObject(arkId)) {
-            return new ResponseEntity<String>("Object with ArkId " + arkId + " is removed from the Shelf", HttpStatus.GONE);
-        } else {
-            return new ResponseEntity<String>("Unable to delete Object with Ark Id " + arkId + ".", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+        return new ResponseEntity<String>("Object with ArkId " + arkId + " no longer on the Shelf", HttpStatus.OK);
     }
 
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}/payload/content", "/shelf/ark:/{naan}/{name}/payload/content"})
@@ -118,16 +113,14 @@ public class ShelfController {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(OTExecutionStackException.class)
-    @ResponseBody
-    String
+    @ResponseBody String
     handleBadRequest(HttpServletRequest req, Exception ex) {
         return req.getRequestURL() + " " + ex.getMessage();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(OTExecutionStackEntityNotFoundException.class)
-    @ResponseBody
-    String
+    @ResponseBody String
     handleEntityNotFound(HttpServletRequest req, Exception ex) {
         return req.getRequestURL() + " " + ex.getMessage();
     }
