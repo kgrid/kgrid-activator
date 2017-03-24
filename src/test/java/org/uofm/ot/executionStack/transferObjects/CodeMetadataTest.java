@@ -7,22 +7,23 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 
 /**
  * Created by nggittle on 3/23/2017.
  */
 public class CodeMetadataTest {
 
-  private CodeMetadata ioSpec;
+  private org.uofm.ot.executionStack.transferObjects.ioSpec ioSpec;
   ArrayList<ParamDescription> paramList;
 
   @Before
   public void setUp() throws Exception {
     paramList = new ArrayList<>();
-    ioSpec = new CodeMetadata();
+    ioSpec = new ioSpec();
   }
 
-  @Test
+  @Test(expected = OTExecutionStackException.class)
   public void givenAMissingParamThrowsError() throws Exception {
     paramList.add(new ParamDescription("rxcui2", DataType.STRING, 0, 2));
     ioSpec.setParams(paramList);
@@ -33,7 +34,7 @@ public class CodeMetadataTest {
     assertEquals(" Input parameter rxcui2 is missing.", ioSpec.verifyInput(inputs));
   }
 
-  @Test
+  @Test(expected = OTExecutionStackException.class)
   public void givenTwoMissingParamsThrowsErrorContainingBoth() throws Exception {
     paramList.add(new ParamDescription("rxcui2", DataType.STRING, 0, 2));
     paramList.add(new ParamDescription("name", DataType.STRING, 0, 2));
