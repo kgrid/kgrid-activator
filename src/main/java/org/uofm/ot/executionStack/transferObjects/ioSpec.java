@@ -5,9 +5,7 @@ import java.util.Map;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 
 
-public class CodeMetadata {
-	
-
+public class ioSpec {
 	
 	private int noOfParams;
 	
@@ -16,7 +14,7 @@ public class CodeMetadata {
 	private DataType returntype;
 	
 
-	public CodeMetadata(){}
+	public ioSpec(){}
 
 	public int getNoOfParams() {
 		return noOfParams;
@@ -61,9 +59,9 @@ public class CodeMetadata {
 		if(errorMessage == null)
 			errorMessage = verifyParameters(ipParams);
 
-		//if (errorMessage != null) {
-			//throw new OTExecutionStackException("Error in converting RDF metadata for ko: " + errorMessage);
-		//}
+//		if (errorMessage != null) {
+//			throw new OTExecutionStackException("Error in converting RDF metadata for ko: " + errorMessage);
+//		}
 
 		return errorMessage;
 	}
