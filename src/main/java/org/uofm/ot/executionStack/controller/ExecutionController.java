@@ -19,7 +19,7 @@ import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundExcept
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.reposity.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
-import org.uofm.ot.executionStack.transferObjects.CodeMetadata;
+import org.uofm.ot.executionStack.transferObjects.ioSpec;
 import org.uofm.ot.executionStack.transferObjects.EngineType;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
@@ -60,6 +60,8 @@ public class ExecutionController {
 
     result.setSource(arkId.getArkId());
 
+    result.setMetadata(ko.metadata);
+
     return result;
   }
 
@@ -67,23 +69,23 @@ public class ExecutionController {
    * Returns true iff the KO is valid when tested against the supplied inputs
    * @param inputs the data to be calculated by the ko
    * @param payload the payload from the given knowledge object
-   * @param metadata
-   * @return true if the KO has metadata,
+   * @param ioSpec
+   * @return true if the KO has valid ioSpec,
    * @throws OTExecutionStackException if the KO fails validation
    */
-  private boolean isInputAndPayloadValid(Map<String, Object> inputs, Payload payload, CodeMetadata metadata) throws OTExecutionStackException {
+  private boolean isInputAndPayloadValid(Map<String, Object> inputs, Payload payload, ioSpec ioSpec) throws OTExecutionStackException {
 
     if(inputs == null || inputs.size() < 1) {
       throw new OTExecutionStackException("No inputs given.");
     }
 
-    if (metadata == null) {
-      throw new OTExecutionStackException("Unable to convert RDF metadata for ko.");
+    if (ioSpec == null) {
+      throw new OTExecutionStackException("Unable to convert RDF ioSpec for ko.");
     }
 
-    String errorMessage = metadata.verifyInput(inputs);
+    String errorMessage = ioSpec.verifyInput(inputs);
     if (errorMessage != null) {
-      throw new OTExecutionStackException("Error in converting RDF metadata for ko: " + errorMessage);
+      throw new OTExecutionStackException("Error in converting RDF ioSpec for ko: " + errorMessage);
     }
 
     if (payload == null || payload.content == null) {
@@ -100,7 +102,7 @@ public class ExecutionController {
   Result validateAndExecute(Map<String, Object> inputs, KnowledgeObjectDTO ko) {
 
     Result result = null;
-    CodeMetadata ioSpec;
+    ioSpec ioSpec;
 
     log.info("Object Input Message and Output Message sent for conversion of RDF .");
     ioSpec = convertor.covertInputOutputMessageToCodeMetadata(ko);
@@ -112,7 +114,7 @@ public class ExecutionController {
       String code = payload.content;
 
       log.info("Object payload is sent to Python Adaptor for execution.");
-      result = adapter.execute(inputs, payload, ioSpec.getReturntype() );
+      result = adapter.execute( inputs, payload, ioSpec.getReturntype() );
     }
 
     return result;
