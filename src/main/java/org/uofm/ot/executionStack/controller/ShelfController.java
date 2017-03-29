@@ -32,7 +32,8 @@ public class ShelfController {
     @Autowired
     private Shelf localStorage;
 
-    @PutMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
+    @PutMapping(consumes = {MediaType.TEXT_PLAIN_VALUE},
+        path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException {
         ResponseEntity<String> result = null;
 
@@ -48,7 +49,7 @@ public class ShelfController {
 
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
-            value = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
+            path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
     public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObjectDTO dto) throws OTExecutionStackException {
         try {
             dto.url = NAME_TO_THING_ADD + arkId;
@@ -66,9 +67,9 @@ public class ShelfController {
     }
 
 
-    @DeleteMapping(value = {"/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
+    @DeleteMapping(path = {"/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
     public ResponseEntity<String> deleteObjectOnTheShelfByArkId(ArkId arkId) {
-
+        localStorage.deleteObject(arkId);
         return new ResponseEntity<String>("Object with ArkId " + arkId + " no longer on the Shelf", HttpStatus.OK);
     }
 
@@ -125,4 +126,6 @@ public class ShelfController {
     handleEntityNotFound(HttpServletRequest req, Exception ex) {
         return req.getRequestURL() + " " + ex.getMessage();
     }
+
+    //TODO: Add more handlers?
 }
