@@ -23,8 +23,8 @@ public class ioSpecTest {
     ioSpec = new ioSpec();
   }
 
-  @Test(expected = OTExecutionStackException.class)
-  public void givenAMissingParamThrowsError() throws Exception {
+  @Test
+  public void givenAMissingParamReportsCorrectly() throws Exception {
     paramList.add(new ParamDescription("rxcui2", DataType.STRING, 0, 2));
     ioSpec.setParams(paramList);
     ioSpec.setNoOfParams(paramList.size());
@@ -34,8 +34,8 @@ public class ioSpecTest {
     assertEquals(" Input parameter rxcui2 is missing.", ioSpec.verifyInput(inputs));
   }
 
-  @Test(expected = OTExecutionStackException.class)
-  public void givenTwoMissingParamsThrowsErrorContainingBoth() throws Exception {
+  @Test
+  public void givenTwoMissingParamsContainsBoth() throws Exception {
     paramList.add(new ParamDescription("rxcui2", DataType.STRING, 0, 2));
     paramList.add(new ParamDescription("name", DataType.STRING, 0, 2));
     ioSpec.setParams(paramList);
