@@ -12,7 +12,7 @@ import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 /**
  * Created by nggittle on 3/23/2017.
  */
-public class CodeMetadataTest {
+public class ioSpecTest {
 
   private org.uofm.ot.executionStack.transferObjects.ioSpec ioSpec;
   ArrayList<ParamDescription> paramList;
