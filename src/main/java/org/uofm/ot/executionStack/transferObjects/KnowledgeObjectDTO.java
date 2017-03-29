@@ -20,11 +20,12 @@ public class KnowledgeObjectDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void genPayload(String content, String engineType, String functionName) {
+	public Payload genPayload(String content, String engineType, String functionName) {
 		this.payload = new Payload();
 		this.payload.content = content;
 		this.payload.engineType = engineType;
 		this.payload.functionName = functionName;
+		return this.payload;
 	}
 	
 	@Override
