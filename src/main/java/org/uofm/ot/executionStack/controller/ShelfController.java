@@ -1,24 +1,27 @@
 package org.uofm.ot.executionStack.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
-import org.uofm.ot.executionStack.exception.OTExecutionStackException;
-import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
-import org.uofm.ot.executionStack.reposity.Shelf;
-import org.uofm.ot.executionStack.transferObjects.*;
-import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.uofm.ot.executionStack.exception.OTExecutionStackException;
+import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
+import org.uofm.ot.executionStack.reposity.Shelf;
+import org.uofm.ot.executionStack.transferObjects.ArkId;
+import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 
 
 @RestController
@@ -32,7 +35,7 @@ public class ShelfController {
     @Autowired
     private Shelf localStorage;
 
-    @PutMapping(consumes = {MediaType.TEXT_PLAIN_VALUE},
+    @PutMapping(consumes = {"!application/json"},
         path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException {
         ResponseEntity<String> result = null;
@@ -112,20 +115,4 @@ public class ShelfController {
 
         return here;
     }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(OTExecutionStackException.class)
-    @ResponseBody String
-    handleBadRequest(HttpServletRequest req, Exception ex) {
-        return req.getRequestURL() + " " + ex.getMessage();
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(OTExecutionStackEntityNotFoundException.class)
-    @ResponseBody String
-    handleEntityNotFound(HttpServletRequest req, Exception ex) {
-        return req.getRequestURL() + " " + ex.getMessage();
-    }
-
-    //TODO: Add more handlers?
 }

@@ -1,6 +1,8 @@
 package org.uofm.ot.executionStack.objectTellerLayer;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,12 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
+import org.uofm.ot.executionStack.exception.OTExecutionBadGateway;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @Service
@@ -41,7 +41,7 @@ public class ObjectTellerInterface  {
 			log.info("KnowledgeObject with Ark Id: "+ arkId + "is checked out from : "+ getAbsoluteObjectUrl(arkId) );
 		} catch ( HttpClientErrorException e ) {
 			if(e.getRawStatusCode() == HttpStatus.NOT_FOUND.value() ){
-				throw new OTExecutionStackEntityNotFoundException("Object with Ark Id : "+arkId+" does not exist ");
+				throw new OTExecutionBadGateway("Object with Ark Id : "+arkId+" does not exist ");
 			} else {
 				throw new OTExecutionStackException(e);
 			}

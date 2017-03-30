@@ -3,7 +3,7 @@ package org.uofm.ot.executionStack.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value= HttpStatus.BAD_REQUEST, reason="Malformed execution inputs") // HTTP 400 Error Bad Request
+@ResponseStatus(value= HttpStatus.BAD_REQUEST) // HTTP 400 Error Bad Request
 public class OTExecutionStackException extends RuntimeException {
 
 	public OTExecutionStackException() {

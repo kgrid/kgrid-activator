@@ -23,13 +23,13 @@ public class PythonAdapter {
 
 		PythonInterpreter interpreter = new PythonInterpreter();
 
-		Result resObj = new Result();
+		Result resObj;
 
 		PyDictionary dictionary = new PyDictionary();
 		dictionary.putAll(params);
-		interpreter.exec(payload.content);
-
 		try {
+			interpreter.exec(payload.content);
+
 			PyObject someFunc = interpreter.get(payload.functionName);
 			if(someFunc != null) {
 				PyObject result = someFunc.__call__(dictionary);
@@ -42,6 +42,7 @@ public class PythonAdapter {
 
 		} catch(PyException ex) {
 			log.error("Exception occurred while executing python code "+ex.getMessage());
+			throw new OTExecutionStackException("Error while executing payload code " + ex);
 		} finally {
 			interpreter.close();
 		}
@@ -53,28 +54,32 @@ public class PythonAdapter {
 
 		Result resObj = new Result();
 
-		if(DataType.FLOAT == returntype){
-      Float realResult = (Float) result.__tojava__(float.class);
+		try {
+			if (DataType.FLOAT == returntype) {
+				Float realResult = (Float) result.__tojava__(float.class);
 
-      resObj.setResult(String.valueOf(realResult));
-    } else {
-      if(DataType.INT == returntype){
-        int realResult = (int) result.__tojava__(int.class);
+				resObj.setResult(String.valueOf(realResult));
+			} else {
+				if (DataType.INT == returntype) {
+					int realResult = (int) result.__tojava__(int.class);
 
-        resObj.setResult(String.valueOf(realResult));
-      } else {
-        if(DataType.STRING == returntype) {
-          String realResult = (String) result.__tojava__(String.class);
-          resObj.setResult(realResult);
+					resObj.setResult(String.valueOf(realResult));
+				} else {
+					if (DataType.STRING == returntype) {
+						String realResult = (String) result.__tojava__(String.class);
+						resObj.setResult(realResult);
 
-        } else {
-          if(DataType.MAP == returntype) {
-            Map<String,Object> realMap = (Map<String,Object>) result.__tojava__(Map.class);
-            resObj.setResult(realMap.get("result"));
-          }
-        }
-      }
-    }
+					} else {
+						if (DataType.MAP == returntype) {
+							Map<String, Object> realMap = (Map<String, Object>) result.__tojava__(Map.class);
+							resObj.setResult(realMap.get("result"));
+						}
+					}
+				}
+			}
+		} catch (ClassCastException ex) {
+			throw new OTExecutionStackException("Type mismatch while converting python result to java. Check input spec and code payload " + ex);
+		}
     return resObj;
 	}
 }

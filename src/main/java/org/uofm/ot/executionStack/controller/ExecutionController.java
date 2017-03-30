@@ -1,29 +1,25 @@
 package org.uofm.ot.executionStack.controller;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
-import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.reposity.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
-import org.uofm.ot.executionStack.transferObjects.ioSpec;
 import org.uofm.ot.executionStack.transferObjects.EngineType;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;
 import org.uofm.ot.executionStack.transferObjects.Result;
+import org.uofm.ot.executionStack.transferObjects.ioSpec;
 import org.uofm.ot.executionStack.util.CodeMetadataConvertor;
 
 /**
@@ -89,7 +85,7 @@ public class ExecutionController {
     }
 
     if (payload == null || payload.content == null) {
-      throw new OTExecutionStackException("Payload content is NULL for ko");
+      throw new OTExecutionStackException("Knowledge object payload content is NULL or empty");
     }
 
     if (!EngineType.PYTHON.toString().equalsIgnoreCase(payload.engineType)) {
@@ -111,28 +107,11 @@ public class ExecutionController {
     if (isInputAndPayloadValid(inputs, ko.payload, ioSpec)) {
       Payload payload = ko.payload;
 
-      String code = payload.content;
-
       log.info("Object payload is sent to Python Adaptor for execution.");
       result = adapter.execute( inputs, payload, ioSpec.getReturntype() );
     }
 
     return result;
-  }
-
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler(OTExecutionStackException.class)
-  @ResponseBody String
-  handleBadRequest(HttpServletRequest req, Exception ex) {
-    return req.getRequestURL() + " " + ex.getMessage();
-  }
-
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler(OTExecutionStackEntityNotFoundException.class)
-  @ResponseBody
-  String
-  handleEntityNotFound(HttpServletRequest req, Exception ex) {
-    return req.getRequestURL() + " " + ex.getMessage();
   }
 
 }
