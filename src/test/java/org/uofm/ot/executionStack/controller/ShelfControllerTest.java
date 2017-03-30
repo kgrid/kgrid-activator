@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +56,10 @@ public class ShelfControllerTest {
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
 
+    @After
+    public void tearDown() {
         File folderPath = new File(localStoragePath, shelfName);
 
         //Clear the shelf
@@ -66,6 +70,7 @@ public class ShelfControllerTest {
                 currentFile.delete();
             }
         }
+
     }
 
     @Test
