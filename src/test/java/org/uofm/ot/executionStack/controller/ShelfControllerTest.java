@@ -10,8 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uofm.ot.executionStack.ObjectTellerExecutionStackApplication;
 import org.uofm.ot.executionStack.TestUtils;
-import org.uofm.ot.executionStack.reposity.Shelf;
+import org.uofm.ot.executionStack.repository.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectBuilder;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
@@ -41,17 +44,24 @@ public class ShelfControllerTest {
 
     private MockMvc mockMvc;
 
+    private static final String SHELF_PATH = "stack.shelf.path";
+
     @Autowired
     private Shelf shelf;
-
-    @Value("${stack.shelf.path:.}")
-    private String localStoragePath;
 
     @Value("${stack.shelf.name:shelf}")
     private String shelfName;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    // Set the shelf path property
+    @BeforeClass
+    public static void initializePath() throws IOException {
+        String tempFilepath;
+        tempFilepath = Files.createTempDirectory("shelf").toString();
+        System.setProperty(SHELF_PATH, (tempFilepath != null ? tempFilepath : "tempShelf"));
+    }
 
     @Before
     public void setUp() {
@@ -60,7 +70,7 @@ public class ShelfControllerTest {
 
     @After
     public void tearDown() {
-        File folderPath = new File(localStoragePath, shelfName);
+        File folderPath = new File(System.getProperty(SHELF_PATH), shelfName);
 
         //Clear the shelf
         if(folderPath.exists() != false){
@@ -79,11 +89,7 @@ public class ShelfControllerTest {
         KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().build();
         ArkId arkId = new ArkId("99999", "fk4df70k9j");
 
-        KnowledgeObjectDTO ko2 = new KnowledgeObjectBuilder().build();
-        ArkId arkId2 = new ArkId("99999", "fk4df70k9k");
-
         shelf.saveObject(ko, arkId);
-        //shelf.saveObject(ko2, arkId2);
 
         ResultActions result = mockMvc.perform(get("/shelf"));
         result
