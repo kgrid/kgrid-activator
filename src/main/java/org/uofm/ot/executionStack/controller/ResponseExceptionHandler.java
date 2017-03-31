@@ -1,4 +1,4 @@
-package org.uofm.ot.executionStack.exception;
+package org.uofm.ot.executionStack.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.uofm.ot.executionStack.exception.OTExecutionBadGateway;
+import org.uofm.ot.executionStack.exception.OTExecutionStackEntityNotFoundException;
+import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.transferObjects.ErrorInfo;
 
 /**

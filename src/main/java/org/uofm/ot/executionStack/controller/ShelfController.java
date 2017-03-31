@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
-import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
+import org.uofm.ot.executionStack.repository.RemoteShelf;
 import org.uofm.ot.executionStack.repository.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
@@ -31,11 +31,11 @@ public class ShelfController {
     private static final String NAME_TO_THING_ADD = "http://n2t.net/";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    private ObjectTellerInterface objTellerInterface;
+    private RemoteShelf objTellerInterface;
     @Autowired
     private Shelf localStorage;
 
-    @PutMapping(consumes = {"!application/json"},
+    @PutMapping(consumes = {MediaType.TEXT_PLAIN_VALUE},
         path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException {
         ResponseEntity<String> result = null;

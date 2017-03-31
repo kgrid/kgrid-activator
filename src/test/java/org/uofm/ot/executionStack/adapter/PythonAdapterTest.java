@@ -44,7 +44,7 @@ public class PythonAdapterTest {
         .build();
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Error while executing payload code SyntaxError:"));
+    expectedEx.expectMessage("Error while executing payload code SyntaxError:");
     pythonAdapter.execute(map, ko.payload, DataType.INT);
 
   }

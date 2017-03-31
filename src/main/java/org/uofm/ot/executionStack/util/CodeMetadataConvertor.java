@@ -17,10 +17,6 @@ import org.uofm.ot.executionStack.transferObjects.DataType;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.ParamDescription;
 
-
-
-
-
 @Service
 public class CodeMetadataConvertor {
 	
@@ -36,21 +32,16 @@ public class CodeMetadataConvertor {
 
 		Model modelInput = ModelFactory.createDefaultModel();
 
-		
-
 		InputStream streamInput = new ByteArrayInputStream(ko.inputMessage.getBytes(StandardCharsets.UTF_8));
 
 		modelInput.read(streamInput,null);
 
-
-
-		StmtIterator iterInput = modelInput.getResource("http://uofm.org/objectteller/inputMessage").listProperties();
+		StmtIterator iterInput = modelInput.getResource(OT_NAMESPACE + "inputMessage").listProperties();
 		ArrayList<String> params = new ArrayList<String>();
-
 
 		while (iterInput.hasNext()) {
 
-			Statement stmt = iterInput.nextStatement(); 
+			Statement stmt = iterInput.nextStatement();
 
 			if("noofparams".equals(stmt.getPredicate().getLocalName()))
 				codeMetadata.setNoOfParams(Integer.parseInt(stmt.getObject().toString()));
@@ -71,7 +62,7 @@ public class CodeMetadataConvertor {
 			ParamDescription description = new ParamDescription();
 			description.setName(param);
 			while(paramDesc.hasNext()){
-				Statement stmt = paramDesc.nextStatement(); 
+				Statement stmt = paramDesc.nextStatement();
 				if("datatype".equals(stmt.getPredicate().getLocalName()))
 					description.setDatatype(DataType.valueOf(stmt.getObject().toString()));
 				if("min".equals(stmt.getPredicate().getLocalName()))
@@ -90,11 +81,11 @@ public class CodeMetadataConvertor {
 
 		modelOutput.read(streamOutput,null);
 
-		StmtIterator iterOutput = modelOutput.getResource("http://uofm.org/objectteller/outputMessage").listProperties();
+		StmtIterator iterOutput = modelOutput.getResource(OT_NAMESPACE + "outputMessage").listProperties();
 
 		while (iterOutput.hasNext()) {
 
-			Statement stmt = iterOutput.nextStatement(); 
+			Statement stmt = iterOutput.nextStatement();
 
 			if("returntype".equals(stmt.getPredicate().getLocalName()))
 				codeMetadata.setReturntype(DataType.valueOf(stmt.getObject().toString()));
