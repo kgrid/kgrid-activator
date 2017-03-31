@@ -43,4 +43,41 @@ public class Metadata {
     this.citations = citations;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Metadata metadata = (Metadata) o;
+
+    if (title != null ? !title.equals(metadata.title) : metadata.title != null) {
+      return false;
+    }
+    if (description != null ? !description.equals(metadata.description)
+        : metadata.description != null) {
+      return false;
+    }
+    return citations != null ? citations.equals(metadata.citations) : metadata.citations == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = title != null ? title.hashCode() : 0;
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (citations != null ? citations.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Metadata{" +
+        "title='" + title + '\'' +
+        ", description='" + description + '\'' +
+        ", citations=" + citations +
+        '}';
+  }
 }

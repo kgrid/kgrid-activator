@@ -60,9 +60,7 @@ public class PythonAdapterTest {
 
     Result result = new Result();
     result.setResult("1");
-    result.setSuccess(0);
     result.setSource(null);
-    result.setErrorMessage(null);
 
     assertEquals(result,pythonAdapter.execute(map, ko.payload, DataType.INT));
 

@@ -25,5 +25,35 @@ public class Citation {
     this.at = at;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
+    Citation citation = (Citation) o;
+
+    if (title != null ? !title.equals(citation.title) : citation.title != null) {
+      return false;
+    }
+    return at != null ? at.equals(citation.at) : citation.at == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = title != null ? title.hashCode() : 0;
+    result = 31 * result + (at != null ? at.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Citation{" +
+        "title='" + title + '\'' +
+        ", at='" + at + '\'' +
+        '}';
+  }
 }
