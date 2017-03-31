@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
 import org.uofm.ot.executionStack.objectTellerLayer.ObjectTellerInterface;
-import org.uofm.ot.executionStack.reposity.Shelf;
+import org.uofm.ot.executionStack.repository.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO.Payload;

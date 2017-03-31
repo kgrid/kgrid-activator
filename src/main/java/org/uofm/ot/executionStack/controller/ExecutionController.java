@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.executionStack.adapter.PythonAdapter;
 import org.uofm.ot.executionStack.exception.OTExecutionStackException;
-import org.uofm.ot.executionStack.reposity.Shelf;
+import org.uofm.ot.executionStack.repository.Shelf;
 import org.uofm.ot.executionStack.transferObjects.ArkId;
 import org.uofm.ot.executionStack.transferObjects.EngineType;
 import org.uofm.ot.executionStack.transferObjects.KnowledgeObjectDTO;
