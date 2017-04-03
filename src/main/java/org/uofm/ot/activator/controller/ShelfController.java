@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.repository.RemoteShelf;
 import org.uofm.ot.activator.repository.Shelf;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO.Payload;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
 
 
 @RestController
@@ -40,7 +40,7 @@ public class ShelfController {
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException {
         ResponseEntity<String> result = null;
 
-        KnowledgeObjectDTO dto = objTellerInterface.checkOutByArkId(arkId);
+        KnowledgeObject dto = objTellerInterface.checkOutByArkId(arkId);
         localStorage.saveObject(dto, arkId);
 
 
@@ -53,7 +53,7 @@ public class ShelfController {
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
             path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-    public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObjectDTO dto) throws OTExecutionStackException {
+    public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObject dto) throws OTExecutionStackException {
         try {
             dto.url = NAME_TO_THING_ADD + arkId;
             localStorage.saveObject(dto, arkId);
@@ -90,7 +90,7 @@ public class ShelfController {
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}/payload", "/shelf/ark:/{naan}/{name}/payload"})
     public Payload retrieveObjectPayload(ArkId arkId) {
 
-        KnowledgeObjectDTO dto = retrieveObjectOnShelf(arkId);
+        KnowledgeObject dto = retrieveObjectOnShelf(arkId);
         if (dto.payload == null) {
             throw new OTExecutionStackException("Payload is null for object with Ark Id:  " + arkId);
         }
@@ -98,7 +98,7 @@ public class ShelfController {
     }
 
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-    public KnowledgeObjectDTO retrieveObjectOnShelf(ArkId arkId) {
+    public KnowledgeObject retrieveObjectOnShelf(ArkId arkId) {
         return localStorage.getObject(arkId);
     }
 

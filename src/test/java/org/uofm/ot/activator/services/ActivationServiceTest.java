@@ -14,10 +14,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.uofm.ot.activator.ObjectTellerExecutionStackApplication;
 import org.uofm.ot.activator.TestUtils;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectBuilder;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
-import org.uofm.ot.activator.transferObjects.Result;
+import org.uofm.ot.activator.domain.KnowledgeObjectBuilder;
+import org.uofm.ot.activator.domain.Result;
 
 /**
  * Created by nggittle on 3/22/2017.
@@ -42,7 +42,7 @@ public class ActivationServiceTest {
   @Test
   public void testCalculateWithEmptyKOandNullInputs() throws Exception {
 
-    KnowledgeObjectDTO ko = new KnowledgeObjectDTO();
+    KnowledgeObject ko = new KnowledgeObject();
     expectedEx.expect(OTExecutionStackException.class);
     expectedEx.expectMessage("No inputs given.");
     assertNotNull(activationService.validateAndExecute(null, ko));
@@ -50,7 +50,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithWrongInput() throws Exception {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .build();
@@ -63,7 +63,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithCorrectInputsButNoPayload() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .build();
@@ -80,7 +80,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithPythonSyntaxErrorToThrowEx() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a)\n    return str(a)") // Syntax error
@@ -100,7 +100,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithTooManyInputsToThrowEx() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a):\n    return str(a)")
@@ -121,7 +121,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithTooFewInputsToThrowEx() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a):\n    return str(a)")
@@ -141,7 +141,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateOneInputSuccess() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a):\n    return str(a)")
@@ -159,7 +159,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateTwoInputsSuccess() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a):\n    return str(a)")
@@ -178,7 +178,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testIntReturnedWhenExpectStringToThrowEx () {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
         .payloadContent("def execute(a):\n    return 1")
@@ -198,7 +198,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testStringReturnedWhenExpectIntToThrowEx() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
         .payloadContent("def execute(a):\n    return str(a)")
@@ -218,7 +218,7 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateIntSuccess() {
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
         .payloadContent("def execute(a):\n    return 42")

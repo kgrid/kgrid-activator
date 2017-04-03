@@ -1,10 +1,10 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KnowledgeObjectDTO {
+public class KnowledgeObject {
 
 	public Metadata metadata;
 	
@@ -16,7 +16,7 @@ public class KnowledgeObjectDTO {
 	
 	public String url;
 	
-	public KnowledgeObjectDTO() {
+	public KnowledgeObject() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -30,7 +30,7 @@ public class KnowledgeObjectDTO {
 	
 	@Override
 	public String toString() {
-		return "KnowledgeObjectDTO [inputMessage=" + inputMessage + ", outputMessage=" + outputMessage + ", payload="
+		return "KnowledgeObject [inputMessage=" + inputMessage + ", outputMessage=" + outputMessage + ", payload="
 				+ payload + ", url=" + url + "]";
 	}
 

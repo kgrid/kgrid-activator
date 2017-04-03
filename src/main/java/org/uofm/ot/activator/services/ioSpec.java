@@ -1,7 +1,9 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.services;
 
 import java.util.ArrayList;
 import java.util.Map;
+import org.uofm.ot.activator.domain.DataType;
+import org.uofm.ot.activator.domain.ParamDescription;
 
 
 public class ioSpec {

@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.activator.domain.ArkId;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class Shelf {
 
     private final Logger log = LoggerFactory.getLogger(Shelf.class);
 
-    private Map<ArkId, KnowledgeObjectDTO> inMemoryShelf = new HashMap<ArkId, KnowledgeObjectDTO>();
+    private Map<ArkId, KnowledgeObject> inMemoryShelf = new HashMap<ArkId, KnowledgeObject>();
 
     @Value("${stack.shelf.path:.}")
     private String localStoragePath;
@@ -34,7 +34,7 @@ public class Shelf {
     @Value("${stack.shelf.name:shelf}")
     private String shelfName;
 
-    public void saveObject(KnowledgeObjectDTO dto, ArkId arkId) throws OTExecutionStackException {
+    public void saveObject(KnowledgeObject dto, ArkId arkId) throws OTExecutionStackException {
 
         try {
 
@@ -67,8 +67,8 @@ public class Shelf {
     }
 
 
-    public KnowledgeObjectDTO getObject(ArkId arkId) throws OTExecutionStackException {
-        KnowledgeObjectDTO dto = null;
+    public KnowledgeObject getObject(ArkId arkId) throws OTExecutionStackException {
+        KnowledgeObject dto = null;
         try {
 
             if (!inMemoryShelf.containsKey(arkId)) {
@@ -78,7 +78,7 @@ public class Shelf {
 
                 File resultFile = new File(folderPath, arkId.getFedoraPath());
 
-                dto = (KnowledgeObjectDTO) mapper.readValue(resultFile, KnowledgeObjectDTO.class);
+                dto = (KnowledgeObject) mapper.readValue(resultFile, KnowledgeObject.class);
             } else
                 dto = inMemoryShelf.get(arkId);
         } catch (JsonGenerationException e) {
@@ -126,7 +126,7 @@ public class Shelf {
                 ArkId arkId = new ArkId(parts[0], parts[1]);
                 if (!inMemoryShelf.containsKey(arkId)) {
                     try {
-                        KnowledgeObjectDTO dto = (KnowledgeObjectDTO) mapper.readValue(file, KnowledgeObjectDTO.class);
+                        KnowledgeObject dto = (KnowledgeObject) mapper.readValue(file, KnowledgeObject.class);
                         inMemoryShelf.put(arkId, dto);
                     } catch (IOException e) {
                         throw new OTExecutionStackException(e);

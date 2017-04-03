@@ -1,4 +1,4 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
 /**
  * Created by nggittle on 3/24/2017.

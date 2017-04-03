@@ -1,15 +1,15 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO.Payload;
+import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
 
 /**
  * Created by nggittle on 3/27/2017.
  */
 public class KnowledgeObjectBuilder {
-  private KnowledgeObjectDTO ko;
+  private KnowledgeObject ko;
 
   public KnowledgeObjectBuilder() {
-    ko = new KnowledgeObjectDTO();
+    ko = new KnowledgeObject();
   }
 
   public KnowledgeObjectBuilder metadata(Metadata metadata) {
@@ -64,7 +64,7 @@ public class KnowledgeObjectBuilder {
     return this;
   }
 
-  public KnowledgeObjectDTO build(){
+  public KnowledgeObject build(){
     return ko;
   }
 

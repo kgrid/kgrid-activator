@@ -7,11 +7,11 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.DataType;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectBuilder;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
-import org.uofm.ot.activator.transferObjects.Result;
+import org.uofm.ot.activator.domain.DataType;
+import org.uofm.ot.activator.domain.KnowledgeObjectBuilder;
+import org.uofm.ot.activator.domain.Result;
 
 /**
  * Created by nggittle on 3/29/17.
@@ -25,7 +25,7 @@ public class PythonAdapterTest {
   public void executeEmptyPayload() throws Exception {
     PythonAdapter pythonAdapter = new PythonAdapter();
     Map<String, Object> map = new HashMap<>();
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().payloadContent("").build();
+    KnowledgeObject ko = new KnowledgeObjectBuilder().payloadContent("").build();
 
     expectedEx.expect(OTExecutionStackException.class);
     expectedEx.expectMessage(" function not found in object payload ");
@@ -37,7 +37,7 @@ public class PythonAdapterTest {
   public void executePayloadWithBadSyntax() throws Exception {
     PythonAdapter pythonAdapter = new PythonAdapter();
     Map<String, Object> map = new HashMap<>();
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .payloadContent("def execute:")
         .payloadFunctionName("execute")
         .build();
@@ -52,7 +52,7 @@ public class PythonAdapterTest {
   public void executePayloadWithGoodSyntax() throws Exception {
     PythonAdapter pythonAdapter = new PythonAdapter();
     Map<String, Object> map = new HashMap<>();
-    KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
         .payloadContent("def execute(a):\n     return True")
         .payloadFunctionName("execute")
         .build();

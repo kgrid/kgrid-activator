@@ -12,8 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.uofm.ot.activator.exception.OTExecutionBadGateway;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 
 
 @Service
@@ -21,16 +21,16 @@ public class RemoteShelf {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public KnowledgeObjectDTO checkOutByArkId(ArkId arkId) throws OTExecutionStackException {
+	public KnowledgeObject checkOutByArkId(ArkId arkId) throws OTExecutionStackException {
 		RestTemplate rt = new RestTemplate();
 
-		KnowledgeObjectDTO	object = null; 
+		KnowledgeObject object = null;
 		
 		try { 
 
-			ResponseEntity<KnowledgeObjectDTO> response = rt.getForEntity(
+			ResponseEntity<KnowledgeObject> response = rt.getForEntity(
 					getAbsoluteObjectUrl(arkId)+"/complete",
-					KnowledgeObjectDTO.class);
+					KnowledgeObject.class);
 
 			
 			

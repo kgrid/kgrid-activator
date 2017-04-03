@@ -28,10 +28,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uofm.ot.activator.ObjectTellerExecutionStackApplication;
 import org.uofm.ot.activator.TestUtils;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.repository.Shelf;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectBuilder;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.KnowledgeObjectBuilder;
 
 /**
  * Created by pboisver on 1/16/17.
@@ -86,7 +86,7 @@ public class ShelfControllerTest {
     @Test
     public void getObjectFromLocalShelf() throws Exception {
 
-        KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().build();
+        KnowledgeObject ko = new KnowledgeObjectBuilder().build();
         ArkId arkId = new ArkId("99999", "fk4df70k9j");
 
         shelf.saveObject(ko, arkId);
@@ -102,7 +102,7 @@ public class ShelfControllerTest {
 
     @Test
     public void addBlankKOtoShelf() throws Exception {
-        KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().build();
+        KnowledgeObject ko = new KnowledgeObjectBuilder().build();
 
         mockMvc.perform(put("/shelf/ark:/{naan}/{name}","99999", "fk4df70k9j")
             .contentType(TestUtils.APPLICATION_JSON_UTF8)
@@ -115,7 +115,7 @@ public class ShelfControllerTest {
 
     @Test
     public void deleteObjectFromShelf() throws Exception {
-        KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().build();
+        KnowledgeObject ko = new KnowledgeObjectBuilder().build();
         ArkId arkId = new ArkId("99999", "fk4df70k9j");
 
         shelf.saveObject(ko, arkId);
@@ -128,7 +128,7 @@ public class ShelfControllerTest {
 
     @Test
     public void insertBlankObjectOntoShelfAndRetrievePayload() throws Exception {
-        KnowledgeObjectDTO ko = new KnowledgeObjectBuilder().build();
+        KnowledgeObject ko = new KnowledgeObjectBuilder().build();
         ArkId arkId = new ArkId("99999", "fk4df70k9j");
 
         shelf.saveObject(ko, arkId);
@@ -140,7 +140,7 @@ public class ShelfControllerTest {
 
     @Test
     public void insertPayloadObjectOntoShelfAndRetrievePayload() throws Exception {
-        KnowledgeObjectDTO ko = new KnowledgeObjectBuilder()
+        KnowledgeObject ko = new KnowledgeObjectBuilder()
             .payloadContent("payload")
             .build();
         ArkId arkId = new ArkId("99999", "fk4df70k9j");

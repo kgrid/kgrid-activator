@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.uofm.ot.activator.services.ActivationService;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.Result;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.Result;
 
 /**
  *

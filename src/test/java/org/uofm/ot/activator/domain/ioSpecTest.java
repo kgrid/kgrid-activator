@@ -1,4 +1,4 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
 import static org.junit.Assert.*;
 
@@ -7,13 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import org.uofm.ot.activator.services.ioSpec;
 
 /**
  * Created by nggittle on 3/23/2017.
  */
 public class ioSpecTest {
 
-  private org.uofm.ot.activator.transferObjects.ioSpec ioSpec;
+  private org.uofm.ot.activator.services.ioSpec ioSpec;
   ArrayList<ParamDescription> paramList;
 
   @Before

@@ -1,4 +1,4 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

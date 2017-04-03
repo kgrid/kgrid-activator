@@ -6,15 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.activator.adapter.PythonAdapter;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.repository.Shelf;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.EngineType;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO.Payload;
-import org.uofm.ot.activator.transferObjects.Result;
-import org.uofm.ot.activator.transferObjects.ioSpec;
-import org.uofm.ot.activator.util.CodeMetadataConvertor;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.EngineType;
+import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
+import org.uofm.ot.activator.domain.Result;
 
 /**
  * Created by nggittle on 3/31/17.
@@ -27,14 +25,14 @@ public class ActivationService {
   @Autowired
   private Shelf shelf;
   @Autowired
-  private CodeMetadataConvertor convertor;
+  private IoSpecGenerator convertor;
   @Autowired
   private PythonAdapter adapter;
 
 
   public Result getResultByArkId(Map<String, Object> inputs, ArkId arkId) {
 
-    KnowledgeObjectDTO ko;
+    KnowledgeObject ko;
 
     ko = shelf.getObject(arkId);
 
@@ -84,7 +82,7 @@ public class ActivationService {
     return true;
   }
 
-  Result validateAndExecute(Map<String, Object> inputs, KnowledgeObjectDTO ko) {
+  Result validateAndExecute(Map<String, Object> inputs, KnowledgeObject ko) {
 
     Result result = null;
     ioSpec ioSpec;

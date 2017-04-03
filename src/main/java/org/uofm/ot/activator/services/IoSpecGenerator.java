@@ -1,4 +1,4 @@
-package org.uofm.ot.activator.util;
+package org.uofm.ot.activator.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,17 +12,16 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.springframework.stereotype.Service;
-import org.uofm.ot.activator.transferObjects.ioSpec;
-import org.uofm.ot.activator.transferObjects.DataType;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO;
-import org.uofm.ot.activator.transferObjects.ParamDescription;
+import org.uofm.ot.activator.domain.DataType;
+import org.uofm.ot.activator.domain.KnowledgeObject;
+import org.uofm.ot.activator.domain.ParamDescription;
 
 @Service
-public class CodeMetadataConvertor {
+public class IoSpecGenerator {
 	
 	public static final String OT_NAMESPACE =  "http://uofm.org/objectteller/";
 
-	public ioSpec covertInputOutputMessageToCodeMetadata(KnowledgeObjectDTO ko) {
+	public ioSpec covertInputOutputMessageToCodeMetadata(KnowledgeObject ko) {
 
 		if(ko == null || ko.inputMessage == null || ko.outputMessage == null) {
 			return null;

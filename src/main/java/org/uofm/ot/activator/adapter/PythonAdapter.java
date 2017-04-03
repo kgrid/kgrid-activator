@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.DataType;
-import org.uofm.ot.activator.transferObjects.KnowledgeObjectDTO.Payload;
-import org.uofm.ot.activator.transferObjects.Result;
+import org.uofm.ot.activator.domain.DataType;
+import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
+import org.uofm.ot.activator.domain.Result;
 
 import java.util.Map;
 

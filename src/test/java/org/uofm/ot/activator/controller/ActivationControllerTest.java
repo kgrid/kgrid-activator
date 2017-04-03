@@ -16,8 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.uofm.ot.activator.services.ActivationService;
-import org.uofm.ot.activator.transferObjects.ArkId;
-import org.uofm.ot.activator.transferObjects.Result;
+import org.uofm.ot.activator.domain.ArkId;
+import org.uofm.ot.activator.domain.Result;
 
 /**
  * Created by nggittle on 3/31/17.

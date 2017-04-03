@@ -1,4 +1,4 @@
-package org.uofm.ot.activator.transferObjects;
+package org.uofm.ot.activator.domain;
 
 public enum DataType {
 	

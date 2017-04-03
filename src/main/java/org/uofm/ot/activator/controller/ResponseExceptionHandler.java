@@ -9,7 +9,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.uofm.ot.activator.exception.OTExecutionBadGateway;
 import org.uofm.ot.activator.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.transferObjects.ErrorInfo;
+import org.uofm.ot.activator.domain.ErrorInfo;
 
 /**
  * Handles errors across all controllers
