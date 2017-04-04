@@ -54,7 +54,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Adds bad KO to shelf\"] = responseBody === \"Object Added on the shelf\";"
+									"tests[\"Adds bad KO to shelf\"] = responseBody === \"Object ark:/99999/badBody added to the shelf\";"
 								]
 							}
 						}
@@ -124,7 +124,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Add Operation\"] = responseBody.has(\"Object Added on the shelf\");"
+									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/99999/fk4rf60z9w added to the shelf\");"
 								]
 							}
 						}
@@ -301,7 +301,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Add Operation\"] = responseBody.has(\"Object Added on the shelf\");"
+									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/99999/fk4rf60z9w added to the shelf\");"
 								]
 							}
 						}
@@ -335,7 +335,7 @@
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
 									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"tests[\"ArkID matches added\"] = jsonData[0].ArkId === \"ark:/99999/fk4rf60z9w\";"
+									"tests[\"ArkID matches added\"] = jsonData[0].metadata.arkId.arkId === \"ark:/99999/fk4rf60z9w\";"
 								]
 							}
 						}
@@ -384,7 +384,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Add Operation\"] = responseBody.has(\"Object Added on the shelf\");"
+									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/99999/fk4rf60z9w added to the shelf\");"
 								]
 							}
 						}
@@ -396,6 +396,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "text/plain",
 								"description": ""
 							}
 						],
@@ -468,6 +473,107 @@
 						"body": {
 							"mode": "raw",
 							"raw": " {\"DrugIDs\":\"101 204 708 406 190\"}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Add Test Built-In Overriding Knowledge Object to the shelf",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code 200\"] = responseCode.code === 200;",
+									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/default/object added to the shelf, overriding existing built-in object.\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/shelf/ark:/default/object",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "text/plain",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"inputMessage\": \"<rdf:RDF xmlns:ot=\\\"http://uofm.org/objectteller/#\\\"\\n xmlns:rdf=\\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\\">\\n  <rdf:Description rdf:about=\\\"http://uofm.org/objectteller/inputMessage\\\">\\n    <ot:noofparams>1</ot:noofparams>\\n    <ot:params>\\n      <rdf:Seq>\\n        <rdf:li>DrugIDs</rdf:li>\\n      </rdf:Seq>\\n    </ot:params>\\n  </rdf:Description>\\n  <rdf:Description rdf:about=\\\"http://uofm.org/objectteller/DrugIDs/\\\">\\n    <ot:datatype>STRING</ot:datatype>\\n  </rdf:Description>\\n</rdf:RDF>\\n\",\r\n  \"outputMessage\": \"<rdf:RDF xmlns:ot=\\\"http://uofm.org/objectteller/\\\"\\n  xmlns:rdf=\\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\\">\\n  <rdf:Description rdf:about=\\\"http://uofm.org/objectteller/outputMessage\\\">\\n    <ot:returntype>INT</ot:returntype>\\n  </rdf:Description>\\n</rdf:RDF>\\n\",\r\n  \"payload\": {\r\n    \"content\": \"def TotalPrescriptions(DrugIDDict):\\n    rxcuistring = DrugIDDict.get(\\\"DrugIDs\\\")\\n    rxcuis=rxcuistring.split()\\n    return (len(rxcuis))\\n\\ndef test():\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"\\\"}) == 0:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"101 204 708 406 190\\\"}) == 5:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"101 204 708\\\"}) == 3:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"192\\\"}) == 1:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"192 108 458 378 142 155 246\\\"}) == 7:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n    if TotalPrescriptions({\\\"DrugIDs\\\":\\\"192 108 458 378 142 155 246 123 423\\\"}) == 9:\\n        print (\\\"ok.\\\")\\n    else:\\n        print (\\\"error.\\\")\\n\",\r\n    \"engineType\": \"Python\",\r\n    \"functionName\": \"TotalPrescriptions\"\r\n  },\r\n  \"url\": \"http://dlhs-fedora-dev-a.umms.med.umich.edu:8080/ObjectTeller/knowledgeObject/ark:/99999/fk4rf60z9w\"\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Test Built-In Overriding Knowledge Object to the shelf",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code 200\"] = responseCode.code === 200;",
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the Shelf, built-in object is exposed.\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/shelf/ark:/default/object",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Attempt to Delete Built-In Object",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code 200\"] = responseCode.code === 200;",
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Unable to delete built-in objects.\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/shelf/ark:/default/object",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept-Encoding",
+								"value": "text/plain",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
 						},
 						"description": ""
 					},
