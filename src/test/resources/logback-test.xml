@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!--This file's presence causes logging to be set to a level above DEBUG.-->
+  <!--<include resource="org/springframework/boot/logging/logback/base.xml" />-->
+  <!--<logger name="org.springframework.beans" level="ERROR" />-->
+</configuration>
