@@ -96,14 +96,13 @@ curl -X PUT "http://localhost:8080/knowledgeObject/ark:/99999/fk45h7sd3p"
 
 and the same `GET` and `POST` operations are available.
 
-#### Test 'shelf' objects
+#### Using the built-in test objects
 
-Example knowledge objects are included in the source repository in 'etc/shelf' directory.
-You can load these  objects manually as outlined above, or start the execution stack
-pointing to this shelf.
+Example knowledge objects are included in the source repository in the resources/shelf folder.
 
-```bash
-java -Dpython.import.site=false -Dstack.shelf.path=etc -jar target/python-execution-stack-0.0.1-SNAPSHOT.war
-```
+These objects will be automatically loaded onto the shelf at startup and behave exactly the same as any user-added object except that they are immutable.
+
+The built-in objects can be overridden by adding an knowledge object with the same ark id as a built-in object.
+An overridden built-in object will be restored if the overriding object is deleted from the shelf.
 
 

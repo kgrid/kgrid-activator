@@ -1,5 +1,7 @@
 package org.uofm.ot.activator.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ArkId {
 
     // Fake/sample Ids (for Testing)
@@ -36,6 +38,7 @@ public class ArkId {
         return arkId;
     }
 
+    @JsonIgnore
     public String getFedoraPath() {
 
         if (naan == null) {

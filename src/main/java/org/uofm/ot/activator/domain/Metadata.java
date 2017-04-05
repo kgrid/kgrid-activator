@@ -19,6 +19,9 @@ public class Metadata {
   @JsonInclude(Include.NON_EMPTY)
   private List<Citation> citations;
 
+  @JsonInclude(Include.NON_EMPTY)
+  private ArkId arkId;
+
   public String getTitle() {
     return title;
   }
@@ -43,6 +46,14 @@ public class Metadata {
     this.citations = citations;
   }
 
+  public ArkId getArkId() {
+    return arkId;
+  }
+
+  public void setArkId(ArkId arkId) {
+    this.arkId = arkId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -61,7 +72,10 @@ public class Metadata {
         : metadata.description != null) {
       return false;
     }
-    return citations != null ? citations.equals(metadata.citations) : metadata.citations == null;
+    if (citations != null ? !citations.equals(metadata.citations) : metadata.citations != null) {
+      return false;
+    }
+    return arkId != null ? arkId.equals(metadata.arkId) : metadata.arkId == null;
   }
 
   @Override
@@ -69,6 +83,7 @@ public class Metadata {
     int result = title != null ? title.hashCode() : 0;
     result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + (citations != null ? citations.hashCode() : 0);
+    result = 31 * result + (arkId != null ? arkId.hashCode() : 0);
     return result;
   }
 
@@ -78,6 +93,7 @@ public class Metadata {
         "title='" + title + '\'' +
         ", description='" + description + '\'' +
         ", citations=" + citations +
+        ", arkId=" + arkId +
         '}';
   }
 }

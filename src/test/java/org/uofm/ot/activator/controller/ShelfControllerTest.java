@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -95,10 +96,9 @@ public class ShelfControllerTest {
         result
             .andExpect(status().isOk())
             .andExpect(content().contentType(TestUtils.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.*", hasSize(1)))
-            .andExpect(jsonPath("$.[0].ArkId", is("ark:/99999/fk4df70k9j")));
+            .andExpect(jsonPath("$.*", hasSize(3)))
+            .andExpect(jsonPath("$.[0].metadata.arkId.arkId", is("ark:/99999/fk4df70k9j")));
     }
-
 
     @Test
     public void addBlankKOtoShelf() throws Exception {
@@ -110,7 +110,7 @@ public class ShelfControllerTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(TestUtils.APPLICATION_TEXT_UTF8))
-            .andExpect(content().string("Object Added on the shelf"));
+            .andExpect(content().string("Object ark:/99999/fk4df70k9j added to the shelf"));
     }
 
     @Test
@@ -152,7 +152,6 @@ public class ShelfControllerTest {
             .andExpect(content().string("payload"));
     }
 
-
     @Test
     public void checkWhereami() throws Exception {
 
@@ -168,5 +167,6 @@ public class ShelfControllerTest {
             .andExpect(status().isNotFound());
 
     }
+
 
 }
