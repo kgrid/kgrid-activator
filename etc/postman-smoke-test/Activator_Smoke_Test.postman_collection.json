@@ -1,9 +1,9 @@
 {
 	"variables": [],
 	"info": {
-		"name": "Execution_Stack_Smoke_Test",
+		"name": "Activator_Smoke_Test",
 		"_postman_id": "23d7bc0c-548b-2109-6c79-ed43a7a4f45f",
-		"description": "Smoke test for the execution stack / shelf.",
+		"description": "Smoke test for the activator / shelf.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
@@ -367,7 +367,7 @@
 						}
 					],
 					"request": {
-						"url": "{{baseUrl}}/shelf/ark:/99999/fk4rf60z9w",
+						"url": "{{url}}/shelf/ark:/99999/fk4rf60z9w",
 						"method": "DELETE",
 						"header": [],
 						"body": {},

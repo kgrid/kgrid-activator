@@ -148,10 +148,11 @@ public class Shelf {
             String objectName = file.getName();
             String[] parts = objectName.split("-");
             if(parts.length != 2) {
-                throw new OTExecutionStackException("Incorrectly named KO file: " + file.getAbsolutePath());
+                log.warn("Incorrectly named KO file: " + file.getAbsolutePath());
+            } else {
+                ArkId arkId = new ArkId(parts[0], parts[1]);
+                refreshedObjects.add(arkId);
             }
-            ArkId arkId = new ArkId(parts[0], parts[1]);
-            refreshedObjects.add(arkId);
         }
 
         for (ArkId arkId : refreshedObjects) {
