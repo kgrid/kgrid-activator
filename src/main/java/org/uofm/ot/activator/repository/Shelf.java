@@ -96,7 +96,7 @@ public class Shelf {
             source = Source.BUILTIN;
         }
         if(!knowledgeResource.exists()) {
-            return null;
+            throw new OTExecutionStackEntityNotFoundException("Object with arkId " + arkId + " not found.");
         }
 
         try {
