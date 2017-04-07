@@ -34,7 +34,7 @@ public class ActivationService {
 
     KnowledgeObject ko;
 
-    ko = shelf.getObject(arkId).getKo();
+    ko = shelf.getObject(arkId);
 
     //TODO: If we need to auto-load objects then add to shelf controller
 

@@ -1,5 +1,6 @@
 package org.uofm.ot.activator.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -19,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -123,7 +123,8 @@ public class ShelfControllerTest {
         mockMvc.perform(delete("/shelf/ark:/{naan}/{name}","99999", "fk4df70k9j"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(TestUtils.APPLICATION_TEXT_UTF8))
-            .andExpect(content().string( "Object with ArkId " + arkId + " no longer on the Shelf"));
+            .andExpect(content().string(containsString(arkId.getArkId())))
+            .andExpect(content().string(containsString("no longer on the user shelf")));
     }
 
     @Test
