@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.KnowledgeObject;
+import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.repository.RemoteShelf;
 import org.uofm.ot.activator.repository.Shelf;
-import org.uofm.ot.activator.domain.ArkId;
-import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
-import org.uofm.ot.activator.repository.Shelf.Source;
+import org.uofm.ot.activator.repository.Shelf.SourcedKO;
 
 
 @RestController
@@ -43,12 +43,12 @@ public class ShelfController {
         String response = "Object " + arkId.getArkId() + " added to the shelf";
 
         KnowledgeObject dto = objTellerInterface.checkOutByArkId(arkId);
-        if(localStorage.getObject(arkId).getSource() == Source.BUILTIN) {
+        if(localStorage.isBuiltinObject(arkId)) {
             response = "Object " + arkId.getArkId() + " added to the shelf, overriding existing built-in object.";
         }
         localStorage.saveObject(dto, arkId);
 
-        result = new ResponseEntity<String>(response, HttpStatus.OK);
+        result = new ResponseEntity<>(response, HttpStatus.OK);
 
         return result;
 
@@ -60,7 +60,7 @@ public class ShelfController {
     public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObject dto) throws OTExecutionStackException {
         try {
             String response = "Object " + arkId.getArkId() + " added to the shelf";
-            if(localStorage.getObject(arkId).getSource() == Source.BUILTIN) {
+            if(localStorage.isBuiltinObject(arkId)) {
                 response = "Object " + arkId.getArkId() + " added to the shelf, overriding existing built-in object.";
             }
             dto.url = NAME_TO_THING_ADD + arkId;
@@ -73,22 +73,18 @@ public class ShelfController {
     }
 
     @GetMapping(path = {"/knowledgeObject", "/shelf"})
-    public List<Map<String, Object>> retrieveObjectsOnShelf() {
+    public List<SourcedKO> retrieveObjectsOnShelf() {
         return localStorage.getAllObjects();
     }
 
 
     @DeleteMapping(path = {"/shelf/ark:/{naan}/{name}", "/knowledgeObject/ark:/{naan}/{name}"})
     public ResponseEntity<String> deleteObjectOnTheShelfByArkId(ArkId arkId) {
-        String response = "Object with ArkId " + arkId + " no longer on the Shelf";
-        if(localStorage.getObject(arkId).getSource() == Source.BUILTIN) {
-            response = "Unable to delete built-in objects.";
-        } else {
-            localStorage.deleteObject(arkId);
-            if (localStorage.getObject(arkId).getSource() == Source.BUILTIN) {
-                response = "Object with ArkId " + arkId
-                    + " no longer on the Shelf, built-in object is exposed.";
-            }
+        String response = "Object with ArkId " + arkId + " no longer on the user shelf";
+
+        localStorage.deleteObject(arkId);
+        if(localStorage.isBuiltinObject(arkId)) {
+            response = response + " built-in object now exposed.";
         }
         return new ResponseEntity<String>(response, HttpStatus.OK);
     }
@@ -116,7 +112,7 @@ public class ShelfController {
 
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
     public KnowledgeObject retrieveObjectOnShelf(ArkId arkId) {
-        return localStorage.getObject(arkId).getKo();
+        return localStorage.getObject(arkId);
     }
 
 

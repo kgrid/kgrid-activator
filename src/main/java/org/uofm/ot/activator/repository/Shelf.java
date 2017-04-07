@@ -1,31 +1,30 @@
 package org.uofm.ot.activator.repository;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
+import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.domain.Metadata;
 import org.uofm.ot.activator.exception.OTExecutionStackEntityNotFoundException;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.domain.ArkId;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class Shelf {
@@ -40,14 +39,13 @@ public class Shelf {
     @Value("${stack.shelf.name:shelf}")
     private String shelfName;
 
-    private static final String BUILTIN_SHELF = "shelf/**";
+    private final String BUILTIN_SHELF = "shelf/";
 
-    private File builtInDir;
 
     public void saveObject(KnowledgeObject dto, ArkId arkId) throws OTExecutionStackException {
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().disable(MapperFeature.USE_ANNOTATIONS);
             ObjectWriter writer = mapper.writer();
             File folderPath = new File(localStoragePath, shelfName);
 
@@ -69,46 +67,46 @@ public class Shelf {
 
         } catch (JsonGenerationException e) {
             throw new OTExecutionStackException(e);
-        } catch (JsonMappingException e) {
-            throw new OTExecutionStackException(e);
         } catch (IOException e) {
             throw new OTExecutionStackException(e);
         }
     }
 
-    public SourcedKO getObject(ArkId arkId) throws OTExecutionStackException {
-        KnowledgeObject dto;
+    public boolean isBuiltinObject(ArkId arkId) {
+        Resource knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
+        return knowledgeResource.exists();
+    }
+
+    public SourcedKO getObject(ArkId arkId) {
+        if(!inMemoryShelf.containsKey(arkId)) {
+            SourcedKO sko = loadAndDeserializeObject(arkId);
+            inMemoryShelf.put(arkId, sko);
+        }
+        return inMemoryShelf.get(arkId);
+    }
+
+    private SourcedKO loadAndDeserializeObject(ArkId arkId) {
+        KnowledgeObject ko;
+        ObjectMapper mapper = new ObjectMapper();
+        Source source = Source.USERGENERATED;
+
+        Resource knowledgeResource = new FileSystemResource(  localStoragePath + "/" + shelfName + "/" + arkId.getFedoraPath());
+        if(!knowledgeResource.exists()) {
+            knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
+            source = Source.BUILTIN;
+        }
+        if(!knowledgeResource.exists()) {
+            return null;
+        }
+
         try {
-            if (!inMemoryShelf.containsKey(arkId)) {
-
-                ObjectMapper mapper = new ObjectMapper();
-
-                File folderPath = new File(localStoragePath, shelfName);
-                Source source = Source.USERGENERATED;
-
-                File resultFile = new File(folderPath, arkId.getFedoraPath());
-                if (!resultFile.exists()) {
-                    resultFile = new File(builtInDir, arkId.getFedoraPath());
-                    source = Source.BUILTIN;
-                    if(!resultFile.exists()) {
-                        return new SourcedKO(null, Source.NONEXISTENT);
-                    }
-                }
-                dto = mapper.readValue(resultFile, KnowledgeObject.class);
-                if (dto.metadata == null)
-                    dto.metadata = new Metadata();
-                dto.metadata.setArkId(arkId);
-                inMemoryShelf.put(arkId, new SourcedKO(dto, source));
-            }
+            ko = mapper.readValue(knowledgeResource.getInputStream(), KnowledgeObject.class);
         } catch (JsonGenerationException e) {
-            throw new OTExecutionStackException(e);
-        } catch (JsonMappingException e) {
             throw new OTExecutionStackException(e);
         } catch (IOException e) {
             throw new OTExecutionStackEntityNotFoundException(e);
         }
-
-        return inMemoryShelf.get(arkId);
+        return new SourcedKO(ko, source);
     }
 
     public boolean deleteObject(ArkId arkId) {
@@ -128,74 +126,59 @@ public class Shelf {
         return success;
     }
 
-    public List<Map<String, Object>> getAllObjects() {
+    public List<SourcedKO> getAllObjects() {
         File folderPath = new File(localStoragePath, shelfName);
+
         log.info("Reloading shelf: " + folderPath.getAbsolutePath());
+        List<Resource> knowledgeObjectResources = new ArrayList<>();
+        knowledgeObjectResources.addAll(getAllResources(Source.BUILTIN.location));
+        File userShelf = new File(localStoragePath, shelfName);
+        knowledgeObjectResources.addAll(getAllResources(userShelf.getAbsolutePath()));
 
-        List<Map<String, Object>> objectsOnTheShelf = new ArrayList<>();
-        List<File> objectsOnShelf = new ArrayList<>();
-        Set<ArkId> refreshedObjects = new HashSet<>();
-
-        if(builtInDir != null && builtInDir.exists()) {
-            File[] builtInObjects = builtInDir.listFiles();
-            objectsOnShelf.addAll(Arrays.asList(builtInObjects));
-        }
-        if (folderPath != null && folderPath.exists()) {
-            File[] objects = folderPath.listFiles();
-            objectsOnShelf.addAll(Arrays.asList(objects));
-        }
-        for(File file : objectsOnShelf) {
-            String objectName = file.getName();
+        for(Resource ko : knowledgeObjectResources) {
+            String objectName = ko.getFilename();
             String[] parts = objectName.split("-");
-            if(parts.length != 2) {
-                log.warn("Incorrectly named KO file: " + file.getAbsolutePath());
-            } else {
+            if(parts.length == 2) {
                 ArkId arkId = new ArkId(parts[0], parts[1]);
-                refreshedObjects.add(arkId);
+                getObject(arkId);
+            } else {
+                log.warn("Incorrectly named KO file: " + ko.getFilename());
             }
         }
+        return new ArrayList<>(inMemoryShelf.values());
+    }
 
-        for (ArkId arkId : refreshedObjects) {
+    private List<Resource> getAllResources(String objectLocationPattern){
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        List<Resource> koResources = new ArrayList<>();
+        try {
+            Resource[] objectLocation = resolver.getResources(objectLocationPattern);
 
-            Map<String, Object> shelfEntry = new HashMap<>();
-
-            SourcedKO sko = getObject(arkId);
-            shelfEntry.put("url", sko.getKo().url);
-            shelfEntry.put("metadata", sko.getKo().metadata);
-            shelfEntry.put("source", sko.getSource().toString());
-
-            objectsOnTheShelf.add(shelfEntry);
+            if(objectLocation[0] != null && objectLocation[0].exists()) {
+                koResources.addAll(Arrays.asList(objectLocation));
+            }
+        } catch (IOException e) {
+            log.error("Error gathering knowledge objects from filesystem at location matching pattern " + objectLocationPattern);
         }
-        return objectsOnTheShelf;
+        return koResources;
     }
 
     @PostConstruct
     public void initBuiltinShelf() {
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        try {
-            Resource[] koFiles = resolver.getResources(BUILTIN_SHELF);
-            if(koFiles[0] != null && koFiles[0].exists()) {
-                builtInDir = koFiles[0].getFile().getParentFile();
-                getAllObjects();
-            }
-        } catch (IOException ex) {
-            throw new OTExecutionStackException(
-                "Error trying to load default knowledge objects. "
-                + "Check that classpath is configured correctly " + ex);
-        }
+
+        getAllObjects();
     }
 
-    public class SourcedKO {
-        private KnowledgeObject ko;
+    public class SourcedKO extends KnowledgeObject{
         private Source source;
 
-        SourcedKO(KnowledgeObject ko, Source source) {
-            this.ko = ko;
+        SourcedKO(KnowledgeObject ko, Source source){
+            this.inputMessage = ko.inputMessage;
+            this.outputMessage = ko.outputMessage;
+            this.metadata = ko.metadata;
+            this.payload = ko.payload;
+            this.url = ko.url;
             this.source = source;
-        }
-
-        public KnowledgeObject getKo() {
-            return ko;
         }
 
         public Source getSource() {
@@ -204,13 +187,14 @@ public class Shelf {
     }
 
     public enum Source {
-        BUILTIN("built-in"),
-        USERGENERATED("user-generated"),
-        NONEXISTENT("non-existent");
+        BUILTIN("built-in", "/shelf/**"),
+        USERGENERATED("user-generated", "file:**/shelf*");
 
         private String source;
 
-        Source(String source) { this.source = source; }
+        private String location;
+
+        Source(String source, String location) { this.source = source; this.location = location; }
 
         @Override
         public String toString(){ return this.source; }
