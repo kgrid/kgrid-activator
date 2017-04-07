@@ -144,7 +144,6 @@ public class Shelf {
             } else {
                 log.warn("Incorrectly named KO file: " + ko.getFilename());
             }
-
         }
         return new ArrayList<>(inMemoryShelf.values());
     }

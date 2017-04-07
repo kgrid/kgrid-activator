@@ -139,6 +139,7 @@ server.contextPath=/stack
 # Optional - absolute path (if external library)
 library.url=http://library.kgrid.org
  
+# the shelf will be at /var/kgrid/stack/shelf, tomcat user will new r+w to ../stack to create/update the shelf
 stack.shelf.path=/var/kgrid/stack
 ```
 
