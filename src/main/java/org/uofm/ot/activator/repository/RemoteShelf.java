@@ -1,11 +1,15 @@
 package org.uofm.ot.activator.repository;
 
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -26,13 +30,14 @@ public class RemoteShelf {
 
 		KnowledgeObject object = null;
 		
-		try { 
+		try {
 
-			ResponseEntity<KnowledgeObject> response = rt.getForEntity(
-					getAbsoluteObjectUrl(arkId)+"/complete",
-					KnowledgeObject.class);
+			HttpClient instance = HttpClientBuilder.create()
+					.setRedirectStrategy(new LaxRedirectStrategy()).build();
 
-			
+			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(instance));
+
+			ResponseEntity<KnowledgeObject> response = rest.getForEntity(getAbsoluteObjectUrl(arkId) + "/complete", KnowledgeObject.class);
 			
 			object = response.getBody() ; 
 

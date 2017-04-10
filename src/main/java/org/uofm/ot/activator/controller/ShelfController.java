@@ -36,8 +36,7 @@ public class ShelfController {
     @Autowired
     private Shelf localStorage;
 
-    @PutMapping(consumes = {MediaType.TEXT_PLAIN_VALUE},
-        path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
+    @PutMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws OTExecutionStackException {
         ResponseEntity<String> result = null;
         String response = "Object " + arkId.getArkId() + " added to the shelf";

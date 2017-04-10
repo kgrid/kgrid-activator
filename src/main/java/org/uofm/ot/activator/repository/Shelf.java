@@ -181,8 +181,8 @@ public class Shelf {
             this.source = source;
         }
 
-        public Source getSource() {
-            return source;
+        public String getSource() {
+            return source.toString();
         }
     }
 
