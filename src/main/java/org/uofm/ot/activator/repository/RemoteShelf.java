@@ -2,6 +2,7 @@ package org.uofm.ot.activator.repository;
 
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
@@ -32,13 +33,14 @@ public class RemoteShelf {
 		
 		try {
 
+			// This creates a client that redirects on gets for HTTP 3xx redirect responses.
 			HttpClient instance = HttpClientBuilder.create()
-					.setRedirectStrategy(new LaxRedirectStrategy()).build();
+					.setRedirectStrategy(new DefaultRedirectStrategy()).build();
 
 			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(instance));
 
 			ResponseEntity<KnowledgeObject> response = rest.getForEntity(getAbsoluteObjectUrl(arkId) + "/complete", KnowledgeObject.class);
-			
+
 			object = response.getBody() ; 
 
 			object.url = getAbsoluteObjectUrl(arkId) ; 
