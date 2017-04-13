@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-#### Download an executable binary or war file
+### Download an executable binary or war file
 
 Download the latest release form https://github.com/kgrid/python-execution-stack/releases
 
@@ -19,20 +19,20 @@ Add a library URl, e.g.
 For the war file, see your container deployment instructions. In Tomact, just copy to `[/path/to/tomcat/home]/webapps`
 
 
-#### Check out the source code
+### Check out the source code
 
     git clone https://github.com/kgrid/python-execution-stack.git
 
     cd python-execution-stack
 
-#### Build and deploy the execution stack as an executable jar file:
+### Build and deploy the execution stack as an executable jar file:
 
 ```bash
 mvn clean package -Dpackaging=jar
 ./target/python-execution-stack-0.0.1-SNAPSHOT.jar
 ```
     
-#### Build and deploy a standard war file
+### Build and deploy a standard war file
 
 ```bash
 mvn clean package    # builds a .war file by default
