@@ -22,7 +22,7 @@ For the war file, see your container deployment instructions. In Tomcat, just co
 
 The activator ships a simple, built-in knowledge object for testing, the "Prescription Counter." Try this:
 
-```bash
+```curl
 curl --request POST \
   --url http://localhost:8080/knowledgeObject/ark:/default/object/result \
   --header 'accept: application/json' \
@@ -31,15 +31,25 @@ curl --request POST \
 ```
 You can see the list of built-in objects by going to `http://localhost:8080/shelf`.
 
-To add an object
+To add an object, use an HTTP PUT request (we use [Postman](https://www.getpostman.com/)):
+
+```bash
+PUT /shelf/ark:/hello/world2 HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Accept-Encoding: text/plain
+```
+
+with the following body:
 
 ```json
 {
 "metadata": {
    "title": "Hello World",
    "description": "Test object",
-   "published": false,
+   "published": false
    },
+   "uri": "ark:/hello/world"
 "payload": {
    "content": "def execute(inputs):\n    name = inputs[\"name\"]\n    return \"Hello, \" + name\n\n#print execute({\"name\":\"Jerry\"})\n",
    "engineType": "Python",
