@@ -2,22 +2,55 @@
 
 ## Quick Start
 
-### Download an executable binary or war file
+### Download and run an executable binary or war file
 
 Download the latest release from https://github.com/kgrid/python-execution-stack/releases
 
-For the executable jar
+Launch the executable jar, running on port 8080 by default:
 
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar
 ```
-Add a library URl, e.g.
+Add a library URl, e.g. (optional)
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
 For the war file, see your container deployment instructions. In Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
 
+#### Test using a built in object
+
+The activator ships a simple, built-in knowledge object for testing, the "Prescription Counter." Try this:
+
+```bash
+curl --request POST \
+  --url http://localhost:8080/knowledgeObject/ark:/default/object/result \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data ' {"DrugIDs":"101 204 708 406 190"}'
+```
+You can see the list of built-in objects by going to `http://localhost:8080/shelf`.
+
+To add an object
+
+```json
+{
+"metadata": {
+   "title": "Hello World",
+   "description": "Test object",
+   "published": false,
+   },
+"payload": {
+   "content": "def execute(inputs):\n    name = inputs[\"name\"]\n    return \"Hello, \" + name\n\n#print execute({\"name\":\"Jerry\"})\n",
+   "engineType": "Python",
+   "functionName": "execute"
+   },
+"inputMessage": "<rdf:RDF xmlns:ot=\"http://uofm.org/objectteller/#\"\n         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n    <rdf:Description rdf:about=\"http://uofm.org/objectteller/inputMessage\">\n        <ot:noofparams>1</ot:noofparams>\n        <ot:params>\n            <rdf:Seq>\n                <rdf:li>name</rdf:li>\n            </rdf:Seq>\n        </ot:params>\n    </rdf:Description>\n    <rdf:Description rdf:about=\"http://uofm.org/objectteller/bame/\">\n        <ot:datatype>STRING</ot:datatype>\n    </rdf:Description>\n</rdf:RDF>\n"
+},
+"outputMessage": "<rdf:RDF xmlns:ot=\"http://uofm.org/objectteller/\"\n  xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n  <rdf:Description rdf:about=\"http://uofm.org/objectteller/outputMessage\">\n    <ot:returntype>STRING</ot:returntype>\n  </rdf:Description>\n</rdf:RDF>\n",
+```
+
+See 
 
 ### To build from source code
 
