@@ -4,7 +4,7 @@
 
 ### Download an executable binary or war file
 
-Download the latest release form https://github.com/kgrid/python-execution-stack/releases
+Download the latest release from https://github.com/kgrid/python-execution-stack/releases
 
 For the executable jar
 
@@ -16,10 +16,10 @@ Add a library URl, e.g.
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
-For the war file, see your container deployment instructions. In Tomact, just copy to `[/path/to/tomcat/home]/webapps`
+For the war file, see your container deployment instructions. In Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
 
 
-### Check out the source code
+### To build from source code
 
     git clone https://github.com/kgrid/python-execution-stack.git
 
@@ -42,30 +42,28 @@ mvn tomcat7:deploy   # tomcat server settings taken from ~/.m2/settings.xml
 #### Default configuration
 
 ```properties
-# application.properties
-# 
-#Use this as a model for externally supplied properties/config
+# Use this as a model for externally supplied properties/config
 # see: https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
- 
+
 # set profile based on system environment variable ('env' or 'ENV')
 # if it exists -> loads application-${env}.properties from spring.config.location directory, or classpath by default
 # spring.profiles.active=test
- 
+
 # server port if different from default (8080) - only for executable jar
 #server.port=8080
- 
+
 # Context path - only for executable jar
 #server.contextPath=/
- 
+
 # Optional - absolute path (if external library)
 #library.url=http://dlhs-fedora-dev-a.umms.med.umich.edu:8080/ObjectTeller
- 
+
 # Default shelf location is current directory, location must be readable by process user, e.g. 'tomcat'
 #stack.shelf.path=${java.io.tmpdir}
- 
+
 #shelf name if other than 'shelf'
 #stack.shelf.name=shelf
- 
+
 # Disable JMX export of all endpoints or set unique-names-true
 # if deploying multiple instances in the same JVM
 #endpoints.jmx.unique-names=true
