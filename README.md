@@ -49,7 +49,7 @@ with the following body:
    "description": "Test object",
    "published": false
    },
-   "uri": "ark:/hello/world"
+   "uri": "ark:/hello/world",
 "payload": {
    "content": "def execute(inputs):\n    name = inputs[\"name\"]\n    return \"Hello, \" + name\n\n#print execute({\"name\":\"Jerry\"})\n",
    "engineType": "Python",
