@@ -4,16 +4,16 @@
 
 #### Download an executable binary or war file
 
-Find the latest release at https://github.com/kgrid/python-execution-stack/releases
+Download the latest release form https://github.com/kgrid/python-execution-stack/releases
 
 For the executable jar
 
 ```bash
-./python-execution-stack-0.0.1-SNAPSHOT.jar
+./python-execution-stack-0.5.2-SNAPSHOT.jar
 ```
 Add a library URl, e.g.
 ```bash
-./python-execution-stack-0.0.1-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
+./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
 For the war file, see your container deployment instructions. In Tomact, just copy to `[/path/to/tomcat/home]/webapps`
