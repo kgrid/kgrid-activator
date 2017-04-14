@@ -11,7 +11,12 @@ Launch the executable jar (running on port 8080 by default):
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar
 ```
-To add a library URL (optional):
+or (in Windows, for example)
+```bash
+java -jar python-execution-stack-0.5.2-SNAPSHOT.jar
+```
+
+To add a library URL (optional; see Configuration below):
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
@@ -79,9 +84,8 @@ You can test the object by `POST`ing a name to http://localhost:8080/knowledgeOb
 ```curl
 curl --request POST \
   --url http://kgrid.med.umich.edu/stack/knowledgeObject/ark:/hello/world/result \
-  --header 'cache-control: no-cache' \
   --header 'content-type: application/json' \
-  --header 'postman-token: a0726366-07e5-5b75-4ba6-c9fe0de62a64' \
+  --header 'accept: application/json' \
   --data '{"name": "Ralph"}'
 ```
 
@@ -107,7 +111,9 @@ mvn clean package    # builds a .war file by default
 mvn tomcat7:deploy   # tomcat server settings taken from ~/.m2/settings.xml 
 ```
 
-#### Default configuration
+## Configuration
+
+### Default configuration
 
 ```properties
 # Use this as a model for externally supplied properties/config
