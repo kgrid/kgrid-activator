@@ -19,7 +19,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code 415\"] = responseCode.code === 502;"
+									"tests[\"Status code 502\"] = responseCode.code === 502;"
 								]
 							}
 						}
