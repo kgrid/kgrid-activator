@@ -6,21 +6,33 @@
 
 Download the latest release from https://github.com/kgrid/python-execution-stack/releases
 
-Launch the executable jar, running on port 8080 by default:
+Launch the executable jar (running on port 8080 by default):
 
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar
 ```
-Add a library URl, e.g. (optional)
+To add a library URL (optional):
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
-For the war file, see your container deployment instructions. In Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
+For war file deployment, see your container  instructions, e.g., for Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
 
 #### Test using a built in object
 
-The activator ships a simple, built-in knowledge object for testing, the "Prescription Counter." Try this:
+The activator ships with a couple of simple, built-in knowledge objects for testing. You can see the list of built-in objects by going to `http://localhost:8080/shelf`.
+
+You can try out the "Prescription Counter":
+
+```bash
+POST /knowledgeObject/ark:/default/object/result HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Accept-Encoding: application/json
+```
+with body: `{"DrugIDs":"101 204 708 406 190"}`
+
+For example, using `curl`:
 
 ```curl
 curl --request POST \
@@ -29,18 +41,19 @@ curl --request POST \
   --header 'content-type: application/json' \
   --data ' {"DrugIDs":"101 204 708 406 190"}'
 ```
-You can see the list of built-in objects by going to `http://localhost:8080/shelf`.
+
+#### Adding an object
 
 To add an object, use an HTTP PUT request (we use [Postman](https://www.getpostman.com/)):
 
 ```bash
-PUT /shelf/ark:/hello/world2 HTTP/1.1
+PUT /shelf/ark:/hello/world HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 Accept-Encoding: text/plain
 ```
 
-with the following body:
+with the knowledge object in the body:
 
 ```json
 {
@@ -59,8 +72,20 @@ with the following body:
 "outputMessage": "<rdf:RDF xmlns:ot=\"http://uofm.org/objectteller/\"\n  xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n  <rdf:Description rdf:about=\"http://uofm.org/objectteller/outputMessage\">\n    <ot:returntype>STRING</ot:returntype>\n  </rdf:Description>\n</rdf:RDF>\n"
 }
 ```
+The newly added knowledge object can be viewed at: http://localhost:8080/shelf/ark:/hello/world. 
 
-See 
+You can test the object by `POST`ing a name to http://localhost:8080/knowledgeObject/ark:/hello/world/result. 
+
+```curl
+curl --request POST \
+  --url http://kgrid.med.umich.edu/stack/knowledgeObject/ark:/hello/world/result \
+  --header 'cache-control: no-cache' \
+  --header 'content-type: application/json' \
+  --header 'postman-token: a0726366-07e5-5b75-4ba6-c9fe0de62a64' \
+  --data '{"name": "Ralph"}'
+```
+
+For more information, see the Kgrid [Authoring Manual](https://kgrid.gitbooks.io/authoring-ii/) and [Activation Manual](https://kgrid.gitbooks.io/execution-manual/)
 
 ### To build from source code
 
