@@ -33,13 +33,15 @@ public class Shelf {
 
     private Map<ArkId, SourcedKO> inMemoryShelf = new HashMap<>();
 
-    @Value("${stack.shelf.path:.}")
+    @Value("${stack.shelf.path:${java.io.tmpdir}}")
     private String localStoragePath;
 
     @Value("${stack.shelf.name:shelf}")
     private String shelfName;
 
     private final String BUILTIN_SHELF = "shelf/";
+
+    private final String BUILTIN_SHELF_PATTERN = BUILTIN_SHELF + "**";
 
 
     public void saveObject(KnowledgeObject dto, ArkId arkId) throws OTExecutionStackException {
@@ -86,11 +88,13 @@ public class Shelf {
     }
 
     private SourcedKO loadAndDeserializeObject(ArkId arkId) {
-        KnowledgeObject ko;
+        KnowledgeObject ko = null;
         ObjectMapper mapper = new ObjectMapper();
         Source source = Source.USERGENERATED;
-
-        Resource knowledgeResource = new FileSystemResource(  localStoragePath + "/" + shelfName + "/" + arkId.getFedoraPath());
+        File shelf = new File(localStoragePath, shelfName);
+        File knowledgeFile = new File (shelf, arkId.getFedoraPath());
+        Resource knowledgeResource = new FileSystemResource(knowledgeFile);
+        //Resource knowledgeResource = new FileSystemResource(  localStoragePath + "/" + shelfName + "/" + arkId.getFedoraPath());
         if(!knowledgeResource.exists()) {
             knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
             source = Source.BUILTIN;
@@ -106,6 +110,7 @@ public class Shelf {
         } catch (IOException e) {
             throw new OTExecutionStackEntityNotFoundException(e);
         }
+
         return new SourcedKO(ko, source);
     }
 
@@ -131,9 +136,9 @@ public class Shelf {
 
         log.info("Reloading shelf: " + folderPath.getAbsolutePath());
         List<Resource> knowledgeObjectResources = new ArrayList<>();
-        knowledgeObjectResources.addAll(getAllResources(Source.BUILTIN.location));
-        File userShelf = new File(localStoragePath, shelfName);
-        knowledgeObjectResources.addAll(getAllResources(userShelf.getAbsolutePath()));
+        knowledgeObjectResources.addAll(getBuiltinClasspathResources());
+
+        knowledgeObjectResources.addAll(getFilesystemResources());
 
         for(Resource ko : knowledgeObjectResources) {
             String objectName = ko.getFilename();
@@ -148,17 +153,27 @@ public class Shelf {
         return new ArrayList<>(inMemoryShelf.values());
     }
 
-    private List<Resource> getAllResources(String objectLocationPattern){
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    private List<Resource> getBuiltinClasspathResources() {
         List<Resource> koResources = new ArrayList<>();
         try {
-            Resource[] objectLocation = resolver.getResources(objectLocationPattern);
-
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] objectLocation = resolver.getResources(BUILTIN_SHELF_PATTERN);
             if(objectLocation[0] != null && objectLocation[0].exists()) {
                 koResources.addAll(Arrays.asList(objectLocation));
             }
         } catch (IOException e) {
-            log.error("Error gathering knowledge objects from filesystem at location matching pattern " + objectLocationPattern);
+            log.warn("Failed to get resources from the built-in shelf during startup " + e);
+        }
+        return koResources;
+    }
+
+    private List<Resource> getFilesystemResources() {
+        List<Resource> koResources = new ArrayList<>();
+        File shelfFolder = new File(localStoragePath, shelfName);
+        if(shelfFolder != null && shelfFolder.isDirectory()) {
+            for (File ko : shelfFolder.listFiles()) {
+                koResources.add(new FileSystemResource(ko));
+            }
         }
         return koResources;
     }
@@ -187,14 +202,12 @@ public class Shelf {
     }
 
     public enum Source {
-        BUILTIN("built-in", "/shelf/**"),
-        USERGENERATED("user-generated", "file:**/shelf*");
+        BUILTIN("built-in"),
+        USERGENERATED("user-generated");
 
         private String source;
 
-        private String location;
-
-        Source(String source, String location) { this.source = source; this.location = location; }
+        Source(String source) { this.source = source; }
 
         @Override
         public String toString(){ return this.source; }
