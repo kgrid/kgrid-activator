@@ -91,6 +91,23 @@ curl --request POST \
 
 For more information, see the Kgrid [Authoring Manual](https://kgrid.gitbooks.io/authoring-ii/) and [Activation Manual](https://kgrid.gitbooks.io/execution-manual/)
 
+#### Using your own shelf
+To specify the location of the shelf (optional):
+```bash
+./python-execution-stack-0.5.2-SNAPSHOT.jar --stack.shelf.path=/kgrid/python-execution-stack
+```
+To specify the shelf name (optional):
+```bash
+./python-execution-stack-0.5.2-SNAPSHOT.jar --stack.shelf.name=shelf
+```
+
+The default shelf is in the java temp directory in a folder called 'shelf'. 
+If knowledge object files are already in the shelf path in a folder with the shelf name 
+they will be loaded onto the shelf automatically.
+
+You can keep different shelves and point to them when starting up the activator. 
+Shelf location can even be on a shared drive.
+
 ### To build from source code
 
     git clone https://github.com/kgrid/python-execution-stack.git

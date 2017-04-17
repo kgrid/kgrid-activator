@@ -19,7 +19,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code 502\"] = responseCode.code === 502;"
+									"tests[\"Status code 415\"] = responseCode.code === 502;"
 								]
 							}
 						}
@@ -358,7 +358,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Response is empty\"] = responseBody === \"Object with ArkId ark:/99999/fk4rf60z9w no longer on the Shelf\""
+									"tests[\"Response indicates object is not there\"] = responseBody === \"Object with ArkId ark:/99999/fk4rf60z9w no longer on the user shelf\""
 								]
 							}
 						}
@@ -367,10 +367,7 @@
 						"url": "{{url}}/shelf/ark:/99999/fk4rf60z9w",
 						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"description": "Delete object from shelf"
 					},
 					"response": []
@@ -524,7 +521,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the Shelf, built-in object is exposed.\");"
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the user shelf built-in object now exposed.\");"
 								]
 							}
 						}
@@ -556,7 +553,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Remove Operation\"] = responseBody.has(\"Unable to delete built-in objects.\");"
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the user shelf\");"
 								]
 							}
 						}
