@@ -1,5 +1,6 @@
 package org.uofm.ot.activator.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by nggittle on 3/24/2017.
  */
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Metadata {
 
   @JsonInclude(Include.NON_EMPTY)
