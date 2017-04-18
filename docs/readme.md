@@ -21,7 +21,7 @@ To add a library URL (optional; see Configuration below):
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
-To change the port(optional; see Configuration below):
+To change the port (optional; see Configuration below):
 ```bash
 ./python-execution-stack-0.5.2-SNAPSHOT.jar --server.port=9090
 ```
@@ -171,7 +171,7 @@ mvn tomcat7:deploy   # tomcat server settings taken from ~/.m2/settings.xml
 > These are some example configurations. There are many many ways to configure the activator at the operating system or container level.
 Consult your OS documentation, container documentation, or cloud provider documentation.
 >
-> For an overview of configuring Spring Boot applications see [the Spring Boot external configuration page](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
+> For an overview of configuring Spring Boot applications see the [Spring Boot external configuration page](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
 
 #### Configuring an Activator deployed as a service
 
