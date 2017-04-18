@@ -9,21 +9,21 @@ Download the latest release from https://github.com/kgrid/python-execution-stack
 Launch the executable jar (running on port 8080 by default):
 
 ```bash
-./python-execution-stack-0.5.2-SNAPSHOT.jar
+./python-execution-stack-0.5.4.jar
 ```
 or (in Windows, for example)
 ```bash
-java -jar python-execution-stack-0.5.2-SNAPSHOT.jar
+java -jar python-execution-stack-0.5.4.jar
 ```
 
 To add a library URL (optional; see Configuration below):
 ```bash
-./python-execution-stack-0.5.2-SNAPSHOT.jar --library.url=https://kgrid.med.umich.edu/library
+./python-execution-stack-0.5.4.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
 To change the port (optional; see Configuration below):
 ```bash
-./python-execution-stack-0.5.2-SNAPSHOT.jar --server.port=9090
+./python-execution-stack-0.5.4.jar --server.port=9090
 ```
 
 For war file deployment, see your container  instructions, e.g., for Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
@@ -35,7 +35,7 @@ The activator ships with a couple of simple, built-in knowledge objects for test
 You can try out the "Prescription Counter":
 
 ```bash
-POST /knowledgeObject/ark:/default/object/result HTTP/1.1
+POST /knowledgeObject/ark:/prescription/counter/result HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 Accept-Encoding: application/json
@@ -46,7 +46,7 @@ For example, using `curl`:
 
 ```curl
 curl --request POST \
-  --url http://localhost:8080/knowledgeObject/ark:/default/object/result \
+  --url http://localhost:8080/knowledgeObject/ark:/prescription/counter/result \
   --header 'accept: application/json' \
   --header 'content-type: application/json' \
   --data ' {"DrugIDs":"101 204 708 406 190"}'
@@ -99,11 +99,11 @@ For more information, see the Kgrid [Authoring Manual](https://kgrid.gitbooks.io
 #### Using your own shelf
 To specify the location of the shelf (optional):
 ```bash
-./python-execution-stack-0.5.2-SNAPSHOT.jar --stack.shelf.path=/kgrid/python-execution-stack
+./python-execution-stack-0.5.4.jar --stack.shelf.path=/kgrid/python-execution-stack
 ```
 To specify the shelf name (optional):
 ```bash
-./python-execution-stack-0.5.2-SNAPSHOT.jar --stack.shelf.name=shelf
+./python-execution-stack-0.5.4.jar --stack.shelf.name=shelf
 ```
 
 The default shelf is in the java temp directory in a folder called 'shelf'. 
@@ -123,7 +123,7 @@ Shelf location can even be on a shared drive.
 
 ```bash
 mvn clean package -Dpackaging=jar
-./target/python-execution-stack-0.0.1-SNAPSHOT.jar
+./target/python-execution-stack-0.5.4.jar
 ```
     
 ### Build and deploy a standard war file

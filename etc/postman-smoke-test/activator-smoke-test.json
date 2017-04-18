@@ -484,13 +484,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/default/object added to the shelf, overriding existing built-in object.\");"
+									"tests[\"Object Add Operation\"] = responseBody.has(\"Object ark:/prescription/counter added to the shelf, overriding existing built-in object.\");"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/shelf/ark:/default/object",
+						"url": "{{url}}/shelf/ark:/prescription/counter",
 						"method": "PUT",
 						"header": [
 							{
@@ -521,13 +521,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the user shelf built-in object now exposed.\");"
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/prescription/counter no longer on the user shelf built-in object now exposed.\");"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/shelf/ark:/default/object",
+						"url": "{{url}}/shelf/ark:/prescription/counter",
 						"method": "DELETE",
 						"header": [
 							{
@@ -553,13 +553,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests[\"Status code 200\"] = responseCode.code === 200;",
-									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/default/object no longer on the user shelf\");"
+									"tests[\"Object Remove Operation\"] = responseBody.has(\"Object with ArkId ark:/prescription/counter no longer on the user shelf\");"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/shelf/ark:/default/object",
+						"url": "{{url}}/shelf/ark:/prescription/counter",
 						"method": "DELETE",
 						"header": [
 							{
