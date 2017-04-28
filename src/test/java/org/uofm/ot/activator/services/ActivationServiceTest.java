@@ -1,10 +1,5 @@
 package org.uofm.ot.activator.services;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -15,9 +10,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.uofm.ot.activator.ObjectTellerExecutionStackApplication;
 import org.uofm.ot.activator.TestUtils;
 import org.uofm.ot.activator.domain.KnowledgeObject;
-import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.domain.KnowledgeObjectBuilder;
 import org.uofm.ot.activator.domain.Result;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by nggittle on 3/22/2017.
@@ -177,46 +179,6 @@ public class ActivationServiceTest {
   }
 
   @Test
-  public void testIntReturnedWhenExpectStringToThrowEx () {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return 1")
-        .payloadEngineType("PYTHON")
-        .payloadFunctionName("execute")
-        .build();
-    Map<String, Object> inputs = new HashMap<>();
-    inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
-    expectedResult.setResult("{u'rxcui': u'1723222'}");
-
-    expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java. Check input spec and code payload java.lang.ClassCastException:"));
-
-    Result generatedResult = activationService.validateAndExecute(inputs, ko);
-  }
-
-  @Test
-  public void testStringReturnedWhenExpectIntToThrowEx() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
-        .payloadFunctionName("execute")
-        .build();
-    Map<String, Object> inputs = new HashMap<>();
-    inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
-    expectedResult.setResult("{u'rxcui': u'1723222'}");
-
-    expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java. Check input spec and code payload java.lang.ClassCastException:"));
-
-    Result generatedResult = activationService.validateAndExecute(inputs, ko);
-  }
-
-  @Test
   public void testCalculateIntSuccess() {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
@@ -228,7 +190,7 @@ public class ActivationServiceTest {
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
     Result expectedResult = new Result(null);
-    expectedResult.setResult("42");
+    expectedResult.setResult(42);
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
     assertEquals(expectedResult, generatedResult);
