@@ -88,7 +88,7 @@ You can test the object by `POST`ing a name to http://localhost:8080/knowledgeOb
 
 ```curl
 curl --request POST \
-  --url http://kgrid.med.umich.edu/stack/knowledgeObject/ark:/hello/world/result \
+  --url http://localhost:8080/knowledgeObject/ark:/hello/world/result \
   --header 'content-type: application/json' \
   --header 'accept: application/json' \
   --data '{"name": "Ralph"}'
