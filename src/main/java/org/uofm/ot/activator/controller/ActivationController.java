@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.uofm.ot.activator.repository.RemoteShelf;
 import org.uofm.ot.activator.services.ActivationService;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.Result;
@@ -29,6 +30,9 @@ public class ActivationController {
   @Autowired
   private ActivationService service;
 
+  @Autowired
+  private RemoteShelf remoteShelf;
+
   @PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -37,7 +41,7 @@ public class ActivationController {
 
     log.info("Sending arkId " + arkId + " to service." );
     Result result = service.getResultByArkId(inputs, arkId);
-
+    result.setSource(remoteShelf.getLibraryPath() + arkId.getArkId());
     return result;
   }
 

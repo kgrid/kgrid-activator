@@ -4,7 +4,6 @@ package org.uofm.ot.activator.repository;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,11 +13,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.uofm.ot.activator.exception.OTExecutionBadGateway;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.KnowledgeObject;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @Service
@@ -59,22 +58,14 @@ public class RemoteShelf {
 	}
 
 
-	@Value("${library.url:}")
+	@Value("${library.url:http://n2t.net/}")
 	String libraryAbsolutePath;
 
 	public String getLibraryPath() {
 
-		String path;
-
 		ServletUriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
 
-		if (libraryAbsolutePath.isEmpty()) {
-			path = uriBuilder.replacePath("").toUriString();
-		} else {
-			path = libraryAbsolutePath;
-		}
-
-		return path;
+			return libraryAbsolutePath;
 	}
 
 
