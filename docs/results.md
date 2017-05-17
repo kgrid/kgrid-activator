@@ -1,11 +1,11 @@
 
 ## Using the metadata in the result object
 
-The result returned from a knowledge object (KO) in the Activator also includes meta data (`"metadata": {...}`) drawn from the KO itself, with title, owner, etc. 
+The result returned from a knowledge object (KO) in the Activator also includes meta data (`"metadata": {...}`) drawn from the KO itself, with title, owner, etc, and a source link.
 
 If a library url (`library.url=...`)is configured for the Activator instance, the source link (`"source": "..."`) link will point to an instance of the knowledge object in a Knowledge Grid library. 
 
-If no library url is configured the source link will point to the global resolution service http://n2t.net, but if the KO has a temporary, reserved, or withdrawn ARK id, the resolution will fail. Also if the KO was uploaded manaully into the activator and no insatnace exists in teh configured library, the source link will fail when followed.
+> If no library url is configured the source link will point to the global resolution service http://n2t.net, but if the KO has a temporary, reserved, or withdrawn ARK id, the resolution will fail. Also if the KO was uploaded manaully into the activator and no instance exists in the configured library, the source link will fail when followed.
 
 
 For example: 
