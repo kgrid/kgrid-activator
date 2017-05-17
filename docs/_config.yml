@@ -1,3 +1,4 @@
-theme: jekyll-theme-cayman
-title: Python Execution Stack
+#theme: jekyll-theme-cayman
+theme: minima
+title: Python Activator
 description: Knowledge Grid execution stack serving Python-coded knowledge objects
