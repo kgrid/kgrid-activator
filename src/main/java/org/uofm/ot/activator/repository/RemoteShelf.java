@@ -17,7 +17,6 @@ import org.uofm.ot.activator.exception.OTExecutionBadGateway;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.KnowledgeObject;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @Service
@@ -63,11 +62,12 @@ public class RemoteShelf {
 
 	public String getLibraryPath() {
 
-		ServletUriComponentsBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
-
 			return libraryAbsolutePath;
 	}
 
+	public String getRemoteObjectURL(ArkId arkId) {
+		return 		libraryAbsolutePath + "/" + arkId.getArkId();
+	}
 
 	public String getAbsoluteObjectUrl(ArkId arkId) {
 		return getLibraryPath()+"/knowledgeObject/" +arkId.getArkId();

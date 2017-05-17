@@ -41,7 +41,7 @@ public class ActivationController {
 
     log.info("Sending arkId " + arkId + " to service." );
     Result result = service.getResultByArkId(inputs, arkId);
-    result.setSource(remoteShelf.getLibraryPath() + arkId.getArkId());
+    result.setSource(remoteShelf.getRemoteObjectURL(arkId));
     return result;
   }
 

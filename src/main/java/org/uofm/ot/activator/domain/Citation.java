@@ -5,24 +5,24 @@ package org.uofm.ot.activator.domain;
  */
 public class Citation {
 
-  private String title;
+  private String citation_title;
 
-  private String at;
+  private String citation_at;
 
-  public String getTitle() {
-    return title;
+  public String getCitation_title() {
+    return citation_title;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+  public void setCitation_title(String citation_title) {
+    this.citation_title = citation_title;
   }
 
-  public String getAt() {
-    return at;
+  public String getCitation_at() {
+    return citation_at;
   }
 
-  public void setAt(String at) {
-    this.at = at;
+  public void setCitation_at(String citation_at) {
+    this.citation_at = citation_at;
   }
 
   @Override
@@ -36,24 +36,25 @@ public class Citation {
 
     Citation citation = (Citation) o;
 
-    if (title != null ? !title.equals(citation.title) : citation.title != null) {
+    if (citation_title != null ? !citation_title
+        .equals(citation.citation_title) : citation.citation_title != null) {
       return false;
     }
-    return at != null ? at.equals(citation.at) : citation.at == null;
+    return citation_at != null ? citation_at.equals(citation.citation_at) : citation.citation_at == null;
   }
 
   @Override
   public int hashCode() {
-    int result = title != null ? title.hashCode() : 0;
-    result = 31 * result + (at != null ? at.hashCode() : 0);
+    int result = citation_title != null ? citation_title.hashCode() : 0;
+    result = 31 * result + (citation_at != null ? citation_at.hashCode() : 0);
     return result;
   }
 
   @Override
   public String toString() {
     return "Citation{" +
-        "title='" + title + '\'' +
-        ", at='" + at + '\'' +
+        "citation_title='" + citation_title + '\'' +
+        ", citation_at='" + citation_at + '\'' +
         '}';
   }
 }

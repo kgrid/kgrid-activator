@@ -3,6 +3,7 @@ package org.uofm.ot.activator.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -155,15 +156,6 @@ public class ShelfControllerTest {
         mockMvc.perform(get("/knowledgeObject/ark:/{naan}/{name}/payload/content", "99999", "fk4df70k9j"))
             .andExpect(status().isOk())
             .andExpect(content().string("payload"));
-    }
-
-    @Test
-    public void checkWhereami() throws Exception {
-
-        mockMvc.perform(get("/whereami"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("{\"objTellerInterface.where()\":\"http://localhost\"}"));
-
     }
 
     @Test

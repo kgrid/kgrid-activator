@@ -11,10 +11,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.uofm.ot.activator.repository.RemoteShelf;
 import org.uofm.ot.activator.services.ActivationService;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.Result;
@@ -33,6 +35,9 @@ public class ActivationControllerTest {
   @InjectMocks
   private ActivationController exCon;
 
+  @Mock
+  private RemoteShelf remoteShelf;
+
   @Before
   public void setUpMocks() {
     mockMvc = MockMvcBuilders
@@ -43,8 +48,8 @@ public class ActivationControllerTest {
   @Test
   public void testGetResultByArkIdSuccess() throws Exception {
 
-    String naan = "99999";
-    String name = "fk4df70k9j";
+    String naan = "hello";
+    String name = "world";
     ArkId arkId = new ArkId(naan, name);
 
     Result result = new Result("success");
@@ -53,12 +58,13 @@ public class ActivationControllerTest {
     inputs.put("Test", "1");
 
     Mockito.when(activationService.getResultByArkId(inputs, arkId)).thenReturn(result);
+    Mockito.when(remoteShelf.getAbsoluteObjectUrl(arkId)).thenReturn("testURL/ark:/hello/world");
 
     mockMvc.perform(post("/knowledgeObject/ark:/{naan}/{name}/result", naan, name)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .content("{\"Test\":\"1\"}"))
         .andExpect(status().isOk())
-        .andExpect(content().string("{\"result\":\"success\",\"source\":null,\"metadata\":null}"));
+        .andExpect(content().string("{\"result\":\"success\",\"source\":\"testURL/ark:/hello/world\",\"metadata\":null}"));
   }
 
 }
