@@ -64,7 +64,7 @@ public class ActivationControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .content("{\"Test\":\"1\"}"))
         .andExpect(status().isOk())
-        .andExpect(content().string("{\"result\":\"success\",\"source\":\"testURL/ark:/hello/world\",\"metadata\":null}"));
+        .andExpect(content().string("{\"result\":\"success\",\"source\":null,\"metadata\":null}"));
   }
 
 }
