@@ -1,18 +1,19 @@
 package org.uofm.ot.activator.services;
 
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.activator.adapter.PythonAdapter;
-import org.uofm.ot.activator.domain.KnowledgeObject;
-import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.repository.Shelf;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.EngineType;
+import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.domain.KnowledgeObject.Payload;
 import org.uofm.ot.activator.domain.Result;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
+import org.uofm.ot.activator.repository.Shelf;
+
+import java.util.Map;
 
 /**
  * Created by nggittle on 3/31/17.
@@ -95,7 +96,7 @@ public class ActivationService {
       Payload payload = ko.payload;
 
       log.info("Object payload is sent to Python Adaptor for execution.");
-      result = adapter.execute( inputs, payload, ioSpec.getReturntype() );
+      result = adapter.execute( inputs, payload);
     }
 
     return result;
