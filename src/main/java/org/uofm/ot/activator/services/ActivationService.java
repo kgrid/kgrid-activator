@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.uofm.ot.activator.adapter.PythonAdapter;
+import org.uofm.ot.activator.adapter.ServiceAdapter;
 import org.uofm.ot.activator.domain.KnowledgeObject;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.repository.Shelf;
@@ -25,9 +26,9 @@ public class ActivationService {
   @Autowired
   private Shelf shelf;
   @Autowired
-  private IoSpecGenerator convertor;
+  private IoSpecGenerator converter;
   @Autowired
-  private PythonAdapter adapter;
+  private ServiceAdapter adapter;
 
 
   public Result getResultByArkId(Map<String, Object> inputs, ArkId arkId) {
@@ -84,18 +85,17 @@ public class ActivationService {
 
   Result validateAndExecute(Map<String, Object> inputs, KnowledgeObject ko) {
 
-    Result result = null;
+    Result result = new Result();
     ioSpec ioSpec;
 
     log.info("Object Input Message and Output Message sent for conversion of RDF .");
-    ioSpec = convertor.covertInputOutputMessageToCodeMetadata(ko);
+    ioSpec = converter.covertInputOutputMessageToCodeMetadata(ko);
     log.info("Object Input Message and Output Message conversion complete . Code Metadata for Input and Output Message ");
 
     if (isInputAndPayloadValid(inputs, ko.payload, ioSpec)) {
-      Payload payload = ko.payload;
 
       log.info("Object payload is sent to Python Adaptor for execution.");
-      result = adapter.execute( inputs, payload, ioSpec.getReturntype() );
+      result.setResult(adapter.execute(inputs, ko.payload.content, ko.payload.functionName, ioSpec.getReturnTypeAsClass()));
     }
 
     return result;

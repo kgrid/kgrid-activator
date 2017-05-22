@@ -69,7 +69,7 @@ public class ActivationServiceTest {
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "test");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
@@ -90,11 +90,11 @@ public class ActivationServiceTest {
 
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222 2101 10767");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Error while executing payload code"));
+    expectedEx.expectMessage(startsWith("Error occurred while executing python code SyntaxError:"));
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
@@ -111,7 +111,7 @@ public class ActivationServiceTest {
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222 2101 10767");
     inputs.put("rxcui2", "1723222 2101 10767");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
@@ -131,7 +131,7 @@ public class ActivationServiceTest {
 
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222 2101 10767");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
@@ -150,7 +150,7 @@ public class ActivationServiceTest {
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setResult("{u'rxcui': u'1723222'}");
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
@@ -169,31 +169,11 @@ public class ActivationServiceTest {
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
     inputs.put("rxcui2", "1723222");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setResult("{u'rxcui': u'1723222', u'rxcui2': u'1723222'}");
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
     assertEquals(expectedResult, generatedResult);
-  }
-
-  @Test
-  public void testIntReturnedWhenExpectStringToThrowEx () {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return 1")
-        .payloadEngineType("PYTHON")
-        .payloadFunctionName("execute")
-        .build();
-    Map<String, Object> inputs = new HashMap<>();
-    inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
-    expectedResult.setResult("{u'rxcui': u'1723222'}");
-
-    expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java. Check input spec and code payload java.lang.ClassCastException:"));
-
-    Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
   @Test
@@ -207,11 +187,11 @@ public class ActivationServiceTest {
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
+    Result expectedResult = new Result();
     expectedResult.setResult("{u'rxcui': u'1723222'}");
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java. Check input spec and code payload java.lang.ClassCastException:"));
+    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java"));
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
@@ -227,8 +207,8 @@ public class ActivationServiceTest {
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
-    Result expectedResult = new Result(null);
-    expectedResult.setResult("42");
+    Result expectedResult = new Result();
+    expectedResult.setResult(new Integer(42));
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
     assertEquals(expectedResult, generatedResult);

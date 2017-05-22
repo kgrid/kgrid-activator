@@ -230,7 +230,7 @@
 								"exec": [
 									"tests[\"Status code 400\"] = responseCode.code === 400;",
 									"var jsonData = JSON.parse(responseBody);",
-									"tests[\"Input is wrong type\"] = jsonData.message.has(\"Error while executing payload code Traceback\");"
+									"tests[\"Input is wrong type\"] = jsonData.message.has(\"Error occurred while executing python code Traceback\");"
 								]
 							}
 						}
@@ -447,7 +447,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"tests[\"Test Case 1\"] = jsonData.result === '5';"
+									"tests[\"Test Case 1\"] = jsonData.result === 5;"
 								]
 							}
 						}

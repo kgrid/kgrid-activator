@@ -12,7 +12,7 @@ public class ioSpec {
 	
 	private ArrayList<ParamDescription> params;
 	
-	private DataType returntype;
+	private DataType returnType;
 	
 
 	public ioSpec(){}
@@ -29,12 +29,29 @@ public class ioSpec {
 		return params;
 	}
 
-	public DataType getReturntype() {
-		return returntype;
+	public DataType getReturnType() {
+		return returnType;
 	}
 
-	public void setReturntype(DataType returntype) {
-		this.returntype = returntype;
+	public Class getReturnTypeAsClass() {
+
+		switch (returnType) {
+			case INT:
+				return Integer.class;
+			case LONG:
+				return Long.class;
+			case FLOAT:
+				return float.class;
+			case STRING:
+				return String.class;
+			case MAP:
+				return Map.class;
+		}
+		return Object.class;
+	}
+
+	public void setReturnType(DataType returnType) {
+		this.returnType = returnType;
 	}
 
 

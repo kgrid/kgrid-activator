@@ -87,7 +87,7 @@ public class IoSpecGenerator {
 			Statement stmt = iterOutput.nextStatement();
 
 			if("returntype".equals(stmt.getPredicate().getLocalName()))
-				codeMetadata.setReturntype(DataType.valueOf(stmt.getObject().toString()));
+				codeMetadata.setReturnType(DataType.valueOf(stmt.getObject().toString()));
 
 		}
 
