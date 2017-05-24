@@ -4,7 +4,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.uofm.ot.activator.adapter.JavaScriptAdapter;
 import org.uofm.ot.activator.adapter.PythonAdapter;
 import org.uofm.ot.activator.adapter.ServiceAdapter;
 import org.uofm.ot.activator.domain.KnowledgeObject;
@@ -28,7 +30,7 @@ public class ActivationService {
   @Autowired
   private IoSpecGenerator converter;
   @Autowired
-  private ServiceAdapter adapter;
+  private ApplicationContext context;
 
 
   public Result getResultByArkId(Map<String, Object> inputs, ArkId arkId) {
@@ -76,10 +78,6 @@ public class ActivationService {
       throw new OTExecutionStackException("Knowledge object payload content is NULL or empty");
     }
 
-    if (!EngineType.PYTHON.toString().equalsIgnoreCase(payload.engineType)) {
-      throw new OTExecutionStackException("Expected Python payload but instead got " + payload.engineType);
-    }
-
     return true;
   }
 
@@ -94,11 +92,25 @@ public class ActivationService {
 
     if (isInputAndPayloadValid(inputs, ko.payload, ioSpec)) {
 
-      log.info("Object payload is sent to Python Adaptor for execution.");
+      log.info("Object payload is sent to Python Adapter for execution.");
+      ServiceAdapter adapter = adapterFactory(EngineType.valueOf(ko.payload.engineType.toUpperCase()));
       result.setResult(adapter.execute(inputs, ko.payload.content, ko.payload.functionName, ioSpec.getReturnTypeAsClass()));
     }
 
     return result;
+  }
+
+  private ServiceAdapter adapterFactory(EngineType adapterLanguage) {
+    switch(adapterLanguage) {
+      case PYTHON:
+        return context.getBean(PythonAdapter.class);
+      case JS:
+        return context.getBean(JavaScriptAdapter.class);
+      case R:
+        //return context.getBean(RAdapter.class);
+      default:
+        throw new OTExecutionStackException("Invalid adapter provided in object payload. Adapter " + adapterLanguage.toString() + " is not hooked up to this activator.");
+    }
   }
 
 }

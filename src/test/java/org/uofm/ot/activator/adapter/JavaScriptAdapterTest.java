@@ -8,24 +8,23 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.python.core.PyDictionary;
 import org.uofm.ot.activator.domain.KnowledgeObject;
-import org.uofm.ot.activator.exception.OTExecutionStackException;
 import org.uofm.ot.activator.domain.KnowledgeObjectBuilder;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 /**
- * Created by nggittle on 3/29/17.
+ * Created by nggittle on 5/23/17.
  */
-public class PythonAdapterTest {
+public class JavaScriptAdapterTest {
 
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
-  PythonAdapter pythonAdapter;
+  JavaScriptAdapter javaScriptAdapter;
   Map<String, Object> argMap;
 
   @Before
   public void setUp() {
-    pythonAdapter = new PythonAdapter();
+    javaScriptAdapter = new JavaScriptAdapter();
     argMap = new HashMap<>();
   }
 
@@ -33,118 +32,133 @@ public class PythonAdapterTest {
   public void executeEmptyPayload() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder().payloadContent("").payloadFunctionName("").build();
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(" function not found in object payload ");
-    pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
+    expectedEx.expectMessage("Javascript payload is empty or has bad syntax");
+    javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
   }
 
   @Test
   public void executePayloadWithBadSyntax() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute():")
+        .payloadContent("function execute():{}")
         .payloadFunctionName("execute")
         .build();
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage("Error occurred while executing python code SyntaxError:");
-    pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
+    expectedEx.expectMessage("Error occurred while executing javascript code SyntaxError:");
+    javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
   }
 
   @Test
   public void executePayloadWithGoodSyntax() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n     return 1")
+        .payloadContent("function execute(a){return 1;}")
         .payloadFunctionName("execute")
         .build();
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
 
     assertEquals(1, result);
   }
 
   @Test
-  public void executePayloadWithReturnTypeMismatch() throws Exception {
-      KnowledgeObject ko = new KnowledgeObjectBuilder()
-          .payloadContent("def execute(a):\n    return \"True\"")
-          .payloadFunctionName("execute").build();
+  public void executePayloadWithMissingFunction() throws Exception {
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
+        .payloadContent("function mexecute(a){return 1;}")
+        .payloadFunctionName("execute")
+        .build();
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage("Type mismatch while converting python result to java type");
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Boolean.class);
+    expectedEx.expectMessage("The function execute was not found in the javascript payload");
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Integer.class);
+  }
+
+  @Test
+  public void executePayloadWithReturnTypeMismatch() throws Exception {
+    KnowledgeObject ko = new KnowledgeObjectBuilder()
+        .payloadContent("function execute(a) {return \"true\";}")
+        .payloadFunctionName("execute").build();
+
+    expectedEx.expect(OTExecutionStackException.class);
+    expectedEx.expectMessage("Type mismatch while converting javascript result to java type");
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Boolean.class);
   }
 
   @Test
   public void executePayloadWithReturnTypeMatch() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return True")
+        .payloadContent("function execute(a){return true}")
         .payloadFunctionName("execute").build();
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Boolean.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Boolean.class);
+    assertEquals(new Boolean(true), result);
   }
 
   @Test
   public void executePayloadWithTwoObjectsInDictionary() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return str(a[\"b\"]) + (str(a[\"a\"]))")
+        .payloadContent("function execute(a){ return a[\"b\"] + a[\"a\"];}")
         .payloadFunctionName("execute").build();
     argMap.put("b", "this is a ");
     argMap.put("a", "test");
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
     assertEquals("this is a test", result);
   }
 
   @Test
   public void executePayloadWithInfiniteRecursion() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return execute(str(a))")
+        .payloadContent("function execute(a){return execute(a);}")
         .payloadFunctionName("execute").build();
 
     expectedEx.expect(OTExecutionStackException.class);
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
+    expectedEx.expectMessage("Stack overflow error. Make sure you don't have infinite recursion or memory leaks");
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
   }
+
 
   @Test
   public void executePayloadWithNullMap() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return a[\"b\"]")
+        .payloadContent("function execute(a){return a[\"b\"];}")
         .payloadFunctionName("execute").build();
     argMap.put("b", null);
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, String.class);
     assertEquals(null, result);
   }
 
   @Test
   public void executePayloadWithFloatIO() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return a[\"b\"]")
+        .payloadContent("function execute(a){  return a[\"b\"]}")
         .payloadFunctionName("execute").build();
     argMap.put("b", new Float("1.532423444455223553399999331"));
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Float.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Float.class);
     assertEquals(new Float("1.532423444455223553399999331"), result);
   }
 
   @Test
   public void executePayloadWithDoubleIO() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return a[\"b\"]")
+        .payloadContent("function execute(a){   return a[\"b\"];}")
         .payloadFunctionName("execute").build();
     argMap.put("b", new Double("1.5324234444552235533999993319999999"));
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Double.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Double.class);
     assertEquals(new Double("1.5324234444552235533999993319999999"), result);
   }
 
   @Test
   public void executePayloadWithMapIO() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return a")
+        .payloadContent("function execute(a){ return a;}")
         .payloadFunctionName("execute").build();
     argMap.put("b", new Double("1.5324234444552235533999993319999999"));
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Map.class);
-    Map<String, Object> exMap = new PyDictionary();
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Map.class);
+    Map<String, Object> exMap = new HashMap<>();
     exMap.put("b", new Double("1.5324234444552235533999993319999999"));
     assertEquals(exMap, result);
   }
@@ -152,13 +166,13 @@ public class PythonAdapterTest {
   @Test
   public void executePayloadWithNestedMapIO() throws Exception {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .payloadContent("def execute(a):\n    return a")
+        .payloadContent("function execute(a) { return a;}")
         .payloadFunctionName("execute").build();
     Map<String, Object> inMap = new HashMap<>();
     inMap.put("double", new Double("1.5324234444552235533999993319999999"));
     argMap.put("b", inMap);
 
-    Object result = pythonAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Map.class);
+    Object result = javaScriptAdapter.execute(argMap, ko.payload.content, ko.payload.functionName, Map.class);
     Map<String, Object> exMap = new HashMap<>();
     exMap.put("double", new Double("1.5324234444552235533999993319999999"));
     assertEquals(exMap, ((Map)result).get("b"));
@@ -167,6 +181,5 @@ public class PythonAdapterTest {
     assertEquals(exMap, result);
 
   }
-
 
 }
