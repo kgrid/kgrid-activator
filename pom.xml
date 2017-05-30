@@ -63,11 +63,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.python</groupId>
-			<artifactId>jython-standalone</artifactId>
-			<version>2.7.1b3</version>
-		</dependency>
-		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.3</version>
@@ -143,36 +138,5 @@
 		</plugins>
 		
 	</build>
-
-	<profiles>
-		<profile>
-            <!-- if 'mvn package -Dpackaging=jar', make executable and unpack jython jar -->
-			<id>executable-jar</id>
-			<activation>
-				<property>
-					<name>packaging</name>
-					<value>jar</value>
-				</property>
-			</activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <executable>true</executable>
-                            <requiresUnpack>
-                                <dependency>
-                                    <groupId>org.python</groupId>
-                                    <artifactId>jython-standalone</artifactId>
-                                </dependency>
-                            </requiresUnpack>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-		</profile>
-	</profiles>
-
 
 </project>

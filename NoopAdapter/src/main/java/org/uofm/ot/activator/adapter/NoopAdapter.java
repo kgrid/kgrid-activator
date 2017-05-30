@@ -3,7 +3,6 @@ package org.uofm.ot.activator.adapter;
 import java.util.HashMap;
 import java.util.Map;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.springframework.stereotype.Component;
 
 /**
  * This dummy implementation of a PayloadAdapter does not execute the contents. Instead it simply
@@ -11,8 +10,14 @@ import org.springframework.stereotype.Component;
  *
  * Created by grosscol on 5/19/17.
  */
-@Component
 public class NoopAdapter implements ServiceAdapter {
+
+    NoopAdapter() {}
+
+    @Override
+    public String supports() {
+        return "Noop";
+    }
 
     /**
      * Implementation that does nothing with the parameter or payload contents.

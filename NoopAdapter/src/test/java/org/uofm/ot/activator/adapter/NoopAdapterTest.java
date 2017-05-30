@@ -2,10 +2,10 @@ package org.uofm.ot.activator.adapter;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

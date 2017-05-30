@@ -5,15 +5,14 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import org.springframework.stereotype.Component;
-import org.uofm.ot.activator.domain.EngineType;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 /**
  * Created by nggittle on 5/23/17.
  */
-@Component
 public class JavaScriptAdapter implements ServiceAdapter {
+
+  public JavaScriptAdapter() {}
 
   @Override
   public Object execute(Map<String, Object> args, String code, String functionName, Class returnType) throws OTExecutionStackException {
@@ -38,5 +37,10 @@ public class JavaScriptAdapter implements ServiceAdapter {
     } catch (StackOverflowError stackEx) {
       throw new OTExecutionStackException("Stack overflow error. Make sure you don't have infinite recursion or memory leaks.", stackEx);
     }
+  }
+
+  @Override
+  public String supports(){
+    return "JS";
   }
 }
