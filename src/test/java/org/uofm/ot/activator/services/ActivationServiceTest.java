@@ -2,6 +2,7 @@ package org.uofm.ot.activator.services;
 
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.contains;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class ActivationServiceTest {
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Error occurred while executing python code SyntaxError:"));
+    expectedEx.expectMessage(contains("Error occurred while executing python code SyntaxError:"));
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
@@ -191,7 +192,7 @@ public class ActivationServiceTest {
     expectedResult.setResult("{u'rxcui': u'1723222'}");
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(startsWith("Type mismatch while converting python result to java"));
+    expectedEx.expectMessage(contains("Type mismatch while converting python result to java"));
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }

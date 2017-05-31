@@ -1,30 +1,23 @@
 package org.uofm.ot.activator.controller;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.type.filter.AssignableTypeFilter;
-import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.uofm.ot.activator.adapter.ServiceAdapter;
-import org.uofm.ot.activator.repository.RemoteShelf;
-import org.uofm.ot.activator.services.ActivationService;
 import org.uofm.ot.activator.domain.ArkId;
 import org.uofm.ot.activator.domain.Result;
+import org.uofm.ot.activator.repository.RemoteShelf;
+import org.uofm.ot.activator.services.ActivationService;
 
 /**
  *
@@ -55,12 +48,16 @@ public class ActivationController {
     return result;
   }
 
-  @GetMapping(value = "/adapters")
-  public Map<String, Set<String>> listAdapters() {
-    Map<String, Class> adapters = service.getAdapterList();
-    Map<String, Set<String>> loadedAdapters = new HashMap<>();
-    loadedAdapters.put("Adapters", adapters.keySet());
-    return loadedAdapters;
+  @Component
+  public class AdapterInfoContributor implements InfoContributor {
+
+    @Override
+    public void contribute(Info.Builder builder) {
+      Map<String, Class> adapters = service.loadAndGetAdapterList();
+      builder.withDetail("Adapters", adapters.keySet());
+
+    }
   }
+
 
 }

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -107,7 +108,7 @@ public class ActivationService {
 
     if (isInputAndPayloadValid(inputs, ko.payload, ioSpec)) {
 
-      log.info("Object payload is sent to Python Adapter for execution.");
+      log.info("Object payload is sent to Adapter for execution.");
 
       try {
         Class adapter = adapterFactory(ko.payload.engineType);
@@ -116,8 +117,10 @@ public class ActivationService {
         Object resultObj = execute.invoke(serviceAdapterInstance, inputs, ko.payload.content, ko.payload.functionName,
             ioSpec.getReturnTypeAsClass());
         result.setResult(resultObj);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
-        throw new OTExecutionStackException("Error invoking execute for payload " + ko.payload + " " + e);
+      } catch (IllegalAccessException | NoSuchMethodException | InstantiationException e) {
+        throw new OTExecutionStackException("Error invoking execute for payload " + e, e);
+      } catch (InvocationTargetException invocationEx) {
+        throw new OTExecutionStackException("Error invoking execute due to internal adapter error: " + invocationEx.getCause(), invocationEx);
       }
     }
 
@@ -138,15 +141,15 @@ public class ActivationService {
     }
   }
 
-  // Reflection is annoying
+  // Loads adapter classes contained in jar files from the user-specified adapter path
   private HashMap<String, Class> loadAdapters() {
 
     HashMap<String, Class> executionImp = new HashMap<>();
 
-    File adapterDir;
-
     try {
+      File adapterDir;
       if(adapterPath.startsWith("classpath:")) {
+        // Chop off the beginning "classpath:" and then get the file
         Resource adapterResource = new ClassPathResource(adapterPath.substring(adapterPath.indexOf(":") + 1));
         adapterDir = adapterResource.getFile();
       } else {
@@ -158,37 +161,38 @@ public class ActivationService {
       if(adapterDir.listFiles().length == 0 ) {
         throw new OTExecutionStackException("No files found in the adapter directory " + adapterPath);
       }
-      for (File classFile : adapterDir.listFiles()) {
 
+      // Loop over every jar file in the specified adapter directory and load in every class that implements ServiceAdapter
+      for (File classFile : adapterDir.listFiles()) {
+        if (!classFile.getName().endsWith(".jar")) {
+          continue;
+        }
         JarFile adapterJar;
         try {
           adapterJar = new JarFile(classFile);
         } catch (ZipException zipE) {
-          log.error("Cannot open jar file " + classFile);
+          log.error("Cannot open jar file " + classFile + " Zip error: " + zipE);
           continue;
         }
-        Enumeration<JarEntry> entryEnumeration = adapterJar.entries();
 
+        Enumeration<JarEntry> entryEnumeration = adapterJar.entries();
         URL[] urls = { new URL("jar:file:" + classFile + "!/")};
         URLClassLoader cl = URLClassLoader.newInstance(urls);
+
         while (entryEnumeration.hasMoreElements()){
           JarEntry entry = entryEnumeration.nextElement();
+          Class<?> classToLoad;
+
           if(entry.isDirectory() || !entry.getName().endsWith(".class")) {
             continue;
           }
           String className = entry.getName().substring(0,entry.getName().length() - 6); // Length - 6 to chop off ending .class
           className = className.replace('/', '.'); // Make into package name instead of directory path
-          Class classToLoad;
           try {
             classToLoad = cl.loadClass(className);
           } catch (ClassNotFoundException | NoClassDefFoundError classEx) {
-            log.error("Can't load class " + className);
             continue;
           }
-          Object serviceAdapterInstance;
-          Method supports;
-          String supportsVal = null;
-
           boolean implementsServiceAdapter = false;
           for (Class classInterface : classToLoad.getInterfaces()) {
             if(classInterface.getSimpleName().equals(ServiceAdapter.class.getSimpleName())){
@@ -198,13 +202,18 @@ public class ActivationService {
           }
           if(implementsServiceAdapter) {
             try {
-              serviceAdapterInstance = classToLoad.newInstance();
-              supports = classToLoad.getDeclaredMethod("supports");
-              supportsVal = supports.invoke(serviceAdapterInstance).toString().toUpperCase();
-              executionImp.put(supportsVal, classToLoad);
+              Object serviceAdapterInstance = classToLoad.newInstance();
+              Method supportsMethod = classToLoad.getDeclaredMethod("supports");
+              List<String> supports = (List<String>)supportsMethod.invoke(serviceAdapterInstance);
+              for (String language : supports) {
+                if(executionImp.get(language) != null) {
+                  log.warn("An adapter already exists for language " + language + "!! Undetermined behavior will occur with two adapters for the same language!");
+                }
+                executionImp.put(language.toUpperCase(), classToLoad);
+                log.info("Loaded adapter for language " + language);
+              }
             } catch (IllegalAccessException | NoSuchMethodException | InstantiationException ex) {
-              log.error(ex.getMessage());
-              continue;
+              log.info(ex.getMessage());
             }
           }
         }
@@ -216,11 +225,11 @@ public class ActivationService {
     if (executionImp.size() == 0) {
       throw new OTExecutionStackException("No valid adapters found. Please place adapters into the directory " + adapterPath);
     }
-
     return executionImp;
   }
 
-  public Map<String, Class> getAdapterList() {
+  public Map<String, Class> loadAndGetAdapterList() {
+    executionImplementations = loadAdapters();
     return executionImplementations;
   }
 

@@ -1,5 +1,7 @@
 package org.uofm.ot.activator.adapter;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.python.core.PyDictionary;
 import org.python.core.PyException;
 import org.python.core.PyObject;
@@ -44,7 +46,9 @@ public class PythonAdapter implements ServiceAdapter {
 		}
 	}
 
-	public String supports() {
-		return "PYTHON";
+	public List<String> supports() {
+		List<String> languages = new ArrayList<>();
+		languages.add("Python");
+		return languages;
 	}
 }

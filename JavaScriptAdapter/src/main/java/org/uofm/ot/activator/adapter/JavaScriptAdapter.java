@@ -1,5 +1,7 @@
 package org.uofm.ot.activator.adapter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -40,7 +42,12 @@ public class JavaScriptAdapter implements ServiceAdapter {
   }
 
   @Override
-  public String supports(){
-    return "JS";
+  public List<String> supports(){
+    List<String> languages = new ArrayList<>();
+    languages.add("JS");
+    languages.add("JavaScript");
+    return languages;
   }
+
+
 }

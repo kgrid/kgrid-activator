@@ -1,5 +1,6 @@
 package org.uofm.ot.activator.adapter;
 
+import java.util.List;
 import java.util.Map;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
@@ -8,8 +9,8 @@ import org.uofm.ot.activator.exception.OTExecutionStackException;
  */
 public interface ServiceAdapter {
 
-  Object execute(Map<String, Object> args, String code, String functionName, Class returnType) throws OTExecutionStackException;
+  Object execute(Map<String, Object> args, String code, String functionName, Class returnType) throws Exception;
 
-  String supports();
+  List<String> supports();
 
 }

@@ -1,6 +1,8 @@
 package org.uofm.ot.activator.adapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
@@ -12,11 +14,13 @@ import org.uofm.ot.activator.exception.OTExecutionStackException;
  */
 public class NoopAdapter implements ServiceAdapter {
 
-    NoopAdapter() {}
+    public NoopAdapter() {}
 
     @Override
-    public String supports() {
-        return "Noop";
+    public List<String> supports() {
+        List<String> languages = new ArrayList<>();
+        languages.add("Noop");
+        return languages;
     }
 
     /**
