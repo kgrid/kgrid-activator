@@ -66,7 +66,10 @@ public class RemoteShelf {
 	}
 
 	public String getRemoteObjectURL(ArkId arkId) {
-		return 		libraryAbsolutePath + "/" + arkId.getArkId();
+		if(libraryAbsolutePath.endsWith("/")){
+			return libraryAbsolutePath + arkId.getArkId();
+		}
+		return libraryAbsolutePath + "/" + arkId.getArkId();
 	}
 
 	public String getAbsoluteObjectUrl(ArkId arkId) {

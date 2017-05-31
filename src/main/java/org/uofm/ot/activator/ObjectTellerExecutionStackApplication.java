@@ -20,5 +20,4 @@ public class ObjectTellerExecutionStackApplication extends SpringBootServletInit
 				.sources(ObjectTellerExecutionStackApplication.class);
 	}
 
-
 }
