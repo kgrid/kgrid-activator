@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 /**
- * Class for mapping the components of the /api/kernels GET and PUT responses from a Jupyter Kernel Gateway
+ * Class for mapping the components of the /api/kernels REST responses from a Jupyter Kernel Gateway
  * Created by grosscol on 2017-06-07.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class KernelsResponse {
+public class RestResponse {
     @JsonProperty
     private
     String name;

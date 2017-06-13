@@ -1,89 +1,84 @@
 package org.uofm.ot.activator.adapter.gateway;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import javax.websocket.ClientEndpoint;
+import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 
-import javax.websocket.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-
+/**
+ * Class to encapsulate the I/O to the Jupyter Kernel Gateway API.
+ * Includes both REST and WebSocket operations.
+ */
 @ClientEndpoint
 public class SockPuppet {
 
   private Session sess = null;
-  private URI baseURI;
-  public RestTemplate restTemplate;
-
-  public SockPuppet() throws URISyntaxException {
-    this(new URI("http://localhost:8888"));
-  }
-
-  public SockPuppet(final URI baseURI) {
-    this.restTemplate = new RestTemplate();
-    this.baseURI = baseURI;
-  }
 
   @OnOpen
   public void onOpen(final Session sess) {
-
+    System.out.println("Socket Session Opened");
+    this.sess = sess;
   }
 
   @OnClose
   public void onClose(final Session sess, final CloseReason rsn) {
-
+    System.out.println("Socket Session Closed");
   }
 
   @OnMessage
   public void onMessage(final String message) {
-
+    System.out.println("Message Received.");
+    System.out.println(message);
   }
 
-  public void sendMessage(final String message) {
+  public static void sendMessage(final String message, final Session sess) {
     sess.getAsyncRemote().sendText(message);
   }
 
-  public String gatewayVersion() {
-    HashMap<String, Object> jb = new HashMap<>();
-    URI targetURI = baseURI.resolve("/api");
+  /**
+   * Send a payload to the Jupyter KernelGateway for execution on a given kernel.
+   *
+   * @param payload code to be executed
+   * @param sess web sockets session
+   * @param kernel_id id of running jupytr kernel
+   */
+  public static void sendPayload(final String payload, final Session sess, final String kernel_id)
+      throws UnsupportedEncodingException {
+
+    String encoded_kernel_id = URLEncoder.encode(kernel_id, "UTF-8");
+
+    // javax websocket implementation
+    WebSocketContainer container =
+        ContainerProvider.getWebSocketContainer();
+    // connect
+    String uri = "ws://localhost:8888/api/kernels/" + encoded_kernel_id + "/channels";
+    //Session sess = null;
+    //try {
+    //  sess = container.connectToServer(SockPuppet.class, URI.create(uri));
+    //} catch (DeploymentException e) {
+    //  e.printStackTrace();
+    //} catch (IOException e) {
+    //  e.printStackTrace();
+    //}
+
+    // send message
+    //String msg = jsonFixture("socket-request");
+    String msg = "Foo";
+    SockPuppet.sendMessage(msg, sess);
+
+    // wait for response
     try {
-      jb = restTemplate.getForObject(targetURI, HashMap.class);
-    } catch (ResourceAccessException e){
-      System.out.println(e.getMessage());
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
-    return (String) jb.get("version");
   }
 
-  public List<KernelsResponse> getKernels() {
-    List<KernelsResponse> list = new ArrayList<>();
-    try {
-      URI targetUri = new URI("http://localhost:8888/api/kernels");
-      list = restTemplate.getForObject(targetUri, ArrayList.class);
-    } catch (URISyntaxException | HttpClientErrorException | ResourceAccessException e) {
-      System.out.println(e.getMessage());
-      return list;
-    }
-
-    return list;
-  }
-
-  public String startKernel() {
-    KernelsResponse resp;
-    try {
-      URI targetUri = new URI("http://localhost:8888/api/kernels");
-      String request = "{\"name\": \"python\"}";
-      resp = restTemplate.postForObject(targetUri, request, KernelsResponse.class);
-    } catch (URISyntaxException | HttpClientErrorException | ResourceAccessException e) {
-      System.out.println(e.getMessage());
-      return "";
-    }
-    return resp.getId();
-  }
 
 }
