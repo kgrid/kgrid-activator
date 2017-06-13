@@ -23,6 +23,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>4.3.9.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>4.3.8.RELEASE</version>
 		</dependency>
@@ -66,6 +71,11 @@
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<version>7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.tyrus.bundles</groupId>
+			<artifactId>tyrus-standalone-client</artifactId>
+			<version>1.13.1</version>
 		</dependency>
 	</dependencies>
 
