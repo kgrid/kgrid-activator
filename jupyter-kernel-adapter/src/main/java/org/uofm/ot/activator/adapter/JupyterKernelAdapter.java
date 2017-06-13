@@ -2,11 +2,14 @@ package org.uofm.ot.activator.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.uofm.ot.activator.adapter.gateway.RestClient;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 import java.util.Map;
 
 public class JupyterKernelAdapter implements ServiceAdapter {
+
+  public RestClient restClient;
 
 	public JupyterKernelAdapter() {}
 
