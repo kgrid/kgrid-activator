@@ -1,0 +1,20 @@
+{
+  "header": {
+    "username": "",
+    "version": "5.0",
+    "session": "demoid",
+    "msg_id": "deadbeef",
+    "msg_type": "execute_request"
+  },
+  "parent_header": {},
+  "channel": "shell",
+  "content": {
+    "code": "print('hello, world!')",
+    "silent": false,
+    "store_history": false,
+    "user_expressions" : {},
+    "allow_stdin" : false
+  },
+  "metadata": {},
+  "buffers": []
+}

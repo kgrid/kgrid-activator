@@ -1,0 +1,26 @@
+{
+    "buffers": [],
+    "channel": "iopub",
+    "content": {
+        "execution_state": "busy"
+    },
+    "header": {
+        "date": "2017-06-12T16:16:45.931693Z",
+        "msg_id": "81b676e5-f2bde29bfd82843212f2f302",
+        "msg_type": "status",
+        "session": "95378559-d4b0f07b1041a2219467ceb4",
+        "username": "grosscol",
+        "version": "5.1"
+    },
+    "metadata": {},
+    "msg_id": "81b676e5-f2bde29bfd82843212f2f302",
+    "msg_type": "status",
+    "parent_header": {
+        "date": "2017-06-12T16:16:45.931538Z",
+        "msg_id": "deadbeef",
+        "msg_type": "execute_request",
+        "session": "demoid",
+        "username": "",
+        "version": "5.0"
+    }
+}
