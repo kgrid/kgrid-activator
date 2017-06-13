@@ -35,20 +35,12 @@ public class JupyterKernelAdapterTest {
   }
 
   @Test
-  public void jupyterNotFound() throws Exception {
+  public void noKernelsAvailable() throws Exception {
     String payload = "def exec(a):\n    return 1";
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(" unable to connect to Jupyter Kernel ");
+    expectedEx.expectMessage(" no available Jupyter Kernels for payload ");
     jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
   } 
-
-    @Test
-  public void jupyterFound() throws Exception {
-    String payload = "def exec(a):\n    return 1";
-    Object result = jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
-    assertEquals(result, 1); 
-  } 
-
 
 
 }

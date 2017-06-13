@@ -12,13 +12,8 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
-import javax.websocket.ContainerProvider;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-
-import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 /**
  * Created by grosscol on 2017-06-13.
@@ -92,7 +82,7 @@ public class RestClientTest {
     mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
-    List<RestResponse> kernels = client.getKernels();
+    List<KernelMetadata> kernels = client.getKernels();
 
     assertThat(kernels, hasSize(2));
   }
@@ -121,7 +111,7 @@ public class RestClientTest {
       mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
           .andExpect(method(HttpMethod.GET))
           .andRespond(withStatus(HttpStatus.FORBIDDEN).body(response));
-      List<RestResponse> kernels = client.getKernels();
+      List<KernelMetadata> kernels = client.getKernels();
 
       assertThat(kernels, hasSize(0));
     }
@@ -144,7 +134,7 @@ public class RestClientTest {
 
     @Test
     public void kernelsInaccessible() throws Exception {
-      List<RestResponse> kernels = client.getKernels();
+      List<KernelMetadata> kernels = client.getKernels();
       assertThat(kernels, hasSize(0));
     }
   }

@@ -17,6 +17,15 @@ public class JupyterKernelAdapter implements ServiceAdapter {
 		return new Object();		
 	}
 
+	//What is the kernel ID of the the jupyter kernel I'll be sending the payload to?
+	public String selectKernel(){
+		//Get list of existing kernels
+
+		//Ask to create a new kernel if one is not available.
+
+	  return "";
+	}
+
 	public List<String> supports() {
 		List<String> languages = new ArrayList<>();
 		languages.add("Python");

@@ -36,8 +36,8 @@ public class RestClient {
     return (String) jb.get("version");
   }
 
-  public List<RestResponse> getKernels() {
-    List<RestResponse> list = new ArrayList<>();
+  public List<KernelMetadata> getKernels() {
+    List<KernelMetadata> list = new ArrayList<>();
     try {
       URI targetUri = new URI("http://localhost:8888/api/kernels");
       list = restTemplate.getForObject(targetUri, ArrayList.class);
@@ -50,11 +50,11 @@ public class RestClient {
   }
 
   public String startKernel() {
-    RestResponse resp;
+    KernelMetadata resp;
     try {
       URI targetUri = new URI("http://localhost:8888/api/kernels");
       String request = "{\"name\": \"python\"}";
-      resp = restTemplate.postForObject(targetUri, request, RestResponse.class);
+      resp = restTemplate.postForObject(targetUri, request, KernelMetadata.class);
     } catch (URISyntaxException | HttpClientErrorException | ResourceAccessException e) {
       System.out.println(e.getMessage());
       return "";

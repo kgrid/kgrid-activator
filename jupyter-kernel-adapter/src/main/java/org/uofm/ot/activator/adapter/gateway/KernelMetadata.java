@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * Created by grosscol on 2017-06-07.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class RestResponse {
+public class KernelMetadata {
     @JsonProperty
     private
     String name;
@@ -26,12 +26,6 @@ public class RestResponse {
     @JsonProperty("last_activity")
     private
     String lastActivity;
-    @JsonProperty
-    private
-    String reason;
-    @JsonProperty
-    private
-    String message;
 
     public String getName() {
         return name;
@@ -73,19 +67,4 @@ public class RestResponse {
         this.lastActivity = lastActivity;
     }
 
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }
