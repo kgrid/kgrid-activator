@@ -40,7 +40,6 @@ public class JupyterKernelAdapterTest {
   public void setUp() {
     jupyterKernelAdapter = new JupyterKernelAdapter();
     argMap = new HashMap<>();
-
   }
 
   @Test
@@ -61,6 +60,5 @@ public class JupyterKernelAdapterTest {
     expectedEx.expectMessage(" no available Jupyter Kernels for payload ");
     jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
   } 
-
 
 }
