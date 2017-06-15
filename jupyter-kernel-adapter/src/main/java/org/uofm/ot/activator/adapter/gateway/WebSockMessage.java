@@ -4,40 +4,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by grosscol on 2017-06-12.
  */
 public class WebSockMessage {
   @JsonProperty
-  HashMap<String, Object> header;
+  public List buffers;
+  @JsonProperty
+  public String channel;
+  @JsonProperty
+  public HashMap<String, Object> content;
+  @JsonProperty
+  public WebSockHeader header;
+  @JsonProperty
+  public HashMap<String, Object> metadata;
+  @JsonProperty("msg_id")
+  public String messageId;
+  @JsonProperty("msg_type")
+  public String messageType;
   @JsonProperty("parent_header")
-  HashMap<String, Object> parentHeader;
-  @JsonProperty
-  String channel;
-  @JsonProperty
-  HashMap<String, Object> content;
-  @JsonProperty
-  HashMap<String, Object> metadata;
-  @JsonProperty
-  List buffers;
+  public HashMap<String, Object> parentHeader;
 
-  /**
-   * Created by grosscol on $-$-$.
-   */
   static class WebSockMessageBuilder {
 
     static WebSockMessage buildPayloadRequest(String payload) {
       WebSockMessage req = new WebSockMessage();
-      req.header = new HashMap<String, Object>();
+      req.header = new WebSockHeader();
       req.content = new HashMap<String, Object>();
 
-      req.header.put("username", "");
-      req.header.put("version", "5.0");
-      req.header.put("session", "demoid");
-      req.header.put("msg_id", "deadbeef");
-      req.header.put("msg_type", "execute_request");
+      req.header.setUsername("");
+      req.header.setVersion("5.0");
+      req.header.setSession("demoid");
+      req.header.setMessageId("deadbeef");
+      req.header.setMessageType("execute_request");
 
       req.channel = "shell";
 
@@ -52,6 +52,5 @@ public class WebSockMessage {
 
       return req;
     }
-
   }
 }

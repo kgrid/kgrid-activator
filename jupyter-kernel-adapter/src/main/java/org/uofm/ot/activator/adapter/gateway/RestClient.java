@@ -16,8 +16,8 @@ public class RestClient {
   private URI restURI;
   public RestTemplate restTemplate;
 
-  public RestClient() throws URISyntaxException {
-    this(new URI("http://localhost:8888"));
+  public RestClient() {
+    this(URI.create("http://localhost:8888"));
   }
 
   public RestClient(final URI restURI) {

@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import org.uofm.ot.activator.adapter.TestUtils;
 
 /**
  * Created by grosscol on 2017-06-13.
@@ -33,27 +34,16 @@ public class RestClientTest {
   private MockRestServiceServer mockServer;
   private RestTemplate restTemplate;
 
-  public String jsonFixture(String fixtureName) throws IOException {
-    String json = new Scanner(
-        RestClientTest.class.getResourceAsStream("/fixtures/" + fixtureName + ".json"), "UTF-8")
-        .useDelimiter("\\A").next();
-    return json;
-  }
-
   @Before
   public void setup() {
-    try {
-      client = new RestClient();
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    client = new RestClient();
     restTemplate = client.restTemplate;
     mockServer = MockRestServiceServer.bindTo(restTemplate).build();
   }
 
   @Test
   public void getVersion() throws Exception {
-    String response = jsonFixture("get-api");
+    String response = TestUtils.jsonFixture("get-api");
     mockServer.expect(requestTo("http://localhost:8888/api"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -66,7 +56,7 @@ public class RestClientTest {
   // Main Context is that Jupytr Gateway is accessible and client is authorized.
   @Test
   public void startTest() throws Exception {
-    String response = jsonFixture("post-kernels");
+    String response = TestUtils.jsonFixture("post-kernels");
     mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
         .andExpect(method(HttpMethod.POST))
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -78,7 +68,7 @@ public class RestClientTest {
 
   @Test
   public void listKernels() throws Exception {
-    String response = jsonFixture("get-kernels");
+    String response = TestUtils.jsonFixture("get-kernels");
     mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -96,18 +86,14 @@ public class RestClientTest {
 
     @Before
     public void setupUnauthorized() {
-      try {
-        client = new RestClient();
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
+      client = new RestClient();
       restTemplate = client.restTemplate;
       mockServer = MockRestServiceServer.bindTo(restTemplate).build();
     }
 
     @Test
     public void kernelsNotListed() throws Exception {
-      String response = jsonFixture("get-kernels-forbidden");
+      String response = TestUtils.jsonFixture("get-kernels-forbidden");
       mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
           .andExpect(method(HttpMethod.GET))
           .andRespond(withStatus(HttpStatus.FORBIDDEN).body(response));
@@ -124,12 +110,8 @@ public class RestClientTest {
 
     @Before
     public void setupInaccessible() {
-      try {
-        URI nonExistantHost = new URI("not-extant.local:8888");
-        client = new RestClient(nonExistantHost);
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
+      URI nonExistantHost = URI.create("nonexistant.host:8888");
+      client = new RestClient(nonExistantHost);
     }
 
     @Test

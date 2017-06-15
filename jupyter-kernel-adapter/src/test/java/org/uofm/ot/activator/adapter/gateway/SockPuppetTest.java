@@ -1,48 +1,104 @@
 package org.uofm.ot.activator.adapter.gateway;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Scanner;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(HierarchicalContextRunner.class)
+import java.io.IOException;
+import java.net.URI;
+import java.util.Scanner;
+import javax.websocket.DeploymentException;
+import javax.websocket.RemoteEndpoint;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.uofm.ot.activator.adapter.TestUtils;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
+
 public class SockPuppetTest {
 
-  public String jsonFixture(String fixtureName) throws IOException {
-    String json = new Scanner(
-        SockPuppetTest.class.getResourceAsStream("/fixtures/" + fixtureName + ".json"), "UTF-8")
-        .useDelimiter("\\A").next();
-    return json;
-  }
+  @Mock
+  private Session session = mock(Session.class);
+
+  @Mock
+  private RemoteEndpoint.Async remoteEndpoint = mock(RemoteEndpoint.Async.class);
+
+  @Mock
+  public WebSocketContainer container = mock(WebSocketContainer.class);
+
+  @InjectMocks
+  private SockPuppet wsClient;
+
+  @Rule
+  public final ExpectedException exception = ExpectedException.none();
+
+  private final String hello_code = "print('Hello, Test')";
 
   @Before
   public void setup() {
+    MockitoAnnotations.initMocks(this);
   }
 
-  // send payload returns message header
   @Test
-  @Ignore
+  public void unableToConnect() throws Exception {
+    URI testUri = URI.create("ws://not.reachable.host:9999");
+    when(container.connectToServer(wsClient, testUri))
+        .thenThrow(new DeploymentException("test exception"));
+
+    exception.expect(OTExecutionStackException.class);
+    exception.expectMessage("Unable to connect to Jupyter Gateway");
+    exception.expectCause(Matchers.instanceOf(DeploymentException.class));
+
+    wsClient.connectToServer(testUri);
+  }
+
+  @Test
   public void sendPayloadReturnsHeader() throws Exception {
+    when(session.getAsyncRemote()).thenReturn(remoteEndpoint);
+    when(session.isOpen()).thenReturn(true);
+    WebSockHeader header = wsClient.sendPayload(hello_code);
 
+    assertThat(header.getMessageId(), not(isEmptyOrNullString()));
   }
 
   @Test
-  @Ignore
-  public void socketMsg() throws Exception {
-    String kernel_id = "somekernel";
+  public void sendingClosedSession() throws Exception {
+    when(session.isOpen()).thenReturn(false);
 
-    // Spring Boot
-    WebSocketTransport transport = new WebSocketTransport(new StandardWebSocketClient());
-    WebSocketClient wsclient = new SockJsClient(Collections.singletonList(transport));
+    exception.expect(OTExecutionStackException.class);
+    exception.expectMessage("session not open");
 
+    wsClient.sendPayload(hello_code);
+  }
+
+  @Test
+  public void sendingNoSession() throws Exception {
+    wsClient.setSession(null);
+
+    exception.expect(OTExecutionStackException.class);
+    exception.expectMessage("no session");
+
+    wsClient.sendPayload(hello_code);
+  }
+
+  @Test
+  public void receivedMessagesAddedToQueue() throws Exception {
+    String response = TestUtils.jsonFixture("socket-resp-exec-reply");
+    for (int i = 0; i < 5; i++) {
+      wsClient.onMessage(response);
+    }
+
+    assertThat(wsClient.getMessageQ(), hasSize(5));
   }
 
 }

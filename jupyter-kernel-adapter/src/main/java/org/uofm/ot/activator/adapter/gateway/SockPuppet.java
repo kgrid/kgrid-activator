@@ -1,29 +1,69 @@
 package org.uofm.ot.activator.adapter.gateway;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
+import org.uofm.ot.activator.adapter.gateway.WebSockMessage.WebSockMessageBuilder;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 /**
- * Class to encapsulate the I/O to the Jupyter Kernel Gateway API.
- * Includes both REST and WebSocket operations.
+ * Class to encapsulate the I/O to the Websocket Jupyter Kernel Gateway API endpoints.
  */
 @ClientEndpoint
 public class SockPuppet {
 
-  private Session sess = null;
+  private Session session = null;
+  private ObjectMapper messageMapper;
+  private WebSocketContainer container;
+  private ArrayBlockingQueue<WebSockMessage> messageQ;
+
+  public SockPuppet() {
+    messageQ = new ArrayBlockingQueue<>(20);
+    messageMapper = new ObjectMapper();
+  }
+
+  /**
+   * Attempt to open websocket connection a url
+   */
+  public void connectToServer(URI uri) throws OTExecutionStackException {
+    try {
+      session = getContainer().connectToServer(this, uri);
+    } catch (DeploymentException | IOException ex) {
+      throw new OTExecutionStackException("Unable to connect to Jupyter Gateway: " + uri.toString(),
+          ex);
+    }
+  }
+
+  /**
+   * Send a payload to the Jupyter KernelGateway for execution.
+   *
+   * @param payload code to be executed
+   */
+  public WebSockHeader sendPayload(final String payload)
+      throws OTExecutionStackException {
+
+    // Build execution message using payload
+    WebSockMessage msg = WebSockMessageBuilder.buildPayloadRequest(payload);
+    sendJsonMessage(msg);
+    return msg.header;
+  }
 
   @OnOpen
   public void onOpen(final Session sess) {
     System.out.println("Socket Session Opened");
-    this.sess = sess;
+    this.session = sess;
   }
 
   @OnClose
@@ -35,50 +75,86 @@ public class SockPuppet {
   public void onMessage(final String message) {
     System.out.println("Message Received.");
     System.out.println(message);
-  }
 
-  public static void sendMessage(final String message, final Session sess) {
-    sess.getAsyncRemote().sendText(message);
-  }
-
-  /**
-   * Send a payload to the Jupyter KernelGateway for execution on a given kernel.
-   *
-   * @param payload code to be executed
-   * @param sess web sockets session
-   * @param kernel_id id of running jupytr kernel
-   */
-  public static void sendPayload(final String payload, final Session sess, final String kernel_id)
-      throws UnsupportedEncodingException {
-
-    String encoded_kernel_id = URLEncoder.encode(kernel_id, "UTF-8");
-
-    // javax websocket implementation
-    WebSocketContainer container =
-        ContainerProvider.getWebSocketContainer();
-    // connect
-    String uri = "ws://localhost:8888/api/kernels/" + encoded_kernel_id + "/channels";
-    //Session sess = null;
-    //try {
-    //  sess = container.connectToServer(SockPuppet.class, URI.create(uri));
-    //} catch (DeploymentException e) {
-    //  e.printStackTrace();
-    //} catch (IOException e) {
-    //  e.printStackTrace();
-    //}
-
-    // send message
-    //String msg = jsonFixture("socket-request");
-    String msg = "Foo";
-    SockPuppet.sendMessage(msg, sess);
-
-    // wait for response
+    // Convert message to WebSockResponse
+    WebSockMessage wsMessage = null;
     try {
-      Thread.sleep(1000);
+      wsMessage = messageMapper.readValue(message, WebSockMessage.class);
+    } catch (IOException e) {
+      // TODO: log message unavailable
+      e.printStackTrace();
+    }
+
+    // Add message to thread safe queue
+    try {
+      messageQ.offer(wsMessage, 2, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
+      // TODO: log waiting to put message in queue interrupted
       e.printStackTrace();
     }
   }
 
+  public void sendText(final String message) throws OTExecutionStackException {
+    if (session == null) {
+      throw new OTExecutionStackException("Sending Error: no session.");
+    } else if (session.isOpen() == false) {
+      throw new OTExecutionStackException("Sending Error: session not open.");
+    }
+    //TODO: Info level log message sent
+    //TODO: Debug level log message content
+    System.out.println("== Sending Message ==");
+    System.out.print(message);
+    getSession().getAsyncRemote().sendText(message);
+  }
 
+  public void sendJsonMessage(final WebSockMessage msg) throws OTExecutionStackException {
+    ObjectMapper mapper = new ObjectMapper();
+    String json_msg = "";
+
+    try {
+      json_msg = mapper.writeValueAsString(msg);
+    } catch (JsonProcessingException e) {
+      throw new OTExecutionStackException(" Error while encoding payload to JSON. ");
+    }
+
+    sendText(json_msg);
+  }
+
+  @Override
+  public void finalize() {
+    this.close();
+  }
+
+  public void close() {
+    if (getSession() != null && getSession().isOpen()) {
+      try {
+        getSession().close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public Session getSession() {
+    return session;
+  }
+
+  public void setSession(Session session) {
+    this.session = session;
+  }
+
+  public WebSocketContainer getContainer() {
+    if (container == null) {
+      setContainer(ContainerProvider.getWebSocketContainer());
+    }
+    return container;
+  }
+
+  public void setContainer(WebSocketContainer container) {
+    this.container = container;
+  }
+
+  public ArrayBlockingQueue<WebSockMessage> getMessageQ() {
+    return messageQ;
+  }
 }
