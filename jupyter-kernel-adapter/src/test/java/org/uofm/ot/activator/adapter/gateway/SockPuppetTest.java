@@ -7,9 +7,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.Scanner;
 import javax.websocket.DeploymentException;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;

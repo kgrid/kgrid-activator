@@ -76,7 +76,7 @@ public class SockPuppet {
     System.out.println("Message Received.");
     System.out.println(message);
 
-    // Convert message to WebSockResponse
+    // Convert message to WebSockMessage
     WebSockMessage wsMessage = null;
     try {
       wsMessage = messageMapper.readValue(message, WebSockMessage.class);

@@ -26,6 +26,21 @@ public class WebSockMessage {
   @JsonProperty("parent_header")
   public HashMap<String, Object> parentHeader;
 
+  public WebSockMessage(){
+    content = new HashMap<>();
+  }
+
+  public boolean isError(){
+    if(messageType == "error"){return true;}
+    else{ return false; }
+  }
+
+  public boolean isResult(){
+    if(messageType == "execute_result"){return true;}
+    else if(messageType == "stream"){return true;}
+    else{ return false; }
+  }
+
   static class WebSockMessageBuilder {
 
     static WebSockMessage buildPayloadRequest(String payload) {

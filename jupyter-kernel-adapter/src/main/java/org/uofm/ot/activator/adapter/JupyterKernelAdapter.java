@@ -1,46 +1,117 @@
 package org.uofm.ot.activator.adapter;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.uofm.ot.activator.adapter.gateway.RestClient;
-import org.uofm.ot.activator.exception.OTExecutionStackException;
-import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
-import java.net.URI;
-
 import java.util.Map;
-import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
+import org.uofm.ot.activator.adapter.gateway.RestClient;
+import org.uofm.ot.activator.adapter.gateway.SockPuppet;
+import org.uofm.ot.activator.adapter.gateway.WebSockHeader;
+import org.uofm.ot.activator.adapter.gateway.WebSockMessage;
+import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 public class JupyterKernelAdapter implements ServiceAdapter {
 
   public RestClient restClient;
+  public SockPuppet sockClient;
+  String host;
+  String port;
 
-	public JupyterKernelAdapter() {
-		this.restClient = new RestClient(URI.create("http://localhost:8888"));
-	}
+  public JupyterKernelAdapter() {
+    host = "localhost";
+    port = "8888";
+    URI restUri = URI.create("http://" + host + ":" + port);
+    restClient = new RestClient(restUri);
+    sockClient = new SockPuppet();
+  }
 
-	public Object execute(Map<String, Object>args, String code, String functionName, Class returnType) {
-		if (code == "") {
-			throw new OTExecutionStackException(functionName + " function not found in object payload ");
-		}
-		String selectedKernel = selectKernel();
-		return new Object();
-	}
+  public Object execute(Map<String, Object> args, String code, String functionName,
+      Class returnType)
+      throws OTExecutionStackException {
+    if (code == "") {
+      throw new OTExecutionStackException(functionName + " No code to execute ");
+    }
 
-	//What is the kernel ID of the the jupyter kernel I'll be sending the payload to?
-	public String selectKernel(){
-		//Get list of existing kernels
-		List<KernelMetadata> kernelIDs = restClient.getKernels();
+    // Obtain kernel suitable for running python code
+    KernelMetadata selectedKernel = selectKernel();
+    if (selectedKernel == null) {
+      throw new OTExecutionStackException(" no available Jupyter Kernel for payload ");
+    }
 
-		//Ask to create a new kernel if one is not available.
-		if (kernelIDs.size() == 0) {
-			throw new OTExecutionStackException(" no available Jupyter Kernels for payload ");
-		}
-		return "";
-	}
+    // Connect to WebSocket
+    URI sockUri = URI.create(
+        String.format("ws://%s:%s/api/kernels/%s/channels", host, port, selectedKernel.getId()));
+    sockClient.connectToServer(sockUri);
 
-	public List<String> supports() {
-		List<String> languages = new ArrayList<>();
-		languages.add("Python");
-		return languages;
-	}
+    // Send Payload
+    WebSockHeader reqHeader = sockClient.sendPayload(code);
+
+    // Poll for responses
+    Object result;
+    Optional<WebSockMessage> response = pollForResultMessage(reqHeader);
+    if (response.isPresent()) {
+      result = responseToResult(response.get());
+    } else {
+      throw new OTExecutionStackException("No result returned in time");
+    }
+
+    return returnType.cast(result);
+  }
+
+  // To which kernel should the code be sent?
+  public KernelMetadata selectKernel() {
+    KernelMetadata kernel;
+
+    //Get list of kernels that match criteria
+    List<KernelMetadata> kernels = restClient.getKernels();
+    Optional<KernelMetadata> selectedKernel = kernels.stream()
+        .filter(metadata -> metadata.getName().contains("python"))
+        .findFirst();
+
+    //Ask to create a new kernel if one is not available.
+    if (selectedKernel.isPresent()) {
+      kernel = selectedKernel.get();
+    } else {
+      kernel = restClient.startKernel();
+    }
+
+    return kernel;
+  }
+
+  public Optional<WebSockMessage> pollForResultMessage(WebSockHeader reqHeader) {
+    WebSockMessage result = null;
+    WebSockMessage msg = null;
+    long maxDuration = 5_000_000L;
+    long pollDuration = 500_000L;
+    long duration = maxDuration - pollDuration;
+    long elapsed = 0L;
+    long start = System.nanoTime();
+
+    // timeElapsed < duration
+    while (elapsed < duration && result == null) {
+      try {
+        msg = sockClient.getMessageQ().poll(pollDuration, TimeUnit.NANOSECONDS);
+      } catch (InterruptedException ex) {
+        ex.printStackTrace();
+      }
+      if (msg != null && (msg.isError() || msg.isResult()) ) {
+        result = msg;
+      }
+      elapsed = System.nanoTime() - start;
+    }
+    return Optional.ofNullable(result);
+  }
+
+  public Object responseToResult(WebSockMessage msg) {
+    return msg.content.get("text");
+  }
+
+  public List<String> supports() {
+    List<String> languages = new ArrayList<>();
+    languages.add("Python");
+    return languages;
+  }
 }

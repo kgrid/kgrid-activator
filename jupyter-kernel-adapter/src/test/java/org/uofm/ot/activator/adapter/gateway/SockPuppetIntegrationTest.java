@@ -18,12 +18,12 @@ public class SockPuppetIntegrationTest {
     return socks;
   }
 
-  private String kernelId;
+  private KernelMetadata kernel;
 
   @Test
   @Ignore
   public void sendMessage() throws Exception {
-    SockPuppet socks = putOnSocks(kernelId);
+    SockPuppet socks = putOnSocks(kernel.getId());
 
     String msg = TestUtils.jsonFixture("socket-request");
     socks.sendText(msg);

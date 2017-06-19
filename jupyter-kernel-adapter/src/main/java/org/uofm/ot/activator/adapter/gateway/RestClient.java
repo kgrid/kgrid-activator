@@ -49,16 +49,15 @@ public class RestClient {
     return list;
   }
 
-  public String startKernel() {
-    KernelMetadata resp;
+  public KernelMetadata startKernel() {
+    KernelMetadata resp = null;
     try {
       URI targetUri = new URI("http://localhost:8888/api/kernels");
       String request = "{\"name\": \"python\"}";
       resp = restTemplate.postForObject(targetUri, request, KernelMetadata.class);
     } catch (URISyntaxException | HttpClientErrorException | ResourceAccessException e) {
       System.out.println(e.getMessage());
-      return "";
     }
-    return resp.getId();
+    return resp;
   }
 }

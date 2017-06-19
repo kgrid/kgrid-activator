@@ -9,11 +9,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Scanner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,12 +52,12 @@ public class RestClientTest {
 
   // Main Context is that Jupytr Gateway is accessible and client is authorized.
   @Test
-  public void startTest() throws Exception {
+  public void startKernel() throws Exception {
     String response = TestUtils.jsonFixture("post-kernels");
     mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
         .andExpect(method(HttpMethod.POST))
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
-    String kernel_id = client.startKernel();
+    String kernel_id = client.startKernel().getId();
 
     mockServer.verify();
     assertThat(kernel_id, equalTo("deadbeef-1234-5678-90ab-beefbeefbeef"));
