@@ -1,9 +1,11 @@
 package org.uofm.ot.activator.adapter.gateway;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by grosscol on 2017-06-12.
@@ -30,15 +32,14 @@ public class WebSockMessage {
     content = new HashMap<>();
   }
 
+  @JsonIgnore
   public boolean isError(){
-    if(messageType == "error"){return true;}
-    else{ return false; }
+    return messageType.contentEquals("error");
   }
 
+  @JsonIgnore
   public boolean isResult(){
-    if(messageType == "execute_result"){return true;}
-    else if(messageType == "stream"){return true;}
-    else{ return false; }
+    return messageType.contentEquals("stream");
   }
 
   static class WebSockMessageBuilder {
@@ -50,8 +51,8 @@ public class WebSockMessage {
 
       req.header.setUsername("");
       req.header.setVersion("5.0");
-      req.header.setSession("demoid");
-      req.header.setMessageId("deadbeef");
+      req.header.setSession(UUID.randomUUID().toString());
+      req.header.setMessageId(UUID.randomUUID().toString());
       req.header.setMessageType("execute_request");
 
       req.channel = "shell";

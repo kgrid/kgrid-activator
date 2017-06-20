@@ -71,6 +71,7 @@ public class RestClientTest {
         .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
     List<KernelMetadata> kernels = client.getKernels();
 
+    mockServer.verify();
     assertThat(kernels, hasSize(2));
   }
 
@@ -96,24 +97,31 @@ public class RestClientTest {
           .andRespond(withStatus(HttpStatus.FORBIDDEN).body(response));
       List<KernelMetadata> kernels = client.getKernels();
 
+      mockServer.verify();
+
       assertThat(kernels, hasSize(0));
     }
   }
 
   // When Jupytr Gateway NOT accessible.
   public class GatewayNotAccessible {
-
     RestClient client;
 
     @Before
     public void setupInaccessible() {
       URI nonExistantHost = URI.create("nonexistant.host:8888");
       client = new RestClient(nonExistantHost);
+      restTemplate = client.restTemplate;
+      mockServer = MockRestServiceServer.bindTo(restTemplate).build();
     }
 
     @Test
     public void kernelsInaccessible() throws Exception {
+      mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
+          .andExpect(method(HttpMethod.GET))
+          .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
       List<KernelMetadata> kernels = client.getKernels();
+      mockServer.verify();
       assertThat(kernels, hasSize(0));
     }
   }

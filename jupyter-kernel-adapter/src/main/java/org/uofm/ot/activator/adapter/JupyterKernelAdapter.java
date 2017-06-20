@@ -19,6 +19,8 @@ public class JupyterKernelAdapter implements ServiceAdapter {
   public SockPuppet sockClient;
   String host;
   String port;
+  long maxDuration;
+  long pollDuration;
 
   public JupyterKernelAdapter() {
     host = "localhost";
@@ -26,6 +28,8 @@ public class JupyterKernelAdapter implements ServiceAdapter {
     URI restUri = URI.create("http://" + host + ":" + port);
     restClient = new RestClient(restUri);
     sockClient = new SockPuppet();
+    maxDuration = 10_000_000_000L;
+    pollDuration = 500_000_000L;
   }
 
   public Object execute(Map<String, Object> args, String code, String functionName,
@@ -49,9 +53,12 @@ public class JupyterKernelAdapter implements ServiceAdapter {
     // Send Payload
     WebSockHeader reqHeader = sockClient.sendPayload(code);
 
+    // Send call to execute function in payload
+    WebSockHeader execHeader = sockClient.sendPayload("print( "+functionName+"())");
+
     // Poll for responses
     Object result;
-    Optional<WebSockMessage> response = pollForResultMessage(reqHeader);
+    Optional<WebSockMessage> response = pollForResultMessage(execHeader);
     if (response.isPresent()) {
       result = responseToResult(response.get());
     } else {
@@ -84,8 +91,6 @@ public class JupyterKernelAdapter implements ServiceAdapter {
   public Optional<WebSockMessage> pollForResultMessage(WebSockHeader reqHeader) {
     WebSockMessage result = null;
     WebSockMessage msg = null;
-    long maxDuration = 5_000_000L;
-    long pollDuration = 500_000L;
     long duration = maxDuration - pollDuration;
     long elapsed = 0L;
     long start = System.nanoTime();
@@ -108,6 +113,7 @@ public class JupyterKernelAdapter implements ServiceAdapter {
   public Object responseToResult(WebSockMessage msg) {
     return msg.content.get("text");
   }
+
 
   public List<String> supports() {
     List<String> languages = new ArrayList<>();
