@@ -25,7 +25,7 @@ jupyter kernelgateway
 
     This should yield the following response
     ```
-{ "version": "5.0.0" }
+    { "version": "5.0.0" }
     ```
 
     This can also be verified on the command line using curl
