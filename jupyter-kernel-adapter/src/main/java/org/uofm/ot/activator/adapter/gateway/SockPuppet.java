@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.websocket.ClientEndpoint;
@@ -51,11 +52,22 @@ public class SockPuppet {
    *
    * @param payload code to be executed
    */
-  public WebSockHeader sendPayload(final String payload)
+  public WebSockHeader sendPayload(String payload){
+    return sendPayload(payload, "");
+
+  }
+
+  public WebSockHeader sendPayload(String payload, String sesion_id)
       throws OTExecutionStackException {
 
     // Build execution message using payload
-    WebSockMessage msg = WebSockMessageBuilder.buildPayloadRequest(payload);
+    WebSockMessage msg = WebSockMessageBuilder.buildPayloadRequest(payload, sesion_id);
+    sendJsonMessage(msg);
+    return msg.header;
+  }
+
+  public WebSockHeader sendUserExpression(Map expr, String session_id){
+    WebSockMessage msg = WebSockMessageBuilder.buildUserExpRequest(expr, session_id);
     sendJsonMessage(msg);
     return msg.header;
   }
@@ -73,7 +85,7 @@ public class SockPuppet {
 
   @OnMessage
   public void onMessage(final String message) {
-    System.out.println("Message Received.");
+    System.out.println("\nMessage Received.");
     System.out.println(message);
 
     // Convert message to WebSockMessage
@@ -102,7 +114,7 @@ public class SockPuppet {
     }
     //TODO: Info level log message sent
     //TODO: Debug level log message content
-    System.out.println("== Sending Message ==");
+    System.out.println("\n== Sending Message ==");
     System.out.print(message);
     getSession().getAsyncRemote().sendText(message);
   }

@@ -19,13 +19,18 @@ public class JupyterKernelIntegrationTest {
   public ExpectedException expectedEx = ExpectedException.none();
 
   @Test
-  public void runAdapter() throws Exception {
+  public void runHello() throws Exception {
     String code = TestUtils.loadFixture("payload-hello-no-params.py");
-
     JupyterKernelAdapter adapter = new JupyterKernelAdapter();
-
     Object result = adapter.execute(new HashMap<>(), code, "hello", String.class  );
-
     assertThat(result, equalTo("Hello, World\n") );
+  }
+
+  @Test
+  public void runNumbers() throws Exception {
+    String code = TestUtils.loadFixture("payload-numbers-no-params.py");
+    JupyterKernelAdapter adapter = new JupyterKernelAdapter();
+    Object result = adapter.execute(new HashMap<>(), code, "numbers", Integer.class  );
+    assertThat(result, equalTo("101") );
   }
 }

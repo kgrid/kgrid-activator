@@ -2,6 +2,7 @@ package org.uofm.ot.activator.adapter;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,20 +51,26 @@ public class JupyterKernelAdapter implements ServiceAdapter {
         String.format("ws://%s:%s/api/kernels/%s/channels", host, port, selectedKernel.getId()));
     sockClient.connectToServer(sockUri);
 
-    // Send Payload
+    // Send code
     WebSockHeader reqHeader = sockClient.sendPayload(code);
 
-    // Send call to execute function in payload
-    WebSockHeader execHeader = sockClient.sendPayload("print( "+functionName+"())");
+    // Send call to execute function in code
+    WebSockHeader execHeader = sockClient.sendPayload("result = "+functionName+"()");
+
+    // Send print to stream result
+    WebSockHeader resultHeader = sockClient.sendPayload("print(json.dump(result))");
 
     // Poll for responses
-    Object result;
-    Optional<WebSockMessage> response = pollForResultMessage(execHeader);
+    String result;
+    Optional<WebSockMessage> response = pollForResultMessage(reqHeader);
     if (response.isPresent()) {
       result = responseToResult(response.get());
     } else {
       throw new OTExecutionStackException("No result returned in time");
     }
+
+    // Cast string to returnType
+    // Ignore
 
     return returnType.cast(result);
   }
@@ -110,9 +117,10 @@ public class JupyterKernelAdapter implements ServiceAdapter {
     return Optional.ofNullable(result);
   }
 
-  public Object responseToResult(WebSockMessage msg) {
-    return msg.content.get("text");
+  public String responseToResult(WebSockMessage msg) {
+    return msg.content.text;
   }
+
 
 
   public List<String> supports() {

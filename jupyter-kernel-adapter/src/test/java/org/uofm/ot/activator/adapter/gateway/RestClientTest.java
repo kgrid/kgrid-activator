@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -119,7 +120,7 @@ public class RestClientTest {
     public void kernelsInaccessible() throws Exception {
       mockServer.expect(requestTo("http://localhost:8888/api/kernels"))
           .andExpect(method(HttpMethod.GET))
-          .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+          .andRespond(withBadRequest());
       List<KernelMetadata> kernels = client.getKernels();
       mockServer.verify();
       assertThat(kernels, hasSize(0));

@@ -53,14 +53,14 @@ public class JupyterKernelAdapterTest {
     messageQ = new ArrayBlockingQueue<WebSockMessage>(5);
     when(sockClient.getMessageQ()).thenReturn(messageQ);
 
-    addResponseToQueue(1);
+    addResponseToQueue("1");
   }
 
   // Add result to mocked message queue from web socket client
-  private void addResponseToQueue(Object val){
+  private void addResponseToQueue(String val){
     WebSockMessage result = new WebSockMessage();
     result.messageType = "stream";
-    result.content.put("text", val);
+    result.content.text = val;
     messageQ.add(result);
   }
 
