@@ -12,9 +12,9 @@ Note: Installing jupyter on Windows may ask for download of a C++ compiler - [In
 ### Running the Kernel
 
 1. Run the jupyter kernel using the following command in the command line
-```
-jupyter kernelgateway
-```
+    ```
+    jupyter kernelgateway
+    ```
 1. Use Postman to verify that the kernel is properly running
 
     ```
