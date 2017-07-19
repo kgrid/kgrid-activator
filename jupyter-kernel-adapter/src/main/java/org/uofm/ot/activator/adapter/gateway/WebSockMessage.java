@@ -12,6 +12,7 @@ import java.util.UUID;
  * Created by grosscol on 2017-06-12.
  */
 public class WebSockMessage {
+
   @JsonProperty
   public List buffers;
   @JsonProperty
@@ -30,18 +31,20 @@ public class WebSockMessage {
   public HashMap<String, Object> parentHeader;
 
 
-  public WebSockMessage(){
+  public WebSockMessage() {
     content = new WebSockContent();
+    messageType = "default";
+    channel = "default";
   }
 
   @JsonIgnore
-  public boolean isError(){
+  public boolean isError() {
     return messageType.contentEquals("error");
   }
 
   @JsonIgnore
-  public boolean isResult(){
-    return messageType.contentEquals("stream");
+  public boolean isResult() {
+    return messageType.contentEquals("execute_result");
   }
 
   static class WebSockMessageBuilder {
@@ -52,7 +55,7 @@ public class WebSockMessage {
       return req;
     }
 
-    static WebSockMessage buildUserExpRequest(Map expr, String session_id){
+    static WebSockMessage buildUserExpRequest(Map expr, String session_id) {
       WebSockMessage req = buildPayloadRequest("", session_id);
       req.content.userExpressions = expr;
       return req;
