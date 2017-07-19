@@ -1,6 +1,6 @@
 package org.uofm.ot.activator.adapter.gateway;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.LinkedHashMap;
@@ -54,7 +54,7 @@ public class SockResponseProcessorTest {
   @Test
   public void queueEmpty() throws Exception {
     responseProcessor.beginProcessing(10_000, 2_000);
-    assertThat(responseProcessor.encounteredTimeout(), is(true));
+    assertThat(responseProcessor.encounteredTimeout(), equalTo(true));
   }
 
   @Test
@@ -62,7 +62,7 @@ public class SockResponseProcessorTest {
     messageQ.add(new WebSockMessage());
 
     responseProcessor.beginProcessing(10_000, 2_000);
-    assertThat(responseProcessor.encounteredTimeout(), is(true));
+    assertThat(responseProcessor.encounteredTimeout(), equalTo(true));
   }
 
   @Test
@@ -72,7 +72,7 @@ public class SockResponseProcessorTest {
     messageQ.add(buildResultMessage());
 
     responseProcessor.beginProcessing(testDuration, testPollInterval);
-    assertThat(responseProcessor.encounteredResult(), is(true));
+    assertThat(responseProcessor.encounteredResult(), equalTo(true));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class SockResponseProcessorTest {
     messageQ.put(buildErrorMessage());
 
     responseProcessor.beginProcessing(testDuration, testPollInterval);
-    assertThat(responseProcessor.encounteredError(), is(true));
+    assertThat(responseProcessor.encounteredError(), equalTo(true));
   }
 
   @Test
@@ -90,6 +90,6 @@ public class SockResponseProcessorTest {
     messageQ.add(buildResultMessage());
 
     responseProcessor.beginProcessing(testDuration, testDuration + 1000);
-    assertThat(responseProcessor.encounteredResult(), is(true));
+    assertThat(responseProcessor.encounteredResult(), equalTo(true));
   }
 }
