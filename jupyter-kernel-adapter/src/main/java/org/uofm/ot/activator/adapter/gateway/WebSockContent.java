@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class for mapping web socket message content section
- * Created by grosscol on 2017-06-20.
+ * Class for mapping web socket message content section Created by grosscol on 2017-06-20.
  */
-@JsonIgnoreProperties({"payload"})
+@JsonIgnoreProperties({"payload", "transient"})
 public class WebSockContent {
+
   @JsonProperty
   public String code;
   @JsonProperty
@@ -20,7 +20,7 @@ public class WebSockContent {
   @JsonProperty
   public boolean store_history;
   @JsonProperty("user_expressions")
-  public Map<String,Object> userExpressions;
+  public Map<String, Object> userExpressions;
   @JsonProperty("allow_stdin")
   public boolean allowStdin;
   @JsonProperty
@@ -37,8 +37,21 @@ public class WebSockContent {
   public String status;
   @JsonProperty
   public String name;
+  @JsonProperty
+  public Map<String, Object> data;
 
-  public WebSockContent(){
+  // Error message fields
+  @JsonProperty
+  public List<String> traceback;
+  @JsonProperty
+  public String evalue;
+  @JsonProperty
+  public String ename;
+  @JsonProperty("engine_info")
+  public Map<String, Object> engineInfo;
+
+
+  public WebSockContent() {
     code = "";
     silent = false;
     store_history = false;
