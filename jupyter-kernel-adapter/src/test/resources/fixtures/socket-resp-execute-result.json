@@ -1,0 +1,40 @@
+{
+  "header": {
+    "date": "2017-07-18T17:35:24.031790Z",
+    "msg_id": "67b0bf74-b20d35008d591f4aa6228c98",
+    "version": "5.1",
+    "username": "grosscol",
+    "msg_type": "execute_result",
+    "session": "84c5691d-3aa41d45fe1e8e474d4573b6"
+  },
+  "msg_type": "execute_result",
+  "content": {
+    "metadata": {
+      "application/json": {
+        "expanded": false
+      }
+    },
+    "execution_count": 1,
+    "data": {
+      "application/json": {
+        "sum": 15,
+        "ave": 2.5,
+        "max": 5,
+        "min": 0
+      },
+      "text/plain": "<IPython.core.display.JSON object>"
+    }
+  },
+  "parent_header": {
+    "date": null,
+    "msg_id": "aa187ba3-21f2-4928-9c13-7c4e994efc92",
+    "version": "5.0",
+    "username": "",
+    "msg_type": "execute_request",
+    "session": ""
+  },
+  "channel": "iopub",
+  "metadata": {},
+  "msg_id": "67b0bf74-b20d35008d591f4aa6228c98",
+  "buffers": []
+}

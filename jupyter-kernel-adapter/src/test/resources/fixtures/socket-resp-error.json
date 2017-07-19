@@ -1,0 +1,30 @@
+{
+  "header": {
+    "date": "2017-07-18T17:41:01.363258Z",
+    "msg_id": "588f494f-03e8ab0152161d2b0b4c83af",
+    "version": "5.1",
+    "username": "grosscol",
+    "msg_type": "error",
+    "session": "84c5691d-3aa41d45fe1e8e474d4573b6"
+  },
+  "msg_type": "error",
+  "content": {
+    "evalue": "invalid syntax (<ipython-input-1-08f607509997>, line 2)",
+    "ename": "SyntaxError",
+    "traceback": [
+      "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-1-08f607509997>\"\u001b[0;36m, line \u001b[0;32m2\u001b[0m\n\u001b[0;31m    While count < 5:\u001b[0m\n\u001b[0m              ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m invalid syntax\n"
+    ]
+  },
+  "parent_header": {
+    "date": null,
+    "msg_id": "63627f80-0cbe-4f41-822e-b3da13656f1c",
+    "version": "5.0",
+    "username": "",
+    "msg_type": "execute_request",
+    "session": ""
+  },
+  "channel": "iopub",
+  "metadata": {},
+  "msg_id": "588f494f-03e8ab0152161d2b0b4c83af",
+  "buffers": []
+}
