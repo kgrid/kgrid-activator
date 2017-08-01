@@ -1,24 +1,29 @@
 package org.uofm.ot.activator.adapter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
 import org.uofm.ot.activator.adapter.gateway.RestClient;
 import org.uofm.ot.activator.adapter.gateway.SockPuppet;
+import org.uofm.ot.activator.adapter.gateway.SockResponseProcessor;
 import org.uofm.ot.activator.adapter.gateway.WebSockHeader;
-import org.uofm.ot.activator.adapter.gateway.WebSockMessage;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 public class JupyterKernelAdapter implements ServiceAdapter {
 
   public RestClient restClient;
   public SockPuppet sockClient;
+  public SockResponseProcessor msgProcessor;
+
   String host;
   String port;
+  long maxDuration;
+  long pollInterval;
 
   public JupyterKernelAdapter() {
     host = "localhost";
@@ -26,19 +31,26 @@ public class JupyterKernelAdapter implements ServiceAdapter {
     URI restUri = URI.create("http://" + host + ":" + port);
     restClient = new RestClient(restUri);
     sockClient = new SockPuppet();
+    msgProcessor = new SockResponseProcessor(sockClient.getMessageQ());
+
+    maxDuration = 10_000_000_000L;
+    pollInterval = 500_000_000L;
   }
 
   public Object execute(Map<String, Object> args, String code, String functionName,
       Class returnType)
       throws OTExecutionStackException {
-    if (code == "") {
-      throw new OTExecutionStackException(functionName + " No code to execute ");
+    if (code == null || code.isEmpty()) {
+      throw new OTExecutionStackException(" No code to execute ");
+    }
+    if (functionName == null || functionName.isEmpty()) {
+      throw new OTExecutionStackException(" No function name to execute ");
     }
 
     // Obtain kernel suitable for running python code
     KernelMetadata selectedKernel = selectKernel();
     if (selectedKernel == null) {
-      throw new OTExecutionStackException(" no available Jupyter Kernel for payload ");
+      throw new OTExecutionStackException(" No available Jupyter Kernel for payload ");
     }
 
     // Connect to WebSocket
@@ -46,19 +58,30 @@ public class JupyterKernelAdapter implements ServiceAdapter {
         String.format("ws://%s:%s/api/kernels/%s/channels", host, port, selectedKernel.getId()));
     sockClient.connectToServer(sockUri);
 
-    // Send Payload
+    // Send code to allow JSON output from IPython kernel:
+    sockClient.sendPayload("from IPython.display import JSON");
+
+    // Send knowledge object function code to the kernel
     WebSockHeader reqHeader = sockClient.sendPayload(code);
 
+    // Send payload to call the kobject function
+    sockClient.sendPayload(buildCallingPayload(args, functionName));
+
+    // Instruct IPython to serialize the result as json
+    sockClient.sendPayload("JSON(result)");
+
     // Poll for responses
-    Object result;
-    Optional<WebSockMessage> response = pollForResultMessage(reqHeader);
-    if (response.isPresent()) {
-      result = responseToResult(response.get());
-    } else {
-      throw new OTExecutionStackException("No result returned in time");
+    msgProcessor.beginProcessing(maxDuration, pollInterval);
+
+    if (msgProcessor.encounteredError()) {
+      throw new OTExecutionStackException(
+          "Error in exec environment: " + msgProcessor.getErrorMsg());
+    } else if (msgProcessor.encounteredTimeout()) {
+      throw new OTExecutionStackException(
+          "Timeout occurred. Max duration reached before result returned.");
     }
 
-    return returnType.cast(result);
+    return msgProcessor.getResult();
   }
 
   // To which kernel should the code be sent?
@@ -81,32 +104,27 @@ public class JupyterKernelAdapter implements ServiceAdapter {
     return kernel;
   }
 
-  public Optional<WebSockMessage> pollForResultMessage(WebSockHeader reqHeader) {
-    WebSockMessage result = null;
-    WebSockMessage msg = null;
-    long maxDuration = 5_000_000L;
-    long pollDuration = 500_000L;
-    long duration = maxDuration - pollDuration;
-    long elapsed = 0L;
-    long start = System.nanoTime();
+  // Generate payload for calling kobject function.
+  public String buildCallingPayload(Map args, String functionName) {
+    String payload;
 
-    // timeElapsed < duration
-    while (elapsed < duration && result == null) {
+    if (args.isEmpty()) {
+      payload = "result = " + functionName + "()";
+    } else {
       try {
-        msg = sockClient.getMessageQ().poll(pollDuration, TimeUnit.NANOSECONDS);
-      } catch (InterruptedException ex) {
-        ex.printStackTrace();
+        StringBuilder sb = new StringBuilder();
+        sb.append("import json\n")
+            .append(String
+                .format("args = json.loads('%s')", new ObjectMapper().writeValueAsString(args)))
+            .append("\n")
+            .append(String.format("result = %s(args)", functionName));
+        payload = sb.toString();
+      } catch (JsonProcessingException e) {
+        throw new OTExecutionStackException("Error serializing args.", e);
       }
-      if (msg != null && (msg.isError() || msg.isResult()) ) {
-        result = msg;
-      }
-      elapsed = System.nanoTime() - start;
     }
-    return Optional.ofNullable(result);
-  }
 
-  public Object responseToResult(WebSockMessage msg) {
-    return msg.content.get("text");
+    return payload;
   }
 
   public List<String> supports() {

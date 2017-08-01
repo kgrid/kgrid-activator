@@ -1,20 +1,24 @@
 package org.uofm.ot.activator.adapter.gateway;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by grosscol on 2017-06-12.
  */
 public class WebSockMessage {
+
   @JsonProperty
   public List buffers;
   @JsonProperty
   public String channel;
   @JsonProperty
-  public HashMap<String, Object> content;
+  public WebSockContent content;
   @JsonProperty
   public WebSockHeader header;
   @JsonProperty
@@ -26,44 +30,51 @@ public class WebSockMessage {
   @JsonProperty("parent_header")
   public HashMap<String, Object> parentHeader;
 
-  public WebSockMessage(){
-    content = new HashMap<>();
+
+  public WebSockMessage() {
+    content = new WebSockContent();
+    messageType = "default";
+    channel = "default";
   }
 
-  public boolean isError(){
-    if(messageType == "error"){return true;}
-    else{ return false; }
+  @JsonIgnore
+  public boolean isError() {
+    return messageType.contentEquals("error");
   }
 
-  public boolean isResult(){
-    if(messageType == "execute_result"){return true;}
-    else if(messageType == "stream"){return true;}
-    else{ return false; }
+  @JsonIgnore
+  public boolean isResult() {
+    return messageType.contentEquals("execute_result");
   }
 
   static class WebSockMessageBuilder {
 
+    static WebSockMessage buildPayloadRequest(String payload, String session_id) {
+      WebSockMessage req = buildPayloadRequest(payload);
+      req.header.setSession(session_id);
+      return req;
+    }
+
+    static WebSockMessage buildUserExpRequest(Map expr, String session_id) {
+      WebSockMessage req = buildPayloadRequest("", session_id);
+      req.content.userExpressions = expr;
+      return req;
+    }
+
     static WebSockMessage buildPayloadRequest(String payload) {
       WebSockMessage req = new WebSockMessage();
       req.header = new WebSockHeader();
-      req.content = new HashMap<String, Object>();
+      req.content = new WebSockContent();
+      req.buffers = new ArrayList();
+      req.parentHeader = new HashMap<>();
 
       req.header.setUsername("");
       req.header.setVersion("5.0");
-      req.header.setSession("demoid");
-      req.header.setMessageId("deadbeef");
+      req.header.setMessageId(UUID.randomUUID().toString());
       req.header.setMessageType("execute_request");
 
       req.channel = "shell";
-
-      req.content.put("code", payload);
-      req.content.put("silent", false);
-      req.content.put("store_history", false);
-      req.content.put("user_expressions", new HashMap<>());
-      req.content.put("allow_stdin", false);
-
-      req.content.put("metadata", new HashMap<>());
-      req.content.put("buffers", new ArrayList<>());
+      req.content.code = payload;
 
       return req;
     }

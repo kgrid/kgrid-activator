@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -38,15 +41,20 @@ public class RestClient {
 
   public List<KernelMetadata> getKernels() {
     List<KernelMetadata> list = new ArrayList<>();
+    List<KernelMetadata> kernels = new ArrayList<>();
     try {
       URI targetUri = new URI("http://localhost:8888/api/kernels");
-      list = restTemplate.getForObject(targetUri, ArrayList.class);
+      //list = restTemplate.getForObject(targetUri, ArrayList.class);
+      ResponseEntity<List<KernelMetadata>> kernelsResponse =
+          restTemplate.exchange(targetUri,
+              HttpMethod.GET, null, new ParameterizedTypeReference<List<KernelMetadata>>() {
+              });
+      kernels = kernelsResponse.getBody();
     } catch (URISyntaxException | HttpClientErrorException | ResourceAccessException e) {
       System.out.println(e.getMessage());
-      return list;
     }
 
-    return list;
+    return kernels;
   }
 
   public KernelMetadata startKernel() {

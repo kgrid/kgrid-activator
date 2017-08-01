@@ -1,27 +1,28 @@
 package org.uofm.ot.activator.adapter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsSame.sameInstance;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ArrayBlockingQueue;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
-import org.uofm.ot.activator.adapter.gateway.RestClient;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
-
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
+import org.uofm.ot.activator.adapter.gateway.RestClient;
 import org.uofm.ot.activator.adapter.gateway.SockPuppet;
-import org.uofm.ot.activator.adapter.gateway.WebSockMessage;
+import org.uofm.ot.activator.adapter.gateway.SockResponseProcessor;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
 /**
@@ -37,34 +38,30 @@ public class JupyterKernelAdapterTest {
 
   @Mock(name = "sockClient")
   private SockPuppet sockClient = mock(SockPuppet.class);
-  private ArrayBlockingQueue<WebSockMessage> messageQ;
+
+  @Mock(name = "msgProcessor")
+  private SockResponseProcessor msgProcessor = mock(SockResponseProcessor.class);
 
   @InjectMocks
   private JupyterKernelAdapter jupyterKernelAdapter;
 
+  // Params for execute method
   private Map<String, Object> argMap;
-  String payload;
+  private String payload;
+  private String funcName;
+  private Class resultClass;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    //default values
     argMap = new HashMap<>();
-    payload = "def exec(a):\n    return 1";
-    messageQ = new ArrayBlockingQueue<WebSockMessage>(5);
-    when(sockClient.getMessageQ()).thenReturn(messageQ);
-
-    addResponseToQueue(1);
+    payload = "def exec(a):\n    return {\"value\": 1}";
+    funcName = "exec";
+    resultClass = Map.class;
   }
 
-  // Add result to mocked message queue from web socket client
-  private void addResponseToQueue(Object val){
-    WebSockMessage result = new WebSockMessage();
-    result.messageType = "stream";
-    result.content.put("text", val);
-    messageQ.add(result);
-  }
-
-  private KernelMetadata getGoodKernel(){
+  private KernelMetadata buildGoodKernel() {
     KernelMetadata goodKernel = new KernelMetadata();
     goodKernel.setName("python7357");
     goodKernel.setId("test-id");
@@ -72,26 +69,15 @@ public class JupyterKernelAdapterTest {
     return goodKernel;
   }
 
-  @Test
-  public void executeEmptyPayload() throws Exception {
-    expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage("No code to execute");
-    jupyterKernelAdapter.execute(argMap, "", "", Integer.class);
-  }
-
-  @Test
-  public void executeSimplePayload() throws Exception {
-    when(restClient.getKernels()).thenReturn(Collections.singletonList(getGoodKernel()));
-
-    Object result = jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
-    assertThat(result, equalTo(1));
-  }
+  //
+  // Test Kernel Discovery
+  //
 
   @Test
   public void connectToDiscoveredKernel() throws Exception {
-    when(restClient.getKernels()).thenReturn(Collections.singletonList(getGoodKernel()));
+    when(restClient.getKernels()).thenReturn(Collections.singletonList(buildGoodKernel()));
 
-    jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
 
     URI expectedUri = URI.create("ws://localhost:8888/api/kernels/test-id/channels");
     verify(sockClient).connectToServer(expectedUri);
@@ -99,10 +85,10 @@ public class JupyterKernelAdapterTest {
 
   @Test
   public void noKernelAlreadyRunning() throws Exception {
-    when(restClient.startKernel()).thenReturn(getGoodKernel());
+    when(restClient.startKernel()).thenReturn(buildGoodKernel());
     when(restClient.getKernels()).thenReturn(new ArrayList<>());
 
-    jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
   }
 
   @Test
@@ -113,9 +99,9 @@ public class JupyterKernelAdapterTest {
     when(restClient.getKernels()).thenReturn(Collections.singletonList(badKernel));
 
     // Return good kernel when asked to start a new one
-    when(restClient.startKernel()).thenReturn(getGoodKernel());
+    when(restClient.startKernel()).thenReturn(buildGoodKernel());
 
-    jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
     verify(restClient).startKernel();
   }
 
@@ -125,9 +111,66 @@ public class JupyterKernelAdapterTest {
     when(restClient.getKernels()).thenReturn(new ArrayList<>());
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(" no available Jupyter Kernel for payload ");
-    jupyterKernelAdapter.execute(argMap, payload, "exec", Integer.class);
+    expectedEx.expectMessage(" No available Jupyter Kernel for payload ");
+
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
   }
 
+  //
+  // Test Response Handling
+  //
+  @Test
+  public void resultReceived() throws Exception {
+    when(restClient.getKernels()).thenReturn(Collections.singletonList(buildGoodKernel()));
+    Map<String, Object> retVal = new LinkedHashMap<>();
+    when(msgProcessor.getResult()).thenReturn(retVal);
+
+    Object result = jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
+    assertThat(result, sameInstance(retVal));
+  }
+
+  @Test
+  public void errorReceived() throws Exception {
+    when(restClient.getKernels()).thenReturn(Collections.singletonList(buildGoodKernel()));
+    String errMsg = "Testing error message";
+    when(msgProcessor.encounteredError()).thenReturn(true);
+    when(msgProcessor.getErrorMsg()).thenReturn(errMsg);
+
+    expectedEx.expect(OTExecutionStackException.class);
+    expectedEx.expectMessage(errMsg);
+
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
+  }
+
+  @Test
+  public void processingResponseTimeout() throws Exception {
+    when(restClient.getKernels()).thenReturn(Collections.singletonList(buildGoodKernel()));
+    when(msgProcessor.encounteredError()).thenReturn(false);
+    when(msgProcessor.encounteredTimeout()).thenReturn(true);
+
+    expectedEx.expect(OTExecutionStackException.class);
+    expectedEx.expectMessage("Timeout occurred");
+
+    jupyterKernelAdapter.execute(argMap, payload, funcName, resultClass);
+  }
+
+  //
+  // Argument validation
+  //
+
+  @Test
+  public void emptyPayload() throws Exception {
+    expectedEx.expect(OTExecutionStackException.class);
+    expectedEx.expectMessage("No code to execute");
+    jupyterKernelAdapter.execute(argMap, "", "foo", resultClass);
+  }
+
+  @Test
+  public void emptyFunctionName() throws Exception {
+    expectedEx.expect(OTExecutionStackException.class);
+    expectedEx.expectMessage("No function name to execute");
+    jupyterKernelAdapter.execute(argMap, payload, "", resultClass);
+
+  }
 
 }
