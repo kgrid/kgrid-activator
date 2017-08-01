@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
 import org.uofm.ot.activator.adapter.gateway.RestClient;
 import org.uofm.ot.activator.adapter.gateway.SockPuppet;
@@ -14,27 +16,27 @@ import org.uofm.ot.activator.adapter.gateway.SockResponseProcessor;
 import org.uofm.ot.activator.adapter.gateway.WebSockHeader;
 import org.uofm.ot.activator.exception.OTExecutionStackException;
 
+@Component
 public class JupyterKernelAdapter implements ServiceAdapter {
 
   public RestClient restClient;
   public SockPuppet sockClient;
   public SockResponseProcessor msgProcessor;
 
-  String host;
-  String port;
+  @Value("${ipython.kernelgateway.host}")
+  public String host;
+  @Value("${ipython.kernelgateway.port}")
+  public String port;
+  @Value("${ipython.kernelgateway.maxDuration}")
   long maxDuration;
+  @Value("${ipython.kernelgateway.pollInterval}")
   long pollInterval;
 
   public JupyterKernelAdapter() {
-    host = "localhost";
-    port = "8888";
     URI restUri = URI.create("http://" + host + ":" + port);
     restClient = new RestClient(restUri);
     sockClient = new SockPuppet();
     msgProcessor = new SockResponseProcessor(sockClient.getMessageQ());
-
-    maxDuration = 10_000_000_000L;
-    pollInterval = 500_000_000L;
   }
 
   public Object execute(Map<String, Object> args, String code, String functionName,

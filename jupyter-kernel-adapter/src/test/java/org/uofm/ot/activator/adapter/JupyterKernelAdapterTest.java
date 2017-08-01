@@ -16,9 +16,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.uofm.ot.activator.adapter.gateway.KernelMetadata;
 import org.uofm.ot.activator.adapter.gateway.RestClient;
 import org.uofm.ot.activator.adapter.gateway.SockPuppet;
@@ -28,6 +33,9 @@ import org.uofm.ot.activator.exception.OTExecutionStackException;
 /**
  * Created by jadzreik on 2017-06-06.
  */
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {JupyterKernelAdapter.class})
+@TestPropertySource("classpath:application.properties")
 public class JupyterKernelAdapterTest {
 
   @Rule
@@ -42,6 +50,7 @@ public class JupyterKernelAdapterTest {
   @Mock(name = "msgProcessor")
   private SockResponseProcessor msgProcessor = mock(SockResponseProcessor.class);
 
+  @Autowired
   @InjectMocks
   private JupyterKernelAdapter jupyterKernelAdapter;
 
