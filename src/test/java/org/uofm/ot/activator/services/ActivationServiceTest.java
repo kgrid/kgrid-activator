@@ -80,12 +80,12 @@ public class ActivationServiceTest {
   }
 
   @Test
-  public void testCalculateWithPythonSyntaxErrorToThrowEx() {
+  public void testCalculateWithSyntaxErrorToThrowEx() {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a)\n    return str(a)") // Syntax error
-        .payloadEngineType("PYTHON")
+        .payloadContent("function execute(a) return a}") // Syntax error
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
 
@@ -95,7 +95,7 @@ public class ActivationServiceTest {
     expectedResult.setSource(null);
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(contains("Error occurred while executing python code SyntaxError:"));
+    expectedEx.expectMessage(contains("Error occurred while executing javascript code SyntaxError:"));
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
@@ -104,8 +104,8 @@ public class ActivationServiceTest {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
+        .payloadContent(TestUtils.CODE)
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
 
@@ -125,8 +125,8 @@ public class ActivationServiceTest {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
+        .payloadContent(TestUtils.CODE)
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
 
@@ -142,17 +142,18 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateOneInputSuccess() {
+
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
+        .payloadContent(TestUtils.CODE)
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
     Result expectedResult = new Result();
-    expectedResult.setResult("{u'rxcui': u'1723222'}");
+    expectedResult.setResult("{rxcui=1723222}");
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
     assertEquals(expectedResult, generatedResult);
@@ -163,15 +164,15 @@ public class ActivationServiceTest {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
+        .payloadContent(TestUtils.CODE)
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
     inputs.put("rxcui2", "1723222");
     Result expectedResult = new Result();
-    expectedResult.setResult("{u'rxcui': u'1723222', u'rxcui2': u'1723222'}");
+    expectedResult.setResult("{rxcui2=1723222, rxcui=1723222}");
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
     assertEquals(expectedResult, generatedResult);
@@ -182,8 +183,8 @@ public class ActivationServiceTest {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
-        .payloadContent("def execute(a):\n    return str(a)")
-        .payloadEngineType("PYTHON")
+        .payloadContent(TestUtils.CODE)
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
     Map<String, Object> inputs = new HashMap<>();
@@ -192,7 +193,7 @@ public class ActivationServiceTest {
     expectedResult.setResult("{u'rxcui': u'1723222'}");
 
     expectedEx.expect(OTExecutionStackException.class);
-    expectedEx.expectMessage(contains("Type mismatch while converting python result to java"));
+    expectedEx.expectMessage(contains("Type mismatch while converting javascript result to java"));
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
@@ -202,8 +203,8 @@ public class ActivationServiceTest {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
         .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
         .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
-        .payloadContent("def execute(a):\n    return 42")
-        .payloadEngineType("PYTHON")
+        .payloadContent("function execute(a){ return 42}")
+        .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
         .build();
     Map<String, Object> inputs = new HashMap<>();

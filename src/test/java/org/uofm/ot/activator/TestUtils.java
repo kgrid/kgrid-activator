@@ -54,6 +54,8 @@ public class TestUtils {
               + "<rdf:Description rdf:about='http://uofm.org/objectteller/outputMessage'>"
               + "<ot:returntype>INT</ot:returntype> </rdf:Description> </rdf:RDF>";
 
+  public static final String CODE = "function execute(a){ return a.toString()}";
+
   public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

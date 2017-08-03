@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>edu.umich.lhs</groupId>
-	<artifactId>python-execution-stack</artifactId>
+	<artifactId>activator</artifactId>
 	<version>0.5.8-SNAPSHOT</version>
 	<packaging>${packaging}</packaging>
 
-	<name>python-execution-stack</name>
-	<description>KGrid: Python Execution Stack</description>
+	<name>activator</name>
+	<description>KGrid: Activator</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
