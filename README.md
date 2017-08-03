@@ -1,1 +1,1 @@
-See http://kgrid.org/python-execution-stack (or the /docs folder) for more info.
+See http://kgrid.org/activator (or the /docs folder) for more info.
