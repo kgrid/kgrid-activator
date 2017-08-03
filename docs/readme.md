@@ -1,29 +1,29 @@
-# Knowledge Grid — Python Execution Stack
+# Knowledge Grid — Kgrid Activator
 
 ## Quick Start
 
 ### Download and run an executable binary or war file
 
-Download the latest release from https://github.com/kgrid/python-execution-stack/releases
+Download the latest release from https://github.com/kgrid/kgrid-activator/releases
 
 Launch the executable jar (running on port 8080 by default):
 
 ```bash
-./python-execution-stack-0.5.7.jar
+./kgrid-activator-0.5.7.jar
 ```
 or (in Windows, for example)
 ```bash
-java -jar python-execution-stack-0.5.7.jar
+java -jar kgrid-activator-0.5.7.jar
 ```
 
 To add a library URL (optional; see Configuration below):
 ```bash
-./python-execution-stack-0.5.7.jar --library.url=https://kgrid.med.umich.edu/library
+./kgrid-activator-0.5.7.jar --library.url=https://kgrid.med.umich.edu/library
 ```
 
 To change the port (optional; see Configuration below):
 ```bash
-./python-execution-stack-0.5.7.jar --server.port=9090
+./kgrid-activator-0.5.7.jar --server.port=9090
 ```
 
 For war file deployment, see your container  instructions, e.g., for Tomcat, just copy to `[/path/to/tomcat/home]/webapps`
@@ -99,11 +99,11 @@ For more information, see the Kgrid [Authoring Manual](https://kgrid.gitbooks.io
 #### Using your own shelf
 To specify the location of the shelf (optional):
 ```bash
-./python-execution-stack-0.5.7.jar --stack.shelf.path=/kgrid/python-execution-stack
+./kgrid-activator-0.5.7.jar --stack.shelf.path=/kgrid/kgrid-activator
 ```
 To specify the shelf name (optional):
 ```bash
-./python-execution-stack-0.5.7.jar --stack.shelf.name=shelf
+./kgrid-activator-0.5.7.jar --stack.shelf.name=shelf
 ```
 
 The default shelf is in the java temp directory in a folder called 'shelf'. 
@@ -115,15 +115,15 @@ Shelf location can even be on a shared drive.
 
 ### To build from source code
 
-    git clone https://github.com/kgrid/python-execution-stack.git
+    git clone https://github.com/kgrid/kgrid-activator.git
 
-    cd python-execution-stack
+    cd kgrid-activator
 
 ### Build and deploy the execution stack as an executable jar file:
 
 ```bash
 mvn clean package -Dpackaging=jar
-./target/python-execution-stack-0.5.7.jar
+./target/kgrid-activator-0.5.7.jar
 ```
     
 ### Build and deploy a standard war file
@@ -259,7 +259,7 @@ library.url=http://library.kgrid.org
 stack.shelf.path=/var/kgrid/stack
 ```
 
-Release version (milestone releases) are available here: https://github.com/kgrid/python-execution-stack/releases
+Release version (milestone releases) are available here: https://github.com/kgrid/kgrid-activator/releases
 
 
 ![under construction](https://camo.githubusercontent.com/4a7cf94aedbd23c13cc2d75fdc3b2af5c816c208/687474703a2f2f7374617469632e646967672e636f6d2f7374617469632f696d616765732f6469676765722e676966)
