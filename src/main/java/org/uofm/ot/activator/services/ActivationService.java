@@ -156,7 +156,7 @@ public class ActivationService {
         adapterDir = new File(adapterPath);
       }
       if(adapterDir.listFiles() == null) {
-        throw new OTExecutionStackException("Adapter directory " + adapterPath + " not found. Please correct the adapter directory location setting.");
+        throw new OTExecutionStackException("Adapter directory " + adapterPath + " not found. Please correct the adapter directory path setting.");
       }
       if(adapterDir.listFiles().length == 0 ) {
         throw new OTExecutionStackException("No files found in the adapter directory " + adapterPath);
@@ -195,9 +195,13 @@ public class ActivationService {
           }
           boolean implementsServiceAdapter = false;
           for (Class classInterface : classToLoad.getInterfaces()) {
-            if(classInterface.getSimpleName().equals(ServiceAdapter.class.getSimpleName())){
-              implementsServiceAdapter = true;
-              break;
+            try {
+              if (classInterface.getSimpleName().equals(ServiceAdapter.class.getSimpleName())) {
+                implementsServiceAdapter = true;
+                break;
+              }
+            } catch (NoClassDefFoundError e) {
+              log.warn(e.toString() + " when loading classes for " + classToLoad);
             }
           }
           if(implementsServiceAdapter) {
@@ -206,8 +210,8 @@ public class ActivationService {
               Method supportsMethod = classToLoad.getDeclaredMethod("supports");
               List<String> supports = (List<String>)supportsMethod.invoke(serviceAdapterInstance);
               for (String language : supports) {
-                if(executionImp.get(language) != null) {
-                  log.warn("An adapter already exists for language " + language + "!! Undetermined behavior will occur with two adapters for the same language!");
+                if(executionImp.get(language.toUpperCase()) != null) {
+                  log.warn("Multiple adapters exist for language " + language + "!! Undetermined behavior will occur with two or more adapters for the same language!");
                 }
                 executionImp.put(language.toUpperCase(), classToLoad);
                 log.info("Loaded adapter for language " + language);
@@ -223,7 +227,7 @@ public class ActivationService {
     }
 
     if (executionImp.size() == 0) {
-      throw new OTExecutionStackException("No valid adapters found. Please place adapters into the directory " + adapterPath);
+      throw new OTExecutionStackException("No valid adapters found. Please place adapters into the directory " + adapterPath + " or change the adapter path setting.");
     }
     return executionImp;
   }
