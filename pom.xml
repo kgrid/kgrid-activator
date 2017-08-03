@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>edu.umich.lhs</groupId>
-	<artifactId>activator</artifactId>
+	<artifactId>kgrid-activator</artifactId>
 	<version>0.5.8-SNAPSHOT</version>
 	<packaging>${packaging}</packaging>
 
-	<name>activator</name>
+	<name>kgrid-activator</name>
 	<description>KGrid: Activator</description>
 
 	<parent>
@@ -18,7 +18,7 @@
 	</parent>
 
 	<scm>
-		<developerConnection>scm:git:git@github.com:kgrid/python-execution-stack.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:kgrid/kgrid-activator.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
