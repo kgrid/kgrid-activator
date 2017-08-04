@@ -1,10 +1,10 @@
 package edu.umich.lhs.activator.controller;
 
+import edu.umich.lhs.activator.adapter.ServiceAdapter;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.repository.RemoteShelf;
 import edu.umich.lhs.activator.services.ActivationService;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +13,10 @@ import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  *
@@ -35,6 +34,7 @@ public class ActivationController {
 
   @Autowired
   private RemoteShelf remoteShelf;
+
 
   @PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
       consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -58,5 +58,19 @@ public class ActivationController {
 
     }
   }
+
+  @GetMapping("/service-adapter")
+  public String getServiceAdapterSupports(){
+
+    ServiceLoader<ServiceAdapter> loader = ServiceLoader.load(ServiceAdapter.class);
+
+    String supports = "Service adapters: \n";
+
+      for (ServiceAdapter sa : loader ) {
+        supports += sa.supports() + "\n";
+      }
+    return supports;
+  }
+
 
 }
