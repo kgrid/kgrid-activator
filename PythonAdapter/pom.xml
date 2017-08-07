@@ -12,6 +12,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>edu.umich.lhs</groupId>
+			<artifactId>service-adapter</artifactId>
+			<version>0.5.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7.1b3</version>

@@ -13,7 +13,7 @@ public class AdapterHealthIndicator extends AbstractHealthIndicator {
   @Autowired
   private ActivationService service;
 
-  @Value("${stack.adapter.path:classpath:adapters}")
+  @Value("${stack.adapter.path:/adapters}")
   String adapterPath;
 
   /**

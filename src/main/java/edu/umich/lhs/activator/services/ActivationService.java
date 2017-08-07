@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
@@ -43,7 +44,7 @@ public class ActivationService {
   private IoSpecGenerator converter;
   @Autowired
   private ApplicationContext context;
-  @Value("${stack.adapter.path:classpath:adapters}")
+  @Value("${stack.adapter.path:${user.home}/adapters}")
   private String adapterPath;
 
   private Map<String, Class> executionImplementations = new HashMap<>();
@@ -133,12 +134,26 @@ public class ActivationService {
     if(executionImplementations.containsKey(adapter)) {
         return executionImplementations.get(adapter);
     } else {
-      executionImplementations = loadAdapters();
+      executionImplementations.putAll(loadAdapters());
+      executionImplementations.putAll(loadBuiltInAdapters());
       if(executionImplementations.containsKey(adapter)) {
         return executionImplementations.get(adapter);
       }
-      throw new ActivatorException("Adapter for language " + adapterLanguage + " not found at location " + adapterPath + " Please supply an adapter.");
+      throw new ActivatorException("Adapter for language " + adapterLanguage + " not found in internal adapters or at location " + adapterPath + " Please supply an adapter.");
     }
+  }
+
+  private HashMap<String, Class> loadBuiltInAdapters() {
+    HashMap<String, Class> adapters = new HashMap<>();
+
+    ServiceLoader<ServiceAdapter> loader = ServiceLoader.load(ServiceAdapter.class);
+    for(ServiceAdapter adapter : loader) {
+      for(String language : adapter.supports()) {
+        adapters.put(language, adapter.getClass());
+      }
+    }
+
+    return adapters;
   }
 
   // Loads adapter classes contained in jar files from the user-specified adapter path
@@ -155,13 +170,10 @@ public class ActivationService {
       } else {
         adapterDir = new File(adapterPath);
       }
-      if(adapterDir.listFiles() == null) {
-        throw new ActivatorException("Adapter directory " + adapterPath + " not found. Please correct the adapter directory path setting.");
+      if(adapterDir == null || adapterDir.listFiles() == null || adapterDir.listFiles().length == 0) {
+        log.info("No adapters found in adapter directory " + adapterPath );
+        return executionImp;
       }
-      if(adapterDir.listFiles().length == 0 ) {
-        throw new ActivatorException("No files found in the adapter directory " + adapterPath);
-      }
-
       // Loop over every jar file in the specified adapter directory and load in every class that implements ServiceAdapter
       for (File classFile : adapterDir.listFiles()) {
         if (!classFile.getName().endsWith(".jar")) {
@@ -227,13 +239,14 @@ public class ActivationService {
     }
 
     if (executionImp.size() == 0) {
-      throw new ActivatorException("No valid adapters found. Please place adapters into the directory " + adapterPath + " or change the adapter path setting.");
+      log.info("No valid adapters found in adapter directory " + adapterPath);
     }
     return executionImp;
   }
 
   public Map<String, Class> loadAndGetAdapterList() {
-    executionImplementations = loadAdapters();
+    executionImplementations.putAll(loadAdapters());
+    executionImplementations.putAll(loadBuiltInAdapters());
     return executionImplementations;
   }
 

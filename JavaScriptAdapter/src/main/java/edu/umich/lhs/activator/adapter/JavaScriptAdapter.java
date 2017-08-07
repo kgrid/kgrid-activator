@@ -8,7 +8,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import edu.umich.lhs.activator.exception.ActivatorException;
 
 /**
  * Created by nggittle on 5/23/17.
