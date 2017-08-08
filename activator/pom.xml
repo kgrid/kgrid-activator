@@ -5,7 +5,7 @@
 	<groupId>edu.umich.lhs</groupId>
 	<artifactId>activator</artifactId>
 	<version>0.5.8-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>war</packaging>
 
 	<name>activator</name>
 	<description>KGrid: Activator</description>
@@ -101,6 +101,12 @@
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.umich.lhs</groupId>
+			<artifactId>javascript-adapter</artifactId>
+			<version>0.5.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

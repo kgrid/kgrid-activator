@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import edu.umich.lhs.activator.domain.KnowledgeObject;
 import edu.umich.lhs.activator.repository.Shelf;
@@ -91,7 +89,7 @@ public class ActivationService {
       throw new ActivatorException("Error in converting RDF ioSpec for ko: " + errorMessage);
     }
 
-    if (payload == null || payload.content == null) {
+    if (payload == null || payload.getContent() == null) {
       throw new ActivatorException("Knowledge object payload content is NULL or empty");
     }
 
@@ -112,10 +110,10 @@ public class ActivationService {
       log.info("Object payload is sent to Adapter for execution.");
 
       try {
-        Class adapter = adapterFactory(ko.payload.engineType);
+        Class adapter = adapterFactory(ko.payload.getEngineType());
         Object environmentAdapterInstance = adapter.newInstance();
         Method execute = adapter.getDeclaredMethod("execute", Map.class, String.class, String.class, Class.class);
-        Object resultObj = execute.invoke(environmentAdapterInstance, inputs, ko.payload.content, ko.payload.functionName,
+        Object resultObj = execute.invoke(environmentAdapterInstance, inputs, ko.payload.getContent(), ko.payload.getFunctionName(),
             ioSpec.getReturnTypeAsClass());
         result.setResult(resultObj);
       } catch (IllegalAccessException | NoSuchMethodException | InstantiationException e) {
@@ -128,19 +126,26 @@ public class ActivationService {
     return result;
   }
 
-  private Class adapterFactory(String adapterLanguage) {
+  private Class adapterFactory(String engineType) {
 
-    String adapter = adapterLanguage.toUpperCase();
-    if(executionImplementations.containsKey(adapter)) {
-        return executionImplementations.get(adapter);
-    } else {
-      executionImplementations.putAll(loadAdapters());
-      executionImplementations.putAll(loadBuiltInAdapters());
-      if(executionImplementations.containsKey(adapter)) {
-        return executionImplementations.get(adapter);
-      }
-      throw new ActivatorException("Adapter for language " + adapterLanguage + " not found in internal adapters or at location " + adapterPath + " Please supply an adapter.");
+    if(executionImplementations.containsKey(engineType)) {
+      return executionImplementations.get(engineType);
     }
+
+    executionImplementations = loadAndGetAdapterList();
+
+    if(executionImplementations.containsKey(engineType)) {
+      return executionImplementations.get(engineType);
+    }
+
+    throw new ActivatorException("Adapter for language " + engineType + " not found in internal adapters or at location " + adapterPath + " Please supply an adapter.");
+
+  }
+
+  public Map<String, Class> loadAndGetAdapterList() {
+    executionImplementations.putAll(loadAdapters());
+    executionImplementations.putAll(loadBuiltInAdapters());
+    return executionImplementations;
   }
 
   private HashMap<String, Class> loadBuiltInAdapters() {
@@ -162,15 +167,9 @@ public class ActivationService {
     HashMap<String, Class> executionImp = new HashMap<>();
 
     try {
-      File adapterDir;
-      if(adapterPath.startsWith("classpath:")) {
-        // Chop off the beginning "classpath:" and then get the file
-        Resource adapterResource = new ClassPathResource(adapterPath.substring(adapterPath.indexOf(":") + 1));
-        adapterDir = adapterResource.getFile();
-      } else {
-        adapterDir = new File(adapterPath);
-      }
-      if(adapterDir == null || adapterDir.listFiles() == null || adapterDir.listFiles().length == 0) {
+      File adapterDir = new File(adapterPath);
+
+      if(adapterDir.listFiles() == null || adapterDir.listFiles().length == 0) {
         log.info("No adapters found in adapter directory " + adapterPath );
         return executionImp;
       }
@@ -242,12 +241,6 @@ public class ActivationService {
       log.info("No valid adapters found in adapter directory " + adapterPath);
     }
     return executionImp;
-  }
-
-  public Map<String, Class> loadAndGetAdapterList() {
-    executionImplementations.putAll(loadAdapters());
-    executionImplementations.putAll(loadBuiltInAdapters());
-    return executionImplementations;
   }
 
 }

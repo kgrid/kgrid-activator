@@ -39,7 +39,7 @@ public class KnowledgeObjectBuilder {
 
   public KnowledgeObjectBuilder payloadContent (String content) {
     if(ko.payload != null) {
-      ko.payload.content = content;
+      ko.payload.setContent(content);
     } else {
       ko.payload = ko.genPayload(content, "", "");
     }
@@ -48,7 +48,7 @@ public class KnowledgeObjectBuilder {
 
   public KnowledgeObjectBuilder payloadFunctionName (String functionName) {
     if(ko.payload != null) {
-      ko.payload.functionName = functionName;
+      ko.payload.setFunctionName(functionName);
     } else {
       ko.payload = ko.genPayload("", "", functionName);
     }
@@ -57,7 +57,7 @@ public class KnowledgeObjectBuilder {
 
   public KnowledgeObjectBuilder payloadEngineType (String engineType) {
     if(ko.payload != null) {
-      ko.payload.engineType = engineType;
+      ko.payload.setEngineType(engineType);
     } else {
       ko.payload = ko.genPayload("", engineType, "");
     }

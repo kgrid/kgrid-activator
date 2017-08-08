@@ -1,6 +1,5 @@
 package edu.umich.lhs.activator.controller;
 
-import edu.umich.lhs.activator.adapter.EnvironmentAdapter;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.repository.RemoteShelf;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
  *

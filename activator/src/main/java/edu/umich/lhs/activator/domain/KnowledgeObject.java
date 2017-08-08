@@ -40,12 +40,36 @@ public class KnowledgeObject {
 
 	public class Payload {
 		
-		public String content;
+		private String content;
 		
-		public String engineType;
+		private String engineType;
 		
-		public String functionName;
-		
+		private String functionName;
+
+		public String getContent() {
+			return content;
+		}
+
+		public void setContent(String content) {
+			this.content = content;
+		}
+
+		public String getEngineType() {
+			return engineType.toUpperCase();
+		}
+
+		public void setEngineType(String engineType) {
+			this.engineType = engineType;
+		}
+
+		public String getFunctionName() {
+			return functionName;
+		}
+
+		public void setFunctionName(String functionName) {
+			this.functionName = functionName;
+		}
+
 		public Payload() {
 			// TODO Auto-generated constructor stub
 		}

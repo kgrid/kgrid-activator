@@ -92,10 +92,10 @@ public class ShelfController {
     public String retrievePayloadContent(ArkId arkId) {
 
         Payload payload = retrieveObjectPayload(arkId);
-        if (payload.content == null) {
+        if (payload.getContent() == null) {
             throw new ActivatorException("Content is null for object with Ark Id:  " + arkId);
         }
-        return payload.content;
+        return payload.getContent();
 
     }
 
