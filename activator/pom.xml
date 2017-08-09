@@ -103,9 +103,15 @@
 			<version>1.4.9</version>
 		</dependency>
 
+		<!-- Built-in adapters -->
 		<dependency>
 			<groupId>edu.umich.lhs</groupId>
 			<artifactId>javascript-adapter</artifactId>
+			<version>0.5.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.umich.lhs</groupId>
+			<artifactId>noop-adapter</artifactId>
 			<version>0.5.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
@@ -141,7 +147,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
 	</build>
 
 </project>
