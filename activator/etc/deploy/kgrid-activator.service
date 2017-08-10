@@ -1,10 +1,10 @@
 [Unit]
-Description=Python Execution Stack
+Description=KGrid Activator
 After=syslog.target network.target
 
 [Service]
 User=kgrid
-ExecStart=/var/kgrid/python-execution-stack.jar
+ExecStart=/var/kgrid/kgrid-activator.jar
 SuccessExitStatus=143
 
 [Install]

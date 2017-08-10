@@ -33,11 +33,9 @@ public class Shelf {
 
     private Map<ArkId, SourcedKO> inMemoryShelf = new HashMap<>();
 
-    @Value("${stack.shelf.path:${java.io.tmpdir}}")
+    @Value("${activator.shelf.path}")
     private String localStoragePath;
 
-    @Value("${stack.shelf.name:shelf}")
-    private String shelfName;
 
     private final String BUILTIN_SHELF = "shelf/";
 
@@ -49,7 +47,7 @@ public class Shelf {
         try {
             ObjectMapper mapper = new ObjectMapper().disable(MapperFeature.USE_ANNOTATIONS);
             ObjectWriter writer = mapper.writer();
-            File folderPath = new File(localStoragePath, shelfName);
+            File folderPath = new File(localStoragePath);
 
             if (folderPath.exists() == false) {
                 folderPath.mkdirs();
@@ -91,7 +89,7 @@ public class Shelf {
         KnowledgeObject ko = null;
         ObjectMapper mapper = new ObjectMapper();
         Source source = Source.USERGENERATED;
-        File shelf = new File(localStoragePath, shelfName);
+        File shelf = new File(localStoragePath);
         File knowledgeFile = new File (shelf, arkId.getFedoraPath());
         Resource knowledgeResource = new FileSystemResource(knowledgeFile);
         //Resource knowledgeResource = new FileSystemResource(  localStoragePath + "/" + shelfName + "/" + arkId.getFedoraPath());
@@ -117,7 +115,7 @@ public class Shelf {
     public boolean deleteObject(ArkId arkId) {
 
         boolean success = false;
-        File folderPath = new File(localStoragePath, shelfName);
+        File folderPath = new File(localStoragePath);
 
         File resultFile = new File(folderPath, arkId.getFedoraPath());
         success = resultFile.delete();
@@ -132,7 +130,7 @@ public class Shelf {
     }
 
     public List<SourcedKO> getAllObjects() {
-        File folderPath = new File(localStoragePath, shelfName);
+        File folderPath = new File(localStoragePath);
 
         log.info("Reloading shelf: " + folderPath.getAbsolutePath());
         List<Resource> knowledgeObjectResources = new ArrayList<>();
@@ -169,7 +167,7 @@ public class Shelf {
 
     private List<Resource> getFilesystemResources() {
         List<Resource> koResources = new ArrayList<>();
-        File shelfFolder = new File(localStoragePath, shelfName);
+        File shelfFolder = new File(localStoragePath);
         if(shelfFolder != null && shelfFolder.isDirectory()) {
             for (File ko : shelfFolder.listFiles()) {
                 koResources.add(new FileSystemResource(ko));

@@ -99,11 +99,11 @@ For more information, see the Kgrid [Authoring Manual](https://kgrid.gitbooks.io
 #### Using your own shelf
 To specify the location of the shelf (optional):
 ```bash
-./kgrid-activator-0.5.7.jar --stack.shelf.path=/kgrid/kgrid-activator
+./kgrid-activator-0.5.7.jar --activator.shelf.path=/kgrid/kgrid-activator
 ```
 To specify the shelf name (optional):
 ```bash
-./kgrid-activator-0.5.7.jar --stack.shelf.name=shelf
+./kgrid-activator-0.5.7.jar --activator.shelf.name=shelf
 ```
 
 The default shelf is in the java temp directory in a folder called 'shelf'. 
@@ -155,10 +155,10 @@ mvn tomcat7:deploy   # tomcat server settings taken from ~/.m2/settings.xml
 #library.url=http://dlhs-fedora-dev-a.umms.med.umich.edu:8080/ObjectTeller
 
 # Default shelf location is current directory, location must be readable by process user, e.g. 'tomcat'
-#stack.shelf.path=${java.io.tmpdir}
+#activator.shelf.path=${java.io.tmpdir}
 
 #shelf name if other than 'shelf'
-#stack.shelf.name=shelf
+#activator.shelf.name=shelf
 
 # Disable JMX export of all endpoints or set unique-names-true
 # if deploying multiple instances in the same JVM
@@ -218,29 +218,29 @@ and add an `application.properties` file in the `config` subdirectory `/var/kgri
 #server.port=8080
  
 # Context path - only for executable jar
-server.contextPath=/stack
+server.contextPath=/activator
  
 # Optional - absolute path (if external library)
 library.url=http://library.kgrid.org
  
-stack.shelf.path=/var/kgrid/stack
+activator.shelf.path=/var/kgrid/activator
 ```
 
 #### Configuring an Activator deployed in tomcat
 
-Basically, for per context configuration, add `stack.xml` file to `$CATALINA_BASE/conf/[enginename]/[hostname]/$APP.xml` (e.g. `/opt/tomcat/conf/Catalina/localhost/stack.xml`) for an app deployed at context `/stack` with the following contents.
+Basically, for per context configuration, add `activator.xml` file to `$CATALINA_BASE/conf/[enginename]/[hostname]/$APP.xml` (e.g. `/opt/tomcat/conf/Catalina/localhost/activator.xml`) for an app deployed at context `/activator` with the following contents.
 
 ```xml
-<!-- stack.xml -->
+<!-- activator.xml -->
  
 <Context reloadable="true">
-    <Parameter name="spring.config.location" value="/var/kgrid/config/stack/"/>
+    <Parameter name="spring.config.location" value="/var/kgrid/config/activator/"/>
 </Context>
 ```
-Or, set an environment variable, `SPRING_CONFIG_LOCATION=/var/kgrid/config/stack/`. See the Stack Overflow question, [Externalizing Tomcat Webapp Config from War File](http://stackoverflow.com/questions/13956651/externalizing-tomcat-webapp-config-from-war-file) for other options.
+Or, set an environment variable, `SPRING_CONFIG_LOCATION=/var/kgrid/config/activator/`. See the Stack Overflow question, [Externalizing Tomcat Webapp Config from War File](http://stackoverflow.com/questions/13956651/externalizing-tomcat-webapp-config-from-war-file) for other options.
 
 
-Then add an application.properties file in `/var/kgrid/config/stack/` like this:
+Then add an application.properties file in `/var/kgrid/config/activator/` like this:
 
 ```properties
 # application.properties
@@ -250,13 +250,13 @@ Then add an application.properties file in `/var/kgrid/config/stack/` like this:
 #server.port=8080
  
 # Context path - only for executable jar
-server.contextPath=/stack
+server.contextPath=/activator
  
 # Optional - absolute path (if external library)
 library.url=http://library.kgrid.org
  
-# the shelf will be at /var/kgrid/stack/shelf, tomcat user will new r+w to ../stack to create/update the shelf
-stack.shelf.path=/var/kgrid/stack
+# the shelf will be at /var/kgrid/activator/shelf, tomcat user will new r+w to ../activator to create/update the shelf
+activator.shelf.path=/var/kgrid/activator
 ```
 
 Release version (milestone releases) are available here: https://github.com/kgrid/kgrid-activator/releases

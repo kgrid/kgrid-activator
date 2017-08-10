@@ -1,5 +1,7 @@
 package edu.umich.lhs.activator.services;
 
+import static org.springframework.boot.actuate.health.Health.unknown;
+
 import edu.umich.lhs.activator.exception.ActivatorException;
 import java.io.File;
 import java.util.Map;
@@ -35,10 +37,13 @@ public class AdapterHealthIndicator extends AbstractHealthIndicator {
         .withDetail("Adapters", adapters.keySet());
 
     if (adapterPath.isEmpty()) {
-      builder.down(new ActivatorException("External adapter directory is not configured."));
-    } else if (!adapterDir.exists() || !adapterDir.isDirectory()) {
-      builder.down(new ActivatorException("External adapter directory is not a valid directory."));
-    } else {
+      builder.withDetail("External adapter directory is not configured", "").unknown();
+    } else if (!adapterDir.exists() ) {
+      builder.down(new ActivatorException("Cannot find external directory " + adapterPath));
+    } else if (!adapterDir.isDirectory() ){
+      builder.down(new ActivatorException(adapterPath + " is not a valid directory"));
+    }
+    else {
       builder.up();
     }
   }

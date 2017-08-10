@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,20 +44,16 @@ import edu.umich.lhs.activator.domain.KnowledgeObjectBuilder;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {KgridActivatorApplication.class})
-@WebAppConfiguration
+@SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ShelfControllerTest {
 
     private MockMvc mockMvc;
 
-    private static final String SHELF_PATH = "stack.shelf.path";
+    private static final String SHELF_PATH = "activator.shelf.path";
 
     @Autowired
     private Shelf shelf;
-
-    @Value("${stack.shelf.name:shelf}")
-    private String shelfName;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -75,7 +73,7 @@ public class ShelfControllerTest {
 
     @After
     public void tearDown() {
-        File folderPath = new File(System.getProperty(SHELF_PATH), shelfName);
+        File folderPath = new File(System.getProperty(SHELF_PATH));
 
         //Clear the shelf
         if(folderPath.exists() != false){

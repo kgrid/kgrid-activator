@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class IoSpecGenerator {
 
-	@Value("${stack.namespace:http://uofm.org/objectteller/}")
+	@Value("${activator.namespace:http://uofm.org/objectteller/}")
 	public String kgridNamespace;
 
 	public ioSpec covertInputOutputMessageToCodeMetadata(KnowledgeObject ko) {

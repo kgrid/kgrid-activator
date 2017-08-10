@@ -35,7 +35,7 @@ public class ActivationService implements ApplicationContextAware {
   private final Shelf shelf;
   private final IoSpecGenerator converter;
 
-  @Value("${stack.adapter.path:${user.home}/adapters}")
+  @Value("${activator.adapter.path}")
   private String adapterPath;
 
   private Map<String, Class> executionImplementations = new HashMap<>();
@@ -46,7 +46,7 @@ public class ActivationService implements ApplicationContextAware {
     this.converter = converter;
   }
 
-  ApplicationContext applicationContext;
+  private ApplicationContext applicationContext;
 
   public void setApplicationContext(ApplicationContext context) {
     applicationContext = context;
