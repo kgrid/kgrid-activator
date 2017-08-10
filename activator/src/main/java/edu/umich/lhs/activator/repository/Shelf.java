@@ -36,11 +36,14 @@ public class Shelf {
     @Value("${activator.shelf.path}")
     private String localStoragePath;
 
-
     private final String BUILTIN_SHELF = "shelf/";
 
     private final String BUILTIN_SHELF_PATTERN = BUILTIN_SHELF + "**";
 
+
+    public String getShelfPath() {
+      return localStoragePath;
+    }
 
     public void saveObject(KnowledgeObject dto, ArkId arkId) throws ActivatorException {
 
@@ -92,7 +95,7 @@ public class Shelf {
         File shelf = new File(localStoragePath);
         File knowledgeFile = new File (shelf, arkId.getFedoraPath());
         Resource knowledgeResource = new FileSystemResource(knowledgeFile);
-        //Resource knowledgeResource = new FileSystemResource(  localStoragePath + "/" + shelfName + "/" + arkId.getFedoraPath());
+
         if(!knowledgeResource.exists()) {
             knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
             source = Source.BUILTIN;

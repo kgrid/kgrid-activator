@@ -37,7 +37,7 @@ public class AdapterHealthIndicator extends AbstractHealthIndicator {
         .withDetail("Adapters", adapters.keySet());
 
     if (adapterPath.isEmpty()) {
-      builder.withDetail("External adapter directory is not configured", "").unknown();
+      builder.withDetail("Warning", "External adapter directory is not configured").unknown();
     } else if (!adapterDir.exists() ) {
       builder.down(new ActivatorException("Cannot find external directory " + adapterPath));
     } else if (!adapterDir.isDirectory() ){
