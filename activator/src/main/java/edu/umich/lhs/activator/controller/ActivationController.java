@@ -51,7 +51,7 @@ public class ActivationController {
 
     @Override
     public void contribute(Info.Builder builder) {
-      Map<String, Class> adapters = service.loadAndGetAdapterList();
+      Map<String, Class> adapters = service.reloadAdapterList();
       builder.withDetail("Adapters", adapters.keySet());
 
     }

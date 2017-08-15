@@ -1,52 +1,60 @@
 package edu.umich.lhs.activator.services;
 
 import edu.umich.lhs.activator.adapter.EnvironmentAdapter;
+import edu.umich.lhs.activator.domain.ArkId;
+import edu.umich.lhs.activator.domain.KnowledgeObject;
+import edu.umich.lhs.activator.domain.KnowledgeObject.Payload;
+import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.exception.ActivatorException;
+import edu.umich.lhs.activator.repository.Shelf;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.zip.ZipException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
-import edu.umich.lhs.activator.domain.KnowledgeObject;
-import edu.umich.lhs.activator.repository.Shelf;
-import edu.umich.lhs.activator.domain.ArkId;
-import edu.umich.lhs.activator.domain.KnowledgeObject.Payload;
-import edu.umich.lhs.activator.domain.Result;
 
 /**
  * Created by nggittle on 3/31/17.
  */
 @Service
-public class ActivationService {
+public class ActivationService implements ApplicationContextAware {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired
-  private Shelf shelf;
-  @Autowired
-  private IoSpecGenerator converter;
-  @Autowired
-  private ApplicationContext context;
-  @Value("${stack.adapter.path:${user.home}/adapters}")
+  private final Shelf shelf;
+  private final IoSpecGenerator converter;
+
+  @Value("${activator.adapter.path}")
   private String adapterPath;
 
   private Map<String, Class> executionImplementations = new HashMap<>();
 
+  @Autowired
+  public ActivationService(Shelf shelf, IoSpecGenerator converter) {
+    this.shelf = shelf;
+    this.converter = converter;
+  }
+
+  private ApplicationContext applicationContext;
+
+  public void setApplicationContext(ApplicationContext context) {
+    applicationContext = context;
+  }
+
+  public String getAdapterPath() {
+    return adapterPath;
+  }
 
   public Result getResultByArkId(Map<String, Object> inputs, ArkId arkId) {
 
@@ -111,7 +119,9 @@ public class ActivationService {
 
       try {
         Class adapter = adapterFactory(ko.payload.getEngineType());
-        Object environmentAdapterInstance = adapter.newInstance();
+        EnvironmentAdapter environmentAdapterInstance = (EnvironmentAdapter)adapter.newInstance();
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(environmentAdapterInstance);
+
         Method execute = adapter.getDeclaredMethod("execute", Map.class, String.class, String.class, Class.class);
         Object resultObj = execute.invoke(environmentAdapterInstance, inputs, ko.payload.getContent(), ko.payload.getFunctionName(),
             ioSpec.getReturnTypeAsClass());
@@ -132,7 +142,7 @@ public class ActivationService {
       return executionImplementations.get(engineType);
     }
 
-    executionImplementations = loadAndGetAdapterList();
+    executionImplementations = reloadAdapterList();
 
     if(executionImplementations.containsKey(engineType)) {
       return executionImplementations.get(engineType);
@@ -142,8 +152,10 @@ public class ActivationService {
 
   }
 
-  public Map<String, Class> loadAndGetAdapterList() {
-    executionImplementations.putAll(loadAdapters());
+  public Map<String, Class> reloadAdapterList() {
+
+    executionImplementations.clear(); // clear the list before reload so we don't run out of memory
+    executionImplementations.putAll(loadExternalAdapters());
     executionImplementations.putAll(loadBuiltInAdapters());
     return executionImplementations;
   }
@@ -154,91 +166,39 @@ public class ActivationService {
     ServiceLoader<EnvironmentAdapter> loader = ServiceLoader.load(EnvironmentAdapter.class);
     for(EnvironmentAdapter adapter : loader) {
       for(String language : adapter.supports()) {
-        adapters.put(language, adapter.getClass());
+        adapters.put(language.toUpperCase(), adapter.getClass());
       }
     }
 
     return adapters;
   }
 
-  // Loads adapter classes contained in jar files from the user-specified adapter path
-  private HashMap<String, Class> loadAdapters() {
-
+  private HashMap<String, Class> loadExternalAdapters() {
     HashMap<String, Class> executionImp = new HashMap<>();
 
-    try {
-      File adapterDir = new File(adapterPath);
-
-      if(adapterDir.listFiles() == null || adapterDir.listFiles().length == 0) {
-        log.info("No adapters found in adapter directory " + adapterPath );
-        return executionImp;
-      }
-      // Loop over every jar file in the specified adapter directory and load in every class that implements EnvironmentAdapter
-      for (File classFile : adapterDir.listFiles()) {
-        if (!classFile.getName().endsWith(".jar")) {
-          continue;
-        }
-        JarFile adapterJar;
-        try {
-          adapterJar = new JarFile(classFile);
-        } catch (ZipException zipE) {
-          log.error("Cannot open jar file " + classFile + " Zip error: " + zipE);
-          continue;
-        }
-
-        Enumeration<JarEntry> entryEnumeration = adapterJar.entries();
-        URL[] urls = { new URL("jar:file:" + classFile + "!/")};
-        URLClassLoader cl = URLClassLoader.newInstance(urls);
-
-        while (entryEnumeration.hasMoreElements()){
-          JarEntry entry = entryEnumeration.nextElement();
-          Class<?> classToLoad;
-
-          if(entry.isDirectory() || !entry.getName().endsWith(".class")) {
-            continue;
-          }
-          String className = entry.getName().substring(0,entry.getName().length() - 6); // Length - 6 to chop off ending .class
-          className = className.replace('/', '.'); // Make into package name instead of directory path
-          try {
-            classToLoad = cl.loadClass(className);
-          } catch (ClassNotFoundException | NoClassDefFoundError classEx) {
-            continue;
-          }
-          boolean implementsEnvironmentAdapter = false;
-          for (Class classInterface : classToLoad.getInterfaces()) {
-            try {
-              if (classInterface.getSimpleName().equals(EnvironmentAdapter.class.getSimpleName())) {
-                implementsEnvironmentAdapter = true;
-                break;
-              }
-            } catch (NoClassDefFoundError e) {
-              log.warn(e.toString() + " when loading classes for " + classToLoad);
-            }
-          }
-          if(implementsEnvironmentAdapter) {
-            try {
-              Object environmentAdapterInstance = classToLoad.newInstance();
-              Method supportsMethod = classToLoad.getDeclaredMethod("supports");
-              List<String> supports = (List<String>)supportsMethod.invoke(environmentAdapterInstance);
-              for (String language : supports) {
-                if(executionImp.get(language.toUpperCase()) != null) {
-                  log.warn("Multiple adapters exist for language " + language + "!! Undetermined behavior will occur with two or more adapters for the same language!");
-                }
-                executionImp.put(language.toUpperCase(), classToLoad);
-                log.info("Loaded adapter for language " + language);
-              }
-            } catch (IllegalAccessException | NoSuchMethodException | InstantiationException ex) {
-              log.info(ex.getMessage());
-            }
-          }
-        }
-      }
-    } catch ( IOException | InvocationTargetException e) {
-      throw new ActivatorException("Something exploded while loading adapters: " + e, e);
+    File adapterDir = new File(adapterPath);
+    if(adapterDir.listFiles() == null || adapterDir.listFiles().length == 0) {
+      log.info("No adapters found in adapter directory " + adapterPath );
+      return executionImp;
     }
+    for (File classFile : adapterDir.listFiles()) {
+      if (!classFile.getName().endsWith(".jar")) {
+        continue;
+      }
+      try {
+        URL[] urls = {new URL("jar:file:" + classFile + "!/")};
 
-    if (executionImp.size() == 0) {
-      log.info("No valid adapters found in adapter directory " + adapterPath);
+        URLClassLoader cl = new URLClassLoader(urls, EnvironmentAdapter.class.getClassLoader());
+
+        ServiceLoader<EnvironmentAdapter> loader = ServiceLoader.load(EnvironmentAdapter.class, cl);
+        for(EnvironmentAdapter adapter : loader) {
+          for (String language : adapter.supports()) {
+            executionImp.put(language.toUpperCase(), adapter.getClass());
+          }
+        }
+      } catch (IOException ioE) {
+        log.error("Cannot open jar file " + classFile + " IO error: " + ioE);
+      }
     }
     return executionImp;
   }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import edu.umich.lhs.activator.exception.ActivatorException;
+import org.springframework.stereotype.Component;
 
 /**
  * This dummy implementation of a PayloadAdapter does not execute the contents. Instead it simply
@@ -13,6 +13,7 @@ import edu.umich.lhs.activator.exception.ActivatorException;
  *
  * Created by grosscol on 5/19/17.
  */
+@Component
 public class NoopAdapter implements EnvironmentAdapter {
 
     public NoopAdapter() {}

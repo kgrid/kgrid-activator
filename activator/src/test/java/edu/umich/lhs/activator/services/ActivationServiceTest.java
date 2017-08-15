@@ -10,7 +10,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.umich.lhs.activator.KgridActivatorApplication;
 import edu.umich.lhs.activator.TestUtils;
@@ -18,12 +22,14 @@ import edu.umich.lhs.activator.domain.KnowledgeObject;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import edu.umich.lhs.activator.domain.KnowledgeObjectBuilder;
 import edu.umich.lhs.activator.domain.Result;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Created by nggittle on 3/22/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {KgridActivatorApplication.class})
+@SpringBootTest
 public class ActivationServiceTest {
 
   @Autowired
@@ -139,44 +145,6 @@ public class ActivationServiceTest {
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
-//  @Test
-//  public void testCalculateOneInputSuccess() {
-//
-//    KnowledgeObject ko = new KnowledgeObjectBuilder()
-//        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-//        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-//        .payloadContent(TestUtils.CODE)
-//        .payloadEngineType("JAVASCRIPT")
-//        .payloadFunctionName("execute")
-//        .build();
-//    Map<String, Object> inputs = new HashMap<>();
-//    inputs.put("rxcui", "1723222");
-//    Result expectedResult = new Result();
-//    expectedResult.setResult("{rxcui=1723222}");
-//
-//    Result generatedResult = activationService.validateAndExecute(inputs, ko);
-//    assertEquals(expectedResult, generatedResult);
-//  }
-
-//  @Test
-//  public void testCalculateTwoInputsSuccess() {
-//    KnowledgeObject ko = new KnowledgeObjectBuilder()
-//        .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
-//        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-//        .payloadContent(TestUtils.CODE)
-//        .payloadEngineType("JAVASCRIPT")
-//        .payloadFunctionName("execute")
-//        .build();
-//    Map<String, Object> inputs = new HashMap<>();
-//    inputs.put("rxcui", "1723222");
-//    inputs.put("rxcui2", "1723222");
-//    Result expectedResult = new Result();
-//    expectedResult.setResult("{rxcui2=1723222, rxcui=1723222}");
-//
-//    Result generatedResult = activationService.validateAndExecute(inputs, ko);
-//    assertEquals(expectedResult, generatedResult);
-//  }
-
   @Test
   public void testStringReturnedWhenExpectIntToThrowEx() {
     KnowledgeObject ko = new KnowledgeObjectBuilder()
@@ -196,22 +164,4 @@ public class ActivationServiceTest {
 
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
-
-//  @Test
-//  public void testCalculateIntSuccess() {
-//    KnowledgeObject ko = new KnowledgeObjectBuilder()
-//        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-//        .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
-//        .payloadContent("function execute(a){ return 42}")
-//        .payloadEngineType("JAVASCRIPT")
-//        .payloadFunctionName("execute")
-//        .build();
-//    Map<String, Object> inputs = new HashMap<>();
-//    inputs.put("rxcui", "1723222");
-//    Result expectedResult = new Result();
-//    expectedResult.setResult(new Integer(42));
-//
-//    Result generatedResult = activationService.validateAndExecute(inputs, ko);
-//    assertEquals(expectedResult, generatedResult);
-//  }
 }
