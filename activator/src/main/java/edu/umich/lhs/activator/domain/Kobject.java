@@ -27,5 +27,20 @@ public class Kobject implements PayloadProvider {
     return new ArrayList<>();
   }
 
+  @Override
+  public String getFunctionName() {
+    return "";
+  }
+
+  @Override
+  public String getContent() {
+    return "";
+  }
+
+  @Override
+  public String getEngineType() {
+    return "";
+  }
+
 
 }
