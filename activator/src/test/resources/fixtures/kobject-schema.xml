@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Putative and minimal schemal for kgrid knowledge objects -->
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schema.org/version/latest/schema.rdf"
+>
+  <!-- CLASSES -->
+  <rdfs:Description rdf:about="http://lhs.umich.edu/kgrid#knoweldgeObject">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdf:label>knowledgeObject</rdf:label>
+    <rdf:comment>A KGrid Knowledge Object</rdf:comment>
+  </rdfs:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#inputMessage">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdf:label>inputMessage</rdf:label>
+    <rdf:comment>An input specification of a knowledge object</rdf:comment>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#outputMessage">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdf:label>outputMessage</rdf:label>
+    <rdf:comment>An output specification of a knowledge object.</rdf:comment>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#parameter">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdf:label>parameter</rdf:label>
+    <rdf:comment>A parameter of an input message.</rdf:comment>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#payload">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdf:label>payload</rdf:label>
+    <rdf:comment>The payload of a knowledge object.</rdf:comment>
+  </rdf:Description>
+
+  <!-- PROPERTIES -->
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#hasInputMessage">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#knoweldgeObject"/>
+    <rdf:range rdf:resource="http://lhs.umich.edu/kgrid#inputMessage"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#hasOutputMessage">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#knoweldgeObject"/>
+    <rdf:range rdf:resource="http://lhs.umich.edu/kgrid#outputMessage"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#hasPayload">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#knoweldgeObject"/>
+    <rdf:range rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#noofparams">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#inputMessage"/>
+    <rdf:range rdf:resource=""/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#hasParams">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#inputMessage"/>
+    <rdf:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#content">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
+    <rdf:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#functionName">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
+    <rdf:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://lhs.umich.edu/kgrid#engineType">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    <rdf:domain rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
+    <rdf:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+
+
+</rdf:RDF>
+

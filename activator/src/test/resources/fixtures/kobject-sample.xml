@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:kgrid="http://lhs.umich.edu/kgrid#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:schema="http://schema.org/"
+>
+
+  <rdf:Description rdf:about="http://example.com/UUID-0000-0000-0001">
+    <!-- UUID of the knowledge object could be an ARK or DOI as well -->
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#knowledgeObject"/>
+    <kgrid:hasInputMessage rdf:nodeID="bnode01"/>
+    <kgrid:hasOutputMessage rdf:nodeID="bnode02"/>
+    <kgrid:hasPayload rdf:nodeID="bnode03"/>
+    <schema:identifier>ark:/1234/56somekobject</schema:identifier>
+  </rdf:Description>
+
+  <rdf:Description rdf:nodeID="bnode01">
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#inputMessage"/>
+    <kgrid:noofparams>2</kgrid:noofparams>
+    <kgrid:hasParams>
+      <rdf:Seq>
+        <rdf:li rdf:nodeID="bnode04"/>
+        <rdf:li rdf:nodeID="bnode05"/>
+      </rdf:Seq>
+    </kgrid:hasParams>
+  </rdf:Description>
+
+  <rdf:Description rdf:nodeID="bnode02">
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#outputMessage"/>
+    <kgrid:returnType>MAP</kgrid:returnType>
+  </rdf:Description>
+
+  <rdf:Description rdf:nodeID="bnode03">
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
+    <kgrid:functionName>hello()</kgrid:functionName>
+    <kgrid:content>def perform(params):
+    return  {'Hello': 'World'}
+</kgrid:content>
+    <kgrid:engineType>Python</kgrid:engineType>
+  </rdf:Description>
+
+  <rdf:Description rdf:nodeID="bnode04">
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#parameter"/>
+    <kgrid:paramname>foo</kgrid:paramname>
+    <kgrid:datatype>STRING</kgrid:datatype>
+  </rdf:Description>
+
+  <rdf:Description rdf:nodeID="bnode05">
+    <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#parameter"/>
+    <kgrid:paramname>bar</kgrid:paramname>
+    <kgrid:datatype>INT</kgrid:datatype>
+  </rdf:Description>
+
+</rdf:RDF>
