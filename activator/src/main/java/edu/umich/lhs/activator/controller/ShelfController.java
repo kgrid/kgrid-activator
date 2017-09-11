@@ -1,7 +1,7 @@
 package edu.umich.lhs.activator.controller;
 
 import edu.umich.lhs.activator.domain.KnowledgeObject;
-import edu.umich.lhs.activator.domain.KnowledgeObject.Payload;
+import edu.umich.lhs.activator.domain.Payload;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import edu.umich.lhs.activator.repository.RemoteShelf;
 import edu.umich.lhs.activator.repository.Shelf;

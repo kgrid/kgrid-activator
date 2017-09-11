@@ -3,7 +3,7 @@ package edu.umich.lhs.activator.services;
 import edu.umich.lhs.activator.adapter.EnvironmentAdapter;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.KnowledgeObject;
-import edu.umich.lhs.activator.domain.KnowledgeObject.Payload;
+import edu.umich.lhs.activator.domain.Payload;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import edu.umich.lhs.activator.repository.Shelf;

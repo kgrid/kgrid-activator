@@ -1,6 +1,6 @@
 package edu.umich.lhs.activator.domain;
 
-import edu.umich.lhs.activator.domain.KnowledgeObject.Payload;
+import edu.umich.lhs.activator.domain.Payload;
 
 /**
  * Created by nggittle on 3/27/2017.
