@@ -56,10 +56,6 @@
 					<artifactId>httpclient</artifactId>
 					<groupId>org.apache.httpcomponents</groupId>
 				</exclusion>
-				<exclusion>
-					<artifactId>httpclient-cache</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
