@@ -1,101 +1,87 @@
 {
-  "@graph": [
-    {
-      "@id": "_:bnode0",
-      "@type": "kgrid:outputMessage",
-      "returnType": "MAP"
+  "@graph" : [ {
+    "@id" : "http://example.com/UUID-0000-0000-0001",
+    "@type" : "kgrid:knowledgeObject",
+    "hasInputMessage" : {
+      "@type" : "kgrid:inputMessage",
+      "hasParams" : {
+        "@type" : "rdf:Seq",
+        "_1" : {
+          "@type" : "kgrid:parameter",
+          "datatype" : "INT",
+          "paramname" : "bar"
+        },
+        "_2" : {
+          "@type" : "kgrid:parameter",
+          "datatype" : "STRING",
+          "paramname" : "foo"
+        }
+      },
+      "noofparams" : "2"
     },
-    {
-      "@id": "_:bnode1",
-      "@type": "rdf:Seq",
-      "_1": "_:bnode3",
-      "_2": "_:bnode2"
+    "hasOutputMessage" : {
+      "@type" : "kgrid:outputMessage",
+      "returnType" : "MAP"
     },
-    {
-      "@id": "_:bnode2",
-      "@type": "kgrid:parameter",
-      "datatype": "INT",
-      "paramname": "bar"
+    "hasPayload" : {
+      "@type" : "kgrid:payload",
+      "content" : "def perform(params):\n          return  {'Hello': 'World'}\n        ",
+      "engineType" : "Python",
+      "functionName" : "hello()"
     },
-    {
-      "@id": "_:bnode3",
-      "@type": "kgrid:parameter",
-      "datatype": "STRING",
-      "paramname": "foo"
+    "identifier" : "ark:/1234/56somekobject"
+  } ],
+  "@context" : {
+    "_2" : {
+      "@id" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#_2",
+      "@type" : "@id"
     },
-    {
-      "@id": "_:bnode4",
-      "@type": "kgrid:payload",
-      "content": "def perform(params):\n    return  {'Hello': 'World'}\n",
-      "engineType": "Python",
-      "functionName": "hello()"
+    "_1" : {
+      "@id" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#_1",
+      "@type" : "@id"
     },
-    {
-      "@id": "_:bnode5",
-      "@type": "kgrid:inputMessage",
-      "hasParams": "_:bnode1",
-      "noofparams": "2"
+    "identifier" : {
+      "@id" : "http://schema.org/identifier"
     },
-    {
-      "@id": "http://example.com/UUID-0000-0000-0001",
-      "@type": "kgrid:knowledgeObject",
-      "hasInputMessage": "_:bnode5",
-      "hasOutputMessage": "_:bnode0",
-      "hasPayload": "_:bnode4",
-      "identifier": "ark:/1234/56somekobject"
-    }
-  ],
-  "@context": {
-    "returnType": {
-      "@id": "http://lhs.umich.edu/kgrid#returnType"
+    "hasPayload" : {
+      "@id" : "http://lhs.umich.edu/kgrid#hasPayload",
+      "@type" : "@id"
     },
-    "_2": {
-      "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#_2",
-      "@type": "@id"
+    "hasOutputMessage" : {
+      "@id" : "http://lhs.umich.edu/kgrid#hasOutputMessage",
+      "@type" : "@id"
     },
-    "_1": {
-      "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#_1",
-      "@type": "@id"
+    "hasInputMessage" : {
+      "@id" : "http://lhs.umich.edu/kgrid#hasInputMessage",
+      "@type" : "@id"
     },
-    "identifier": {
-      "@id": "http://schema.org/identifier"
+    "returnType" : {
+      "@id" : "http://lhs.umich.edu/kgrid#returnType"
     },
-    "hasPayload": {
-      "@id": "http://lhs.umich.edu/kgrid#hasPayload",
-      "@type": "@id"
+    "datatype" : {
+      "@id" : "http://lhs.umich.edu/kgrid#datatype"
     },
-    "hasOutputMessage": {
-      "@id": "http://lhs.umich.edu/kgrid#hasOutputMessage",
-      "@type": "@id"
+    "paramname" : {
+      "@id" : "http://lhs.umich.edu/kgrid#paramname"
     },
-    "hasInputMessage": {
-      "@id": "http://lhs.umich.edu/kgrid#hasInputMessage",
-      "@type": "@id"
+    "hasParams" : {
+      "@id" : "http://lhs.umich.edu/kgrid#hasParams",
+      "@type" : "@id"
     },
-    "engineType": {
-      "@id": "http://lhs.umich.edu/kgrid#engineType"
+    "noofparams" : {
+      "@id" : "http://lhs.umich.edu/kgrid#noofparams"
     },
-    "content": {
-      "@id": "http://lhs.umich.edu/kgrid#content"
+    "engineType" : {
+      "@id" : "http://lhs.umich.edu/kgrid#engineType"
     },
-    "functionName": {
-      "@id": "http://lhs.umich.edu/kgrid#functionName"
+    "content" : {
+      "@id" : "http://lhs.umich.edu/kgrid#content"
     },
-    "datatype": {
-      "@id": "http://lhs.umich.edu/kgrid#datatype"
+    "functionName" : {
+      "@id" : "http://lhs.umich.edu/kgrid#functionName"
     },
-    "paramname": {
-      "@id": "http://lhs.umich.edu/kgrid#paramname"
-    },
-    "hasParams": {
-      "@id": "http://lhs.umich.edu/kgrid#hasParams",
-      "@type": "@id"
-    },
-    "noofparams": {
-      "@id": "http://lhs.umich.edu/kgrid#noofparams"
-    },
-    "schema": "http://schema.org/",
-    "kgrid": "http://lhs.umich.edu/kgrid#",
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    "schema" : "http://schema.org/",
+    "kgrid" : "http://lhs.umich.edu/kgrid#",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   }
 }
