@@ -3,7 +3,9 @@ package edu.umich.lhs.activator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Scanner;
 import org.springframework.http.MediaType;
 
 /**
@@ -61,5 +63,28 @@ public class TestUtils {
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper.writeValueAsBytes(object);
   }
+
+  // Helper function to retrieve string fixtures from test package resources
+  public static String loadFixture(String fixtureName) throws IOException {
+    String fixture = new Scanner(
+        TestUtils.class.getResourceAsStream("/fixtures/" + fixtureName), "UTF-8")
+        .useDelimiter("\\A").next();
+    return fixture;
+  }
+
+  public static String safeLoadFixture(String fixtureName){
+    try{
+      return loadFixture(fixtureName);
+    }catch(IOException ex){
+      return "";
+    }
+  }
+
+  // Helper function to stream fixtures from test package resources
+  public static InputStream streamFixture(String fixtureName) throws IOException {
+    InputStream ins = TestUtils.class.getResourceAsStream("/fixtures/" + fixtureName);
+    return ins;
+  }
+
 
 }
