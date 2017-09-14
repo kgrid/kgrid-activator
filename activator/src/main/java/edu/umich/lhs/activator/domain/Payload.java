@@ -11,6 +11,10 @@ public class Payload {
 
   private String functionName;
 
+  public Payload() {
+    // TODO Auto-generated constructor stub
+  }
+
   public String getContent() {
     return content;
   }
@@ -35,13 +39,10 @@ public class Payload {
     this.functionName = functionName;
   }
 
-  public Payload() {
-    // TODO Auto-generated constructor stub
-  }
-
   @Override
   public String toString() {
-    return "Payload [content=" + content + ", engineType=" + engineType + ", functionName=" + functionName
+    return "Payload [content=" + content + ", engineType=" + engineType + ", functionName="
+        + functionName
         + "]";
   }
 

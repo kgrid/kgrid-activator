@@ -1,62 +1,63 @@
 package edu.umich.lhs.activator.domain;
 
 public class ParamDescription {
-	
-	private String name;
-	
-	private DataType datatype;
-	
-	private Integer min;
-	
-	private Integer max;
 
-	public ParamDescription(){}
-	
-	public ParamDescription(String name, DataType datatype, Integer min, Integer max) {
-		super();
-		this.name = name;
-		this.datatype = datatype;
-		this.min = min;
-		this.max = max;
-	}
+  private String name;
 
-	public String getName() {
-		return name;
-	}
+  private DataType datatype;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  private Integer min;
 
-	public DataType getDatatype() {
-		return datatype;
-	}
+  private Integer max;
 
-	public void setDatatype(DataType datatype) {
-		this.datatype = datatype;
-	}
+  public ParamDescription() {
+  }
 
-	public Integer getMin() {
-		return min;
-	}
+  public ParamDescription(String name, DataType datatype, Integer min, Integer max) {
+    super();
+    this.name = name;
+    this.datatype = datatype;
+    this.min = min;
+    this.max = max;
+  }
 
-	public void setMin(Integer min) {
-		this.min = min;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public Integer getMax() {
-		return max;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setMax(Integer max) {
-		this.max = max;
-	}
+  public DataType getDatatype() {
+    return datatype;
+  }
 
-	@Override
-	public String toString() {
-		return "ParamDescription [name=" + name + ", datatype=" + datatype + ", min=" + min + ", max=" + max + "]";
-	}
-	
-	
+  public void setDatatype(DataType datatype) {
+    this.datatype = datatype;
+  }
+
+  public Integer getMin() {
+    return min;
+  }
+
+  public void setMin(Integer min) {
+    this.min = min;
+  }
+
+  public Integer getMax() {
+    return max;
+  }
+
+  public void setMax(Integer max) {
+    this.max = max;
+  }
+
+  @Override
+  public String toString() {
+    return "ParamDescription [name=" + name + ", datatype=" + datatype + ", min=" + min + ", max="
+        + max + "]";
+  }
+
 
 }

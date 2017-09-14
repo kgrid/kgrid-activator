@@ -1,6 +1,5 @@
 package edu.umich.lhs.activator.domain;
 
-import edu.umich.lhs.activator.domain.Payload;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -20,6 +19,10 @@ public class Kobject implements PayloadProvider {
   @Override
   public Class getReturnType() {
     return Map.class;
+  }
+
+  public void setReturnType(Class c) {
+    returnType = c;
   }
 
   @Override
@@ -47,31 +50,25 @@ public class Kobject implements PayloadProvider {
     return "";
   }
 
-  public ArkId getIdentifier(){
+  public ArkId getIdentifier() {
     return identifier;
   }
 
-  public void setIdentifier(ArkId id){
+  public void setIdentifier(ArkId id) {
     identifier = id;
   }
 
-  public void setParamDescriptions(ArrayList<ParamDescription> p){
+  public void setParamDescriptions(ArrayList<ParamDescription> p) {
     paramDescriptions = p;
   }
 
-  public void setNoofParams(Integer i){
+  public void setNoofParams(Integer i) {
     noofParams = i;
   }
 
-  public void setReturnType(Class c){
-    returnType = c;
-  }
-
-  public void setPayload(Payload p){
+  public void setPayload(Payload p) {
     payload = p;
   }
-
-
 
 
 }

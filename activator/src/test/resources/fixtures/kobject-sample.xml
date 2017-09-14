@@ -34,8 +34,8 @@
     <rdf:type rdf:resource="http://lhs.umich.edu/kgrid#payload"/>
     <kgrid:functionName>hello()</kgrid:functionName>
     <kgrid:content>def perform(params):
-    return  {'Hello': 'World'}
-</kgrid:content>
+      return {'Hello': 'World'}
+    </kgrid:content>
     <kgrid:engineType>Python</kgrid:engineType>
   </rdf:Description>
 

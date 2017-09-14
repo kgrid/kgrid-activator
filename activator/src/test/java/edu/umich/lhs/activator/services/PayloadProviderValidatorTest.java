@@ -23,15 +23,13 @@ import org.junit.rules.ExpectedException;
  */
 public class PayloadProviderValidatorTest {
 
-  private PayloadProvider pp = mock(PayloadProvider.class);
-  private PayloadProviderValidator validator;
-
   // Source dummy parameters
   private final ParamDescription foo = new ParamDescription("foo", DataType.STRING, null, null);
   private final ParamDescription bar = new ParamDescription("bar", DataType.INT, -5, 20);
-
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
+  private PayloadProvider pp = mock(PayloadProvider.class);
+  private PayloadProviderValidator validator;
 
   @Before
   public void setUp() throws Exception {

@@ -1,62 +1,65 @@
 {
-  "@graph": [{
-    "@id" : "http://example.com/UUID-0000-0000-0001",
-    "@type" : "kgrid:knowledgeObject",
-    "hasInputMessage" : {
-      "@type" : "kgrid:inputMessage",
-      "hasParams" : {
-        "@type" : "rdf:Seq",
-        "_1" : {
-          "@type" : "kgrid:parameter",
-          "datatype" : "INT",
-          "paramname" : "bar"
+  "@graph": [
+    {
+      "@id": "http://example.com/UUID-0000-0000-0001",
+      "@type": "kgrid:knowledgeObject",
+      "hasInputMessage": {
+        "@type": "kgrid:inputMessage",
+        "hasParams": {
+          "@type": "rdf:Seq",
+          "_1": {
+            "@type": "kgrid:parameter",
+            "datatype": "INT",
+            "paramname": "bar"
+          },
+          "_2": {
+            "@type": "kgrid:parameter",
+            "datatype": "STRING",
+            "paramname": "foo"
+          }
         },
-        "_2" : {
-          "@type" : "kgrid:parameter",
-          "datatype" : "STRING",
-          "paramname" : "foo"
-        }
+        "noofparams": "2"
       },
-      "noofparams" : "2"
-    },
-    "hasOutputMessage" : {
-      "@type" : "kgrid:outputMessage",
-      "returnType" : "MAP"
-    },
-    "hasPayload" : {
-      "@type" : "kgrid:payload",
-      "content" : "def perform(foo, bar):\n          return  {'Hello': 'World'}\n        ",
-      "engineType" : "Python",
-      "functionName" : "hello()"
-    },
-    "identifier" : "ark:/1234/56first"
-  },{
-    "@id" : "http://example.com/UUID-0000-0000-0002",
-    "@type" : "kgrid:knowledgeObject",
-    "hasInputMessage" : {
-      "@type" : "kgrid:inputMessage",
-      "hasParams" : {
-        "@type" : "rdf:Seq",
-        "_1" : {
-          "@type" : "kgrid:parameter",
-          "datatype" : "MAP",
-          "paramname" : "funparams"
-        }
+      "hasOutputMessage": {
+        "@type": "kgrid:outputMessage",
+        "returnType": "MAP"
       },
-      "noofparams" : "1"
+      "hasPayload": {
+        "@type": "kgrid:payload",
+        "content": "def perform(foo, bar):\n          return  {'Hello': 'World'}\n        ",
+        "engineType": "Python",
+        "functionName": "hello()"
+      },
+      "identifier": "ark:/1234/56first"
     },
-    "hasOutputMessage" : {
-      "@type" : "kgrid:outputMessage",
-      "returnType" : "MAP"
-    },
-    "hasPayload" : {
-      "@type" : "kgrid:payload",
-      "content" : "def perform(funparams):\n          return  {'Hello': 'World'}\n        ",
-      "engineType" : "Python",
-      "functionName" : "hello()"
-    },
-    "identifier" : "ark:/1234/56second"
-  } ],
+    {
+      "@id": "http://example.com/UUID-0000-0000-0002",
+      "@type": "kgrid:knowledgeObject",
+      "hasInputMessage": {
+        "@type": "kgrid:inputMessage",
+        "hasParams": {
+          "@type": "rdf:Seq",
+          "_1": {
+            "@type": "kgrid:parameter",
+            "datatype": "MAP",
+            "paramname": "funparams"
+          }
+        },
+        "noofparams": "1"
+      },
+      "hasOutputMessage": {
+        "@type": "kgrid:outputMessage",
+        "returnType": "MAP"
+      },
+      "hasPayload": {
+        "@type": "kgrid:payload",
+        "content": "def perform(funparams):\n          return  {'Hello': 'World'}\n        ",
+        "engineType": "Python",
+        "functionName": "hello()"
+      },
+      "identifier": "ark:/1234/56second"
+    }
+  ],
   "@context": {
     "returnType": {
       "@id": "http://lhs.umich.edu/kgrid#returnType"

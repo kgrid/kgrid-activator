@@ -3,8 +3,6 @@
 <rdf:RDF
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://schema.org/version/latest/schema.rdf"
 >
   <!-- CLASSES -->
   <rdfs:Description rdf:about="http://lhs.umich.edu/kgrid#knoweldgeObject">

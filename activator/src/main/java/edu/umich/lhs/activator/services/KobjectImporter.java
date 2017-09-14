@@ -45,7 +45,8 @@ public class KobjectImporter {
   public static final String IDENTIFIER_URI = "http://schema.org/identifier";
 
   // Reference Resource
-  public static final Resource kobjectRDFClass = ResourceFactory.createResource(KNOWLEDGE_OBJECT_URI);
+  public static final Resource kobjectRDFClass = ResourceFactory
+      .createResource(KNOWLEDGE_OBJECT_URI);
 
   // Reference Properties
   public static final Property payloadProp = ResourceFactory.createProperty(HAS_PAYLOAD_URI);
@@ -65,7 +66,7 @@ public class KobjectImporter {
   static final Map<DataType, Class> dataClasses = mapClasses();
 
   static Map<DataType, Class> mapClasses() {
-    HashMap<DataType, Class>m = new HashMap<>();
+    HashMap<DataType, Class> m = new HashMap<>();
     m.put(DataType.INT, Integer.class);
     m.put(DataType.LONG, Long.class);
     m.put(DataType.FLOAT, float.class);
@@ -84,7 +85,7 @@ public class KobjectImporter {
     return extractKobject(model);
   }
 
-  static Kobject extractKobject(Model model){
+  static Kobject extractKobject(Model model) {
     Kobject kob = new Kobject();
     Resource kobjectRdf = getSingleKobjectResource(model);
 

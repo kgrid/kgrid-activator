@@ -1,21 +1,21 @@
 package edu.umich.lhs.activator.services;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isOneOf;
+import static org.junit.Assert.assertThat;
+
+import edu.umich.lhs.activator.TestUtils;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.DataType;
+import edu.umich.lhs.activator.domain.Kobject;
 import edu.umich.lhs.activator.domain.ParamDescription;
 import edu.umich.lhs.activator.domain.Payload;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.rdf.model.Model;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.junit.Assert.*;
-
-import edu.umich.lhs.activator.TestUtils;
-import edu.umich.lhs.activator.domain.Kobject;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Seq;
@@ -30,11 +30,9 @@ import org.junit.rules.ExpectedException;
  */
 public class KobjectImporterTest {
 
+  private final String SAMPLE_JSON_KOBJECT = TestUtils.safeLoadFixture("kobject-sample.json");
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
-
-  private final String SAMPLE_JSON_KOBJECT = TestUtils.safeLoadFixture("kobject-sample.json");
-
   private InputStream inStream;
   private Model model;
   private Resource kobjectRdf;
@@ -63,8 +61,10 @@ public class KobjectImporterTest {
   // Unit tests
   @Test
   public void getSingleKobject() throws Exception {
-    Resource kobjectOne = model.createResource("http://example.com/001", KobjectImporter.kobjectRDFClass);
-    Resource kobjectTwo = model.createResource("http://example.com/002", KobjectImporter.kobjectRDFClass);
+    Resource kobjectOne = model
+        .createResource("http://example.com/001", KobjectImporter.kobjectRDFClass);
+    Resource kobjectTwo = model
+        .createResource("http://example.com/002", KobjectImporter.kobjectRDFClass);
 
     Resource result = KobjectImporter.getSingleKobjectResource(model);
     assertThat(result, isOneOf(kobjectOne, kobjectTwo));
@@ -137,7 +137,7 @@ public class KobjectImporterTest {
     paramSeq.add(param1)
         .add(param2);
 
-    ParamDescription p1 = new ParamDescription("foo", DataType.STRING , null, null);
+    ParamDescription p1 = new ParamDescription("foo", DataType.STRING, null, null);
     ParamDescription p2 = new ParamDescription("bar", DataType.INT, null, null);
 
     ArrayList<ParamDescription> pList = KobjectImporter.deserializeParameters(kobjectRdf);

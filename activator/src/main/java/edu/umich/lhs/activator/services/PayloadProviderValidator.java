@@ -20,19 +20,19 @@ public class PayloadProviderValidator {
     this.provider = provider;
   }
 
-  public boolean verify(){
+  public boolean verify() {
     message = "";
     boolean result = false;
-    if( verifyInputArity() && verifyFunctionName() &&
-        verifyPayloadContent() && verifyReturnType() ){
+    if (verifyInputArity() && verifyFunctionName() &&
+        verifyPayloadContent() && verifyReturnType()) {
       message = VALIDATED_MESSAGE;
       result = true;
     }
     return result;
   }
 
-  public boolean verifyInputArity(){
-    if( provider.getNoOfParams() == provider.getParams().size()){
+  public boolean verifyInputArity() {
+    if (provider.getNoOfParams() == provider.getParams().size()) {
       return true;
     }
     message += ARITY_MESSAGE;
@@ -41,16 +41,16 @@ public class PayloadProviderValidator {
     return false;
   }
 
-  public boolean verifyFunctionName(){
-    if(provider.getFunctionName() != null && !provider.getFunctionName().isEmpty()){
+  public boolean verifyFunctionName() {
+    if (provider.getFunctionName() != null && !provider.getFunctionName().isEmpty()) {
       return true;
     }
     message += FUNC_NAME_MESSAGE;
     return false;
   }
 
-  public boolean verifyPayloadContent(){
-    if(provider.getContent() != null && !provider.getContent().isEmpty()){
+  public boolean verifyPayloadContent() {
+    if (provider.getContent() != null && !provider.getContent().isEmpty()) {
       return true;
     }
 
@@ -58,8 +58,8 @@ public class PayloadProviderValidator {
     return false;
   }
 
-  public boolean verifyReturnType(){
-    if(provider.getReturnType() != null){
+  public boolean verifyReturnType() {
+    if (provider.getReturnType() != null) {
       return true;
     }
     message += RETURN_TYPE_MESSAGE;
