@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -192,7 +193,7 @@ public class KobjectImporter {
     Resource outMsg = rdfKobject.getPropertyResourceValue(outMsgProp);
 
     String retTypeString = outMsg.getProperty(retTypeProp).getString();
-    DataType retType = DataType.valueOf(retTypeString);
+    DataType retType = EnumUtils.getEnum(DataType.class, retTypeString);
 
     return (dataClasses.getOrDefault(retType, Object.class));
   }

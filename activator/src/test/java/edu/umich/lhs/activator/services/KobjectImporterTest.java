@@ -5,8 +5,7 @@ import edu.umich.lhs.activator.domain.DataType;
 import edu.umich.lhs.activator.domain.ParamDescription;
 import edu.umich.lhs.activator.domain.Payload;
 import java.util.ArrayList;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.mem.GraphMem;
+import java.util.Map;
 import org.apache.jena.rdf.model.AnonId;
 import org.apache.jena.rdf.model.Model;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,16 +17,8 @@ import edu.umich.lhs.activator.domain.Kobject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Seq;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.impl.ModelCom;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdf.model.impl.StatementImpl;
-import org.apache.jena.util.MonitorModel;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -110,6 +101,7 @@ public class KobjectImporterTest {
     check.setEngineType(engineType);
     check.setFunctionName(funcName);
 
+    //TODO: Better method for equivalence testing Payloads
     assertThat(p.getContent(), equalTo(check.getContent()));
     assertThat(p.getEngineType(), equalTo(check.getEngineType()));
     assertThat(p.getFunctionName(), equalTo(check.getFunctionName()));
@@ -150,17 +142,42 @@ public class KobjectImporterTest {
 
     ArrayList<ParamDescription> pList = KobjectImporter.deserializeParameters(kobjectRdf);
 
+    //TODO: Method for equivalence testing Parameters
     assertThat(pList.size(), equalTo(2));
   }
 
   @Test
   public void deserializeParamDescription() throws Exception {
-    //TODO
+    Resource paramRdf = model.createResource(AnonId.create());
+    paramRdf.addProperty(KobjectImporter.paramNameProp, "foo");
+    paramRdf.addProperty(KobjectImporter.dataTypeProp, "INT");
+
+    ParamDescription check = new ParamDescription("foo", DataType.INT, null, null);
+
+    ParamDescription result = KobjectImporter.deserializeParamDescription(paramRdf);
+
+    assertThat(result.getDatatype(), equalTo(check.getDatatype()));
+    assertThat(result.getName(), equalTo(check.getName()));
   }
 
   @Test
   public void deserializeReturnType() throws Exception {
-    //TODO
+    Resource outMsg = model.createResource(KobjectImporter.outMsgProp);
+    outMsg.addProperty(KobjectImporter.retTypeProp, "MAP");
+    kobjectRdf.addProperty(KobjectImporter.outMsgProp, outMsg);
+
+    Class result = KobjectImporter.deserializeReturnType(kobjectRdf);
+    assertThat(result, equalTo(Map.class));
+  }
+
+  @Test
+  public void defaultReturnType() throws Exception {
+    Resource outMsg = model.createResource(KobjectImporter.outMsgProp);
+    outMsg.addProperty(KobjectImporter.retTypeProp, "NONEXTANTCLASS");
+    kobjectRdf.addProperty(KobjectImporter.outMsgProp, outMsg);
+
+    Class result = KobjectImporter.deserializeReturnType(kobjectRdf);
+    assertThat(result, equalTo(Object.class));
   }
 
 }
