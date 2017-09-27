@@ -11,9 +11,9 @@
 	<description>KGrid: Environment Adapter - implement this interface to build an adapter for the KGrid activator</description>
 	<url>http://kgrid.org</url>
 
-	<scm>
-		<url>https://github.com/kgrid/</url>
-	</scm>
+	<!--<scm>-->
+		<!--<url>https://github.com/kgrid/</url>-->
+	<!--</scm>-->
 
 	<build>
 		<plugins>
@@ -23,6 +23,10 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.github.danielflower.mavenplugins</groupId>
+				<artifactId>multi-module-maven-release-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
