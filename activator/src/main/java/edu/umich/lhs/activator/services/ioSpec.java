@@ -41,7 +41,7 @@ public class ioSpec {
 			case LONG:
 				return Long.class;
 			case FLOAT:
-				return float.class;
+				return Float.class;
 			case STRING:
 				return String.class;
 			case MAP:
