@@ -261,5 +261,21 @@ activator.shelf.path=/var/kgrid/activator
 
 Release version (milestone releases) are available here: https://github.com/kgrid/kgrid-activator/releases
 
+#### Creating a new Adapter:
+     
+ 1. Copy an existing implementation such as the noop-adapter.
+ 
+ 2. Edit the pom file by changing the groupId, artifactId, version, name and description and adding whatever dependencies your adapter needs and removing any that are unnecessary.
+ 
+ 3. Make sure you've added the enviornment adapter jar to your local maven repo. If it's not there add it with the command `mvn install:install-file -Dfile=<path to environment-adapter-0.5.8-SNAPSHOT.jar> -DgroupId=edu.umich.lhs -DartifactId=environment-adapter -Dversion=0.5.8-SNAPSHOT -Dpackaging=jar`
+ 
+ 4. Edit the supports() method to add the name or names of your language that will be used in knowledge objects as the payload engineType. This is **not** case sensitive.
+ 
+ 5. Use the execute() method to pass the code, arguments, and function name to your execution environment and return an object of the specified type. Supported types are integer, long, float, string and map.
+ 
+ 6. Edit the file in resources/META-INF/services so that the line in that file matches the unqualified name of your adapter java class.
+ 
+ 7. Build your jar file using maven and move it to the adapters directory for your activator when done.
+
 
 ![under construction](https://camo.githubusercontent.com/4a7cf94aedbd23c13cc2d75fdc3b2af5c816c208/687474703a2f2f7374617469632e646967672e636f6d2f7374617469632f696d616765732f6469676765722e676966)
