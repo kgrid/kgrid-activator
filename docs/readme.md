@@ -261,7 +261,7 @@ activator.shelf.path=/var/kgrid/activator
 
 Release version (milestone releases) are available here: https://github.com/kgrid/kgrid-activator/releases
 
-#### Creating a new Adapter:
+### Creating a new Adapter:
      
  1. Copy an existing implementation such as the noop-adapter.
  
