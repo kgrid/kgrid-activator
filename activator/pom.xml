@@ -17,10 +17,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<scm>
-		<developerConnection>scm:git:git@github.com:kgrid/kgrid-activator.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
+	<!--<scm>-->
+		<!--<developerConnection>scm:git:git@github.com:kgrid/kgrid-activator.git</developerConnection>-->
+		<!--<tag>HEAD</tag>-->
+	<!--</scm>-->
 
 	<properties>
 		<java.version>1.8</java.version> <!-- override spring boot parent; sets java source & target -->
@@ -146,6 +146,10 @@
 					<url>${tomcat-url}</url>
 				</configuration>
 			</plugin>
+				<plugin>
+					<groupId>com.github.danielflower.mavenplugins</groupId>
+					<artifactId>multi-module-maven-release-plugin</artifactId>
+				</plugin>
 		</plugins>
 	</build>
 

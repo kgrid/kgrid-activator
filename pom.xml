@@ -16,4 +16,21 @@
 	<name>kgrid-activator</name>
 	<description>KGrid: Activator</description>
 
+	<!--<scm>-->
+		<!--<developerConnection>scm:git:git@github.com:kgrid/kgrid-activator.git</developerConnection>-->
+		<!--<tag>HEAD</tag>-->
+	<!--</scm>-->
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.github.danielflower.mavenplugins</groupId>
+					<artifactId>multi-module-maven-release-plugin</artifactId>
+					<version>2.1.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
 </project>
