@@ -7,6 +7,8 @@ public class Citation {
 
   private String citation_title;
 
+  private String citation_id;
+
   private String citation_at;
 
   public String getCitation_title() {
@@ -23,6 +25,14 @@ public class Citation {
 
   public void setCitation_at(String citation_at) {
     this.citation_at = citation_at;
+  }
+
+  public String getCitation_id() {
+    return citation_id;
+  }
+
+  public void setCitation_id(String citation_id) {
+    this.citation_id = citation_id;
   }
 
   @Override
