@@ -5,11 +5,21 @@ package edu.umich.lhs.activator.domain;
  */
 public class Citation {
 
+  private String citation_id;
+
   private String citation_title;
 
   private String citation_id;
 
   private String citation_at;
+
+  public String getCitation_id() {
+    return citation_id;
+  }
+
+  public void setCitation_id(String citation_id) {
+    this.citation_id = citation_id;
+  }
 
   public String getCitation_title() {
     return citation_title;
