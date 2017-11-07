@@ -52,7 +52,7 @@ public class Shelf {
             ObjectWriter writer = mapper.writer();
             File folderPath = new File(localStoragePath);
 
-            if (folderPath.exists() == false) {
+            if (!folderPath.exists()) {
                 folderPath.mkdirs();
             }
 
@@ -68,8 +68,6 @@ public class Shelf {
             }
             inMemoryShelf.put(arkId, new SourcedKO(dto, Source.USERGENERATED));
 
-        } catch (JsonGenerationException e) {
-            throw new ActivatorException(e);
         } catch (IOException e) {
             throw new ActivatorException(e);
         }
@@ -89,19 +87,28 @@ public class Shelf {
     }
 
     private SourcedKO loadAndDeserializeObject(ArkId arkId) {
-        KnowledgeObject ko = null;
+        KnowledgeObject ko;
         ObjectMapper mapper = new ObjectMapper();
         Source source = Source.USERGENERATED;
         File shelf = new File(localStoragePath);
-        File knowledgeFile = new File (shelf, arkId.getFedoraPath());
+        File knowledgeFile = new File(shelf, arkId.getFedoraPath());
+
         Resource knowledgeResource = new FileSystemResource(knowledgeFile);
 
+        // If the file 'shelf/naan-name' doesn't exist check shelf/naan-name.json
+        // then check the built-in shelf and finally throw an exception
         if(!knowledgeResource.exists()) {
-            knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
-            source = Source.BUILTIN;
-        }
-        if(!knowledgeResource.exists()) {
-            throw new KONotFoundException("Object with arkId " + arkId + " not found.");
+            knowledgeFile = new File(shelf, arkId.getFedoraPath() + ".json");
+            knowledgeResource = new FileSystemResource(knowledgeFile);
+
+            if (!knowledgeResource.exists()) {
+                knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
+                source = Source.BUILTIN;
+
+                if (!knowledgeResource.exists()) {
+                    throw new KONotFoundException("Object with arkId " + arkId + " not found.");
+                }
+            }
         }
 
         try {
@@ -117,7 +124,7 @@ public class Shelf {
 
     public boolean deleteObject(ArkId arkId) {
 
-        boolean success = false;
+        boolean success;
         File folderPath = new File(localStoragePath);
 
         File resultFile = new File(folderPath, arkId.getFedoraPath());
@@ -143,8 +150,8 @@ public class Shelf {
 
         for(Resource ko : knowledgeObjectResources) {
             String objectName = ko.getFilename();
-            String[] parts = objectName.split("-");
-            if(parts.length == 2) {
+            String[] parts = objectName.split("[-\\.]"); // split on hyphens and periods
+            if((parts.length == 2 || parts.length == 3) && objectName.indexOf('.') != 0) {
                 ArkId arkId = new ArkId(parts[0], parts[1]);
                 getObject(arkId);
             } else {
@@ -171,7 +178,7 @@ public class Shelf {
     private List<Resource> getFilesystemResources() {
         List<Resource> koResources = new ArrayList<>();
         File shelfFolder = new File(localStoragePath);
-        if(shelfFolder != null && shelfFolder.isDirectory()) {
+        if(shelfFolder.isDirectory()) {
             for (File ko : shelfFolder.listFiles()) {
                 koResources.add(new FileSystemResource(ko));
             }

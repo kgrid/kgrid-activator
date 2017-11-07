@@ -34,7 +34,7 @@ public class ActivationController {
   private RemoteShelf remoteShelf;
 
 
-  @PostMapping(value = "/knowledgeObject/ark:/{naan}/{name}/result",
+  @PostMapping(value = {"/knowledgeObject/ark:/{naan}/{name}/result", "ko/{naan}-{name}/result"},
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
@@ -42,7 +42,9 @@ public class ActivationController {
 
     log.info("Sending arkId " + arkId + " to service." );
     Result result = service.getResultByArkId(inputs, arkId);
-    result.setSource(remoteShelf.getRemoteObjectURL(arkId));
+    if(remoteShelf.libraryObjectExists(arkId)) {
+      result.setSource(remoteShelf.getRemoteObjectURL(arkId));
+    }
     return result;
   }
 

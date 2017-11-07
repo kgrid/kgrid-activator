@@ -5,7 +5,7 @@ public enum DataType {
 	INT,
 	FLOAT,
 	STRING,
-	LONG, 
-	MAP;
+	LONG,
+	MAP
 
 }

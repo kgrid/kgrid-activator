@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import edu.umich.lhs.activator.exception.BadGatewayException;
 import edu.umich.lhs.activator.domain.ArkId;
@@ -25,9 +26,8 @@ public class RemoteShelf {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public KnowledgeObject checkOutByArkId(ArkId arkId) throws ActivatorException {
-		RestTemplate rt = new RestTemplate();
 
-		KnowledgeObject object = null;
+		KnowledgeObject object;
 		
 		try {
 
@@ -56,6 +56,22 @@ public class RemoteShelf {
 		return object;
 	}
 
+	public boolean libraryObjectExists(ArkId arkId) {
+		try {
+			HttpClient instance = HttpClientBuilder.create()
+					.setRedirectStrategy(new DefaultRedirectStrategy()).build();
+
+			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(instance));
+
+			ResponseEntity<KnowledgeObject> response = rest.getForEntity(getAbsoluteObjectUrl(arkId) + "/complete", KnowledgeObject.class);
+
+			return response.getStatusCode() == HttpStatus.OK;
+
+		} catch (HttpServerErrorException e) {
+			return false;
+		}
+	}
+
 
 	@Value("${library.url:http://n2t.net/}")
 	String libraryAbsolutePath;
@@ -72,7 +88,7 @@ public class RemoteShelf {
 		return libraryAbsolutePath + "/" + arkId.getArkId();
 	}
 
-	public String getAbsoluteObjectUrl(ArkId arkId) {
+	private String getAbsoluteObjectUrl(ArkId arkId) {
 		return getLibraryPath()+"/knowledgeObject/" +arkId.getArkId();
 	}
 }

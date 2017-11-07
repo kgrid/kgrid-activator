@@ -38,7 +38,7 @@ public class ShelfController {
 
     @PutMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}","/ko/{naan}-{name}"})
     public ResponseEntity<String> checkOutObjectByArkId(ArkId arkId) throws ActivatorException {
-        ResponseEntity<String> result = null;
+        ResponseEntity<String> result;
         String response = "Object " + arkId.getArkId() + " added to the shelf";
 
         KnowledgeObject dto = libraryInterface.checkOutByArkId(arkId);
@@ -85,7 +85,7 @@ public class ShelfController {
         if(localStorage.isBuiltinObject(arkId)) {
             response = response + " built-in object now exposed.";
         }
-        return new ResponseEntity<String>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}/payload/content", "/shelf/ark:/{naan}/{name}/payload/content"})
