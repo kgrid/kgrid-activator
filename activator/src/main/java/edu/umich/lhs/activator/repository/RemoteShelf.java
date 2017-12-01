@@ -1,7 +1,10 @@
 package edu.umich.lhs.activator.repository;
 
 
+import edu.umich.lhs.activator.domain.ArkId;
+import edu.umich.lhs.activator.domain.KnowledgeObject;
 import edu.umich.lhs.activator.exception.ActivatorException;
+import edu.umich.lhs.activator.exception.BadGatewayException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -13,11 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import edu.umich.lhs.activator.exception.BadGatewayException;
-import edu.umich.lhs.activator.domain.ArkId;
-import edu.umich.lhs.activator.domain.KnowledgeObject;
 
 
 @Service
@@ -67,7 +67,7 @@ public class RemoteShelf {
 
 			return response.getStatusCode() == HttpStatus.OK;
 
-		} catch (HttpServerErrorException e) {
+		} catch (RestClientException e) {
 			return false;
 		}
 	}
