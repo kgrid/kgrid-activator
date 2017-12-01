@@ -12,7 +12,9 @@ public class Payload {
   private String functionName;
 
   public Payload() {
-    // TODO Auto-generated constructor stub
+    content = "";
+    engineType = "NONE";
+    functionName = "";
   }
 
   public String getContent() {

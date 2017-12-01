@@ -112,6 +112,7 @@ public class KobjectImporter {
    */
   static Model jsonToModel(InputStream ins) {
     Model model = ModelFactory.createDefaultModel();
+    // TODO Auto-generated constructor stub
     model.read(ins, "http://example.com", "JSON-LD");
 
     return model;
