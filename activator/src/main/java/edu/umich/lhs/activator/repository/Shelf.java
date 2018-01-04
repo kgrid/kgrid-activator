@@ -4,10 +4,11 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import edu.umich.lhs.activator.domain.KnowledgeObject;
+import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.Kobject;
 import edu.umich.lhs.activator.domain.Metadata;
 import edu.umich.lhs.activator.exception.ActivatorException;
+import edu.umich.lhs.activator.exception.KONotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,183 +25,176 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
-import edu.umich.lhs.activator.domain.ArkId;
-import edu.umich.lhs.activator.exception.KONotFoundException;
 
 @Service
 public class Shelf {
 
-    private final Logger log = LoggerFactory.getLogger(Shelf.class);
+  private final Logger log = LoggerFactory.getLogger(Shelf.class);
+  private final String BUILTIN_SHELF = "shelf/";
+  private final String BUILTIN_SHELF_PATTERN = BUILTIN_SHELF + "**";
+  private Map<ArkId, Kobject> inMemoryShelf = new HashMap<>();
+  @Value("${activator.shelf.path}")
+  private String localStoragePath;
 
-    private Map<ArkId, Kobject> inMemoryShelf = new HashMap<>();
+  public String getShelfPath() {
+    return localStoragePath;
+  }
 
-    @Value("${activator.shelf.path}")
-    private String localStoragePath;
+  public void saveObject(Kobject kob, ArkId arkId) throws ActivatorException {
 
-    private final String BUILTIN_SHELF = "shelf/";
+    try {
+      ObjectMapper mapper = new ObjectMapper().disable(MapperFeature.USE_ANNOTATIONS);
+      ObjectWriter writer = mapper.writer();
+      File folderPath = new File(localStoragePath);
 
-    private final String BUILTIN_SHELF_PATTERN = BUILTIN_SHELF + "**";
-
-
-    public String getShelfPath() {
-      return localStoragePath;
-    }
-
-    public void saveObject(Kobject kob, ArkId arkId) throws ActivatorException {
-
-        try {
-            ObjectMapper mapper = new ObjectMapper().disable(MapperFeature.USE_ANNOTATIONS);
-            ObjectWriter writer = mapper.writer();
-            File folderPath = new File(localStoragePath);
-
-            if (!folderPath.exists()) {
-                folderPath.mkdirs();
-            }
-
-            File resultFile = new File(folderPath, arkId.getFedoraPath());
-
-            writer.writeValue(resultFile, kob);
-            log.info("Object written to shelf: " + resultFile.getAbsolutePath());
-            if(kob.metadata == null) {
-                kob.metadata = new Metadata();
-            }
-            if(kob.metadata.getArkId() == null) {
-                kob.metadata.setArkId(arkId);
-            }
-            inMemoryShelf.put(arkId, kob);
-
-        } catch (IOException e) {
-            throw new ActivatorException(e);
-        }
-    }
-
-    public boolean isBuiltinObject(ArkId arkId) {
-        Resource knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
-        return knowledgeResource.exists();
-    }
-
-    public Kobject getObject(ArkId arkId) {
-        if(!inMemoryShelf.containsKey(arkId)) {
-            Kobject kob = loadAndDeserialize(arkId);
-            inMemoryShelf.put(arkId, kob);
-        }
-        return inMemoryShelf.get(arkId);
-    }
-
-    // Convenience method
-    private Kobject loadAndDeserialize(ArkId arkId){
-        Resource res = loadKobjectResource(arkId);
-        return deserializeKobjectResource(res);
-    }
-
-    // Load serialized kobject as Resource
-    private Resource loadKobjectResource(ArkId arkId){
-
-      File shelf = new File(localStoragePath);
-      File knowledgeFile = new File(shelf, arkId.getFedoraPath());
-
-      Resource knowledgeResource = new FileSystemResource(knowledgeFile);
-
-      // Search order for kobject: shelf/path, shelf/path.json, built-in shelf
-      if(!knowledgeResource.exists()) {
-          knowledgeFile = new File(shelf, arkId.getFedoraPath() + ".json");
-          knowledgeResource = new FileSystemResource(knowledgeFile);
-
-          if (!knowledgeResource.exists()) {
-              knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
-
-              if (!knowledgeResource.exists()) {
-                  throw new KONotFoundException("Object with arkId " + arkId + " not found.");
-              }
-          }
+      if (!folderPath.exists()) {
+        folderPath.mkdirs();
       }
 
-      return knowledgeResource;
+      File resultFile = new File(folderPath, arkId.getFedoraPath());
+
+      writer.writeValue(resultFile, kob);
+      log.info("Object written to shelf: " + resultFile.getAbsolutePath());
+      if (kob.metadata == null) {
+        kob.metadata = new Metadata();
+      }
+      if (kob.metadata.getArkId() == null) {
+        kob.metadata.setArkId(arkId);
+      }
+      inMemoryShelf.put(arkId, kob);
+
+    } catch (IOException e) {
+      throw new ActivatorException(e);
     }
+  }
 
-    // Deserialize kobject resource to kobject
-    private Kobject deserializeKobjectResource( Resource res){
-      Kobject kob;
-        ObjectMapper mapper = new ObjectMapper();
+  public boolean isBuiltinObject(ArkId arkId) {
+    Resource knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
+    return knowledgeResource.exists();
+  }
 
-        try {
-            kob = mapper.readValue(res.getInputStream(), Kobject.class);
-        } catch (JsonGenerationException e) {
-            throw new ActivatorException(e);
-        } catch (IOException e) {
-            throw new KONotFoundException(e);
+  public Kobject getObject(ArkId arkId) {
+    if (!inMemoryShelf.containsKey(arkId)) {
+      Kobject kob = loadAndDeserialize(arkId);
+      inMemoryShelf.put(arkId, kob);
+    }
+    return inMemoryShelf.get(arkId);
+  }
+
+  // Convenience method
+  private Kobject loadAndDeserialize(ArkId arkId) {
+    Resource res = loadKobjectResource(arkId);
+    return deserializeKobjectResource(res);
+  }
+
+  // Load serialized kobject as Resource
+  private Resource loadKobjectResource(ArkId arkId) {
+
+    File shelf = new File(localStoragePath);
+    File knowledgeFile = new File(shelf, arkId.getFedoraPath());
+
+    Resource knowledgeResource = new FileSystemResource(knowledgeFile);
+
+    // Search order for kobject: shelf/path, shelf/path.json, built-in shelf
+    if (!knowledgeResource.exists()) {
+      knowledgeFile = new File(shelf, arkId.getFedoraPath() + ".json");
+      knowledgeResource = new FileSystemResource(knowledgeFile);
+
+      if (!knowledgeResource.exists()) {
+        knowledgeResource = new ClassPathResource(BUILTIN_SHELF + arkId.getFedoraPath());
+
+        if (!knowledgeResource.exists()) {
+          throw new KONotFoundException("Object with arkId " + arkId + " not found.");
         }
-
-      return new Kobject();
+      }
     }
 
-    public boolean deleteObject(ArkId arkId) {
+    return knowledgeResource;
+  }
 
-        boolean success;
-        File folderPath = new File(localStoragePath);
+  // Deserialize kobject resource to kobject
+  private Kobject deserializeKobjectResource(Resource res) {
+    Kobject kob;
+    ObjectMapper mapper = new ObjectMapper();
 
-        File resultFile = new File(folderPath, arkId.getFedoraPath());
-        success = resultFile.delete();
-        log.info("Object deleted from shelf: " + resultFile.getAbsolutePath());
-
-        if (success) {
-            if (inMemoryShelf.containsKey(arkId)) {
-                inMemoryShelf.remove(arkId);
-            }
-        }
-        return success;
+    try {
+      kob = mapper.readValue(res.getInputStream(), Kobject.class);
+    } catch (JsonGenerationException e) {
+      throw new ActivatorException(e);
+    } catch (IOException e) {
+      throw new KONotFoundException(e);
     }
 
-    public List<Kobject> getAllObjects() {
-        File folderPath = new File(localStoragePath);
+    return new Kobject();
+  }
 
-        log.info("Reloading shelf: " + folderPath.getAbsolutePath());
-        List<Resource> knowledgeObjectResources = new ArrayList<>();
-        knowledgeObjectResources.addAll(getBuiltinClasspathResources());
+  public boolean deleteObject(ArkId arkId) {
 
-        knowledgeObjectResources.addAll(getFilesystemResources());
+    boolean success;
+    File folderPath = new File(localStoragePath);
 
-        for(Resource res : knowledgeObjectResources) {
-            String objectName = res.getFilename();
-            String[] parts = objectName.split("[-\\.]"); // split on hyphens and periods
-            if((parts.length == 2 || parts.length == 3) && objectName.indexOf('.') != 0) {
-                ArkId arkId = new ArkId(parts[0], parts[1]);
-                getObject(arkId);
-            } else {
-                log.warn("Incorrectly named KO resource: " + res.getFilename());
-            }
-        }
-        return new ArrayList<>(inMemoryShelf.values());
+    File resultFile = new File(folderPath, arkId.getFedoraPath());
+    success = resultFile.delete();
+    log.info("Object deleted from shelf: " + resultFile.getAbsolutePath());
+
+    if (success) {
+      if (inMemoryShelf.containsKey(arkId)) {
+        inMemoryShelf.remove(arkId);
+      }
     }
+    return success;
+  }
 
-    private List<Resource> getBuiltinClasspathResources() {
-        List<Resource> koResources = new ArrayList<>();
-        try {
-            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] objectLocation = resolver.getResources(BUILTIN_SHELF_PATTERN);
-            if(objectLocation[0] != null && objectLocation[0].exists()) {
-                koResources.addAll(Arrays.asList(objectLocation));
-            }
-        } catch (IOException e) {
-            log.warn("Failed to get resources from the built-in shelf during startup " + e);
-        }
-        return koResources;
-    }
+  public List<Kobject> getAllObjects() {
+    File folderPath = new File(localStoragePath);
 
-    private List<Resource> getFilesystemResources() {
-        List<Resource> koResources = new ArrayList<>();
-        File shelfFolder = new File(localStoragePath);
-        if(shelfFolder.isDirectory()) {
-            for (File ko : shelfFolder.listFiles()) {
-                koResources.add(new FileSystemResource(ko));
-            }
-        }
-        return koResources;
-    }
+    log.info("Reloading shelf: " + folderPath.getAbsolutePath());
+    List<Resource> knowledgeObjectResources = new ArrayList<>();
+    knowledgeObjectResources.addAll(getBuiltinClasspathResources());
 
-    @PostConstruct
-    public void initBuiltinShelf() {
-        getAllObjects();
+    knowledgeObjectResources.addAll(getFilesystemResources());
+
+    for (Resource res : knowledgeObjectResources) {
+      String objectName = res.getFilename();
+      String[] parts = objectName.split("[-\\.]"); // split on hyphens and periods
+      if ((parts.length == 2 || parts.length == 3) && objectName.indexOf('.') != 0) {
+        ArkId arkId = new ArkId(parts[0], parts[1]);
+        getObject(arkId);
+      } else {
+        log.warn("Incorrectly named KO resource: " + res.getFilename());
+      }
     }
+    return new ArrayList<>(inMemoryShelf.values());
+  }
+
+  private List<Resource> getBuiltinClasspathResources() {
+    List<Resource> koResources = new ArrayList<>();
+    try {
+      PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+      Resource[] objectLocation = resolver.getResources(BUILTIN_SHELF_PATTERN);
+      if (objectLocation[0] != null && objectLocation[0].exists()) {
+        koResources.addAll(Arrays.asList(objectLocation));
+      }
+    } catch (IOException e) {
+      log.warn("Failed to get resources from the built-in shelf during startup " + e);
+    }
+    return koResources;
+  }
+
+  private List<Resource> getFilesystemResources() {
+    List<Resource> koResources = new ArrayList<>();
+    File shelfFolder = new File(localStoragePath);
+    if (shelfFolder.isDirectory()) {
+      for (File ko : shelfFolder.listFiles()) {
+        koResources.add(new FileSystemResource(ko));
+      }
+    }
+    return koResources;
+  }
+
+  @PostConstruct
+  public void initBuiltinShelf() {
+    getAllObjects();
+  }
 
 }
