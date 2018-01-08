@@ -58,11 +58,11 @@ public class TestUtils {
 
   public static final String CODE = "function execute(a){ return a.toString()}";
 
-  public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    return mapper.writeValueAsBytes(object);
-  }
+//  public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+//    ObjectMapper mapper = new ObjectMapper();
+//    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//    return mapper.writeValueAsBytes(object);
+//  }
 
   // Helper function to retrieve string fixtures from test package resources
   public static String loadFixture(String fixtureName) throws IOException {

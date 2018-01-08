@@ -1,8 +1,11 @@
 package edu.umich.lhs.activator.services;
 
 import edu.umich.lhs.activator.TestUtils;
+import edu.umich.lhs.activator.domain.DataType;
 import edu.umich.lhs.activator.domain.KnowledgeObject;
 import edu.umich.lhs.activator.domain.KnowledgeObjectBuilder;
+import edu.umich.lhs.activator.domain.Kobject;
+import edu.umich.lhs.activator.domain.KobjectBuilder;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import org.junit.Rule;
@@ -25,6 +28,8 @@ import static org.junit.Assert.assertNotNull;
 @SpringBootTest
 public class ActivationServiceTest {
 
+  public static final String payload_code = "function execute(a){ return a.toString()}";
+
   @Autowired
   private ActivationService activationService;
 
@@ -41,17 +46,21 @@ public class ActivationServiceTest {
   @Test
   public void testCalculateWithEmptyKOandNullInputs() throws Exception {
 
-    KnowledgeObject ko = new KnowledgeObject();
+    Kobject ko = new Kobject();
     expectedEx.expect(ActivatorException.class);
     expectedEx.expectMessage("No inputs given.");
     assertNotNull(activationService.validateAndExecute(null, ko));
   }
 
+  //TODO: Move this spec to a test of the Validator
   @Test
   public void testCalculateWithWrongInput() throws Exception {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.STRING, 1, 1)
+        .returnType(String.class)
+        .payloadEngineType("JAVASCRIPT")
+        .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("test", "test");
@@ -62,9 +71,12 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithCorrectInputsButNoPayload() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.STRING, 1, 1)
+        .returnType(String.class)
+        .payloadEngineType("JAVASCRIPT")
+        .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "test");
@@ -79,12 +91,12 @@ public class ActivationServiceTest {
 
   @Test
   public void testCalculateWithSyntaxErrorToThrowEx() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent("function execute(a) return a}") // Syntax error
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.INT, 1, 1)
+        .returnType(String.class)
         .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
 
     Map<String, Object> inputs = new HashMap<>();
@@ -93,19 +105,20 @@ public class ActivationServiceTest {
     expectedResult.setSource(null);
 
     expectedEx.expect(ActivatorException.class);
-//    expectedEx.expectMessage(contains("Error occurred while executing javascript code SyntaxError:"));
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
-
   }
 
+  //TODO: Ensure validator is called
+
+  //TODO: Move this spec to a test of the Validator
   @Test
   public void testCalculateWithTooManyInputsToThrowEx() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent(TestUtils.CODE)
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.INT, 1, 1)
+        .returnType(String.class)
         .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
 
     Map<String, Object> inputs = new HashMap<>();
@@ -119,14 +132,16 @@ public class ActivationServiceTest {
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
+  //TODO: Move this spec to a test of the Validator
   @Test
   public void testCalculateWithTooFewInputsToThrowEx() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_TWO_INPUTS)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_STR)
-        .payloadContent(TestUtils.CODE)
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.INT, 1, 1)
+        .addParamDescription("rxcui2", DataType.INT, 1, 1)
+        .returnType(String.class)
         .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
 
     Map<String, Object> inputs = new HashMap<>();
@@ -139,14 +154,16 @@ public class ActivationServiceTest {
     Result generatedResult = activationService.validateAndExecute(inputs, ko);
   }
 
+  //TODO: Move this spec to a test of the Validator
   @Test
   public void testStringReturnedWhenExpectIntToThrowEx() {
-    KnowledgeObject ko = new KnowledgeObjectBuilder()
-        .inputMessage(TestUtils.INPUT_SPEC_ONE_INPUT)
-        .outputMessage(TestUtils.OUTPUT_SPEC_RET_INT)
-        .payloadContent(TestUtils.CODE)
+    Kobject ko = new KobjectBuilder()
+        .addParamDescription("rxcui", DataType.INT, 1, 1)
+        .addParamDescription("rxcui2", DataType.INT, 1, 1)
+        .returnType(Integer.class)
         .payloadEngineType("JAVASCRIPT")
         .payloadFunctionName("execute")
+        .payloadContent(payload_code)
         .build();
     Map<String, Object> inputs = new HashMap<>();
     inputs.put("rxcui", "1723222");
