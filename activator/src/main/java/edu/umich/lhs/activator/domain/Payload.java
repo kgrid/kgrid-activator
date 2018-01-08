@@ -17,6 +17,12 @@ public class Payload {
     functionName = "";
   }
 
+  public Payload(String content, String engineType, String functionName){
+    this.content = content;
+    this.engineType = engineType;
+    this.functionName = functionName;
+  }
+
   public String getContent() {
     return content;
   }

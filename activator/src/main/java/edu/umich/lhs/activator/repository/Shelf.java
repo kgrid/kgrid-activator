@@ -1,15 +1,14 @@
 package edu.umich.lhs.activator.repository;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.Kobject;
 import edu.umich.lhs.activator.domain.Metadata;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import edu.umich.lhs.activator.exception.KONotFoundException;
+import edu.umich.lhs.activator.services.KobjectImporter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +43,15 @@ public class Shelf {
 
   public void saveObject(Kobject kob, ArkId arkId) throws ActivatorException {
 
+    // Fill identifier and metadata if none exist.
+    if (kob.metadata == null) {
+      kob.metadata = new Metadata();
+    }
+    if (kob.metadata.getArkId() == null) {
+      kob.metadata.setArkId(arkId);
+    }
+
     try {
-      ObjectMapper mapper = new ObjectMapper().disable(MapperFeature.USE_ANNOTATIONS);
-      ObjectWriter writer = mapper.writer();
       File folderPath = new File(localStoragePath);
 
       if (!folderPath.exists()) {
@@ -52,15 +59,11 @@ public class Shelf {
       }
 
       File resultFile = new File(folderPath, arkId.getFedoraPath());
+      FileOutputStream ofs = new FileOutputStream(resultFile);
+      RDFDataMgr.write(ofs, kob.getRdfModel(), RDFFormat.JSONLD);
 
-      writer.writeValue(resultFile, kob);
       log.info("Object written to shelf: " + resultFile.getAbsolutePath());
-      if (kob.metadata == null) {
-        kob.metadata = new Metadata();
-      }
-      if (kob.metadata.getArkId() == null) {
-        kob.metadata.setArkId(arkId);
-      }
+
       inMemoryShelf.put(arkId, kob);
 
     } catch (IOException e) {
@@ -115,17 +118,16 @@ public class Shelf {
   // Deserialize kobject resource to kobject
   private Kobject deserializeKobjectResource(Resource res) {
     Kobject kob;
-    ObjectMapper mapper = new ObjectMapper();
 
     try {
-      kob = mapper.readValue(res.getInputStream(), Kobject.class);
+      kob = KobjectImporter.jsonToKobject(res.getInputStream());
     } catch (JsonGenerationException e) {
       throw new ActivatorException(e);
     } catch (IOException e) {
       throw new KONotFoundException(e);
     }
 
-    return new Kobject();
+    return kob;
   }
 
   public boolean deleteObject(ArkId arkId) {

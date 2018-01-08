@@ -1,11 +1,11 @@
 package edu.umich.lhs.activator.controller;
 
 import edu.umich.lhs.activator.domain.KnowledgeObject;
+import edu.umich.lhs.activator.domain.Kobject;
 import edu.umich.lhs.activator.domain.Payload;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import edu.umich.lhs.activator.repository.RemoteShelf;
 import edu.umich.lhs.activator.repository.Shelf;
-import edu.umich.lhs.activator.repository.Shelf.SourcedKO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,30 +41,28 @@ public class ShelfController {
         ResponseEntity<String> result;
         String response = "Object " + arkId.getArkId() + " added to the shelf";
 
-        KnowledgeObject dto = libraryInterface.checkOutByArkId(arkId);
+        Kobject kob = libraryInterface.checkOutByArkId(arkId);
         if(localStorage.isBuiltinObject(arkId)) {
             response = "Object " + arkId.getArkId() + " added to the shelf, overriding existing built-in object.";
         }
-        localStorage.saveObject(dto, arkId);
+        localStorage.saveObject(kob, arkId);
 
         result = new ResponseEntity<>(response, HttpStatus.OK);
 
         return result;
-
     }
-
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
             path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-    public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody KnowledgeObject dto) throws ActivatorException {
+    public ResponseEntity<String> checkOutObject(ArkId arkId, @RequestBody Kobject kob) throws ActivatorException {
         try {
             String response = "Object " + arkId.getArkId() + " added to the shelf";
             if(localStorage.isBuiltinObject(arkId)) {
                 response = "Object " + arkId.getArkId() + " added to the shelf, overriding existing built-in object.";
             }
-            dto.url = NAME_TO_THING_ADD + arkId;
-            localStorage.saveObject(dto, arkId);
-            ResponseEntity<String> result = new ResponseEntity<String>(response, HttpStatus.OK);
+            kob.setUrl(NAME_TO_THING_ADD + arkId);
+            localStorage.saveObject(kob, arkId);
+            ResponseEntity<String> result = new ResponseEntity<>(response, HttpStatus.OK);
             return result;
         } catch (Exception e) {
             throw new ActivatorException("Unable to save object with ArkId: " + arkId + ", root cause: " + e.getMessage(), e);
@@ -72,7 +70,7 @@ public class ShelfController {
     }
 
     @GetMapping(path = {"/knowledgeObject", "/shelf"})
-    public List<SourcedKO> retrieveObjectsOnShelf() {
+    public List<Kobject> retrieveObjectsOnShelf() {
         return localStorage.getAllObjects();
     }
 
@@ -102,15 +100,15 @@ public class ShelfController {
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}/payload", "/shelf/ark:/{naan}/{name}/payload"})
     public Payload retrieveObjectPayload(ArkId arkId) {
 
-        KnowledgeObject dto = retrieveObjectOnShelf(arkId);
-        if (dto.payload == null) {
+        Kobject kob = retrieveObjectOnShelf(arkId);
+        if (kob.getPayload() == null) {
             throw new ActivatorException("Payload is null for object with Ark Id:  " + arkId);
         }
-        return dto.payload;
+        return kob.getPayload();
     }
 
     @GetMapping(path = {"/knowledgeObject/ark:/{naan}/{name}", "/shelf/ark:/{naan}/{name}"})
-    public KnowledgeObject retrieveObjectOnShelf(ArkId arkId) {
+    public Kobject retrieveObjectOnShelf(ArkId arkId) {
         return localStorage.getObject(arkId);
     }
 

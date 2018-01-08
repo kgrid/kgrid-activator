@@ -1,7 +1,9 @@
 package edu.umich.lhs.activator.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Map;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Created by grosscol on 2017-09-11.
@@ -15,6 +17,34 @@ public class Kobject implements PayloadProvider {
   private ArrayList<ParamDescription> paramDescriptions;
   private Class returnType;
   private ArkId identifier;
+  private String url;
+
+
+  @JsonIgnore
+  private Model rdfModel;
+
+  public Kobject(){
+    paramDescriptions = new ArrayList<>();
+    payload = new Payload();
+    url = "";
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  @Override
+  public String toString() {
+    return "Kobject [FunctionName=" + payload.getFunctionName() +
+        ", engineType=" + payload.getEngineType() +
+        ", payloadContent=" + payload.getContent() +
+        ", url=" + url +
+        "]";
+  }
 
   @Override
   public Class getReturnType() {
@@ -37,17 +67,22 @@ public class Kobject implements PayloadProvider {
 
   @Override
   public String getFunctionName() {
-    return "";
+    return payload.getFunctionName();
   }
 
   @Override
   public String getContent() {
-    return "";
+    return payload.getContent();
   }
 
   @Override
   public String getEngineType() {
-    return "";
+    return payload.getEngineType();
+  }
+
+  //TODO: Refactor such that this is not required?  Use payload provider or suitable interface?
+  public Payload getPayload() {
+    return payload;
   }
 
   public ArkId getIdentifier() {
@@ -62,6 +97,10 @@ public class Kobject implements PayloadProvider {
     paramDescriptions = p;
   }
 
+  public void addParamDescriptions(ParamDescription p) {
+    paramDescriptions.add(p);
+  }
+
   public void setNoofParams(Integer i) {
     noofParams = i;
   }
@@ -70,5 +109,11 @@ public class Kobject implements PayloadProvider {
     payload = p;
   }
 
+  public Model getRdfModel() {
+    return rdfModel;
+  }
 
+  public void setRdfModel(Model rdfModel) {
+    this.rdfModel = rdfModel;
+  }
 }

@@ -24,6 +24,9 @@ import org.apache.jena.vocabulary.RDF;
 
 /**
  * Created by grosscol on 2017-09-11.
+ *
+ * Conversion from JSON-LD to Kobject
+ * Accomplished by creating an RDF model from a JSON-LD input and then extracting relevant fields.
  */
 public class KobjectImporter {
 
@@ -75,12 +78,12 @@ public class KobjectImporter {
     return m;
   }
 
-  static Kobject jsonToKobject(String ins) {
+  public static Kobject jsonToKobject(String ins) {
     ByteArrayInputStream stream = new ByteArrayInputStream(ins.getBytes());
     return jsonToKobject(stream);
   }
 
-  static Kobject jsonToKobject(InputStream ins) {
+  public static Kobject jsonToKobject(InputStream ins) {
     Model model = jsonToModel(ins);
     return extractKobject(model);
   }
@@ -100,6 +103,7 @@ public class KobjectImporter {
     kob.setReturnType(returnClass);
     kob.setIdentifier(identifier);
     kob.setPayload(payload);
+    kob.setRdfModel(model);
     return kob;
 
   }

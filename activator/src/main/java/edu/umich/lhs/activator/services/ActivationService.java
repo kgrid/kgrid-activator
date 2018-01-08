@@ -3,6 +3,7 @@ package edu.umich.lhs.activator.services;
 import edu.umich.lhs.activator.adapter.EnvironmentAdapter;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.KnowledgeObject;
+import edu.umich.lhs.activator.domain.Kobject;
 import edu.umich.lhs.activator.domain.Payload;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.exception.ActivatorException;
@@ -25,7 +26,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by nggittle on 3/31/17.
+ * Responsible for loading Adapters, matching payload with adapter,
+ *   passing payload to adapter, and returning result.
  */
 @Service
 public class ActivationService implements ApplicationContextAware {
@@ -58,17 +60,17 @@ public class ActivationService implements ApplicationContextAware {
 
   public Result getResultByArkId(Map<String, Object> inputs, ArkId arkId) {
 
-    KnowledgeObject ko;
+    Kobject kob;
 
-    ko = shelf.getObject(arkId);
+    kob = shelf.getObject(arkId);
 
     //TODO: If we need to auto-load objects then add to shelf controller
 
-    Result result = validateAndExecute(inputs, ko);
+    Result result = validateAndExecute(inputs, kob);
 
     result.setSource(arkId.getArkId());
 
-    result.setMetadata(ko.metadata);
+    result.setMetadata(kob.metadata);
 
     return result;
 
@@ -104,27 +106,31 @@ public class ActivationService implements ApplicationContextAware {
     return true;
   }
 
-  Result validateAndExecute(Map<String, Object> inputs, KnowledgeObject ko) {
+  Result validateAndExecute(Map<String, Object> inputs, Kobject kob) {
 
     Result result = new Result();
-    ioSpec ioSpec;
 
+    // Conversion from RDF to Java object was done at load time
+    /*
     log.info("Object Input Message and Output Message sent for conversion of RDF .");
     ioSpec = converter.covertInputOutputMessageToCodeMetadata(ko);
     log.info("Object Input Message and Output Message conversion complete . Code Metadata for Input and Output Message ");
+    */
 
-    if (isInputAndPayloadValid(inputs, ko.payload, ioSpec)) {
+    PayloadInputValidator validator = new PayloadInputValidator(kob, inputs);
 
+    if(validator.isValid()){
+      log.info("Payload provider (kobject) validataed.");
       log.info("Object payload is sent to Adapter for execution.");
 
       try {
-        Class adapter = adapterFactory(ko.payload.getEngineType());
+        Class adapter = adapterFactory(kob.getEngineType());
         EnvironmentAdapter environmentAdapterInstance = (EnvironmentAdapter)adapter.newInstance();
         applicationContext.getAutowireCapableBeanFactory().autowireBean(environmentAdapterInstance);
 
         Method execute = adapter.getDeclaredMethod("execute", Map.class, String.class, String.class, Class.class);
-        Object resultObj = execute.invoke(environmentAdapterInstance, inputs, ko.payload.getContent(), ko.payload.getFunctionName(),
-            ioSpec.getReturnTypeAsClass());
+        Object resultObj = execute.invoke(environmentAdapterInstance, inputs, kob.getContent(), kob.getFunctionName(),
+            kob.getReturnType());
         result.setResult(resultObj);
       } catch (IllegalAccessException | NoSuchMethodException | InstantiationException e) {
         throw new ActivatorException("Error invoking execute for payload " + e, e);
