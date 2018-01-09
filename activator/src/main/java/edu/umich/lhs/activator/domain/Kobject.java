@@ -27,6 +27,7 @@ public class Kobject implements PayloadProvider {
     paramDescriptions = new ArrayList<>();
     payload = new Payload();
     url = "";
+    returnType = Map.class;
   }
 
   public String getUrl() {
@@ -48,7 +49,7 @@ public class Kobject implements PayloadProvider {
 
   @Override
   public Class getReturnType() {
-    return Map.class;
+    return returnType;
   }
 
   public void setReturnType(Class c) {
@@ -57,12 +58,15 @@ public class Kobject implements PayloadProvider {
 
   @Override
   public int getNoOfParams() {
-    return 0;
+    if(noofParams == null){
+      return 0;
+    }
+    return noofParams;
   }
 
   @Override
   public ArrayList<ParamDescription> getParams() {
-    return new ArrayList<>();
+    return paramDescriptions;
   }
 
   @Override

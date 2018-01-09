@@ -117,9 +117,18 @@ public class ActivationService implements ApplicationContextAware {
     log.info("Object Input Message and Output Message conversion complete . Code Metadata for Input and Output Message ");
     */
 
-    PayloadInputValidator validator = new PayloadInputValidator(kob, inputs);
+    PayloadProviderValidator pValidator = new PayloadProviderValidator(kob);
+    pValidator.verify();
 
-    if(validator.isValid()){
+    PayloadInputValidator inputValidator = new PayloadInputValidator(kob, inputs);
+
+
+    // Problem with the structure of the provided payload
+    if(!pValidator.verify()){
+      throw new ActivatorException(pValidator.getMessage());
+    }
+
+    if(inputValidator.isValid()){
       log.info("Payload provider (kobject) validataed.");
       log.info("Object payload is sent to Adapter for execution.");
 
@@ -137,6 +146,9 @@ public class ActivationService implements ApplicationContextAware {
       } catch (InvocationTargetException invocationEx) {
         throw new ActivatorException("Error invoking execute due to internal adapter error: " + invocationEx.getCause(), invocationEx);
       }
+    }
+    else{
+      throw new ActivatorException(inputValidator.getMessage());
     }
 
     return result;

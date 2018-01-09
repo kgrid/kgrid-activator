@@ -93,6 +93,9 @@ public class ShelfController {
         if (payload.getContent() == null) {
             throw new ActivatorException("Content is null for object with Ark Id:  " + arkId);
         }
+        else if(payload.getContent().isEmpty()){
+            throw new ActivatorException("Content is empty for object with Ark Id:  " + arkId);
+        }
         return payload.getContent();
 
     }

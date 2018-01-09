@@ -10,7 +10,7 @@ public class PayloadProviderValidator {
   public static final String VALIDATED_MESSAGE = "payload provider valid.";
   public static final String ARITY_MESSAGE = "Incorrect number of parameters declared.";
   public static final String FUNC_NAME_MESSAGE = "Function does not have valid name.";
-  public static final String CONTENT_MESSAGE = "Content is empty.";
+  public static final String CONTENT_MESSAGE = "Knowledge object payload content is empty";
   public static final String RETURN_TYPE_MESSAGE = "Invalid return type.";
 
   private final PayloadProvider provider;
