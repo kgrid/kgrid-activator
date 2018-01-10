@@ -20,6 +20,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 /**
@@ -137,7 +138,15 @@ public class KobjectImporter {
    * Deserialize the identifier (arkida) out of a rdf knowledge object resource
    */
   static ArkId deserializeIdentifier(Resource rdfKobject) {
-    return (new ArkId(rdfKobject.getProperty(identifierProp).getString()));
+    Statement identifier = rdfKobject.getProperty(identifierProp);
+    ArkId ark;
+    if(identifier == null){
+      ark = new ArkId();
+    }
+    else{
+      ark = new ArkId(rdfKobject.getProperty(identifierProp).getString());
+    }
+    return ark;
   }
 
   /**
@@ -145,11 +154,12 @@ public class KobjectImporter {
    */
   static Payload deserializePayload(Resource rdfKobject) {
     Resource rdfPayload = rdfKobject.getPropertyResourceValue(payloadProp);
-
     Payload payload = new Payload();
-    payload.setFunctionName(rdfPayload.getProperty(funcNameProp).getString());
-    payload.setEngineType(rdfPayload.getProperty(engineTypeProp).getString());
-    payload.setContent(rdfPayload.getProperty(contentProp).getString());
+    if(rdfPayload != null) {
+      payload.setFunctionName(rdfPayload.getProperty(funcNameProp).getString());
+      payload.setEngineType(rdfPayload.getProperty(engineTypeProp).getString());
+      payload.setContent(rdfPayload.getProperty(contentProp).getString());
+    }
 
     return payload;
   }
@@ -159,7 +169,11 @@ public class KobjectImporter {
    */
   static Integer deserializeNoofParams(Resource rdfKobject) {
     Resource inpMsg = rdfKobject.getPropertyResourceValue(inpMsgProp);
-    return inpMsg.getProperty(noOfParamsProp).getInt();
+    if(inpMsg == null){
+      return 0;
+    } else {
+      return inpMsg.getProperty(noOfParamsProp).getInt();
+    }
   }
 
   /**
@@ -170,6 +184,10 @@ public class KobjectImporter {
 
     // Get input message as intermediate step
     Resource inpMsg = rdfKobject.getPropertyResourceValue(inpMsgProp);
+
+    if(inpMsg == null){
+      return params;
+    }
 
     NodeIterator itt = inpMsg.getProperty(hasParams).getSeq().iterator();
     while (itt.hasNext()) {
@@ -198,10 +216,17 @@ public class KobjectImporter {
   static Class deserializeReturnType(Resource rdfKobject) {
     Resource outMsg = rdfKobject.getPropertyResourceValue(outMsgProp);
 
-    String retTypeString = outMsg.getProperty(retTypeProp).getString();
-    DataType retType = EnumUtils.getEnum(DataType.class, retTypeString);
+    if(outMsg != null){
+      Statement rTypeProp = outMsg.getProperty(retTypeProp);
 
-    return (dataClasses.getOrDefault(retType, Object.class));
+      if(rTypeProp != null){
+        String retTypeString = outMsg.getProperty(retTypeProp).getString();
+        DataType retType = EnumUtils.getEnum(DataType.class, retTypeString);
+        return (dataClasses.getOrDefault(retType, Object.class));
+      }
+    }
+
+    return Object.class;
   }
 
 }
