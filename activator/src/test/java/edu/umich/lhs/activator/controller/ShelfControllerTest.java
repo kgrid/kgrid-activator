@@ -106,15 +106,15 @@ public class ShelfControllerTest {
 
     @Test
     public void addBlankKOtoShelf() throws Exception {
-        KnowledgeObject ko = new KnowledgeObjectBuilder().build();
+        String blankJson = TestUtils.loadFixture("kobject-empty.json");
 
-//        mockMvc.perform(put("/shelf/ark:/{naan}/{name}","99999", "fk4df70k9j")
-//            .contentType(TestUtils.APPLICATION_JSON_UTF8)
-//            .content(TestUtils.convertObjectToJsonBytes(ko))
-//        )
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType(TestUtils.APPLICATION_TEXT_UTF8))
-//            .andExpect(content().string("Object ark:/99999/fk4df70k9j added to the shelf"));
+        mockMvc.perform(put("/shelf/ark:/{naan}/{name}","99999", "fk4df70k9j")
+            .contentType(TestUtils.APPLICATION_JSON_UTF8)
+            .content(blankJson)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(TestUtils.APPLICATION_TEXT_UTF8))
+            .andExpect(content().string("Object ark:/99999/fk4df70k9j added to the shelf"));
     }
 
     @Test

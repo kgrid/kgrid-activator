@@ -1,0 +1,79 @@
+{
+  "@graph": [
+    {
+      "@id": "http://example.com/UUID-0000-0000-0001",
+      "@type": "kgrid:knowledgeObject"
+    }
+  ],
+  "@context": {
+    "_1": {
+      "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#_1",
+      "@type": "@id"
+    },
+    "identifier": {
+      "@id": "http://schema.org/identifier"
+    },
+    "url": {
+      "@id": "http://schema.org/url"
+    },
+    "hasPayload": {
+      "@id": "http://lhs.umich.edu/kgrid#hasPayload",
+      "@type": "@id"
+    },
+    "hasOutputMessage": {
+      "@id": "http://lhs.umich.edu/kgrid#hasOutputMessage",
+      "@type": "@id"
+    },
+    "hasInputMessage": {
+      "@id": "http://lhs.umich.edu/kgrid#hasInputMessage",
+      "@type": "@id"
+    },
+    "returnType": {
+      "@id": "http://lhs.umich.edu/kgrid#returnType"
+    },
+    "datatype": {
+      "@id": "http://lhs.umich.edu/kgrid#datatype"
+    },
+    "paramname": {
+      "@id": "http://lhs.umich.edu/kgrid#paramname"
+    },
+    "hasParams": {
+      "@id": "http://lhs.umich.edu/kgrid#hasParams",
+      "@type": "@id"
+    },
+    "noofparams": {
+      "@id": "http://lhs.umich.edu/kgrid#noofparams"
+    },
+    "engineType": {
+      "@id": "http://lhs.umich.edu/kgrid#engineType"
+    },
+    "content": {
+      "@id": "http://lhs.umich.edu/kgrid#content"
+    },
+    "functionName": {
+      "@id": "http://lhs.umich.edu/kgrid#functionName"
+    },
+    "bibliographicCitation": {
+      "@id": "http://purl.org/dc/terms/bibliographicCitation"
+    },
+    "created": {
+      "@id": "http://purl.org/dc/terms/created"
+    },
+    "modified": {
+      "@id": "http://purl.org/dc/terms/modified"
+    },
+    "published": {
+      "@id": "http://lhs.umich.edu/kgrid#published"
+    },
+    "description": {
+      "@id": "http://purl.org/dc/terms/description"
+    },
+    "title": {
+      "@id": "http://purl.org/dc/terms/title"
+    },
+    "dc": "http://purl.org/dc/terms/",
+    "schema": "http://schema.org/",
+    "kgrid": "http://lhs.umich.edu/kgrid#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  }
+}
