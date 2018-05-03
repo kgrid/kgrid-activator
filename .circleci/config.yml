@@ -1,0 +1,66 @@
+version: 2
+jobs:
+
+  ##############
+  # Build job uses a go cli tool to create a github release
+  ##############
+  build:
+
+    working_directory: ~/kgrid
+
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+
+      #must run install to ensure multi module dependencies(shelf-api) are cached
+      - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      # run build and test
+      - run: mvn package
+
+      - persist_to_workspace:
+          root: shelf-gateway
+          paths:
+            - target
+
+
+      # save test results
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/junit
+
+      - store_artifacts:
+          path: ~/junit
+
+      - store_artifacts:
+          path: environment-adapter/target
+      - store_artifacts:
+          path: javascript-adapter/target
+      - store_artifacts:
+          path: activator/target
+
