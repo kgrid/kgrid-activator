@@ -4,7 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
-@SpringBootApplication(scanBasePackages = {"edu.umich.lhs", "org.kgrid.shelf"})
+@SpringBootApplication(scanBasePackages = {"edu.umich.lhs.activator", "org.kgrid.shelf"})
 public class KgridActivatorApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
