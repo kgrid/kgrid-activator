@@ -12,12 +12,12 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ShelfHealthIndicator extends AbstractHealthIndicator {
+public class HeritageShelfHealthIndicator extends AbstractHealthIndicator {
 
   private final Shelf shelf;
 
   @Autowired
-  public ShelfHealthIndicator(Shelf shelf) { this.shelf = shelf; }
+  public HeritageShelfHealthIndicator(Shelf shelf) { this.shelf = shelf; }
 
   /**
    * Shows the external adapter directory and a list of the valid adapters loaded internally and from the adapter directory.

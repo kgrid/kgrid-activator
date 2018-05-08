@@ -27,7 +27,7 @@ import edu.umich.lhs.activator.domain.ArkId;
 
 @RestController
 @CrossOrigin
-public class ShelfController {
+public class HeritageShelfController {
 
     private static final String NAME_TO_THING_ADD = "http://n2t.net/";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
