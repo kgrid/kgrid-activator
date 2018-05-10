@@ -12,9 +12,9 @@ import javax.script.ScriptException;
 /**
  * Created by nggittle on 5/23/17.
  */
-public class JavaScriptAdapter implements EnvironmentAdapter {
+public class HeritageJavaScriptAdapter implements EnvironmentAdapter {
 
-  public JavaScriptAdapter() {}
+  public HeritageJavaScriptAdapter() {}
 
   @Override
   public Object execute(Map<String, Object> args, String code, String functionName, Class returnType) throws ActivatorException {

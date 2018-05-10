@@ -17,12 +17,12 @@ public class JavaScriptAdapterTest {
 
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
-  private JavaScriptAdapter javaScriptAdapter;
+  private HeritageJavaScriptAdapter javaScriptAdapter;
   private Map<String, Object> argMap;
 
   @Before
   public void setUp() {
-    javaScriptAdapter = new JavaScriptAdapter();
+    javaScriptAdapter = new HeritageJavaScriptAdapter();
     argMap = new HashMap<>();
   }
 
