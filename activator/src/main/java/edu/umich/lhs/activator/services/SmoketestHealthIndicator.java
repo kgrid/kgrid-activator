@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class SmoketestHealthIndicator extends AbstractHealthIndicator {
 
   private final Shelf shelf;
-  private final ActivationService activationService;
+  private final HeritageActivationService activationService;
 
   @Autowired
-  public SmoketestHealthIndicator(Shelf shelf, ActivationService activationService) {
+  public SmoketestHealthIndicator(Shelf shelf, HeritageActivationService activationService) {
     this.shelf = shelf;
     this.activationService = activationService;
   }

@@ -1,7 +1,5 @@
 package edu.umich.lhs.activator.services;
 
-import static org.springframework.boot.actuate.health.Health.unknown;
-
 import edu.umich.lhs.activator.exception.ActivatorException;
 import java.io.File;
 import java.util.Map;
@@ -13,10 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdapterHealthIndicator extends AbstractHealthIndicator {
 
-  private final ActivationService service;
+  private final HeritageActivationService service;
 
   @Autowired
-  public AdapterHealthIndicator(ActivationService service) {
+  public AdapterHealthIndicator(HeritageActivationService service) {
     this.service = service;
   }
 

@@ -3,7 +3,7 @@ package edu.umich.lhs.activator.controller;
 import edu.umich.lhs.activator.domain.ArkId;
 import edu.umich.lhs.activator.domain.Result;
 import edu.umich.lhs.activator.repository.RemoteShelf;
-import edu.umich.lhs.activator.services.ActivationService;
+import edu.umich.lhs.activator.services.HeritageActivationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ActivationController {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
-  private ActivationService service;
+  private HeritageActivationService service;
 
   @Autowired
   private RemoteShelf remoteShelf;

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * Created by nggittle on 3/31/17.
  */
 @Service
-public class ActivationService implements ApplicationContextAware {
+public class HeritageActivationService implements ApplicationContextAware {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -41,7 +41,7 @@ public class ActivationService implements ApplicationContextAware {
   private Map<String, Class> executionImplementations = new HashMap<>();
 
   @Autowired
-  public ActivationService(Shelf shelf, IoSpecGenerator converter) {
+  public HeritageActivationService(Shelf shelf, IoSpecGenerator converter) {
     this.shelf = shelf;
     this.converter = converter;
   }

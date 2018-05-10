@@ -1,6 +1,8 @@
 package org.kgrid.activator.services;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,17 +13,30 @@ public class ActivationServiceTest {
   private  ActivationService service;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     service = new ActivationService();
   }
 
   @Test
-  public void loadAdapters(){
-
-    service.loadAdapters();
-    Adapter adapter = service.findAdapter("JAVASCRIPT");
+  public void loadMockAdapters(){
+    service.loadAndInitializeAdapters();
+    Adapter adapter = service.findAdapter("MOCKADAPTER");
     assertNotNull(adapter);
+  }
+  @Test
+  public void adapterNotFound(){
+    service.loadAndInitializeAdapters();
+    assertNull(service.findAdapter("XXXXX"));
+  }
 
+  @Test
+  public void loadedAdaptersAreInitialized(){
+    service.loadAndInitializeAdapters();
+    Adapter jsAdapter =service.findAdapter("mockadapter");
+    assertEquals("UP",jsAdapter.status());
+
+    jsAdapter =service.findAdapter("mockadaptersupport");
+    assertEquals("UP",jsAdapter.status());
   }
 
 }

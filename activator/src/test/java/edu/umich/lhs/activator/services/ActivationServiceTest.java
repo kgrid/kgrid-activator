@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 public class ActivationServiceTest {
 
   @Autowired
-  private ActivationService activationService;
+  private HeritageActivationService activationService;
 
   @Rule
   public ExpectedException expectedEx = ExpectedException.none();
