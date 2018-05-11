@@ -34,4 +34,9 @@ public class ActivationService {
   protected Adapter findAdapter(String adapterType) {
     return adapters.get(adapterType.toUpperCase());
   }
+
+  public  HashMap<String, Adapter> getLoadedAdapters() {
+    return adapters;
+  }
+
 }
