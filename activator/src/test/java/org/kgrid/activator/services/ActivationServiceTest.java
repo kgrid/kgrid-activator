@@ -63,7 +63,7 @@ public class ActivationServiceTest {
 
     assertEquals(2, service.getEndpointExecutors().size());
     Executor executor = service.getEndpointExecutors()
-        .get(new ArkId("99999-newko").getArkId() + "v0.0.1:" + "welcome");
+        .get(new ArkId("99999-newko").getArkId() + "v0.0.1/" + "welcome");
     assertEquals("Welcome to Knowledge Grid, Tester", executor
         .execute("{\"name\":\"Tester\"}")
         .getResult());
