@@ -59,11 +59,12 @@ public class ActivationServiceTest {
   @Test
   public void activateKnowledgeObjects() {
 
-    service.activateKnowledgeObjects();
+    service.loadAndActivateEndpoints();
 
     assertEquals(2, service.getEndpointExecutors().size());
-    assertEquals("Welcome to Knowledge Grid, Tester", service.getEndpointExecutors()
-        .get(new ArkId("99999-newko").getArkId() + "v0.0.1:" + "welcome")
+    Executor executor = service.getEndpointExecutors()
+        .get(new ArkId("99999-newko").getArkId() + "v0.0.1:" + "welcome");
+    assertEquals("Welcome to Knowledge Grid, Tester", executor
         .execute("{\"name\":\"Tester\"}")
         .getResult());
 
@@ -85,7 +86,7 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.1");
 
-    assertTrue(service.activateKnowledageObjectEndPoint
+    assertTrue(service.activateKnowledgeObjectEndPoint
         (knowledgeObject) instanceof Executor ? true : false);
 
   }
@@ -98,7 +99,7 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
 
-    service.activateKnowledageObjectEndPoint(knowledgeObject);
+    service.activateKnowledgeObjectEndPoint(knowledgeObject);
 
   }
 }

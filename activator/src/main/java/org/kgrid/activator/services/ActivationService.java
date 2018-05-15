@@ -1,5 +1,6 @@
 package org.kgrid.activator.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.umich.lhs.activator.exception.ActivatorException;
 import java.nio.file.Path;
@@ -75,27 +76,26 @@ public class ActivationService {
    * Gets all of the knowledge object versions and activates the endpoint for each.  A map of
    * endpoint executors is created.
    */
-  public void activateKnowledgeObjects() {
+  public void loadAndActivateEndpoints() {
 
     //TODO All too hard
     //Load all of the ko including all versions
     Map<String, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
-    for (Entry<String, Map<String, ObjectNode>> entry : koList.entrySet()) {
+    for (Entry<String, Map<String, ObjectNode>> ko : koList.entrySet()) {
 
-      for (Entry<String, ObjectNode> version : entry.getValue().entrySet()) {
+      for (Entry<String, ObjectNode> version : ko.getValue().entrySet()) {
 
         KnowledgeObject knowledgeObject = knowledgeObjectRepository
-            .findByArkIdAndVersion(new ArkId(entry.getKey()), version.getKey());
+            .findByArkIdAndVersion(new ArkId(ko.getKey()), version.getKey());
 
         try {
 
-          endpointExecutors.put(knowledgeObject.getArkId() + knowledgeObject.version() +
-                  ":" + knowledgeObject.getFunctionName(),
-                          activateKnowledageObjectEndPoint(knowledgeObject));
+          endpointExecutors.put(knowledgeObject.getExecutorKey(),
+              activateKnowledgeObjectEndPoint(knowledgeObject));
 
         } catch (ActivatorException e) {
-          log.error("Couldn't activate KnowledageObject EndPoint" + e.getMessage());
+          log.error("Couldn't activate KnowledgeObject EndPoint" + e.getMessage());
         }
 
       }
@@ -104,40 +104,40 @@ public class ActivationService {
 
   }
 
+
   /**
    * Will find the applicable adapter for a Knowledge Object and activate the endpoint
    *
-   * @param knowledgeObject
-   * @return Executer
-   * @throws AdapterException
+   * @return Executor
    */
-  public Executor activateKnowledageObjectEndPoint(KnowledgeObject knowledgeObject)
+  Executor activateKnowledgeObjectEndPoint(KnowledgeObject knowledgeObject)
       throws AdapterException {
 
-    Adapter adapter;
+    Path modelPath = knowledgeObject.getModelDir();
+    JsonNode endPointMetadata = knowledgeObject.getModelMetadata();
 
-    if (adapters.get(knowledgeObject.adapterType()) == null) {
+    Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText());
+
+    if (adapter == null) {
 
       String message =
-          "No " + knowledgeObject.adapterType() + "adapter type found for ko " + knowledgeObject
+          "No " + endPointMetadata.get("adapterType") + "adapter type found for ko "
+              + knowledgeObject
               .getArkId() + ":" + knowledgeObject
               .version();
 
       log.error(message);
 
       throw new ActivatorException(message);
-
-    } else {
-      adapter = adapters.get(knowledgeObject.adapterType());
     }
 
     //TODO  Assuming function name will be used as endpoint will change :-)
-    Path resourcePath = knowledgeObject.getResourceLocation();
-    String functionName = knowledgeObject.getFunctionName();
+    String functionName = endPointMetadata.get("functionName").asText();
 
-    return adapter.activate(resourcePath, functionName);
+    return adapter.activate(modelPath.resolve("resource"), functionName);
 
   }
+
 }
 
 
