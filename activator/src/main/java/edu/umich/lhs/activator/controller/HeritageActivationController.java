@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin
-public class ActivationController {
+public class HeritageActivationController {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 

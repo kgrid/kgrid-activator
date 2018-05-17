@@ -5,8 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umich.lhs.activator.KgridActivatorApplication;
 import edu.umich.lhs.activator.exception.ActivatorException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -57,16 +62,21 @@ public class ActivationServiceTest {
   }
 
   @Test
-  public void activateKnowledgeObjects() {
+  public void activateKnowledgeObjects() throws IOException {
+
+    ObjectMapper mapper = new ObjectMapper();
+    String jsonInput = "{\"name\": \"Tester\"}";
+    TypeReference<HashMap<String, String>> typeRef
+        = new TypeReference<HashMap<String, String>>() {};
+    Map<String, String> map = mapper.readValue(jsonInput, typeRef);
 
     service.loadAndActivateEndpoints();
 
     assertEquals(2, service.getEndpointExecutors().size());
     Executor executor = service.getEndpointExecutors()
-        .get(new ArkId("99999-newko").getArkId() + "v0.0.1/" + "welcome");
+        .get("99999-newko/v0.0.1/welcome");
     assertEquals("Welcome to Knowledge Grid, Tester", executor
-        .execute("{\"name\":\"Tester\"}")
-        .getResult());
+        .execute(map));
 
   }
 

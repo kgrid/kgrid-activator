@@ -155,12 +155,5 @@ public class ShelfControllerTest {
             .andExpect(content().string("payload"));
     }
 
-    @Test
-    public void test404() throws Exception {
-        mockMvc.perform(get("/"))
-            .andExpect(status().isNotFound());
-
-    }
-
 
 }

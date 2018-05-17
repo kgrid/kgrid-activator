@@ -1,4 +1,3 @@
 function welcome(inputs){
-  var contact = JSON.parse(inputs);
-  return "Welcome to Knowledge Grid, " +  contact.name;
+  return "Welcome to Knowledge Grid, " +  inputs.name;
 }

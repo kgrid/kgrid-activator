@@ -91,7 +91,7 @@ public class ActivationService {
 
         try {
 
-          endpointExecutors.put(knowledgeObject.getExecutorKey(),
+          endpointExecutors.put(this.getExecutorKey(knowledgeObject),
               activateKnowledgeObjectEndPoint(knowledgeObject));
 
         } catch (ActivatorException e) {
@@ -102,6 +102,11 @@ public class ActivationService {
 
     }
 
+  }
+
+  public String getExecutorKey(KnowledgeObject knowledgeObject) {
+    return knowledgeObject.getArkId().getFedoraPath() +  "/" + knowledgeObject.version() +
+        "/" + knowledgeObject.getModelMetadata().get("functionName").asText();
   }
 
 
