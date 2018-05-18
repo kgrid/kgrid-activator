@@ -45,13 +45,9 @@ public class ActivationController {
   public Object processKnowledgeObjectEndPoint(@PathVariable String naan, @PathVariable String name,
       @PathVariable String version, @PathVariable String endpoint, @RequestBody Map<String, Object> inputs) {
 
-    final String key = naan + "-" + name + "/" + version + "/" + endpoint;
-
-    log.info("Looking for endpoint " + key);
+    final String key = naan + "/" + name + "/" + version + "/" + endpoint;
 
     Executor executor = service.getEndpointExecutors().get(key);
-
-    log.info("Found executor for " + key);
 
     EndPointResult result = null;
 
@@ -59,7 +55,7 @@ public class ActivationController {
 
       result = new EndPointResult( executor.execute(inputs) );
       result.getInfo().put( "inputs", inputs);
-      result.getInfo().put( "ko",  naan + "-" + name + "/" + version);
+      result.getInfo().put( "ko",  naan + "/" + name + "/" + version);
 
       return result;
 

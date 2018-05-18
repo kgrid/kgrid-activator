@@ -2,7 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.umich.lhs.activator.exception.ActivatorException;
+import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,8 +104,9 @@ public class ActivationService {
 
   }
 
+  //TODO  Need to fix the ark id so getting naan and name is posiible, we now have ark:/ or naan-name options
   public String getExecutorKey(KnowledgeObject knowledgeObject) {
-    return knowledgeObject.getArkId().getFedoraPath() +  "/" + knowledgeObject.version() +
+    return knowledgeObject.getArkId().getFedoraPath().replace('-','/') +  "/" + knowledgeObject.version() +
         "/" + knowledgeObject.getModelMetadata().get("functionName").asText();
   }
 
@@ -121,7 +122,7 @@ public class ActivationService {
     Path modelPath = knowledgeObject.getModelDir();
     JsonNode endPointMetadata = knowledgeObject.getModelMetadata();
 
-    Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText());
+    Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText().toUpperCase());
 
     if (adapter == null) {
 

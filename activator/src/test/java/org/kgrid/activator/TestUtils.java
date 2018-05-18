@@ -1,4 +1,4 @@
-package edu.umich.lhs.activator;
+package org.kgrid.activator;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
