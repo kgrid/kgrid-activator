@@ -28,6 +28,7 @@ public class ActivationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   private HashMap<String, Adapter> adapters;
+  private long knowledgeObjectsFound;
 
   @Value("${shelf.location}")
   private String locationStoragePath;
@@ -72,6 +73,10 @@ public class ActivationService {
     return endpointExecutors;
   }
 
+  public long getKnowledgeObjectsFound() {
+    return knowledgeObjectsFound;
+  }
+
   /**
    * Gets all of the knowledge object versions and activates the endpoint for each.  A map of
    * endpoint executors is created.
@@ -83,6 +88,7 @@ public class ActivationService {
     Map<String, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
     for (Entry<String, Map<String, ObjectNode>> ko : koList.entrySet()) {
+      knowledgeObjectsFound++;
 
       for (Entry<String, ObjectNode> version : ko.getValue().entrySet()) {
 
