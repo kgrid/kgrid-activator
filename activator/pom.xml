@@ -4,10 +4,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>edu.umich.lhs</groupId>
+  <groupId>org.kgrid</groupId>
   <artifactId>activator</artifactId>
   <version>0.5.8-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <name>activator</name>
   <description>KGrid: Activator</description>
@@ -26,7 +26,6 @@
 
   <properties>
     <java.version>1.8</java.version> <!-- override spring boot parent; sets java source & target -->
-    <packaging>war</packaging> <!-- default is standard war file -->
   </properties>
 
   <dependencies>
