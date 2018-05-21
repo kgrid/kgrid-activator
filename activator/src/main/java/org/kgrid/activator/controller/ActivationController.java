@@ -39,7 +39,7 @@ public class ActivationController {
   }
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
-      value = {"/{naan}/{name}/{version}/{endpoint}"},
+      value = {"/{naan}/{name}/{version}/{endpoint}", "/{naan}-{name}/{version}/{endpoint}"},
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
   public Object processKnowledgeObjectEndPoint(@PathVariable String naan, @PathVariable String name,
