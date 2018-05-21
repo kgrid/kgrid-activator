@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@SpringBootApplication(scanBasePackages = { "org.kgrid.shelf", "org.kgrid.activator"})
+@SpringBootApplication(scanBasePackages = { "org.kgrid.shelf.domain", "org.kgrid.shelf.repository", "org.kgrid.activator"})
 public class KgridActivatorApplication implements CommandLineRunner {
 
 	@Autowired
