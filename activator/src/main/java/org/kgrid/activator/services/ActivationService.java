@@ -77,6 +77,10 @@ public class ActivationService {
     return knowledgeObjectsFound;
   }
 
+  public HashMap<String, Executor> getLoadedExecutors() {
+    return endpointExecutors;
+  }
+
   /**
    * Gets all of the knowledge object versions and activates the endpoint for each.  A map of
    * endpoint executors is created.
@@ -108,6 +112,10 @@ public class ActivationService {
 
     }
 
+  }
+
+  public KnowledgeObject getKnowledgeObject(ArkId arkId, String version) {
+    return knowledgeObjectRepository.findByArkIdAndVersion(arkId, version);
   }
 
   //TODO  Need to fix the ark id so getting naan and name is posiible, we now have ark:/ or naan-name options

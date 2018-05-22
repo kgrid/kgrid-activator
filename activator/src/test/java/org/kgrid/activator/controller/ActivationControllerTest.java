@@ -38,7 +38,7 @@ public class ActivationControllerTest {
   @Test
   public void findAllLoadedKnowledgeObjectEndPoints() throws Exception {
 
-    ResultActions result = mockMvc.perform(get("/"));
+    ResultActions result = mockMvc.perform(get("/executors"));
 
     result.andExpect(status().isOk())
         .andExpect(content().contentType(TestUtils.APPLICATION_JSON_UTF8))
