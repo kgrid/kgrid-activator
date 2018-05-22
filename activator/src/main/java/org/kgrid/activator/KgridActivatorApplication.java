@@ -12,7 +12,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication(scanBasePackages = { "org.kgrid.shelf.domain", "org.kgrid.shelf.repository", "org.kgrid.activator"})
+@SpringBootApplication(scanBasePackages = { "org.kgrid.shelf", "org.kgrid.activator"})
 @EnableSwagger2
 public class KgridActivatorApplication implements CommandLineRunner {
 
@@ -37,7 +37,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
-				.apis(RequestHandlerSelectors.basePackage("org.kgrid.activator.controller"))
+				.apis(RequestHandlerSelectors.basePackage("org.kgrid"))
 				.paths(PathSelectors.any())
 				.build();
 	}
