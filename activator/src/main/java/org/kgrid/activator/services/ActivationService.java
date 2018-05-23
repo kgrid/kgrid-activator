@@ -89,15 +89,15 @@ public class ActivationService {
 
     //TODO All too hard
     //Load all of the ko including all versions
-    Map<String, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
+    Map<ArkId, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
-    for (Entry<String, Map<String, ObjectNode>> ko : koList.entrySet()) {
+    for (Entry<ArkId, Map<String, ObjectNode>> ko : koList.entrySet()) {
       knowledgeObjectsFound++;
 
       for (Entry<String, ObjectNode> version : ko.getValue().entrySet()) {
 
         KnowledgeObject knowledgeObject = knowledgeObjectRepository
-            .findByArkIdAndVersion(new ArkId(ko.getKey()), version.getKey());
+            .findByArkIdAndVersion(ko.getKey(), version.getKey());
 
         try {
 
