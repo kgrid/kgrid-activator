@@ -30,7 +30,7 @@ public class ActivationService {
   private HashMap<String, Adapter> adapters;
   private long knowledgeObjectsFound;
 
-  @Value("${shelf.location}")
+  @Value("${shelf.location:shelf}")
   private String locationStoragePath;
 
   @Autowired
