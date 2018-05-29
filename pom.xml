@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- Build Settings -->
 	<groupId>org.kgrid</groupId>
 	<artifactId>kgrid-activator</artifactId>
 	<version>0.5.8-SNAPSHOT</version>
@@ -13,13 +14,6 @@
 	</modules>
 	<packaging>pom</packaging>
 
-	<name>kgrid-activator</name>
-	<description>KGrid: Activator</description>
-
-	<!--<scm>-->
-		<!--<developerConnection>scm:git:git@github.com:kgrid/kgrid-activator.git</developerConnection>-->
-		<!--<tag>HEAD</tag>-->
-	<!--</scm>-->
 
 	<build>
 		<pluginManagement>
@@ -32,5 +26,10 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<!-- More Project Information -->
+	<name>kgrid-activator</name>
+	<description>KGrid: Activator</description>
+
 
 </project>

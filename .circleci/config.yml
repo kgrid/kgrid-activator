@@ -27,7 +27,7 @@ jobs:
 
 
       #must run install to ensure multi module dependencies(shelf-api) are cached
-      - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
+      - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline -s .circleci/settings.xml
 
       - save_cache:
           paths:
@@ -35,7 +35,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       # run build and test
-      - run: mvn package
+      - run: mvn package -s .circleci/settings.xml
 
       - persist_to_workspace:
           root: shelf-gateway
