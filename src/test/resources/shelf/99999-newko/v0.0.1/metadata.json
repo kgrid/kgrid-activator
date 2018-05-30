@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Knowledge Object Title",
+    "description": "A new knowledge object.",
+    "arkId": {
+      "arkId": "ark:/99999/newko",
+      "fedoraPath": "99999-newko"
+    },
+    "citations": [
+      {
+        "citation_title": "Citation Title ",
+        "citation_at": "https://link"
+      }
+    ],
+    "keywords": "Keywords",
+    "owners": "DLHS",
+    "contributors": "KGRID Team",
+    "license": {
+      "licenseName": "",
+      "licenseLink": ""
+    },
+    "url": "http://url",
+    "published": false,
+    "version": "v0.0.1",
+    "lastModified": 1525444440589,
+    "createdOn": 1525444440588
+  },
+  "version": "v0.0.1"
+}
