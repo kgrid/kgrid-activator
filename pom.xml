@@ -102,16 +102,6 @@
 
     <!-- Built-in adapters -->
     <dependency>
-      <groupId>edu.umich.lhs</groupId>
-      <artifactId>javascript-adapter</artifactId>
-      <version>0.5.8-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.umich.lhs</groupId>
-      <artifactId>noop-adapter</artifactId>
-      <version>0.5.8-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
       <version>0.5.8-SNAPSHOT</version>
