@@ -3,3 +3,4 @@
 target/
 python-execution-stack.iml
 /.idea/
+*

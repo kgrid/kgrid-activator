@@ -7,9 +7,6 @@
 	<artifactId>kgrid-activator</artifactId>
 	<version>0.5.8-SNAPSHOT</version>
 	<modules>
-		<module>environment-adapter</module>
-		<module>javascript-adapter</module>
-		<module>noop-adapter</module>
 		<module>activator</module>
 	</modules>
 	<packaging>pom</packaging>
