@@ -1,3 +1,8 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+
 version: 2
 jobs:
 
@@ -6,7 +11,7 @@ jobs:
   ##############
   build:
 
-    working_directory: ~/kgrid
+    working_directory: ~/repo
 
     docker:
       - image: circleci/openjdk:8-jdk
@@ -26,7 +31,7 @@ jobs:
           - v1-dependencies-
 
 
-      #must run install to ensure multi module dependencies(shelf-api) are cached
+      #must run install to ensure multi module dependencies(simple-scripts-api) are cached
       - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline -s .circleci/settings.xml
 
       - save_cache:
@@ -36,11 +41,6 @@ jobs:
 
       # run build and test
       - run: mvn package -s .circleci/settings.xml
-
-      - persist_to_workspace:
-          root: shelf-gateway
-          paths:
-            - target
 
 
       # save test results
@@ -57,10 +57,30 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
-      - store_artifacts:
-          path: environment-adapter/target
-      - store_artifacts:
-          path: javascript-adapter/target
-      - store_artifacts:
-          path: activator/target
 
+  ##############
+  # Deploy To Heroku Job
+  ##############
+  deploy_heroku:
+
+    working_directory: ~/repo
+
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+      - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
+
+workflows:
+  version: 2
+  build_test_release:
+    jobs:
+      - build
+      - deploy_heroku:
+          requires:
+            - build
