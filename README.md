@@ -1,5 +1,6 @@
 # KGrid Activator
 [![CircleCI](https://circleci.com/gh/kgrid/kgrid-activator/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-activator/tree/master)
+[![latest release](https://img.shields.io/badge/release%20notes-1.x-yellow.svg)](https://github.com/mockito/mockito/blob/release/!.x/doc/release-notes/official.md)
 
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data. 
 Activators provide a horizontally scalable means to put Knowledge Objects to work in the real world. 
@@ -30,10 +31,13 @@ cd kgrid-activator
 This quick start will run the activator and load two example knowledge objects for testing.  This objects are located
 in the _shelf_ directory at the root of the project. By default application will start up and PORT 8080.
 ```
-$ mvn clean package
-$ java -jar target/kgrid-activator*.jar
+mvn clean package
+java -jar target/kgrid-activator*.jar
 ```
-
+Example of how to set KO shelf (_where to look for the KOs_)
+```
+java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=/tmp/shelf
+```
 Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:
 
 ```
@@ -85,6 +89,13 @@ curl http://localhost:8080/99999/newko/v0.0.1
 
 Run the welcome endpoint on the 99999/newko/v0.0.1 knowledge object
 ```
-curl -X POST -H "Content-Type:application/json" -d "{\"name\": \"Fred Flintstone\"}" "http://localhost:8080/99999/newko/v0.0.1/weclome"
+curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/99999/newko/v0.0.1/welcome
 
 ```
+
+
+## Running the tests
+
+
+
+## Additional Information
