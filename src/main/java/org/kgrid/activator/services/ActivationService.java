@@ -30,7 +30,7 @@ public class ActivationService {
   private HashMap<String, Adapter> adapters;
   private long knowledgeObjectsFound;
 
-  @Value("${kgrid.shelf.cdostore.filesystem.location}")
+  @Value("${kgrid.shelf.cdostore.filesystem.location:shelf}")
   private String locationStoragePath;
 
   @Autowired

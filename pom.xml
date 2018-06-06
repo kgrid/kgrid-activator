@@ -168,7 +168,7 @@
           </configVars>
           <jdkVersion>${java.version}</jdkVersion>
           <processTypes>
-            <web>java -jar /app/target/${project.build.finalName}.jar $JAVA_OPTS</web>
+            <web>java -jar /app/target/${project.build.finalName}.jar --kgrid.shelf.cdostore.filesystem.location=src/test/resources/shelf $JAVA_OPTS</web>
           </processTypes>
         </configuration>
       </plugin>
