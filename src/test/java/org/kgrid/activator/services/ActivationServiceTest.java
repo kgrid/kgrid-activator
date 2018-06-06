@@ -85,7 +85,7 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.1");
 
-    String resource = knowledgeObject.getMetadata().get("models").get("resource").asText();
+    String resource = knowledgeObject.getModelMetadata().get("resource").asText();
     assertEquals("resource/welcome.js",
         resource);
   }
