@@ -1,6 +1,5 @@
 # KGrid Activator
 [![CircleCI](https://circleci.com/gh/kgrid/kgrid-activator/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-activator/tree/master)
-[![latest release](https://img.shields.io/badge/release%20notes-1.x-yellow.svg)](https://github.com/mockito/mockito/blob/release/!.x/doc/release-notes/official.md)
 
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data. 
 Activators provide a horizontally scalable means to put Knowledge Objects to work in the real world. 
@@ -34,9 +33,9 @@ in the _shelf_ directory at the root of the project. By default application will
 mvn clean package
 java -jar target/kgrid-activator*.jar
 ```
-Example of how to set KO shelf (_where to look for the KOs_)
+You can load sample KO shelf (_where to look for the KOs_)
 ```
-java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=/tmp/shelf
+java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=etc/shelf
 ```
 Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:
 
@@ -78,24 +77,18 @@ Sample shelf in place the following tests can be executed against the running ac
 View a Knowledge Object
 
 ```
-curl http://localhost:8080/99999/newko
+curl http://localhost:8080/hello/world
 ```
 
 View a Knowledge Object Version
 
 ```
-curl http://localhost:8080/99999/newko/v0.0.1
+curl http://localhost:8080/hello/world/v0.0.1
 ```
 
 Run the welcome endpoint on the 99999/newko/v0.0.1 knowledge object
 ```
-curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/99999/newko/v0.0.1/welcome
-
+curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome
 ```
-
-
-## Running the tests
-
-
 
 ## Additional Information
