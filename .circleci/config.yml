@@ -55,7 +55,7 @@ jobs:
           path: ~/junit
 
       - store_artifacts:
-          path: ~/junit
+          path: target
 
 
   ##############
@@ -75,6 +75,9 @@ jobs:
     steps:
       - checkout
       - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
+
+      - store_artifacts:
+               path: target
 
 workflows:
   version: 2
