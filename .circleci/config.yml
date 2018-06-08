@@ -74,7 +74,7 @@ jobs:
 
     steps:
       - checkout
-      - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml -DskipTests
+      - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
 
 workflows:
   version: 2
