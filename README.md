@@ -5,6 +5,6 @@ As a key component of Knowledge Grid, an activator allows knowledge objects to b
 
 ##Table of Contents
 
-1. [Getting Started KGrid Core Platform Developer](docs/developer.md)
-2. [Activator Deployment](docs/deployment.md)
+1. [Getting Started KGrid Core Platform Developer](docs/02-developer.md)
+2. [Activator Deployment](docs/03-deploy.md)
 

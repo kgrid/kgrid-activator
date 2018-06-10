@@ -1,7 +1,4 @@
----
-layout: page
-navtitle: OLD
----
+
 ## Using the metadata in the result object
 
 The result returned from a knowledge object (KO) in the Activator also includes meta data (`"metadata": {...}`) drawn from the KO itself, with title, owner, etc, and a source link.

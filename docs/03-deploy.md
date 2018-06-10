@@ -1,6 +1,6 @@
 ---
 layout: page
-navtitle: Deployment
+navtitle: Deploy/Run
 ---
 ## Deploy
 
