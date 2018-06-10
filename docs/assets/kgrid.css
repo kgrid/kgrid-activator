@@ -1,0 +1,193 @@
+/* ==== Google font ==== */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:500italic,300,400,500,600,700');
+
+/* ScrollBar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+/*     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);  */
+}
+::-webkit-scrollbar-track {
+      background-color: #fff;
+} /* the new scrollbar will have a flat appearance with the set background color */
+
+::-webkit-scrollbar-thumb {
+      background-color: #e6e6e6;
+} /* this will style the thumb, ignoring the track */
+
+::-webkit-scrollbar-button {
+    display:none;
+      background-color: #e6e6e6;
+} /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+
+::-webkit-scrollbar-corner {
+      background-color: #fff;
+} /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
+
+/*==========================================================================
+  General
+  ========================================================================== */
+body {
+	color:#555555;
+	background: #fff;
+	font-size: 14px;
+	line-height: 1.6em;
+	font-weight: 400;
+	text-shadow: none;
+	letter-spacing: 0.02em;
+	overflow-x: hidden;
+}
+
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: 'Open Sans';
+}
+h1, h2, h3, h4, h5, h6 {
+	color:#555555;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	font-style: normal;
+	margin: 0 0 10px 0;
+}
+
+h1 { font-size: 36px; line-height: 1.1em; margin-bottom:28px;}
+h2 { font-size: 28px; line-height: 1.25em;}
+h3 { font-size: 18px; }
+h4 { font-size: 16px; }
+h5 { font-size: 14px; }
+
+a, a:active, a:focus, a:visited, a:hover {
+  text-decoration: none;
+}
+a:hover {
+  cursor:pointer;
+}
+/* Overwrite Minima */
+.site-header {
+  border-top: none;
+  min-height:60px;
+  width: 100%;
+    position: fixed;
+    z-index: 999;
+    background: #fff;
+}
+.site-header .wrapper, .site-footer .wrapper {
+  position: relative;
+  max-width: 1024px;
+}
+
+.site-title {
+  background-image: url("./img/KG_Logo_DarkBlue.png");
+  background-size: 60px;
+  background-repeat: no-repeat;
+  padding-left: 80px;
+  background-position-y: 8px;
+}
+.site-nav {
+  line-height: 2.6em;
+}
+.pad-left15 {
+  padding-left: 15px;
+}
+.pad-left30 {
+  padding-left: 30px;
+}
+.pad-left280 {
+  padding-left: 280px;
+}
+.page-content {
+  padding-top:90px;;
+}
+:target:before {
+  content:"";
+  display:block;
+  height:88px; /* fixed header height*/
+  margin:-88px 0 0; /* negative fixed header height */
+}
+.home {
+  background-image: url("./img/KGridLogo_Blue.png");
+  background-size: 30%;
+  width:80%;
+  min-height: 400px;
+  border: 5px ridge #f7f7f7;
+  background-repeat: no-repeat;
+  padding: 30px;
+  background-position: 50% 90%;
+
+}
+.home h1{
+  text-align: center;
+  margin-top: 30px;
+}
+
+.home h4 {
+  text-align: center;
+  margin-top: 50px;
+}
+
+@media screen and (min-width: 600px)
+{
+.site-nav .trigger {
+  position: absolute;
+  left:15px;
+  top: 90px;
+  width: 260px;
+background-color: #f5f5f5;
+}
+.page-content {
+  min-height: 500px;
+}
+.page-content .wrapper.pad-alt {
+  padding-left: 280px;
+}
+}
+.site-nav .trigger li {
+  font-size:13px;
+  list-style: none;
+}
+.trigger ul {
+  margin-left: 20px;
+}
+/* footer*/
+.site-footer {
+  border-top: 1px solid #f5f5f5;
+  background-color: #f5f5f5;
+  padding-bottom: 0px;
+}
+.footer-col {
+  padding-bottom: 20px;
+}
+.footer-col ul {
+  margin-bottom:0px;
+}
+h3.footer-sectitle {
+  padding-bottom: 0px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.copyright.school{
+  height:40px;
+}
+ul#markdown-toc {
+  border:2px solid #e5e5e5;
+  margin-left: 0px;
+  margin-bottom: 30px;
+  padding: 15px;
+  display:inline-block;
+  background-color: #fff;
+}
+ul#markdown-toc li {
+  list-style: none;
+}
+
+.post-content {
+  position: relative;
+}

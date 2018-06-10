@@ -1,4 +1,7 @@
-
+---
+layout: page
+navtitle: Get Started
+---
 ## Table of Contents
 
 1. [Getting Started KGrid Core Platform Developer](developer.md)
