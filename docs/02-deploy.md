@@ -1,6 +1,6 @@
 ---
 layout: page
-navtitle: Deploy/Run
+navtitle: Deploy the Activator
 ---
 ## Deploy
 
@@ -75,19 +75,19 @@ curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintston
 
 ## Configuration
 
-### KO Shelf Location
+**KO Shelf Location**
 By default the activator will look for a _shelf_ in jar execution directory but the location the _shelf_ can be configured:
 ```bash
 java -jar kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=//data/myshelf
 ```
 
-### Activator port 
+**Activator port** 
 To change the port:
 ```bash
 java -jar kgrid-activator*.jar --server.port=9090
 ```
 
-### Activator server path 
+**Activator server path** 
 To change the the server root path
 ```bash
 java -jar kgrid-activator*.jar --server.contextPath=/activator
