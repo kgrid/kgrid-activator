@@ -25,15 +25,19 @@ Directory structure should look simular to the following
 ```     
  ├── shelf
  │   └── hello-world  
- │      ├── model
- │      └── metadata.json
+ │       └── v0.0.1
+ │           ├── model
+ │           └── metadata.json
  └── kgrid-activator-0.5.8-RC1.jar
 ```
 
-We can now run the activator.  The activator is executable jar and can be started from the
-command line.  By default the activator will run on port 8080.
+The activator is executable jar and can be run from the command line.  Open a terminal window and navigate to the direcoty where the jar and shelf are located.  
+
+Type in the following. 
 
 ```java -jar kgrid-activator-0.5.8-.jar ```
+
+NOTE: By default the activator will run on port 8080.
 
 ## Validating the Activator 
 
@@ -58,6 +62,7 @@ Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
 ## Configuration
 
 **KO Shelf Location**
+
 By default the activator will look for a _shelf_ in jar execution directory but the location the _shelf_ can be configured:
 
 ```bash
@@ -65,11 +70,22 @@ java -jar kgrid-activator-0.5.8-RC1.jar --kgrid.shelf.cdostore.filesystem.locati
 ```
 
 **Activator port** 
+
 To change the port:
 
 ```java -jar kgrid-activator-0.5.8-RC1.jar --server.port=9090```
 
+Now access health
+
+```curl http://localhost:9090/health```
+
+
 **Activator server path** 
-To change the the server root path
+
+By default the endpoints of the activator asssessed via the root of the activator server.  To change the the server root path:
 
 ```java -jar kgrid-activator-0.5.8-RC1.jar --server.contextPath=/activator```
+
+Now access health
+
+```curl http://localhost:8080/activator/health```
