@@ -2,7 +2,7 @@
 layout: page
 navtitle: Deploy the Activator
 ---
-## Deploy
+## Deploy Activator
 
 These instructions will get the Kgrid Activator running with sample set of Knowledge Objects.
 
@@ -42,14 +42,17 @@ Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
 
 **KO Shelf Location**
 By default the activator will look for a _shelf_ in jar execution directory but the location the _shelf_ can be configured:
+
 ```bash
 java -jar kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=//data/myshelf
 ```
 
 **Activator port** 
 To change the port:
+
 ```java -jar kgrid-activator*.jar --server.port=9090```
 
 **Activator server path** 
 To change the the server root path
+
 ```java -jar kgrid-activator*.jar --server.contextPath=/activator```
