@@ -23,7 +23,7 @@ The activator is executable jar and can be run from the command line.  Open a te
 
 Type in the following. 
 
-```java -jar kgrid-activator-0.5.8-.jar ```
+```java -jar kgrid-activator-0.5.8-RC1.jar ```
 
 By default the activator will run on port 8080. You can validate the activator is up and running using the activators health endpoint. All _statuses_ reported should be **UP**
 
