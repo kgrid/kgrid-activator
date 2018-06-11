@@ -14,13 +14,27 @@ For running the application you need:
 
 ### Running the Activator
 
-Download the latest activator and a sample set of Knowledge Objects for testing the deployment. 
-The latest release can be found on GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
+Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
-1. Download _kgrid-activator-0.5.8-RC1.jar_ and _shelf.zip_.
-1. Unzip the sample _shelf.zip_ into the directory where the activator jar is located.
+1. Download _kgrid-activator-0.5.8-RC1.jar_ and 
 
-Directory structure should look simular to the following
+
+The activator is executable jar and can be run from the command line.  Open a terminal window and navigate to the direcoty where the jar and shelf are located.  
+
+Type in the following. 
+
+```java -jar kgrid-activator-0.5.8-.jar ```
+
+By default the activator will run on port 8080. You can validate the activator is up and running using the activators health endpoint. All _statuses_ reported should be **UP**
+
+```curl http://localhost:8080/health```
+
+## Sample Shelf and Knowledge Object
+
+A sample shelf with the hello-world KO can be download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
+Download and Unzip _hello-world-shelf.zip_ into the directory where the activator jar is located.
+
+Directory structure should look similar to the following
 
 ```     
  ├── shelf
@@ -31,19 +45,7 @@ Directory structure should look simular to the following
  └── kgrid-activator-0.5.8-RC1.jar
 ```
 
-The activator is executable jar and can be run from the command line.  Open a terminal window and navigate to the direcoty where the jar and shelf are located.  
-
-Type in the following. 
-
-```java -jar kgrid-activator-0.5.8-.jar ```
-
-NOTE: By default the activator will run on port 8080.
-
-## Validating the Activator 
-
-Once running access the health endpoint. All _statuses_ reported should be **UP**
-
-```curl http://localhost:8080/health```
+## Validating the Hello-World KO on the Activator 
 
 With the sample shelf in place the following tests can be executed against the running activator
 
@@ -58,6 +60,20 @@ View a Knowledge Object Version
 Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
 
 ```curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome```
+
+Your response should as follows
+
+```aidl
+{
+    "result": "Welcome to Knowledge Grid, Fred Flintstone",
+    "info": {
+        "ko": "hello/world/v0.0.1",
+        "inputs": {
+            "name": "Fred Flintstone"
+        }
+    }
+}
+```
 
 ## Configuration
 
