@@ -105,11 +105,11 @@ Now access health
 ## Adding New Knowledge Objects
 
 Put the KOs in to the shelf directory.  Once in the directory you will need to activate the new 
-KO objects but refreshing the executors as follows.
+KO objects by refreshing the executors as follows.
 
 ```curl http://localhost:8080/executors```
 
-This will load and activate the KOs on the shelf.  YOu should recibe a list of the activated endpoint similar to the following 
+This will load and activate the KOs on the shelf.  YOu should recieve a list of the activated endpoint similar to the following 
 
 ```json
 [
