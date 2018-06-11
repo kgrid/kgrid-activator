@@ -18,9 +18,11 @@ The latest release can be found on GitHub [Latest Activator Release](https://git
 Download activator jar and sample_shelf.zip.  Unzip the sample_shelf.zip into the directory where the activator jar is located.
 
 The activator is executable jar (running on port 8080 by default)
+
 ```java -jar kgrid-activator*.jar ```
 
 Once running access the health endpoint. All _statuses_ reported should be **UP**
+
 ```curl http://localhost:8080/health```
 
 ## Validating the Activator 
@@ -36,6 +38,7 @@ View a Knowledge Object Version
 ```curl http://localhost:8080/hello/world/v0.0.1```
 
 Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
+
 ```curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome```
 
 ## Configuration
