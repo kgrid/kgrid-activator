@@ -61,7 +61,7 @@ Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
 
 ## Configuration
 
-**KO Shelf Location**
+**Activator Knowledge Object Shelf Location**
 
 By default the activator will look for a _shelf_ in jar execution directory but the location the _shelf_ can be configured:
 
@@ -69,7 +69,7 @@ By default the activator will look for a _shelf_ in jar execution directory but 
 java -jar kgrid-activator-0.5.8-RC1.jar --kgrid.shelf.cdostore.filesystem.location=//data/myshelf
 ```
 
-**Activator port** 
+**Activator Server Port** 
 
 To change the port:
 
@@ -80,9 +80,9 @@ Now access health
 ```curl http://localhost:9090/health```
 
 
-**Activator server path** 
+**Activator Server Path** 
 
-By default the endpoints of the activator asssessed via the root of the activator server.  To change the the server root path:
+By default the endpoints of the activator at the root of the activator server.  To change the server root path:
 
 ```java -jar kgrid-activator-0.5.8-RC1.jar --server.contextPath=/activator```
 
