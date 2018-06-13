@@ -42,7 +42,7 @@ public class ActivationControllerTest {
 
     result.andExpect(status().isOk())
         .andExpect(content().contentType(TestUtils.APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("$.*", hasSize(2)));
+        .andExpect(jsonPath("$.*", hasSize(3)));
   }
 
   @Before

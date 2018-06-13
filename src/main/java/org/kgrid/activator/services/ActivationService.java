@@ -14,6 +14,7 @@ import org.kgrid.adapter.api.AdapterSupport;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
+import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.FilesystemCDOStore;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
@@ -30,8 +31,8 @@ public class ActivationService {
   private HashMap<String, Adapter> adapters;
   private long knowledgeObjectsFound;
 
-  @Value("${kgrid.shelf.cdostore.filesystem.location:shelf}")
-  private String locationStoragePath;
+  @Autowired
+  CompoundDigitalObjectStore cdoStore;
 
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
@@ -55,7 +56,7 @@ public class ActivationService {
 
   protected void initializeAdapter(Adapter adapter) {
     if (adapter instanceof AdapterSupport) {
-      ((AdapterSupport) adapter).setCdoStore(new FilesystemCDOStore(locationStoragePath));
+      ((AdapterSupport) adapter).setCdoStore(cdoStore);
     }
     adapter.initialize();
   }

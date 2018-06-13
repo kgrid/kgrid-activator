@@ -43,7 +43,8 @@ public class ActivationController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
   public Object processKnowledgeObjectEndPoint(@PathVariable String naan, @PathVariable String name,
-      @PathVariable String version, @PathVariable String endpoint, @RequestBody Map<String, Object> inputs) {
+      @PathVariable String version, @PathVariable String endpoint,
+      @RequestBody Map<String, Object> inputs) {
 
     final String key = naan + "/" + name + "/" + version + "/" + endpoint;
 
@@ -51,15 +52,15 @@ public class ActivationController {
 
     EndPointResult result = null;
 
-    try{
+    try {
 
-      result = new EndPointResult( executor.execute(inputs) );
-      result.getInfo().put( "inputs", inputs);
-      result.getInfo().put( "ko",  naan + "/" + name + "/" + version);
+      result = new EndPointResult(executor.execute(inputs));
+      result.getInfo().put("inputs", inputs);
+      result.getInfo().put("ko", naan + "/" + name + "/" + version);
 
       return result;
 
-    } catch ( AdapterException e){
+    } catch (AdapterException e) {
       log.error("Exception " + e);
     }
 

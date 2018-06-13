@@ -15,14 +15,16 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
   @Override
   public Health health() {
 
-    if(activationService.getLoadedAdapters().size() > 0){
+    if (activationService.getLoadedAdapters().size() > 0) {
       return Health.up()
           .withDetail("Knowledge Objects found", activationService.getKnowledgeObjectsFound())
           .withDetail("Adapters loaded", activationService.getLoadedAdapters().keySet())
           .withDetail("Executors loaded", activationService.getEndpointExecutors().keySet())
           .build();
     } else {
-      return Health.down().withDetail("there are now adapters loaded",activationService.getLoadedAdapters()).build();
+      return Health.down()
+          .withDetail("there are now adapters loaded", activationService.getLoadedAdapters())
+          .build();
     }
 
   }
