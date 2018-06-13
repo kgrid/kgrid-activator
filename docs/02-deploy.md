@@ -17,7 +17,8 @@ For running the application you need:
 Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
 1. Download _kgrid-activator-0.5.8-RC1.jar_  
-1. Download and Unzip _hello-world-shelf.zip_ into the directory where the activator jar is located.
+1. Download _hello-world-shelf.zip_ into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+
 
 Directory structure should look similar to the following
 
@@ -108,7 +109,7 @@ Add new KOs to the existing shelf. Once in the shelf directory you will need to 
 KO objects.  For example to add the MOpen Opiod KOs.
 
 1. Download the released MOpen Opiod KOs self (_opid_shelf.zip_) from github [MOpen-Opioid Collection](https://github.com/kgrid/mopen-opioid-collection/releases/latest)
-1. Download and Unzip _opid_shelf.zip.zip_ into the directory where the activator jar is located.
+1. Download _opid_shelf.zip.zip_ into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 Directory structure should look similar to the following
 
