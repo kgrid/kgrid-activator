@@ -74,8 +74,9 @@ jobs:
 
     steps:
       - checkout
+      - run: DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
+      - run: unzip opioid-shelf.zip -d etc
       - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
-
       - store_artifacts:
                path: target
 
