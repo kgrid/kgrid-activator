@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 'Hello, World'
+  description: 'hello world'
+servers:
+  - url: 'http://localhost:8083/execute/99999-newko/v0.0.1' 
+paths:
+  /welcome:
+    post:
+      description: Welcome.
+      operationId: welcome
+      requestBody:
+        description: inputs 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: response 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WelcomeOutput'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    user:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: 'Bob'
+    WelcomeOutput:
+      required:
+        - result
+      properties:
+        result:
+          type: string
+          example: 'welcome'
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
