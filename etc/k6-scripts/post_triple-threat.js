@@ -12,7 +12,7 @@ let url =
 const params = {headers: {'content-type': 'application/json'}}
 const body = JSON.stringify({
   // "rxcuis": "106500"
-  "rxcuis": "106500,200240,856917,994226,197446,801958"
+  "rxcuis": [106500,200240,856917,994226,197446,801958]
 })
 
 export function setup () {

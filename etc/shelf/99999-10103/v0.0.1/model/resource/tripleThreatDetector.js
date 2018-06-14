@@ -1,53 +1,50 @@
-
 function tripleThreatDetector (inputs) {
-  // var regimenList = ["106500"];
-  var regimenList = inputs.rxcuis.split(',')
-  var output = []
-  var jsonoutput = {'condition_satisfied': false, 'summary': '', 'detail': ''}
-  //JAVASCRIPT ARRAYS WITH RXNORM CODES - JUNE 10, 2018 - ALLEN FLYNN
 
-  var summaryentry = {
-    opioid: false,
-    bzd: false,
-    mr: false,
-    note: 'mutiple drug; full arrays; live return; array for details'
+  var threat = {
+    respiratoryDepressionRisk: true,
+    summary: {},
+    detail: {}
+    // detail: [] // faster to use array, but serializes awkwardly
   }
 
-  // var detail = {}
-  var detail = []
+  inputs.rxcuis.forEach(function(rxcui) {
+    var summary = threat.summary
+    var detail = threat.detail
 
-  regimenList.forEach(function (e) {
-    var detailentry = {opioid: true, bzd: true, mr: true}
+    var rxScreen = screen(rxcui)
 
-    var cui = parseInt(e, 10)
+    detail[rxcui] = rxScreen
+    // rxScreen.rxcui = rxcui // if using real array, add rx xcode to detail
+    // detail.push(rxScreen)  // for true array (unordered)
 
-    detailentry.opioid = opioidArray.indexOf(cui) != -1
-    detailentry.bzd = benzodiazepineArray.indexOf(cui) != -1
-    detailentry.mr = muscleRelaxantArray.indexOf(cui) != -1
-    detailentry.cui = cui
-
-    // detail[e] = detailentry
-    detail.push(detailentry)
-
-    summaryentry.opioid = (summaryentry.opioid || detailentry.opioid)
-    summaryentry.bzd = summaryentry.bzd || detailentry.bzd
-    summaryentry.mr = summaryentry.mr || detailentry.mr
+    summary.opioid = summary.opioid || rxScreen.opioid
+    summary.bzd = summary.bzd || rxScreen.bzd
+    summary.msclrlx = summary.msclrlx || rxScreen.msclrlx
   })
 
-  jsonoutput.detail = detail
-  jsonoutput.summary = summaryentry
-  jsonoutput.condition_satisfied = summaryentry.opioid && summaryentry.bzd
-    && summaryentry.mr
+  threat.respiratoryDepressionRisk =
+    threat.summary.opioid && threat.summary.bzd && threat.summary.msclrlx
 
-  return jsonoutput
+  return threat
 }
 
+function screen (rxcui) {
+  var panel = {}
+  panel.opioid = isIn(rxcui, opioids)
+  panel.bzd = isIn(rxcui, benzodiazepines)
+  panel.msclrlx = isIn(rxcui, muscleRelaxants)
 
-// --- rxcui codes ---
+  return panel
+}
+
+function isIn (rxcui, rxcuiArray) {
+  return rxcuiArray.indexOf(rxcui) != -1
+}
+// ---  JAVASCRIPT ARRAYS WITH RXNORM CODES - JUNE 10, 2018 - ALLEN FLYNN ---
 
 //OPIOID CODES
 
-var opioidArray =
+var opioids =
   // [1723206,1723208,1723209]
   [1723206, 1723208, 1723209, 1723210, 106500, 1864412, 238129, 1655032, 246474,
     250426, 1010600, 1010604, 351264, 351265, 351266, 351267, 388506, 388507,
@@ -181,7 +178,7 @@ var opioidArray =
 
 //BENZODIAZEPINE CODES
 
-var benzodiazepineArray =
+var benzodiazepines =
   // [197321,197322,308047]
   [197321, 197322, 308047, 308049, 308050, 433799, 433800, 485413, 485414,
     485416, 308048, 433798, 485415, 433801, 856769, 856792, 856863, 889614,
@@ -204,7 +201,7 @@ var benzodiazepineArray =
 
 //MUSCLE RELAXANT CODES
 
-var muscleRelaxantArray =
+var muscleRelaxants =
   // [197446,197447,994226]
   [197446, 197447, 994226, 105974, 730794, 1088934, 1088936, 197501, 197502,
     828299, 828320, 828348, 828353, 828358, 999731, 197943, 197945, 238175,
@@ -216,8 +213,10 @@ var muscleRelaxantArray =
     1047444, 1369784, 1369788, 1369792, 1666615, 1301627, 202109, 213725,
     805678, 805679, 1666620, 1666623, 664144, 666857, 209153, 352277, 1720612]
 
-// var out = tripleThreatDetector({
-//   'rxcuis': '106500,200240,856917,994226,197446,801958'
-// })
 
+/// Uncomment to test
+// var out = tripleThreatDetector({
+//   rxcuis: [106500, 200240, 856917, 994226, 197446, 801958]
+// })
+//
 // console.log(out)

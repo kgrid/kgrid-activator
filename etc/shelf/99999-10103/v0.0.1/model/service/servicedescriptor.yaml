@@ -45,7 +45,7 @@ components:
       properties:
         result:
           type: string
-          example: '{condition_satisfied:false,summary:{opioid:false,bzd:false,mr:false},detail:{}}'
+          example: '{respiratoryDepression:false,summary:{opioid:false,bzd:false,mr:false},detail:{}}'
     Error:
       required:
         - code
