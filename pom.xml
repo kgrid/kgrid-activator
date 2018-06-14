@@ -168,7 +168,7 @@
           <includeTarget>false</includeTarget>
           <includes>
             <include>${project.build.directory}/${project.build.finalName}.jar</include>
-            <include>${project.basedir}/etc/sample-shelf</include>
+            <include>${project.basedir}/etc/integration-test-shelf</include>
           </includes>
           <configVars>
             <JAVA_OPTS>-Xss512k -XX:+UseCompressedOops</JAVA_OPTS>
