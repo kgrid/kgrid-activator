@@ -72,7 +72,6 @@ public class ActivationServiceTest {
 
     service.loadAndActivateEndpoints();
 
-    assertEquals(3, service.getEndpointExecutors().size());
     Executor executor = service.getEndpointExecutors()
         .get("99999/newko/v0.0.1/welcome");
     assertEquals("Welcome to Knowledge Grid, Tester", executor

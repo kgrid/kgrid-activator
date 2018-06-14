@@ -35,15 +35,6 @@ public class ActivationControllerTest {
   private ObjectMapper mapper;
   private RestTemplate restTemplate;
 
-  @Test
-  public void findAllLoadedKnowledgeObjectEndPoints() throws Exception {
-
-    ResultActions result = mockMvc.perform(get("/executors"));
-
-    result.andExpect(status().isOk())
-        .andExpect(content().contentType(TestUtils.APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("$.*", hasSize(3)));
-  }
 
   @Before
   public void setUp(){
