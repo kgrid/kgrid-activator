@@ -28,7 +28,7 @@ java -jar target/kgrid-activator*.jar
 ```
 You can load sample KO shelf (_where to look for the KOs_)
 ```
-java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location=etc/shelf
+java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.url:filesystem:file://etc/shelf
 ```
 Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:
 
