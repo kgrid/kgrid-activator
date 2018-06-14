@@ -1,0 +1,9 @@
+{
+  "functionName":"tripleThreatDetector",
+  "adapterType":"JAVASCRIPT",
+  "resource":"resource/tripleThreatDetector.js",
+  "service":"service/servicedescriptor.yaml",
+  "adapters":[
+    {"name":"JavaScript","version":"0.5.8","filename":"javascript-adapter-0.0.1-SNAPSHOT.jar","download_url":"https://github.com/kgrid/ko-templates/releases/download/0.1/", "target":"adapters/"}
+  ]
+}

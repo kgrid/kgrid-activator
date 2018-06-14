@@ -13,10 +13,11 @@ java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.filesystem.location
 ### K6 performance script examples
 With the Activator running using the etc/shelf KOs you can run these performance scripts
 
-#####Simple get KOs test
+#####Simple 'list of KOs' test
+(with 5 virtual users for 5 seconds)
 ```bash
 cd etc
-k6 run k6-scripts/get_objects.js
+k6 run k6-scripts/get_objects.js --vus 5 --duration 5s
 ```
 
 #####Simple post hello world knowledge object
