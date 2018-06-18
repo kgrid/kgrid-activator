@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Build Settings -->
   <groupId>org.kgrid</groupId>
   <artifactId>kgrid-activator</artifactId>
-  <version>0.5.8-SNAPSHOT</version>
+  <version>0.5.8</version>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>1.5.10.RELEASE</version>
-    <relativePath/>
+    <relativePath />
   </parent>
 
   <!-- More Project Information -->
@@ -29,6 +27,7 @@
     <url>https://github.com/kgrid/kgrid-activator</url>
     <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
     <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
+    <tag>kgrid-activator-0.5.8</tag>
   </scm>
 
   <dependencies>
@@ -110,17 +109,17 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.5.8-SNAPSHOT</version>
+      <version>0.5.8</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>adapter-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
   </dependencies>
 
