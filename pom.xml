@@ -25,6 +25,12 @@
     <java.version>1.8</java.version> <!-- override spring boot parent; sets java source & target -->
   </properties>
 
+  <scm>
+    <url>https://github.com/kgrid/kgrid-activator</url>
+    <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
+    <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -123,13 +129,13 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <goals>
-                <goal>build-info</goal>
-              </goals>
-            </execution>
-          </executions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build-info</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <!--
       For non-maven-repository releases
@@ -171,10 +177,12 @@
           </configVars>
           <jdkVersion>${java.version}</jdkVersion>
           <processTypes>
-            <web>java -jar /app/target/${project.build.finalName}.jar --kgrid.shelf.cdostore.url=filesystem:file://etc/shelf $JAVA_OPTS</web>
+            <web>java -jar /app/target/${project.build.finalName}.jar
+              --kgrid.shelf.cdostore.url=filesystem:file://etc/shelf $JAVA_OPTS
+            </web>
           </processTypes>
         </configuration>
       </plugin>
     </plugins>
   </build>
-  </project>
+</project>
