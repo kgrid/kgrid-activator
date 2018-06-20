@@ -90,6 +90,9 @@ public class ActivationService {
 
     //TODO All too hard
     //Load all of the ko including all versions
+
+    endpointExecutors.clear();
+
     Map<ArkId, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
     for (Entry<ArkId, Map<String, ObjectNode>> ko : koList.entrySet()) {
