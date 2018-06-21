@@ -27,7 +27,6 @@
     <url>https://github.com/kgrid/kgrid-activator</url>
     <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
     <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
-    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
