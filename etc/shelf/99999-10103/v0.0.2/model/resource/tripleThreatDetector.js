@@ -1,22 +1,21 @@
-function tripleThreatDetector (inputs) {
+function tripleThreatDetector (rx_array) {
 
   var threat = {
     respiratoryDepressionRisk: true,
     summary: {},
-    detail: {}
-    // detail: [] // faster to use array, but serializes awkwardly
+    // detail: {}
+    detail: [] // faster to use array, but serializes awkwardly
   }
 
-  var rx_array = inputs.rxcuis
   rx_array.forEach(function(rxcui) {
     var summary = threat.summary
     var detail = threat.detail
 
     var rxScreen = screen(rxcui)
 
-    detail[rxcui] = rxScreen
-    // rxScreen.rxcui = rxcui // if using real array, add rx xcode to detail
-    // detail.push(rxScreen)  // for true array (unordered)
+    // detail[rxcui] = rxScreen
+    rxScreen.rxcui = rxcui // if using real array, add rx xcode to detail
+    detail.push(rxScreen)  // for true array (unordered)
 
     summary.opioid = summary.opioid || rxScreen.opioid
     summary.bzd = summary.bzd || rxScreen.bzd

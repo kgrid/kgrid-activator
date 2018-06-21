@@ -1,0 +1,23 @@
+{
+    "title": "Respiratory Depression Risk Indicator",
+    "description": "This object scans a list of a patient's prescriptions and determines if they are at risk greater for drug-induced respiratory depression because of being exposed simultaneously to a known dangerous combination of an opioid, a benzodiazepine, and a muscle relaxant.",
+    "arkId": "ark:/99999/10103",
+    "citations": [
+      {
+        "citation_title": "Citation Title ",
+        "citation_at": "https://link"
+      }
+    ],
+    "keywords": "Keywords",
+    "owners": "KGRID",
+    "contributors": "KGRID TEAM",
+    "license": {
+      "licenseName": "",
+      "licenseLink": ""
+    },
+    "url": "http://url",
+    "published": false,
+    "version": "v0.0.1",
+    "lastModified": 1528317149305,
+    "createdOn": 1528317149304
+}

@@ -1,6 +1,5 @@
 package org.kgrid.activator.controller;
 
-import java.util.Map;
 import java.util.Set;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
@@ -42,9 +41,9 @@ public class ActivationController {
       value = {"/{naan}/{name}/{version}/{endpoint}"},
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
-  public Object processKnowledgeObjectEndPoint(@PathVariable String naan, @PathVariable String name,
+  public Object processWithBareJsonInputOutput(@PathVariable String naan, @PathVariable String name,
       @PathVariable String version, @PathVariable String endpoint,
-      @RequestBody Map<String, Object> inputs) {
+      @RequestBody Object inputs) {
 
     final String key = naan + "/" + name + "/" + version + "/" + endpoint;
 
