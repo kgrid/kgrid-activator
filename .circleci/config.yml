@@ -40,8 +40,10 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       # run build and test
-      - run: mvn package -s .circleci/settings.xml
-
+      - run:
+         name: Build and Test And Verify
+         command: |
+            mvn verify -s .circleci/settings.xml
 
       # save test results
       - run:
@@ -57,34 +59,20 @@ jobs:
       - store_artifacts:
           path: target
 
-
-  ##############
-  # Deploy To Heroku Job
-  ##############
-  deploy_heroku:
-
-    working_directory: ~/repo
-
-    docker:
-      - image: circleci/openjdk:8-jdk
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-      - run: DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
-      - run: unzip -o opioid-shelf.zip -d etc
-      - run: HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
-      - store_artifacts:
-               path: target
-
-workflows:
-  version: 2
-  build_test_release:
-    jobs:
-      - build
-      - deploy_heroku:
-          requires:
-            - build
+      # Will normally run deploy but if triggered with Release will prepare and perform maven release
+      # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
+      # Release runs maven release and adds a Release to GitHub based on the tag via github api
+      - run:
+          name: Deploy/Release
+          command: |
+            if [ $RELEASE ]; then
+                git config --global user.email "$GIT_USER_EMAIL"
+                git config --global user.name "$GIT_USER_NAME"
+                mvn release:clean release:prepare -B  -DscmCommentPrefix="Release [skip ci] " -DreleaseVersion=$RELEASE -DdevelopmentVersion=$NEXT release:perform -P ci -s .circleci/settings.xml
+                curl POST "https://api.github.com/repos/kgrid/kgrid-activator/releases?access_token=$GITHUB_TOKEN" \
+                            -H 'Content-Type: application/json' -d "{\"tag_name\":\"kgrid-activator-$RELEASE\"}"
+            else
+                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
+                unzip -o opioid-shelf.zip -d etc
+                HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
+            fi
