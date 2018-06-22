@@ -68,9 +68,14 @@ jobs:
             if [ $RELEASE ]; then
                 git config --global user.email "$GIT_USER_EMAIL"
                 git config --global user.name "$GIT_USER_NAME"
+                TAG_NAME="kgrid-activator-$RELEASE"
                 mvn release:clean release:prepare -B  -DscmCommentPrefix="Release [skip ci] " -DreleaseVersion=$RELEASE -DdevelopmentVersion=$NEXT release:perform -P ci -s .circleci/settings.xml
                 curl POST "https://api.github.com/repos/kgrid/kgrid-activator/releases?access_token=$GITHUB_TOKEN" \
-                            -H 'Content-Type: application/json' -d "{\"tag_name\":\"kgrid-activator-$RELEASE\"}"
+                            -H 'Content-Type: application/json' -d "{\"tag_name\":\"$TAG_NAME\"}"
+                RELEASE_ID=$(curl -s https://api.github.com/repos/kgrid/kgrid-activator/releases/latest | jq -r ".id")
+                curl POST "https://uploads.github.com/repos/kgrid/kgrid-activator/releases/$RELEASE_ID/assets?access_token=$GITHUB_TOKEN&name=$TAG_NAME.jar" \
+                  -H "Content-Type: application/octet-stream" \
+                  --data-binary "@target/$TAG_NAME.jar"
             else
                 DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
                 DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/CPIC-objects/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
