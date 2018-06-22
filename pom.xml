@@ -125,7 +125,7 @@
       <artifactId>proxy-adapter</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-`    <dependency>
+    <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>resource-adapter</artifactId>
       <version>0.0.1-SNAPSHOT</version>
