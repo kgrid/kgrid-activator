@@ -27,7 +27,6 @@
     <url>https://github.com/kgrid/kgrid-activator</url>
     <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
     <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
-    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
@@ -109,7 +108,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.5.8</version>
+      <version>0.6.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
@@ -120,6 +119,11 @@
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
       <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.kgrid</groupId>
+      <artifactId>proxy-adapter</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

@@ -16,7 +16,7 @@ For running the application you need:
 
 Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
-1. Download _kgrid-activator-0.5.8-RC1.jar_  
+1. Download _kgrid-activator-0.5.8.jar_  
 1. Download _hello-world-shelf.zip_ into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 
@@ -28,14 +28,14 @@ Directory structure should look similar to the following
  │       └── v0.0.1
  │           ├── model
  │           └── metadata.json
- └── kgrid-activator-0.5.8-RC1.jar
+ └── kgrid-activator-0.5.8.jar
 ```
 
 The activator is executable jar and can be run from the command line.  Open a terminal window and navigate to the direcoty where the jar and shelf are located.  
 
 Type in the following. 
 
-```java -jar kgrid-activator-0.5.8-RC1.jar ```
+```java -jar kgrid-activator-0.5.8.jar ```
 
 By default the activator will run on port 8080. You can validate the activator is up and running using the activators health endpoint. All _statuses_ reported should be **UP**
 
@@ -78,14 +78,14 @@ The Hello World KO will return the following
 By default the activator will look for a _shelf_ in jar execution directory but the location the _shelf_ can be configured:
 
 ```bash
-java -jar kgrid-activator-0.5.8-RC1.jar --kgrid.shelf.cdostore.filesystem.location=//data/myshelf
+java -jar kgrid-activator-0.5.8.jar --kgrid.shelf.cdostore.url:filesystem:file://data/myshelf
 ```
 
 **Activator Server Port** 
 
 To change the port:
 
-```java -jar kgrid-activator-0.5.8-RC1.jar --server.port=9090```
+```java -jar kgrid-activator-0.5.8.jar --server.port=9090```
 
 Now access health
 
@@ -96,7 +96,7 @@ Now access health
 
 By default the endpoints of the activator at the root of the activator server.  To change the server root path:
 
-```java -jar kgrid-activator-0.5.8-RC1.jar --server.contextPath=/activator```
+```java -jar kgrid-activator-0.5.8.jar --server.contextPath=/activator```
 
 Now access health
 
@@ -123,7 +123,7 @@ Directory structure should look similar to the following
  │       └── v0.0.1   
  │   └── 99999-10101
  │       └── v0.0.1   
- └── kgrid-activator-0.5.8-RC1.jar
+ └── kgrid-activator-0.5.8.jar
 ```
 
 Once loaded into the shelf directory the KOs will need to be activated.  This is accomplished by calling the executors resource.  
