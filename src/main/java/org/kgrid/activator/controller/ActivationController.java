@@ -66,4 +66,14 @@ public class ActivationController {
     return result;
   }
 
+  @GetMapping(value = {"{naan}/{name}/{version}/{endpoint}"})
+  @ResponseStatus(HttpStatus.OK)
+  public Object getResource(@PathVariable String naan, @PathVariable String name,
+      @PathVariable String version, @PathVariable String endpoint) {
+    final String key = naan + "/" + name + "/" + version + "/" + endpoint;
+    Executor executor = service.getEndpointExecutors().get(key);
+
+    return executor.execute(null);
+  }
+
 }
