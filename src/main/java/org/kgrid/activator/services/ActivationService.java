@@ -2,12 +2,14 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
+import org.kgrid.activator.EndPoint;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.AdapterSupport;
@@ -15,12 +17,10 @@ import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
-import org.kgrid.shelf.repository.FilesystemCDOStore;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,7 +37,7 @@ public class ActivationService {
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
 
-  private HashMap<String, Executor> endpointExecutors = new HashMap<String, Executor>();
+  private HashMap<String, EndPoint> endpoints = new HashMap<String, EndPoint>();
 
   public ActivationService() {
   }
@@ -70,28 +70,23 @@ public class ActivationService {
     return adapters;
   }
 
-  public HashMap<String, Executor> getEndpointExecutors() {
-    return endpointExecutors;
-  }
+  public HashMap<String, EndPoint> getEndpoints() { return endpoints; }
 
   public long getKnowledgeObjectsFound() {
     return knowledgeObjectsFound;
   }
 
-  public HashMap<String, Executor> getLoadedExecutors() {
-    return endpointExecutors;
-  }
 
   /**
    * Gets all of the knowledge object versions and activates the endpoint for each.  A map of
    * endpoint executors is created.
    */
-  public void loadAndActivateEndpoints() {
+  public void loadAndActivateEndPoints() {
 
     //TODO All too hard
     //Load all of the ko including all versions
 
-    endpointExecutors.clear();
+    endpoints.clear();
 
     Map<ArkId, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
@@ -103,13 +98,20 @@ public class ActivationService {
         KnowledgeObject knowledgeObject = knowledgeObjectRepository
             .findByArkIdAndVersion(ko.getKey(), version.getKey());
 
+        EndPoint endPoint =null;
+
         try {
 
-          endpointExecutors.put(this.getExecutorKey(knowledgeObject),
-              activateKnowledgeObjectEndPoint(knowledgeObject));
+          endPoint = activateKnowledgeObjectEndpoint(knowledgeObject);
 
-        } catch (ActivatorException e) {
-          log.error("Couldn't activate KnowledgeObject EndPoint" + e.getMessage());
+          endpoints.put(endPoint.getEndPointPath(), endPoint);
+
+        } catch (ActivatorException activatorException) {
+          log.warn("Activator couldn't activate KnowledgeObject EndPoint " +
+              ko.getKey() + "/" + version.getKey()+ " - " + activatorException.getMessage());
+        } catch (AdapterException adapterException ){
+          log.warn("Adapter couldn't activate KnowledgeObject EndPoint " +
+              ko.getKey() + "/" + version.getKey()+ " - " + adapterException.getMessage());
         }
 
       }
@@ -118,12 +120,8 @@ public class ActivationService {
 
   }
 
-  public KnowledgeObject getKnowledgeObject(ArkId arkId, String version) {
-    return knowledgeObjectRepository.findByArkIdAndVersion(arkId, version);
-  }
-
   //TODO  Need to fix the ark id so getting naan and name is posiible, we now have ark:/ or naan-name options
-  public String getExecutorKey(KnowledgeObject knowledgeObject) {
+  public String getEndPointKey(KnowledgeObject knowledgeObject) {
     return knowledgeObject.getArkId().getFedoraPath().replace('-','/') +  "/" + knowledgeObject.version() +
         "/" + knowledgeObject.getModelMetadata().get("functionName").asText();
   }
@@ -134,31 +132,46 @@ public class ActivationService {
    *
    * @return Executor
    */
-  Executor activateKnowledgeObjectEndPoint(KnowledgeObject knowledgeObject)
+  EndPoint activateKnowledgeObjectEndpoint(KnowledgeObject knowledgeObject)
       throws AdapterException {
 
     Path modelPath = knowledgeObject.getModelDir();
     JsonNode endPointMetadata = knowledgeObject.getModelMetadata();
 
-    Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText().toUpperCase());
+    validateEndPoint(endPointMetadata);
 
-    if (adapter == null) {
+   if (adapters.containsKey(endPointMetadata.get("adapterType").asText().toUpperCase())){
 
-      String message =
-          "No " + endPointMetadata.get("adapterType") + "adapter type found for ko "
-              + knowledgeObject
-              .getArkId() + ":" + knowledgeObject
-              .version();
+     Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText().toUpperCase());
+     //TODO  Assuming function name will be used as endpoint will change :-)
+     String functionName = endPointMetadata.get("functionName").asText();
 
-      log.error(message);
+     Executor executor = adapter.activate(modelPath.resolve("resource"), functionName);
 
-      throw new ActivatorException(message);
+     return new EndPoint(getEndPointKey( knowledgeObject), executor);
+
+   } else {
+
+     throw new ActivatorException( endPointMetadata.get("adapterType") + " adapter type found");
+
+   }
+
+  }
+
+  protected void validateEndPoint(JsonNode endPointMetadata) {
+
+    try {
+      Objects.requireNonNull(
+          endPointMetadata.get("adapterType"), "Adapter Type on Model  Required");
+      Objects.requireNonNull(
+          endPointMetadata.get("functionName"), "Function Name on Model Required");
+      Objects.requireNonNull(
+          endPointMetadata.get("resource"), "Resource on Model Required");
+
+    } catch (NullPointerException exception){
+      throw new ActivatorException(exception.getMessage());
     }
 
-    //TODO  Assuming function name will be used as endpoint will change :-)
-    String functionName = endPointMetadata.get("functionName").asText();
-
-    return adapter.activate(modelPath.resolve("resource"), functionName);
 
   }
 

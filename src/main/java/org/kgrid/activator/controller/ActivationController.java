@@ -1,23 +1,31 @@
 package org.kgrid.activator.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.adapter.api.Executor;
+import org.kgrid.adapter.resource.ResourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 @RestController
 @CrossOrigin
@@ -29,11 +37,11 @@ public class ActivationController {
   @Autowired
   private ActivationService service;
 
-  @GetMapping("/executors")
-  public Set<String> findAllLoadedKnowledgeObjectEndPoints() {
-
-    service.loadAndActivateEndpoints();
-    return service.getEndpointExecutors().keySet();
+  @GetMapping("/endpoints")
+  public Set<String> reloadAndActivateEndPoints() {
+    log.info("Reload and activiate endpoints");
+    service.loadAndActivateEndPoints();
+    return service.getEndpoints().keySet();
 
   }
 
@@ -46,24 +54,32 @@ public class ActivationController {
       @RequestBody Object inputs) {
 
     final String key = naan + "/" + name + "/" + version + "/" + endpoint;
+    log.info("Execute endpoint  " + key);
 
-    Executor executor = service.getEndpointExecutors().get(key);
+    if (service.getEndpoints().containsKey(key)){
 
-    EndPointResult result = null;
+      try {
 
-    try {
+        EndPoint endPoint = service.getEndpoints().get(key);
 
-      result = new EndPointResult(executor.execute(inputs));
-      result.getInfo().put("inputs", inputs);
-      result.getInfo().put("ko", naan + "/" + name + "/" + version);
+        EndPointResult<Object> result = new EndPointResult<>(endPoint.executeEndPoint(inputs));
+        result.getInfo().put("inputs", inputs);
+        result.getInfo().put("ko", naan + "/" + name + "/" + version);
 
-      return result;
+        return result;
 
-    } catch (AdapterException e) {
-      log.error("Exception " + e);
+      } catch (AdapterException e) {
+        log.error("Exception " + e);
+        throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
+      }
+
+    } else {
+
+      log.error("No endpoint found for path " + key);
+      throw new ActivatorException("No endpoint found for path " + key);
+
     }
 
-    return result;
   }
 
   @GetMapping(value = {"{naan}/{name}/{version}/{endpoint}"})
@@ -71,9 +87,35 @@ public class ActivationController {
   public Object getResource(@PathVariable String naan, @PathVariable String name,
       @PathVariable String version, @PathVariable String endpoint) {
     final String key = naan + "/" + name + "/" + version + "/" + endpoint;
-    Executor executor = service.getEndpointExecutors().get(key);
+    log.info("Get resource at  endpoint  " + key);
+    EndPoint endPoint = service.getEndpoints().get(key);
 
-    return executor.execute(null);
+    return endPoint.getExecutor().execute(null);
   }
+
+  @ExceptionHandler(ActivatorException.class)
+  public ResponseEntity<Map<String, String>> handleGeneralActivatorExceptions(ActivatorException e,
+      WebRequest request) {
+    return new ResponseEntity<>(generateErrorMap(request, e.getMessage(), HttpStatus.BAD_REQUEST),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception e,
+      WebRequest request) {
+    return new ResponseEntity<>(generateErrorMap(request, e.getMessage(), HttpStatus.BAD_REQUEST),
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private Map<String, String> generateErrorMap(WebRequest request, String message, HttpStatus status) {
+    Map<String, String> errorInfo = new HashMap<>();
+    errorInfo.put("Status", status.toString());
+    errorInfo.put("Error", message);
+    errorInfo.put("Request", request.getDescription(false));
+    errorInfo.put("Time", new Date().toString());
+    return errorInfo;
+
+  }
+
 
 }

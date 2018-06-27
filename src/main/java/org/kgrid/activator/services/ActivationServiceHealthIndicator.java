@@ -19,7 +19,7 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
       return Health.up()
           .withDetail("Knowledge Objects found", activationService.getKnowledgeObjectsFound())
           .withDetail("Adapters loaded", activationService.getLoadedAdapters().keySet())
-          .withDetail("Executors loaded", activationService.getEndpointExecutors().keySet())
+          .withDetail("EndPoints loaded", activationService.getEndpoints().keySet())
           .build();
     } else {
       return Health.down()

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.KgridActivatorApplication;
 import org.kgrid.activator.ActivatorException;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
@@ -70,10 +72,10 @@ public class ActivationServiceTest {
         = new TypeReference<HashMap<String, String>>() {};
     Map<String, String> map = mapper.readValue(jsonInput, typeRef);
 
-    service.loadAndActivateEndpoints();
+    service.loadAndActivateEndPoints();
 
-    Executor executor = service.getEndpointExecutors()
-        .get("99999/newko/v0.0.1/welcome");
+    Executor executor = service.getEndpoints()
+        .get("99999/newko/v0.0.1/welcome").getExecutor();
     assertEquals("Welcome to Knowledge Grid, Tester", executor
         .execute(map));
 
@@ -95,10 +97,11 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.1");
 
-    assertTrue(service.activateKnowledgeObjectEndPoint
-        (knowledgeObject) instanceof Executor ? true : false);
+    assertTrue(service.activateKnowledgeObjectEndpoint
+        (knowledgeObject) instanceof EndPoint ? true : false);
 
   }
+
 
   @Test
   public void activateKnowledageObjectEndPointNoAdapterFound() {
@@ -108,7 +111,43 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
 
-    service.activateKnowledgeObjectEndPoint(knowledgeObject);
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+
+  @Test
+  public void activateKnowledageObjectEndPointNoFunction() {
+
+    thrown.expect(ActivatorException.class);
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.Nofunction");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+
+  @Test
+  public void activateKnowledageObjectEndPointJSCompile() {
+
+    thrown.expect(AdapterException.class);
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.JSNotCompile");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+
+  @Test
+  public void activateKnowledageObjectEndPointNoResource() {
+
+    thrown.expect(ActivatorException.class);
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.NoResource");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
 
   }
 }
