@@ -2,7 +2,6 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
@@ -124,9 +123,18 @@ public class ActivationService {
   }
 
   //TODO  Need to fix the ark id so getting naan and name is posiible, we now have ark:/ or naan-name options
-  public String getEndPointKey(KnowledgeObject knowledgeObject) {
-    return knowledgeObject.getArkId().getFedoraPath().replace('-','/') +  "/" + knowledgeObject.version() +
-        "/" + knowledgeObject.getModelMetadata().get("functionName").asText();
+  public String getEndPointKey(KnowledgeObject knowledgeObject,
+      JsonNode serviceDescriptionJsonNode) {
+
+    StringBuffer endPointPath = new StringBuffer(knowledgeObject.getArkId().getFedoraPath().replace('-', '/') + "/" + knowledgeObject
+        .version());
+
+    if(serviceDescriptionJsonNode==null) {
+      endPointPath.append(((ObjectNode) serviceDescriptionJsonNode.get("paths")).fieldNames().next());
+    } else {
+      endPointPath.append(   "/" + knowledgeObject.getModelMetadata().get("functionName").asText());
+    }
+    return endPointPath.toString();
   }
 
 
@@ -146,13 +154,18 @@ public class ActivationService {
    if (adapters.containsKey(endPointMetadata.get("adapterType").asText().toUpperCase())){
 
      Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText().toUpperCase());
+
      //TODO  Assuming function name will be used as endpoint will change :-)
      String functionName = endPointMetadata.get("functionName").asText();
 
      Executor executor = adapter.activate(modelPath.resolve("resource"), functionName);
 
+     //TODO  Stupid
+     String path = serviceDescriptionService.findPath(knowledgeObject)!=null?serviceDescriptionService.findPath(knowledgeObject):"/"+functionName;
 
-     return new EndPoint(getEndPointKey( knowledgeObject), executor, serviceDescriptionService.loadServiceDescription(knowledgeObject));
+     EndPoint endPoint =  new EndPoint(knowledgeObject.getArkId(),knowledgeObject.version(),executor, path);
+
+     return endPoint;
 
    } else {
 

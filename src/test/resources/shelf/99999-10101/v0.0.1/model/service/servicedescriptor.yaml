@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 'Opioid Use Detector'
+  description: 'This object scans a list of prescriptions and determines if the patient is exposed to an opioid.'
+servers:
+  - url: 'https://kgrid-activator.herokuapp.com/99999/10101/v0.0.1'
+paths:
+  /opioidDetector:
+    post:
+      description: opioidDetector.
+      operationId: opioidDetector
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/druglist'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    druglist:
+      required:
+        - rxcuis
+      properties:
+        rxcuis:
+          type: string
+          example: '106500,200240,856917,994226,197446,801958'
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: string
+          example: '{condition_satisfied:false,summary:{opioid:false},detail:{}}'
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

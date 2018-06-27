@@ -21,7 +21,7 @@ class EndpointKnowledgeObjectDecorator implements KnowledgeObjectDecorator {
     ArkId arkId = ko.getArkId();
     String version = ko.version();
     String endpoint = ko.getModelMetadata().get("functionName").asText();
-    if (service.getEndpoints().containsKey(service.getEndPointKey(ko))) {
+    if (service.getEndpoints().containsKey(service.getEndPointKey(ko,null))) {
       ko.getMetadata().put("endpoint", requestEntity.getUrl() + "/" + endpoint);
     }
   }

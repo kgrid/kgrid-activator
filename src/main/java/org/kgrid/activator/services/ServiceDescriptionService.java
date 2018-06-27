@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -35,7 +36,7 @@ public class ServiceDescriptionService {
         return serviceJsonNode;
 
       } catch (Exception e) {
-        log.warn(e.getMessage());
+        log.warn("Could load Service Description");
       }
     }
 
@@ -58,6 +59,15 @@ public class ServiceDescriptionService {
 
     return jsonNode;
 
+  }
+
+  public String findPath(KnowledgeObject knowledgeObject) {
+    ObjectNode objectNode = (ObjectNode) loadServiceDescription(knowledgeObject);
+    if (objectNode.has("paths")) {
+      return objectNode.get("paths").fieldNames().next();
+    } else {
+      return null;
+    }
   }
 
 }
