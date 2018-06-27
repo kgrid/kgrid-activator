@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
@@ -30,6 +31,8 @@ public class ActivationService {
 
   private HashMap<String, Adapter> adapters;
   private long knowledgeObjectsFound;
+  @Autowired
+  private ServiceDescriptionService serviceDescriptionService;
 
   @Autowired
   CompoundDigitalObjectStore cdoStore;
@@ -130,7 +133,7 @@ public class ActivationService {
   /**
    * Will find the applicable adapter for a Knowledge Object and activate the endpoint
    *
-   * @return Executor
+   * @return EndPoint
    */
   EndPoint activateKnowledgeObjectEndpoint(KnowledgeObject knowledgeObject)
       throws AdapterException {
@@ -148,7 +151,8 @@ public class ActivationService {
 
      Executor executor = adapter.activate(modelPath.resolve("resource"), functionName);
 
-     return new EndPoint(getEndPointKey( knowledgeObject), executor);
+
+     return new EndPoint(getEndPointKey( knowledgeObject), executor, serviceDescriptionService.loadServiceDescription(knowledgeObject));
 
    } else {
 
@@ -158,6 +162,10 @@ public class ActivationService {
 
   }
 
+  /**
+   * Validates that there is enough information to create an EndPoint
+   * @param endPointMetadata
+   */
   protected void validateEndPoint(JsonNode endPointMetadata) {
 
     try {
