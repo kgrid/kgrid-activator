@@ -4,14 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.nio.file.Paths;
-import org.kgrid.activator.ActivatorException;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceDescriptionService {
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 
   YAMLMapper yamlMapper = new YAMLMapper();
 
@@ -28,14 +31,16 @@ public class ServiceDescriptionService {
         JsonNode serviceJsonNode = loadServiceDescription(
             cdoStore.getBinary(Paths.get(knowledgeObject.getArkId().getFedoraPath(),
                 knowledgeObject.version(),serviceDescriptionPath)));
+
         return serviceJsonNode;
 
       } catch (Exception e) {
-        throw new ActivatorException( e.getMessage());
+        log.warn(e.getMessage());
       }
-    } else {
-      return yamlMapper.createObjectNode();
     }
+
+    return yamlMapper.createObjectNode();
+
 
   }
 
