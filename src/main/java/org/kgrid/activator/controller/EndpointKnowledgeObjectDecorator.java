@@ -1,6 +1,8 @@
 package org.kgrid.activator.controller;
 
+import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.ServiceDescriptionService;
 import org.kgrid.shelf.controller.KnowledgeObjectDecorator;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
@@ -14,15 +16,20 @@ import org.springframework.stereotype.Service;
 class EndpointKnowledgeObjectDecorator implements KnowledgeObjectDecorator {
 
   @Autowired
-  private ActivationService service;
+  private ActivationService activationService;
+
+  @Autowired
+  private ServiceDescriptionService serviceDescriptionService;
 
   @Override
-  public void decorate(KnowledgeObject ko, RequestEntity requestEntity) {
-    ArkId arkId = ko.getArkId();
-    String version = ko.version();
-    String endpoint = ko.getModelMetadata().get("functionName").asText();
-    if (service.getEndpoints().containsKey(service.getEndPointKey(ko,null))) {
-      ko.getMetadata().put("endpoint", requestEntity.getUrl() + "/" + endpoint);
+  public void decorate(KnowledgeObject knowledgeObject, RequestEntity requestEntity) {
+
+    if (activationService.getEndpoints().containsKey(activationService.getKnowleledgeObjectPath(
+        knowledgeObject)+ activationService.getEndPointPath(knowledgeObject))) {
+
+      knowledgeObject.getMetadata().put("endpoint",
+          requestEntity.getUrl() + "/" + activationService.getEndPointPath(
+              knowledgeObject));
     }
   }
 }

@@ -106,7 +106,7 @@ public class ActivationService {
 
           endPoint = activateKnowledgeObjectEndpoint(knowledgeObject);
 
-          endpoints.put(endPoint.getEndPointPath(), endPoint);
+          endpoints.put(endPoint.getEndPointAbsolutePath(), endPoint);
 
         } catch (ActivatorException activatorException) {
           log.warn("Activator couldn't activate KnowledgeObject EndPoint " +
@@ -121,24 +121,25 @@ public class ActivationService {
     }
 
   }
+  public String getKnowleledgeObjectPath(KnowledgeObject knowledgeObject) {
 
-  //TODO  Need to fix the ark id so getting naan and name is posiible, we now have ark:/ or naan-name options
-  public String getEndPointKey(KnowledgeObject knowledgeObject,
-      JsonNode serviceDescriptionJsonNode) {
+    return knowledgeObject.getArkId().getFedoraPath().replace('-', '/') + "/" + knowledgeObject
+        .version();
+  }
 
-    StringBuffer endPointPath = new StringBuffer(knowledgeObject.getArkId().getFedoraPath().replace('-', '/') + "/" + knowledgeObject
-        .version());
+  public String getEndPointPath(KnowledgeObject knowledgeObject){
 
-    if(serviceDescriptionJsonNode==null) {
-      endPointPath.append(((ObjectNode) serviceDescriptionJsonNode.get("paths")).fieldNames().next());
-    } else {
-      endPointPath.append(   "/" + knowledgeObject.getModelMetadata().get("functionName").asText());
-    }
-    return endPointPath.toString();
+    JsonNode endPointMetadata = knowledgeObject.getModelMetadata();
+
+    String functionName = endPointMetadata.get("functionName").asText();
+    String path = serviceDescriptionService.findPath(knowledgeObject)!=null?serviceDescriptionService.findPath(knowledgeObject):"/"+functionName;
+
+    return path;
   }
 
 
   /**
+   *
    * Will find the applicable adapter for a Knowledge Object and activate the endpoint
    *
    * @return EndPoint
@@ -161,9 +162,11 @@ public class ActivationService {
      Executor executor = adapter.activate(modelPath.resolve("resource"), functionName);
 
      //TODO  Stupid
-     String path = serviceDescriptionService.findPath(knowledgeObject)!=null?serviceDescriptionService.findPath(knowledgeObject):"/"+functionName;
+     String endPointPath = getEndPointPath(knowledgeObject);
 
-     EndPoint endPoint =  new EndPoint(knowledgeObject.getArkId(),knowledgeObject.version(),executor, path);
+     String baseKOPath = getKnowleledgeObjectPath(knowledgeObject);
+
+     EndPoint endPoint =  new EndPoint(executor, endPointPath, baseKOPath);
 
      return endPoint;
 

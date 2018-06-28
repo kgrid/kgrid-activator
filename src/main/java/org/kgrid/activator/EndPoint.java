@@ -1,9 +1,6 @@
 package org.kgrid.activator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.domain.ArkId;
 
 /**
  * Defines an activated knowledge object endpoint
@@ -12,37 +9,30 @@ import org.kgrid.shelf.domain.ArkId;
 public class EndPoint {
 
   private Executor executor;
-  private ArkId arkId;
-  private String version;
-  private String path;
+  private String knowledgeObjectEndPointPath;
+  private String endPointPath;
 
 
-  public EndPoint(ArkId arkId, String version , Executor executor, String path) {
-    this.arkId= arkId;
+  public EndPoint( Executor executor, String endPointPath, String knowledgeObjectEndPointPath) {
+    this.endPointPath= endPointPath;
     this.executor = executor;
-    this.version = version;
-    this.path = path;
+    this.knowledgeObjectEndPointPath = knowledgeObjectEndPointPath;
+
   }
   public Object executeEndPoint(Object input){
     return executor.execute( input );
   }
   public Executor getExecutor() { return executor; }
 
-  public ArkId getArkId() {
-    return arkId;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public String getVersion() {
-    return version;
+  public String getKnowledgeObjectEndPointPath() {
+    return knowledgeObjectEndPointPath;
   }
 
   public String getEndPointPath() {
-    return arkId.getFedoraPath().replace('-', '/') + "/" + version + path;
+    return endPointPath;
+  }
 
-
+  public String getEndPointAbsolutePath() {
+    return getKnowledgeObjectEndPointPath() + getEndPointPath();
   }
 }

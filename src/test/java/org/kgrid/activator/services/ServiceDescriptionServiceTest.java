@@ -5,6 +5,9 @@ import static org.junit.Assert.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.KgridActivatorApplication;
@@ -31,11 +34,14 @@ public class ServiceDescriptionServiceTest {
   public void loadServiceDescription() {
 
     try{
-      JsonNode serviceDescriptionwJsonNode = service.loadServiceDescription("openapi: 3.0.0 \ninfo:\n" + "  description: This is a simple API");
+      Path path = Paths.get("src/test/resources/servicedescription.yaml");
+      byte [] openAPI = Files.readAllBytes(path);
+      JsonNode serviceDescriptionwJsonNode = service.loadServiceDescription(openAPI);
+
       assertEquals("3.0.0",serviceDescriptionwJsonNode.get("openapi").asText());
-      assertEquals("This is a simple API", serviceDescriptionwJsonNode.get("info").get("description").asText());
+      assertEquals("This is a sample Petstore server", serviceDescriptionwJsonNode.get("info").get("description").asText());
     } catch (Exception e){
-        assertFalse("throw exception "  +e.getMessage(), true);
+        assertFalse("throw exception "  + e, true);
     }
 
   }
@@ -48,7 +54,7 @@ public class ServiceDescriptionServiceTest {
 
     JsonNode serviceDescriptionwJsonNode = service.loadServiceDescription(knowledgeObject);
     assertEquals("3.0.0",serviceDescriptionwJsonNode.get("openapi").asText());
-    assertEquals("/opioidDetector",  ((ObjectNode) serviceDescriptionwJsonNode.get("paths")).fieldNames().next());
+    assertEquals("/opioidDetector",  ((ObjectNode) serviceDescriptionwJsonNode.get(ServiceDescriptionService.SERVICE_DESCRIPTION_PATHS)).fieldNames().next());
 
 
 

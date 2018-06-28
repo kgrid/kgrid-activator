@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 public class ServiceDescriptionService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-
+  public static String SERVICE_DESCRIPTION = "service";
+  public static String SERVICE_DESCRIPTION_PATHS = "paths";
   YAMLMapper yamlMapper = new YAMLMapper();
 
   @Autowired
@@ -24,8 +25,8 @@ public class ServiceDescriptionService {
 
   public JsonNode loadServiceDescription(KnowledgeObject knowledgeObject){
 
-    if(knowledgeObject.getMetadata().has("service")){
-      String serviceDescriptionPath = knowledgeObject.getMetadata().get("service").asText();
+    if(knowledgeObject.getMetadata().has(SERVICE_DESCRIPTION)){
+      String serviceDescriptionPath = knowledgeObject.getMetadata().get(SERVICE_DESCRIPTION).asText();
 
       try {
 
@@ -36,20 +37,12 @@ public class ServiceDescriptionService {
         return serviceJsonNode;
 
       } catch (Exception e) {
-        log.warn("Could load Service Description");
+        log.warn("Could not load Service Description");
       }
     }
 
     return yamlMapper.createObjectNode();
 
-
-  }
-
-  public JsonNode loadServiceDescription(String serviceDescription) throws IOException {
-
-    JsonNode jsonNode = yamlMapper.readTree(serviceDescription);
-
-    return jsonNode;
 
   }
 
@@ -63,8 +56,8 @@ public class ServiceDescriptionService {
 
   public String findPath(KnowledgeObject knowledgeObject) {
     ObjectNode objectNode = (ObjectNode) loadServiceDescription(knowledgeObject);
-    if (objectNode.has("paths")) {
-      return objectNode.get("paths").fieldNames().next();
+    if (objectNode.has(SERVICE_DESCRIPTION_PATHS)) {
+      return objectNode.get(SERVICE_DESCRIPTION_PATHS).fieldNames().next();
     } else {
       return null;
     }
