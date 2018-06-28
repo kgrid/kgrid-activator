@@ -1,5 +1,5 @@
 ---
-
+layout: page
 ---
 ## Deploy Activator
 
