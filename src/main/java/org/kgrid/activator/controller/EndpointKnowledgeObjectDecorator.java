@@ -28,7 +28,7 @@ class EndpointKnowledgeObjectDecorator implements KnowledgeObjectDecorator {
         knowledgeObject)+ activationService.getEndPointPath(knowledgeObject))) {
 
       knowledgeObject.getMetadata().put("endpoint",
-          requestEntity.getUrl() + "/" + activationService.getEndPointPath(
+          requestEntity.getUrl() + activationService.getEndPointPath(
               knowledgeObject));
     }
   }

@@ -25,25 +25,25 @@ public class ServiceDescriptionService {
 
   public JsonNode loadServiceDescription(KnowledgeObject knowledgeObject){
 
+    JsonNode serviceJsonNode = null;
+
     if(knowledgeObject.getMetadata().has(SERVICE_DESCRIPTION)){
+
       String serviceDescriptionPath = knowledgeObject.getMetadata().get(SERVICE_DESCRIPTION).asText();
 
       try {
 
-        JsonNode serviceJsonNode = loadServiceDescription(
+        serviceJsonNode = loadServiceDescription(
             cdoStore.getBinary(Paths.get(knowledgeObject.getArkId().getFedoraPath(),
                 knowledgeObject.version(),serviceDescriptionPath)));
 
-        return serviceJsonNode;
-
       } catch (Exception e) {
-        log.warn("Could not load Service Description");
+        log.warn("Could not load Service Description for " +knowledgeObject.getArkId() + "/" +
+            knowledgeObject.version() + " " + e.getMessage());
       }
     }
 
-    return yamlMapper.createObjectNode();
-
-
+    return serviceJsonNode;
   }
 
   public JsonNode loadServiceDescription(byte[] serviceDescription) throws IOException {

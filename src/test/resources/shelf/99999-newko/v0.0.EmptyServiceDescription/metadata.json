@@ -22,7 +22,6 @@
   "published": false,
   "lastModified": 1525444440589,
   "createdOn": 1525444440588,
-  "version": "v0.0.NoResource",
+  "version": "v0.0.0",
   "model": "model",
-  "service":"model/service/servicedescriptor.yaml"
-}
+  "service": "model/service/servicedescriptor.yaml"}

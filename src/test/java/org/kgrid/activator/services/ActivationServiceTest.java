@@ -75,7 +75,7 @@ public class ActivationServiceTest {
     service.loadAndActivateEndPoints();
 
     Executor executor = service.getEndpoints()
-        .get("99999/newko/v0.0.1/welcome").getExecutor();
+        .get("99999/newko/v0.0.0/welcome").getExecutor();
     assertEquals("Welcome to Knowledge Grid, Tester", executor
         .execute(map));
 
@@ -84,7 +84,7 @@ public class ActivationServiceTest {
   @Test
   public void findResourcePathforKO() {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
-        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.1");
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
 
     String resource = knowledgeObject.getModelMetadata().get("resource").asText();
     assertEquals("resource/welcome.js",
@@ -95,7 +95,7 @@ public class ActivationServiceTest {
   public void activateKnowledageObjectEndPoint() {
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
-        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.1");
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
 
     assertTrue(service.activateKnowledgeObjectEndpoint
         (knowledgeObject) instanceof EndPoint ? true : false);
@@ -107,18 +107,58 @@ public class ActivationServiceTest {
   public void activateKnowledageObjectEndPointNoAdapterFound() {
 
     thrown.expect(ActivatorException.class);
+    thrown.expectMessage("\"BADADAPTER\" adapter type found");
+
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
-        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.NoAdapter");
 
     service.activateKnowledgeObjectEndpoint(knowledgeObject);
 
   }
 
   @Test
+  public void activateKnowledageObjectNoServiceDescription() {
+
+    thrown.expect(ActivatorException.class);
+    thrown.expectMessage("Service Description is Required");
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.NoServiceDescription");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+  @Test
+  public void activateKnowledageObjectEmptyServiceDescription() {
+
+    thrown.expect(ActivatorException.class);
+    thrown.expectMessage("Service Description is Required");
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.EmptyServiceDescription");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+
+  @Test
+  public void activateKnowledageObjectServiceDescriptionNoPaths() {
+
+    thrown.expect(ActivatorException.class);
+    thrown.expectMessage("Service Description Paths are Required");
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.ServiceDescriptionNoPaths");
+
+    service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+  @Test
   public void activateKnowledageObjectEndPointNoFunction() {
 
     thrown.expect(ActivatorException.class);
+    thrown.expectMessage("Function Name on Model Required");
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.Nofunction");
@@ -131,6 +171,7 @@ public class ActivationServiceTest {
   public void activateKnowledageObjectEndPointJSCompile() {
 
     thrown.expect(AdapterException.class);
+    thrown.expectMessage("unable to compile script 99999-newko/v0.0.JSNotCompile");
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.JSNotCompile");
@@ -143,11 +184,21 @@ public class ActivationServiceTest {
   public void activateKnowledageObjectEndPointNoResource() {
 
     thrown.expect(ActivatorException.class);
+    thrown.expectMessage("Resource on Model Required");
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.NoResource");
 
     service.activateKnowledgeObjectEndpoint(knowledgeObject);
+
+  }
+  @Test
+  public void findEndPointPath() {
+
+    KnowledgeObject knowledgeObject = knowledgeObjectRepository
+        .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
+
+    service.getEndPointPath(knowledgeObject);
 
   }
 }

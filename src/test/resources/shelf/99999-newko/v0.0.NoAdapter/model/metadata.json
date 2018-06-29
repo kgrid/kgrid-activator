@@ -1,6 +1,6 @@
 {
   "functionName":"welcome",
-  "adapterType":"JAVASCRIPT",
+  "adapterType":"BADADAPTER",
   "resource":"resource/welcome.js",
   "service":"service/iospec.json"
 }

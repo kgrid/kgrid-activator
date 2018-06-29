@@ -23,5 +23,7 @@
     "version": "v0.0.1",
     "lastModified": 1525444440589,
     "createdOn": 1525444440588 ,
-    "version": "v0.0.1"
+    "version": "v0.0.1",
+    "service":"model/service/servicedescriptor.yaml"
+
 }

@@ -47,7 +47,7 @@ public class ActivationControllerTest {
 
 
      ResultActions result = mockMvc.perform(
-        post("/99999/newko/v0.0.1/welcome").content("{\"name\" : \"tester\"}")
+        post("/99999/newko/v0.0.0/welcome").content("{\"name\" : \"tester\"}")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .accept(MediaType.APPLICATION_JSON_UTF8));
 
