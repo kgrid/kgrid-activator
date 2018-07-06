@@ -1,6 +1,6 @@
 # KGrid Activator
 [![CircleCI](https://circleci.com/gh/kgrid/kgrid-activator/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-activator/tree/master)
-
+[![GitHub release](https://img.shields.io/github/release/kgrid/kgrid-activator.svg)](https://github.com/kgrid/kgrid-activator/releases/)
 
 ## Overview
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data. 
