@@ -139,17 +139,13 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      For non-maven-repository releases
-      mvn release:prepare
-      [This builds a versioned artifact and tags it in the repo.
-      Then upload the war and publish the release, say on github].
-      Use mvn release:clean afterward
-       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.5.3</version>
+        <configuration>
+          <goals>install</goals>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
