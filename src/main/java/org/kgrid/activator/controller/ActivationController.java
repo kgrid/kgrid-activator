@@ -82,20 +82,6 @@ public class ActivationController {
 
   }
 
-  @GetMapping(value = {"{naan}/{name}/{version}/{endpoint}"}, produces = {"*/*"})
-  @ResponseStatus(HttpStatus.OK)
-  public Object getResource(@PathVariable String naan, @PathVariable String name,
-      @PathVariable String version, @PathVariable String endpoint) {
-
-    final String key = naan + "/" + name + "/" + version + "/" + endpoint;
-
-    log.info("Get resource at  endpoint  " + key);
-
-    EndPoint endPoint = service.getEndpoints().get(key);
-
-    return endPoint.getExecutor().execute(null);
-  }
-
   @ExceptionHandler(ActivatorException.class)
   public ResponseEntity<Map<String, String>> handleGeneralActivatorExceptions(ActivatorException e,
       WebRequest request) {
