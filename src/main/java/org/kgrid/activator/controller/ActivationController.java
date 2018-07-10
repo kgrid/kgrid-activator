@@ -9,7 +9,6 @@ import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.adapter.resource.ResourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
