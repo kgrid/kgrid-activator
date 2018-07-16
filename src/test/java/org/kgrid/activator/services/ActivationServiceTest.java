@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.file.FileSystems;
 import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.KgridActivatorApplication;
 import org.kgrid.activator.ActivatorException;
@@ -171,7 +172,8 @@ public class ActivationServiceTest {
   public void activateKnowledageObjectEndPointJSCompile() {
 
     thrown.expect(AdapterException.class);
-    thrown.expectMessage("unable to compile script 99999-newko/v0.0.JSNotCompile");
+    thrown.expectMessage("unable to compile script 99999-newko"
+        + FileSystems.getDefault().getSeparator() +"v0.0.JSNotCompile");
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.JSNotCompile");
