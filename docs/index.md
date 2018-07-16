@@ -1,5 +1,6 @@
 ---
 layout: page
+navtitle: Deploy the Activator
 ---
 ## Deploy Activator
 

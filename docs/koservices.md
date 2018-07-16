@@ -1,5 +1,6 @@
 ---
 layout: page
+navtitle: Accessing KO Services/Endpoints 
 ---
 ## Accessing KO Services/Endpoints in the Activator
 
