@@ -5,6 +5,11 @@
 ## Overview
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data. 
 
+> More information on using Knowledge Objects in the Activator and integration with other systems can be found here: [Getting Started with the KGrid Activator](http://kgrid.org/kgrid-activator/).
+
+> To download the latest releases and sample Knowledge Object collections: [Latest Activator release](https://github.com/kgrid/kgrid-activator/releases/latest)
+
+
 ## Table of Contents
 
 1. [Build and Test Activator](#build-activator)
