@@ -35,7 +35,7 @@ public class ServiceDescriptionService {
 
         serviceJsonNode = loadServiceDescription(
             cdoStore.getBinary(Paths.get(knowledgeObject.getArkId().getFedoraPath(),
-                knowledgeObject.version(),serviceDescriptionPath)));
+                knowledgeObject.version(),serviceDescriptionPath).toString()));
 
       } catch (Exception e) {
         log.warn("Could not load Service Description for " +knowledgeObject.getArkId() + "/" +
