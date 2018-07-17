@@ -24,3 +24,9 @@ theme: minima
 exclude:
   - Gemfile
   - Gemfile.lock
+
+header_pages:
+  - index.md
+  - koservices.md
+  - addingkos.md
+  - configuration.md
