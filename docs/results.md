@@ -1,3 +1,7 @@
+---
+layout: page
+navtitle: The KO results message
+---
 
 ## Using the metadata in the result object
 
