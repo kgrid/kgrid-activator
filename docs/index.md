@@ -37,9 +37,41 @@ Type in the following.
 
 ```java -jar kgrid-activator-0.6.2.jar ```
 
-By default the activator will run on port 8080. You can validate the activator is up and running using the activators health endpoint. All _statuses_ reported should be **UP**
+By default the activator will run on port 8080. You can validate the activator is up and running using 
+the activators health endpoint. In your browser type in the following URL address.
 
-```curl http://localhost:8080/health```
+```http://localhost:8080/health```
+
+The health of the Activator should display a status of **UP**.  Other informatoin about 
+Knowledage Objects, Adapters and EndPoints can also be found.  Details about these attributes be
+discussed later.
+
+```
+{
+   status: "UP",
+   shelf: {
+      status: "UP",
+      kgrid.shelf.cdostore.url: "shelf"
+   },
+   activationService: {
+      status: "UP",
+      Knowledge Objects found: 1,
+      Adapters loaded: [
+        "JAVASCRIPT",
+        "PROXY"
+       ],
+   EndPoints loaded: [
+        "hello/world/v0.0.1/welcome"
+   ]
+   },
+   diskSpace: {
+      status: "UP",
+      total: 499963170816,
+      free: 415911948288,
+      threshold: 10485760
+   }
+ }
+   ```
 
 ## Validating the Hello-World KO on the Activator 
 

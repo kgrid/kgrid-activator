@@ -1,16 +1,16 @@
 ---
 layout: page
-navtitle: Adding New Knowledge Objects
+navtitle: Adding MOpen Opioid Knowledge Objects
 
 ---
 
-## Adding New Knowledge Objects
+## Adding MOpen Opioid Knowledge Objects
 
 Add new KOs to the existing shelf. Once in the shelf directory you will need to activate the new 
 KO objects.  For example to add the MOpen Opiod KOs.
 
-1. Download the released MOpen Opiod KOs self (_opid_shelf.zip_) from github [MOpen-Opioid Collection](https://github.com/kgrid/mopen-opioid-collection/releases/latest)
-1. Download _opid_shelf.zip.zip_ into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+1. Download the released MOpen Opioid KOs self ([]opid_shelf.zip(https://github.com/kgrid/mopen-opioid-collection/releases/latest)) from github [MOpen-Opioid Collection](https://github.com/kgrid/mopen-opioid-collection/releases/latest)
+1. Put the pioid_shelf.zip into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 Directory structure should look similar to the following
 
@@ -27,11 +27,12 @@ Directory structure should look similar to the following
  └── kgrid-activator-0.6.2.jar
 ```
 
-Once loaded into the shelf directory the KOs will need to be activated.  This is accomplished by calling the executors resource.  
+Once loaded into the shelf directory the KOs restart the Activator application.  Check 
+on the Activators heath using
 
-```curl http://localhost:8080/endpoints```
+``` http://localhost:8080/health```
 
-This will load and activate the KOs on the shelf.  You should recieve a list of the activated endpoint similar to the following 
+You should receive a list of the Endpoints loaded similar to the following 
 
 ```json
 [
@@ -40,4 +41,31 @@ This will load and activate the KOs on the shelf.  You should recieve a list of 
     "99999/10101/v0.0.1/opioidDetector",
     "99999/10102/v0.0.1/opioidbzdDetector"
 ]
-```
+   {
+      status: "UP",
+      shelf: {
+         status: "UP",
+         kgrid.shelf.cdostore.url: "shelf"
+      },
+      activationService: {
+         status: "UP",
+         Knowledge Objects found: 1,
+         Adapters loaded: [
+           "JAVASCRIPT",
+           "PROXY"
+          ],
+      EndPoints loaded: [
+           "hello/world/v0.0.1/welcome"
+            "99999/10103/v0.0.1/tripleThreatDetector",
+            "99999/10101/v0.0.1/opioidDetector",
+            "99999/10102/v0.0.1/opioidbzdDetector"
+      ]
+      },
+      diskSpace: {
+         status: "UP",
+         total: 499963170816,
+         free: 415911948288,
+         threshold: 10485760
+      }
+    }
+ ```
