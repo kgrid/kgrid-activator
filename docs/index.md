@@ -16,8 +16,8 @@ For running the application you need:
 
 Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
-1. Download _kgrid-activator-0.6.2.jar_  
-1. Download _hello-world-shelf.zip_ into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+1. Download [kgrid-activator-0.6.2.jar](https://github.com/kgrid/kgrid-activator/releases/latest)  
+1. Download [hello-world-shelf.zip](https://github.com/kgrid/kgrid-activator/releases/latest) into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 
 Directory structure should look similar to the following
