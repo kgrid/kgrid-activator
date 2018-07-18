@@ -1,6 +1,6 @@
 ---
 layout: page
-navtitle: Adding MOpen Opioid Knowledge Objects
+navtitle: Adding Opioid KOs
 
 ---
 
@@ -9,8 +9,8 @@ navtitle: Adding MOpen Opioid Knowledge Objects
 Add new KOs to the existing shelf. Once in the shelf directory you will need to activate the new 
 KO objects.  For example to add the MOpen Opiod KOs.
 
-1. Download the released MOpen Opioid KOs self ([]opid_shelf.zip(https://github.com/kgrid/mopen-opioid-collection/releases/latest)) from github [MOpen-Opioid Collection](https://github.com/kgrid/mopen-opioid-collection/releases/latest)
-1. Put the pioid_shelf.zip into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+1. Download the released MOpen Opioid KOs self ([opioid_shelf.zip](https://github.com/kgrid/mopen-opioid-collection/releases/latest)) from github [MOpen-Opioid Collection](https://github.com/kgrid/mopen-opioid-collection/)
+1. Put the opioid_shelf.zip into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 Directory structure should look similar to the following
 
@@ -27,10 +27,10 @@ Directory structure should look similar to the following
  └── kgrid-activator-0.6.2.jar
 ```
 
-Once loaded into the shelf directory the KOs restart the Activator application.  Check 
+Once loaded into the shelf directory the KOs restart the Activator application by stopping and starting the activator.  Check 
 on the Activators heath using
 
-``` http://localhost:8080/health```
+``` http://localhost:8080/health ```
 
 You should receive a list of the Endpoints loaded similar to the following 
 

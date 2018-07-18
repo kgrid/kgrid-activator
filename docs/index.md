@@ -1,8 +1,8 @@
 ---
 layout: page
-navtitle: Deploy the Activator
+navtitle: Activator Deployment
 ---
-## Deploy Activator
+## Activator Deployment
 
 These instructions will get the Kgrid Activator running with sample set of Knowledge Objects.
 

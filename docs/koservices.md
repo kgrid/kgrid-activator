@@ -1,6 +1,6 @@
 ---
 layout: page
-navtitle: Accessing Knowledge Object Services
+navtitle: Accessing KO Services
 order: 1
 ---
 ## Accessing KO Services/Endpoints in the Activator

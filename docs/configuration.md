@@ -1,6 +1,6 @@
 ---
 layout: page
-navtitle: Configuration
+navtitle: Activator Configuration
 ---
 
 ## Configuration
