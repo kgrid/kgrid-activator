@@ -8,7 +8,7 @@ navtitle: Accessing KO Service Description
 ### Service Description
 
 Each Knowledge Object (KO) is required to have a service description which is a definition of what  
-services a KO provides and how it is access those services. The service description use the
+services a KO provides and how to access those services. The service description uses the
 [OpenAPI Specification](https://en.wikipedia.org/wiki/OpenAPI_Specification). 
 
 ### Accessing Service Description
@@ -34,3 +34,5 @@ KOs services.
   ( http://localhost:8080/hello/world/v0.0.1/service )![Swagger UI](assets/img/swaggerui.png)
   1. Press **Explore**, this will load the service description into Swagger UI and render a simple client. 
 
+
+### Additional Information
