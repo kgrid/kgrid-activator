@@ -71,7 +71,7 @@ discussed later.
       threshold: 10485760
    }
  }
-   ```
+```
 
 ## Validating the Hello-World KO on the Activator 
 
