@@ -17,7 +17,8 @@ For running the application you need:
 Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
 1. Download [kgrid-activator-0.6.2.jar](https://github.com/kgrid/kgrid-activator/releases/latest)  
-1. Download [hello-world-shelf.zip](https://github.com/kgrid/kgrid-activator/releases/latest) into the directory where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+1. Download [hello-world-shelf.zip](https://github.com/kgrid/kgrid-activator/releases/latest) into the directory 
+where the activator jar is located and unzip.  This will place the KOs into the shelf directory
 
 
 Directory structure should look similar to the following
@@ -35,18 +36,12 @@ The activator is executable jar and can be run from the command line.  Open a te
 
 Type in the following. 
 
-```java -jar kgrid-activator-0.6.2.jar ```
+``` java -jar kgrid-activator-0.6.2.jar ```
 
 By default the activator will run on port 8080. You can validate the activator is up and running using 
-the activators health endpoint. In your browser type in the following URL address.
+the [activators health endpoint](http://localhost:8080/health).  The health of the Activator should display a status of **UP**.  
 
-```http://localhost:8080/health```
-
-The health of the Activator should display a status of **UP**.  Other informatoin about 
-Knowledage Objects, Adapters and EndPoints can also be found.  Details about these attributes be
-discussed later.
-
-```
+```yaml
 {
    status: "UP",
    shelf: {
@@ -71,27 +66,28 @@ discussed later.
       threshold: 10485760
    }
  }
+ 
 ```
 
-## Validating the Hello-World KO on the Activator 
+## Using the Hello World KO on the Activator 
 
-With the sample shelf in place the following tests can be executed against the running activator
+The Hello World is a very simple KO with a Javascript based service that takes in a name and displays 
+ a _Welcome to the Knowledge Grid_ message. 
+ 
+ First lets look at the Hello World's metadata. Hello World
+ 
+ * View the [Hello World](http://localhost:8080/hello/world) Knowledge Object
+ * View version 0.0.1 of the [Hello World 0.0.1](http://localhost:8080/hello/world//v0.0.1)  
 
-View a Knowledge Object
-
-```curl http://localhost:8080/hello/world```
-
-View a Knowledge Object Version
-
-```curl http://localhost:8080/hello/world/v0.0.1```
-
-Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
+The KO has one service called _welcome_.  The welcome service expects you to pass it a name as a json 
+object, for example _{"name":"Fred Flintstone"}_.  The following is a curl POST to the Hello World 
+welcome service passing _{"name":"Fred Flintstone"}_.
 
 ```curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome```
 
 The Hello World KO will return the following
 
-```aidl
+```
 {
     "result": "Welcome to Knowledge Grid, Fred Flintstone",
     "info": {
