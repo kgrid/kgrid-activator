@@ -79,7 +79,7 @@ jobs:
             else
                 DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
                 DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/CPIC-objects/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
-                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/kgrid-activator/releases/latest | jq -r ".assets[].browser_download_url"  && curl -L -O $DOWNLOAD_URL
+                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/kgrid-activator/releases/latest | jq -r ".assets[].browser_download_url")  && curl -L -O $DOWNLOAD_URL
                 unzip -o opioid-shelf.zip
                 unzip -o cpic-shelf.zip
                 unzip -o hello-world-shelf.zip
