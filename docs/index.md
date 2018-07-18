@@ -23,7 +23,7 @@ where the activator jar is located and unzip.  This will place the KOs into the 
 
 Directory structure should look similar to the following
 
-```     
+```text     
  ├── shelf
  │   └── hello-world  
  │       └── v0.0.1
@@ -36,7 +36,9 @@ The activator is executable jar and can be run from the command line.  Open a te
 
 Type in the following. 
 
-``` java -jar kgrid-activator-0.6.2.jar ```
+```bash
+ java -jar kgrid-activator-0.6.2.jar 
+```
 
 By default the activator will run on port 8080. You can validate the activator is up and running using 
 the [activators health endpoint](http://localhost:8080/health).  The health of the Activator should display a status of **UP**.  
@@ -79,15 +81,20 @@ The Hello World is a very simple KO with a Javascript based service that takes i
  * View the [Hello World](http://localhost:8080/hello/world) Knowledge Object
  * View version 0.0.1 of the [Hello World 0.0.1](http://localhost:8080/hello/world//v0.0.1)  
 
-The KO has one service called _welcome_.  The welcome service expects you to pass it a name as a json 
+The Hello World KO has one service called _welcome_.  The welcome service expects you to pass it a name as a json 
 object, for example _{"name":"Fred Flintstone"}_.  The following is a curl POST to the Hello World 
-welcome service passing _{"name":"Fred Flintstone"}_.
+welcome.
 
-```curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome```
+```bash
+curl -X POST -H "Content-Type:application/json"  \
+    -d "{\"name\": \"Fred Flintstone\"}" \
+     http://localhost:8080/hello/world/v0.0.1/welcome
+
+```
 
 The Hello World KO will return the following
 
-```
+```json
 {
     "result": "Welcome to Knowledge Grid, Fred Flintstone",
     "info": {
