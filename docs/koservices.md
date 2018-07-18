@@ -1,7 +1,7 @@
 ---
 layout: page
-navtitle: Accessing KO Services
-order: 
+navtitle: Accessing KO Service Description
+
 ---
 ## Accessing KO Services/Endpoints in the Activator
 
@@ -31,6 +31,6 @@ KOs services.
 
   1. In your browser navigate to [KGrid's Swagger UI](https://kgrid-demos.github.io/swaggerui/) implementation 
   1. In the Explore text box type in the service url for the Hello World KO 
-  ( http://localhost:8080/hello/world/v0.0.1/service ) <img src="assets/img/swaggerui.png" border=1 />
-  1. Press Explore which will load the service description into Swagger UI and render a simple client. 
+  ( http://localhost:8080/hello/world/v0.0.1/service )![Swagger UI](assets/img/swaggerui.png)
+  1. Press **Explore**, this will load the service description into Swagger UI and render a simple client. 
 
