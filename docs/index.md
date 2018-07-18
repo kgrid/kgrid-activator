@@ -76,7 +76,7 @@ the [activators health endpoint](http://localhost:8080/health).  The health of t
 The Hello World is a very simple KO with a Javascript based service that takes in a name and displays 
  a _Welcome to the Knowledge Grid_ message. 
  
- First lets look at the Hello World's metadata. Hello World
+First lets look at the Hello World's metadata. Hello World
  
  * View the [Hello World](http://localhost:8080/hello/world) Knowledge Object
  * View version 0.0.1 of the [Hello World 0.0.1](http://localhost:8080/hello/world//v0.0.1)  
