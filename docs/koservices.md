@@ -1,9 +1,9 @@
 ---
 layout: page
-navtitle: Accessing KO Service Description
+navtitle: KO Service Description
 
 ---
-## Accessing KO Services/Endpoints in the Activator
+## KO Services in the Activator
 
 ### Service Description
 
