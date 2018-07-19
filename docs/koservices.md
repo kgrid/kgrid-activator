@@ -5,8 +5,6 @@ navtitle: KO Service Description
 ---
 ## KO Services in the Activator
 
-### Service Description
-
 Each Knowledge Object (KO) is required to have a service description which is a definition of what  
 services a KO provides and how to access those services. The service description uses the
 [OpenAPI Specification](https://en.wikipedia.org/wiki/OpenAPI_Specification). 
