@@ -68,7 +68,7 @@ jobs:
          command: |
             cp -r ./shelf/ ./activator
             cp ./target/*.jar ./activator/
-            zip -r -X activator_quickstart.zip activator -d ./target
+            zip -r -X ./target/activator_quickstart.zip activator
 
       - store_artifacts:
           path: target
