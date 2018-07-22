@@ -77,11 +77,12 @@ jobs:
                   -H "Content-Type: application/octet-stream" \
                   --data-binary "@target/$TAG_NAME.jar"
             else
-                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
-                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/CPIC-objects/releases/latest | jq -r ".assets[].browser_download_url") && curl -L -O $DOWNLOAD_URL
-                DOWNLOAD_URL=$(curl -s https://api.github.com/repos/kgrid/kgrid-activator/releases/latest | jq -r ".assets[].browser_download_url")  && curl -L -O $DOWNLOAD_URL
-                unzip -o opioid-shelf.zip
-                unzip -o cpic-shelf.zip
-                unzip -o hello-world-shelf.zip
+                mkdir shelf
+                .circleci/download_assets.sh https://api.github.com/repos/kgrid/CPIC-objects/releases/latest
+                .circleci/download_assets.sh https://api.github.com/repos/kgrid/mopen-opioid-collection/releases/latest
+                .circleci/download_assets.sh https://api.github.com/repos/kgrid/kgrid-activator/releases/latest
+                unzip -o opioid-all.zip -d shelf
+                unzip -o cpic-all.zip -d shelf
+                unzip -o hello-world.zip -d shelf
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
