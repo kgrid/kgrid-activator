@@ -66,7 +66,7 @@ jobs:
       - run:
          name: Create Quick Start
          command: |
-            cp -r ./shelf/ ./activator
+            mkdir activator && cp -r shelf activator/shelf/
             cp ./target/*.jar ./activator/
             zip -r -X ./target/activator_quickstart.zip activator
 
