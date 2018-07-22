@@ -77,6 +77,6 @@ jobs:
                   -H "Content-Type: application/octet-stream" \
                   --data-binary "@target/$TAG_NAME.jar"
             else
-               ./circleci/create_shelf
+               ./circleci/create_shelf.sh
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
