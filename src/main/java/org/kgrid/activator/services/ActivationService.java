@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
@@ -144,19 +145,19 @@ public class ActivationService {
 
     Path modelPath = knowledgeObject.getModelDir();
 
-
     validateEndPoint(knowledgeObject);
 
-    JsonNode endPointMetadata = knowledgeObject.getModelMetadata();
+    JsonNode modelMetadata = knowledgeObject.getModelMetadata();
 
-   if (adapters.containsKey(endPointMetadata.get("adapterType").asText().toUpperCase())){
+   if (adapters.containsKey(modelMetadata.get("adapterType").asText().toUpperCase())){
 
-     Adapter adapter = adapters.get(endPointMetadata.get("adapterType").asText().toUpperCase());
+     Adapter adapter = adapters.get(modelMetadata.get("adapterType").asText().toUpperCase());
 
-     //TODO  Assuming function name will be used as endpoint will change :-)
-     String functionName = endPointMetadata.get("functionName").asText();
+     String functionName = modelMetadata.get("functionName").asText();
 
-     Executor executor = adapter.activate(modelPath.resolve("resource"), functionName);
+     Path resource = modelPath.resolve(modelMetadata.get("resource").asText());
+
+     Executor executor = adapter.activate(resource, functionName);
 
      //TODO  Stupid
      String endPointPath = getEndPointPath(knowledgeObject);
@@ -169,7 +170,7 @@ public class ActivationService {
 
    } else {
 
-     throw new ActivatorException( endPointMetadata.get("adapterType") + " adapter type found");
+     throw new ActivatorException( modelMetadata.get("adapterType") + " adapter type found");
 
    }
 
@@ -194,7 +195,6 @@ public class ActivationService {
           serviceDescriptionService.loadServiceDescription(knowledgeObject), "Service Description is Required");
       Objects.requireNonNull(
           serviceDescriptionService.findPath(knowledgeObject),"Service Description Paths are Required");
-
     } catch (NullPointerException exception){
       throw new ActivatorException(exception.getMessage());
     }
