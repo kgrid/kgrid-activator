@@ -124,7 +124,7 @@ public class ActivationService {
   }
   public String getKnowleledgeObjectPath(KnowledgeObject knowledgeObject) {
 
-    return knowledgeObject.getArkId().getFedoraPath().replace('-', '/') + "/" + knowledgeObject
+    return knowledgeObject.getArkId().getAsSimpleArk().replace('-', '/') + "/" + knowledgeObject
         .version();
   }
 
