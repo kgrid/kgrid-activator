@@ -5,7 +5,7 @@
   <!-- Build Settings -->
   <groupId>org.kgrid</groupId>
   <artifactId>kgrid-activator</artifactId>
-  <version>0.6.4-SNAPSHOT</version>
+  <version>0.6.4</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -27,7 +27,7 @@
     <url>https://github.com/kgrid/kgrid-activator</url>
     <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
     <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>kgrid-activator-0.6.4</tag>
   </scm>
 
   <dependencies>
