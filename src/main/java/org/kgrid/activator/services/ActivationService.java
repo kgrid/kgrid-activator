@@ -1,7 +1,10 @@
 package org.kgrid.activator.services;
 
+import static java.nio.file.StandardWatchEventKinds.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
@@ -18,6 +21,7 @@ import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
+import org.kgrid.shelf.repository.FilesystemCDOWatcher;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +45,8 @@ public class ActivationService {
   KnowledgeObjectRepository knowledgeObjectRepository;
 
   private HashMap<String, EndPoint> endpoints = new HashMap<String, EndPoint>();
+
+  private FilesystemCDOWatcher watcher;
 
   public ActivationService() {
   }
@@ -122,6 +128,23 @@ public class ActivationService {
     }
 
   }
+
+  // Reloads the whole shelf looking for endpoints when any change is made to a file on the shelf
+  // In the future can change to load/delete/reload only changed KOs
+  public void startEndpointWatcher() throws IOException {
+    if(watcher != null ) {
+      return;
+    }
+    watcher = new FilesystemCDOWatcher();
+    watcher.registerAll(Paths.get(cdoStore.getAbsoluteLocation(null)),
+        ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
+    watcher.addFileListener((path, eventKind) -> {
+      loadAndActivateEndPoints();
+      log.info("File change in CDO Store: " + path + " -> " + eventKind.name());
+    });
+    new Thread(watcher).start();
+  }
+
   public String getKnowleledgeObjectPath(KnowledgeObject knowledgeObject) {
 
     return knowledgeObject.getArkId().getAsSimpleArk().replace('-', '/') + "/" + knowledgeObject

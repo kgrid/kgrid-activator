@@ -112,7 +112,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.6.4</version>
+      <version>0.6.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>

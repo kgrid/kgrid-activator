@@ -24,7 +24,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
   private ActivationService service;
 
   public static void main(String[] args) {
-
     new SpringApplicationBuilder(KgridActivatorApplication.class)
         .build()
         .run(args);
@@ -35,6 +34,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
   public void run(String... strings) throws Exception {
     service.loadAndInitializeAdapters();
     service.loadAndActivateEndPoints();
+    service.startEndpointWatcher();
   }
 
   //Swagger API Documentation Generation
