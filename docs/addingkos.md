@@ -27,8 +27,7 @@ Directory structure should look similar to the following
  └── kgrid-activator-0.6.2.jar
 ```
 
-Once loaded into the shelf directory the KOs restart the Activator application by stopping and starting the activator.  Check 
-on the Activators heath using
+Once unzipped into the shelf directory the activator should auto-load the new knowledge objects.
 
 ``` http://localhost:8080/health ```
 
