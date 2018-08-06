@@ -12,6 +12,8 @@ By default the activator will look for a _shelf_ in jar execution directory but 
 
 ```bash
 java -jar kgrid-activator-0.6.2.jar --kgrid.shelf.cdostore.url=filesystem:file:///data/myshelf
+
+java -jar kgrid-activator-0.6.2.jar --kgrid.shelf.cdostore.url=filesystem:file:///c:/Users/me/myshelf
 ```
 
 **Activator Cross-Origin Resource Sharing (CORS)**
