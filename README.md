@@ -69,6 +69,9 @@ Once Running access the [Activators Health Endpoint](http://localhost:8080/healt
            "status": "UP",     
 ```
 
+#### Auto-Reload
+The activator will detect when a file in the shelf directory or in a knowledge object in the shelf directory has been added, changed or removed and reload the available objects in the activator. This allows a user to add or remove knowledge objects or versions of knowledge objects and have them be ready for activation without needing to reload the shelf manually.
+
 ## Running the tests
 
 #### Automated tests 
