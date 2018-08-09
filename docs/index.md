@@ -16,20 +16,24 @@ For running the application you need:
 
 Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
-1. Download [kgrid-activator-0.6.4.jar](https://github.com/kgrid/kgrid-activator/releases/latest)  
-1. Download [hello-world-shelf.zip](https://github.com/kgrid/kgrid-activator/releases/latest) into the directory 
-where the activator jar is located and unzip.  This will place the KOs into the shelf directory
+1. Create a activator directory
+1. Create a directory named shelf in the new activator directory
+1. Download [kgrid-activator-#.#.#.jar](https://github.com/kgrid/kgrid-activator/releases/latest)  
+1. Place the kgrid-activator-#.#.#.jar into the activator
+1. Download [hello-world.zip](https://github.com/kgrid/kgrid-activator/releases/latest) 
+1. Place the hello-world.zip into the activator/shelf directory and unzip. This will place the KOs into the shelf directory
 
 
 Directory structure should look similar to the following
 
-```text     
- ├── shelf
- │   └── hello-world  
- │       └── v0.0.1
+```text  
+ ├── activator   
+ │  └──  shelf
+ │     └── hello-world  
+ │        └── v0.0.1
  │           ├── model
  │           └── metadata.json
- └── kgrid-activator-0.6.4.jar
+ └── kgrid-activator-#.#.#.jar
 ```
 
 The activator is executable jar and can be run from the command line.  Open a terminal window and navigate to the direcoty where the jar and shelf are located.  
@@ -37,7 +41,7 @@ The activator is executable jar and can be run from the command line.  Open a te
 Type in the following. 
 
 ```bash
- java -jar kgrid-activator-0.6.4.jar 
+ java -jar kgrid-activator-#.#.#.jar 
 ```
 
 By default the activator will run on port 8080. You can validate the activator is up and running using 
