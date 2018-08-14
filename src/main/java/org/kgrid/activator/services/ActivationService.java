@@ -5,7 +5,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
@@ -96,6 +95,7 @@ public class ActivationService {
     //Load all of the ko including all versions
 
     endpoints.clear();
+    knowledgeObjectsFound = 0;
 
     Map<ArkId, Map<String, ObjectNode>> koList = knowledgeObjectRepository.findAll();
 
