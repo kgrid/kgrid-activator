@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Objects;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
