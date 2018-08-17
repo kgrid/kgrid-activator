@@ -10,4 +10,4 @@
  unzip -o cpic-all.zip -d shelf
  unzip -o hello-world.zip -d shelf
  unzip -o cancer-risk.zip -d shelf
- unzip -o scriptnuemrate-all.zip -d shelf
+ unzip -o scriptnumerate-all.zip -d shelf
