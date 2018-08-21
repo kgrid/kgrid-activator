@@ -1,5 +1,5 @@
 # KGrid Activator
-[![CircleCI](https://circleci.com/gh/kgrid/kgrid-activator/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-activator/tree/master)
+[![CircleCI](https://circleci.com/gh/kgrid/kgrid-activator.svg?style=svg)](https://circleci.com/gh/kgrid/kgrid-activator)
 [![GitHub release](https://img.shields.io/github/release/kgrid/kgrid-activator.svg)](https://github.com/kgrid/kgrid-activator/releases/)
 
 ## Overview
