@@ -1,15 +1,12 @@
 package org.kgrid.activator.controller;
 
 import javax.servlet.http.HttpServletRequest;
-import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.ServiceDescriptionService;
 import org.kgrid.shelf.controller.KnowledgeObjectDecorator;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 
 @Service
