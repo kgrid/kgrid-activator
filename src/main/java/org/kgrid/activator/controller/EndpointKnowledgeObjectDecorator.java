@@ -1,5 +1,6 @@
 package org.kgrid.activator.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.ServiceDescriptionService;
@@ -22,13 +23,13 @@ class EndpointKnowledgeObjectDecorator implements KnowledgeObjectDecorator {
   private ServiceDescriptionService serviceDescriptionService;
 
   @Override
-  public void decorate(KnowledgeObject knowledgeObject, RequestEntity requestEntity) {
+  public void decorate(KnowledgeObject knowledgeObject, HttpServletRequest httpServletRequest) {
 
     if (activationService.getEndpoints().containsKey(activationService.getKnowleledgeObjectPath(
         knowledgeObject)+ activationService.getEndPointPath(knowledgeObject))) {
 
       knowledgeObject.getMetadata().put("endpoint",
-          requestEntity.getUrl() + activationService.getEndPointPath(
+          httpServletRequest.getRequestURL() + activationService.getEndPointPath(
               knowledgeObject));
     }
   }
