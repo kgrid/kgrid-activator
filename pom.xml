@@ -175,7 +175,7 @@
           </configVars>
           <jdkVersion>${java.version}</jdkVersion>
           <processTypes>
-            <web>java -jar /app/target/${project.build.finalName}.jar --kgrid.shelf.cdostore.url=$CDOSTORE_URL --cors.url=$KGRID_COR_URL --$JAVA_OPTS</web>
+            <web>java -jar /app/target/${project.build.finalName}.jar $KGRID_CONFIG </web>
           </processTypes>
         </configuration>
       </plugin>
