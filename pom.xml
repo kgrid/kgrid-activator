@@ -92,7 +92,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.6.7-SNAPSHOT</version>
+      <version>0.6.7</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
