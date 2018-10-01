@@ -1,7 +1,7 @@
 #!/bin/bash
 
  mkdir application/shelf
- repos=(mopen-opioid-collection cpic-objects example-kos cancer-risk icon-array script-numerate postpci labwise )
+ repos=(opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise )
 
  for i in "${repos[@]}"
  do
