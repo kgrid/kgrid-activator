@@ -153,7 +153,7 @@
           <configVars>
             <JAVA_OPTS>-Xss512k -XX:+UseCompressedOops</JAVA_OPTS>
           </configVars>
-          <jdkVersion>${java.version}</jdkVersion>
+          <jdkVersion>10</jdkVersion>
           <processTypes>
             <web>java -jar /app/target/${project.build.finalName}.jar $KGRID_CONFIG </web>
           </processTypes>
