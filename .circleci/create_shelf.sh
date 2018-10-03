@@ -9,11 +9,5 @@
   .circleci/download_assets.sh "$url"
  done
 
- unzip -o opioid-all.zip -d shelf
- unzip -o cpic-all.zip -d shelf
- unzip -o hello-world.zip -d shelf
- unzip -o cancer-risk.zip -d shelf
- unzip -o icon-array.zip -d shelf
- unzip -o scriptnumerate-all.zip -d shelf
- unzip -o postpci-all.zip -d shelf
- unzip -o labwise-all.zip -d shelf
+ find . -name "*.zip" -exec unzip -o -q -d shelf {} \;
+
