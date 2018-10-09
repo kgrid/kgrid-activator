@@ -97,12 +97,12 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.0.4</version>
+      <version>0.0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
-      <artifactId>proxy-adapter</artifactId>
-      <version>0.0.2</version>
+      <artifactId>jupyter-kernel-adapter</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

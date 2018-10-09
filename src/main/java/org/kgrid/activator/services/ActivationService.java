@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Properties;
+import java.util.stream.StreamSupport;
 import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -26,6 +29,10 @@ import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,6 +50,9 @@ public class ActivationService {
 
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
+
+  @Autowired
+  Environment env;
 
   private HashMap<String, EndPoint> endpoints = new HashMap<String, EndPoint>();
 
@@ -67,7 +77,20 @@ public class ActivationService {
     if (adapter instanceof AdapterSupport) {
       ((AdapterSupport) adapter).setCdoStore(cdoStore);
     }
-    adapter.initialize();
+
+    Properties properties = new Properties();
+    MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
+    StreamSupport.stream(propSrcs.spliterator(), false)
+        .filter(ps -> ps instanceof EnumerablePropertySource)
+        .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+        .flatMap(Arrays::stream)
+        .forEach(propName -> properties.setProperty(propName, env.getProperty(propName)));
+
+    try {
+      adapter.initialize(properties);
+    } catch (Exception e) {
+      log.error("Cannot load adapter " + adapter.getType() + " cause: " + e.getMessage());
+    }
   }
 
 

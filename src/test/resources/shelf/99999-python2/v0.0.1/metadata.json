@@ -1,0 +1,18 @@
+{
+  "title": "Python test object",
+  "description": "A test object for the python adapter",
+  "citations": [],
+  "arkId": "ark:/99999/fk45m6gq9t",
+  "version": "v0.0.1",
+  "keywords": "Keywords",
+  "owners": "KGRID",
+  "contributors": "KGRID TEAM",
+  "license": {
+    "licenseName": "",
+    "licenseLink": ""
+  },
+  "url": "http://url",
+  "published": false,
+  "modelpath": "model",
+  "service":"model/service/servicedescriptor.yaml"
+}

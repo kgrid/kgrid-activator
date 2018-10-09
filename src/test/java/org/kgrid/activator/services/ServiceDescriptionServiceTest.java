@@ -3,6 +3,7 @@ package org.kgrid.activator.services;
 import static org.junit.Assert.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,6 +52,8 @@ public class ServiceDescriptionServiceTest {
 
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-10101"), "v0.0.1");
+    ObjectNode json = new ObjectMapper().createObjectNode();
+    json.put("service","src/test/resources/servicedescription.yaml");
 
     JsonNode serviceDescriptionwJsonNode = service.loadServiceDescription(knowledgeObject);
     assertEquals("3.0.0",serviceDescriptionwJsonNode.get("openapi").asText());

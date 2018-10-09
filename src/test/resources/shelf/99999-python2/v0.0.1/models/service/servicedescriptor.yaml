@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 'Python test object'
+  description: 'Hello world in python'
+servers:
+  - url: 'https://kgrid-activator.herokuapp.com/99999/python2/v0.0.1'
+paths:
+  /hello:
+    post:
+      description: 'Hello world'
+      operationId: hello
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/name'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    name:
+      required:
+        - name
+      properties:
+        rxcuis:
+          type: string
+          example: 'world!'
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: string
+          example: 'Hello world!'
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

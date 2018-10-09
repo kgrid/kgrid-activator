@@ -1,6 +1,7 @@
 package org.kgrid.mock.adapter;
 
 import java.nio.file.Path;
+import java.util.Properties;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 
@@ -12,7 +13,7 @@ public class MockAdapter implements Adapter {
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Properties properties) {
       status = "UP";
   }
 
