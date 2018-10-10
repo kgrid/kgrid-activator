@@ -1,8 +1,4 @@
----
-layout: page
-navtitle: Adding Opioid KOs
 
----
 
 ## Adding MOpen Opioid Knowledge Objects
 

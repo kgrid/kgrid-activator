@@ -62,13 +62,10 @@ jobs:
          command: |
             .circleci/create_shelf.sh
 
-      #create quickstart
       - run:
-         name: Create Quick Start
-         command: |
-            mkdir activator && cp -r shelf activator/shelf/
-            cp ./target/*.jar ./activator/
-            zip -r -X ./target/activator_quickstart.zip activator
+          name: Deploy VuePress GitHub Pages
+          command: |
+            .circleci/vuepress_deploy.sh
 
       - store_artifacts:
           path: target

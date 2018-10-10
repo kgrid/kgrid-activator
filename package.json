@@ -1,0 +1,15 @@
+{
+  "name": "Cardiac-Advisor",
+  "version": "1.0.0",
+  "description": "KGrid Cardiac Advisor Demo App",
+  "main": " ",
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "author": "KGrid Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^0.14.4"
+  }
+}

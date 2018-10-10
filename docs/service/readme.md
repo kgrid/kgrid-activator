@@ -1,8 +1,4 @@
----
-layout: page
-navtitle: KO Service Description
 
----
 ## KO Services in the Activator
 
 Each Knowledge Object (KO) is required to have a service description which is a definition of what  
@@ -29,7 +25,7 @@ KOs services.
 
   1. In your browser navigate to [KGrid's Swagger UI](https://kgrid-demos.github.io/swaggerui/) implementation 
   1. In the Explore text box type in the service url for the Hello World KO 
-  ( http://localhost:8080/hello/world/v0.0.1/service )![Swagger UI](assets/img/swaggerui.png)
+  ( http://localhost:8080/hello/world/v0.0.1/service )![Swagger UI](../assets/img/swaggerui.png)
   1. Press **Explore**, this will load the service description into Swagger UI and render a simple client. 
 
 

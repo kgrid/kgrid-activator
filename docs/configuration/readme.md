@@ -1,7 +1,4 @@
----
-layout: page
-navtitle: Activator Configuration
----
+
 
 ## Configuration
 There are several settings that you can control on the Activator.

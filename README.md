@@ -108,3 +108,14 @@ Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for
 ## Release Activator
 
 Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details 
+
+
+## Building Documentation
+
+Running Local Dev Docs Publish
+```npm install
+npm run docs:dev
+```
+
+Build dist directory ready for publish
+```nopm run docs:build```
