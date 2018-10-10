@@ -24,7 +24,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 For building and running the application you need:
 
-- [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+- [Java 8 or higher](https://www.oracle.com/java/)
 - [Maven 3](https://maven.apache.org)
 
 ### Clone
@@ -110,12 +110,20 @@ Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for
 Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details 
 
 
-## Building Documentation
+## Publish Documentation
 
 Running Local Dev Docs Publish
-```npm install
+```
+npm install
 npm run docs:dev
 ```
 
 Build dist directory ready for publish
-```nopm run docs:build```
+
+```
+npm run docs:build`
+```
+
+CircleCi publishes the documentation use [VuePress](https://vuepress.vuejs.org/) and 
+the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
+GitHub repository's GitHub Pages.
