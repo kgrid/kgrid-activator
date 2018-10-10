@@ -124,6 +124,6 @@ Build dist directory ready for publish
 npm run docs:build`
 ```
 
-CircleCi publishes the documentation use [VuePress](https://vuepress.vuejs.org/) and 
+CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org/) and 
 the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
 GitHub repository's GitHub Pages.
