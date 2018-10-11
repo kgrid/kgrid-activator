@@ -4,7 +4,7 @@ info:
   title: 'Python test object'
   description: 'Hello world in python'
 servers:
-  - url: 'https://kgrid-activator.herokuapp.com/99999/python2/v0.0.1'
+  - url: 'https://kgrid-activator.herokuapp.com/99999/python/v0.0.1'
 paths:
   /hello:
     post:

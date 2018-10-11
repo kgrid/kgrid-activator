@@ -102,7 +102,9 @@ public class ActivationService {
     return adapters;
   }
 
-  public HashMap<String, EndPoint> getEndpoints() { return endpoints; }
+  public HashMap<String, EndPoint> getEndpoints() {
+    return endpoints;
+  }
 
   public long getKnowledgeObjectsFound() {
     return knowledgeObjectsFound;
@@ -131,7 +133,7 @@ public class ActivationService {
         KnowledgeObject knowledgeObject = knowledgeObjectRepository
             .findByArkIdAndVersion(ko.getKey(), version.getKey());
 
-        EndPoint endPoint =null;
+        EndPoint endPoint = null;
 
         try {
 
@@ -141,10 +143,10 @@ public class ActivationService {
 
         } catch (ActivatorException activatorException) {
           log.warn("Activator couldn't activate KnowledgeObject EndPoint " +
-              ko.getKey() + "/" + version.getKey()+ " - " + activatorException.getMessage());
-        } catch (AdapterException adapterException ){
+              ko.getKey() + "/" + version.getKey() + " - " + activatorException.getMessage());
+        } catch (AdapterException adapterException) {
           log.warn("Adapter couldn't activate KnowledgeObject EndPoint " +
-              ko.getKey() + "/" + version.getKey()+ " - " + adapterException.getMessage());
+              ko.getKey() + "/" + version.getKey() + " - " + adapterException.getMessage());
         }
 
       }
@@ -156,7 +158,7 @@ public class ActivationService {
   // Reloads the whole shelf looking for endpoints when any change is made to a file on the shelf
   // In the future can change to load/delete/reload only changed KOs
   public void startEndpointWatcher() throws IOException {
-    if(watcher != null ) {
+    if (watcher != null) {
       return;
     }
     watcher = new FilesystemCDOWatcher();
@@ -175,14 +177,13 @@ public class ActivationService {
         .version();
   }
 
-  public String getEndPointPath(KnowledgeObject knowledgeObject){
+  public String getEndPointPath(KnowledgeObject knowledgeObject) {
 
     return serviceDescriptionService.findPath(knowledgeObject);
   }
 
 
   /**
-   *
    * Will find the applicable adapter for a Knowledge Object and activate the endpoint
    *
    * @return EndPoint
@@ -196,36 +197,35 @@ public class ActivationService {
 
     JsonNode modelMetadata = knowledgeObject.getModelMetadata();
 
-   if (adapters.containsKey(modelMetadata.get("adapterType").asText().toUpperCase())){
+    if (adapters.containsKey(modelMetadata.get("adapterType").asText().toUpperCase())) {
 
-     Adapter adapter = adapters.get(modelMetadata.get("adapterType").asText().toUpperCase());
+      Adapter adapter = adapters.get(modelMetadata.get("adapterType").asText().toUpperCase());
 
-     String functionName = modelMetadata.get("functionName").asText();
+      String functionName = modelMetadata.get("functionName").asText();
 
-     Path resource = modelPath.resolve(modelMetadata.get("resource").asText());
+      Path resource = modelPath.resolve(modelMetadata.get("resource").asText());
 
-     Executor executor = adapter.activate(resource, functionName);
+      Executor executor = adapter.activate(resource, functionName);
 
-     //TODO  Stupid
-     String endPointPath = getEndPointPath(knowledgeObject);
+      //TODO  Stupid
+      String endPointPath = getEndPointPath(knowledgeObject);
 
-     String baseKOPath = getKnowleledgeObjectPath(knowledgeObject);
+      String baseKOPath = getKnowleledgeObjectPath(knowledgeObject);
 
-     EndPoint endPoint =  new EndPoint(executor, endPointPath, baseKOPath);
+      EndPoint endPoint = new EndPoint(executor, endPointPath, baseKOPath);
 
-     return endPoint;
+      return endPoint;
 
-   } else {
+    } else {
 
-     throw new ActivatorException( modelMetadata.get("adapterType") + " adapter type found");
+      throw new ActivatorException(modelMetadata.get("adapterType") + " adapter type found");
 
-   }
+    }
 
   }
 
   /**
    * Validates that there is enough information to create an EndPoint
-   * @param knowledgeObject
    */
   protected void validateEndPoint(KnowledgeObject knowledgeObject) {
 
@@ -239,10 +239,12 @@ public class ActivationService {
       Objects.requireNonNull(
           endPointMetadata.get("resource"), "Resource on Model Required");
       Objects.requireNonNull(
-          serviceDescriptionService.loadServiceDescription(knowledgeObject), "Service Description is Required");
+          serviceDescriptionService.loadServiceDescription(knowledgeObject),
+          "Service Description is Required");
       Objects.requireNonNull(
-          serviceDescriptionService.findPath(knowledgeObject),"Service Description Paths are Required");
-    } catch (NullPointerException exception){
+          serviceDescriptionService.findPath(knowledgeObject),
+          "Service Description Paths are Required");
+    } catch (NullPointerException exception) {
       throw new ActivatorException(exception.getMessage());
     }
 
