@@ -1,6 +1,5 @@
 #!/bin/bash
 
- mkdir application/shelf
  repos=(opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise )
 
  for i in "${repos[@]}"

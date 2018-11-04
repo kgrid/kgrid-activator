@@ -82,6 +82,14 @@ jobs:
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
 
+
+    # Tigger Smoke Test
+      - run:
+          name: Trigger Smoke Test
+          command: |
+            curl -v -X POST --header 'Content-Type:application/json' \
+              https://circleci.com/api/v1.1/project/github/kgrid/kgrid-smoketest/tree/master?circle-token=$CIRCLECI_TOKEN
+
 workflows:
   version: 2
   main:
