@@ -62,17 +62,9 @@ jobs:
          command: |
             .circleci/create_shelf.sh
 
-      - run:
-          name: Deploy VuePress GitHub Pages
-          command: |
-            npm install && .circleci/vuepress_deploy.sh
-
-      - store_artifacts:
-          path: target
-
-      # Will normally run deploy but if triggered with Release will prepare and perform maven release
-      # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
-      # Release runs maven release and adds a Release to GitHub based on the tag via github api
+    # Will normally run deploy but if triggered with Release will prepare and perform maven release
+    # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
+    # Release runs maven release and adds a Release to GitHub based on the tag via github api
       - run:
           name: Deploy/Release
           command: |
@@ -81,6 +73,14 @@ jobs:
             else
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
+
+      - run:
+          name: Deploy VuePress GitHub Pages
+          command: |
+            npm install && .circleci/vuepress_deploy.sh
+
+      - store_artifacts:
+          path: target
 
 
     # Tigger Smoke Test
