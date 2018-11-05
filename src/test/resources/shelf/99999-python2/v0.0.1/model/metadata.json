@@ -1,0 +1,8 @@
+{
+  "functionName": "hello",
+  "adapterType": "PYTHON2",
+  "resource": "resource/content.py",
+  "adapters":[
+    {"name":"JupyterKernel","version":"0.0.1","filename":"jupyter-kernel-0.0.1-SNAPSHOT.jar","download_url":"https://github.com/kgrid/ko-templates/releases/download/0.1/", "target":"adapters/"}
+  ]
+}
