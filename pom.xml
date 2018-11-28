@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Build Settings -->
@@ -12,7 +14,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.4.RELEASE</version>
-    <relativePath />
+    <relativePath/>
   </parent>
 
   <!-- More Project Information -->
@@ -128,18 +130,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.2</version>
-        <!-- Default context path is: '/${project.artifactId}'. -->
-        <!-- Use 'mvn tomcat7:deploy -Dmaven.tomcat.path=/xxx' to change -->
-        <configuration>
-          <!--properties from settings.xml or the command line-->
-          <server>${tomcat-server}</server>
-          <url>${tomcat-url}</url>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>com.heroku.sdk</groupId>
         <artifactId>heroku-maven-plugin</artifactId>
         <version>2.0.3</version>
@@ -155,9 +145,34 @@
           </configVars>
           <jdkVersion>10</jdkVersion>
           <processTypes>
-            <web>java -jar /app/target/${project.build.finalName}.jar $KGRID_CONFIG </web>
+            <web>java -jar /app/target/${project.build.finalName}.jar $KGRID_CONFIG</web>
           </processTypes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
