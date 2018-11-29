@@ -1,25 +1,22 @@
 package org.kgrid.activator.services;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.stream.StreamSupport;
-import org.kgrid.activator.ActivatorException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ServiceLoader;
+import java.util.Objects;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPoint;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.adapter.api.AdapterSupport;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
@@ -29,10 +26,7 @@ import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.AbstractEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,7 +34,6 @@ public class ActivationService {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-  private HashMap<String, Adapter> adapters;
   private long knowledgeObjectsFound;
   @Autowired
   private ServiceDescriptionService serviceDescriptionService;
@@ -54,6 +47,9 @@ public class ActivationService {
   @Autowired
   Environment env;
 
+  @Autowired
+  AdapterService adapterService;
+
   private HashMap<String, EndPoint> endpoints = new HashMap<String, EndPoint>();
 
   private FilesystemCDOWatcher watcher;
@@ -61,46 +57,6 @@ public class ActivationService {
   public ActivationService() {
   }
 
-
-  public void loadAndInitializeAdapters() {
-
-    adapters = new HashMap<>();
-
-    ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
-    for (Adapter adapter : loader) {
-      initializeAdapter(adapter);
-      adapters.put(adapter.getType().toUpperCase(), adapter);
-    }
-  }
-
-  protected void initializeAdapter(Adapter adapter) {
-    if (adapter instanceof AdapterSupport) {
-      ((AdapterSupport) adapter).setCdoStore(cdoStore);
-    }
-
-    Properties properties = new Properties();
-    MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
-    StreamSupport.stream(propSrcs.spliterator(), false)
-        .filter(ps -> ps instanceof EnumerablePropertySource)
-        .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
-        .flatMap(Arrays::stream)
-        .forEach(propName -> properties.setProperty(propName, env.getProperty(propName)));
-
-    try {
-      adapter.initialize(properties);
-    } catch (Exception e) {
-      log.error("Cannot load adapter " + adapter.getType() + " cause: " + e.getMessage());
-    }
-  }
-
-
-  protected Adapter findAdapter(String adapterType) {
-    return adapters.get(adapterType.toUpperCase());
-  }
-
-  public HashMap<String, Adapter> getLoadedAdapters() {
-    return adapters;
-  }
 
   public HashMap<String, EndPoint> getEndpoints() {
     return endpoints;
@@ -155,8 +111,12 @@ public class ActivationService {
 
   }
 
-  // Reloads the whole shelf looking for endpoints when any change is made to a file on the shelf
-  // In the future can change to load/delete/reload only changed KOs
+  /**
+   *
+   * Reloads the whole shelf looking for endpoints when any change is made to a file on the shelf
+   * In the future can change to load/delete/reload only changed KOs
+   * @throws IOException if can't watch the filesystem
+   */
   public void startEndpointWatcher() throws IOException {
     if (watcher != null) {
       return;
@@ -197,6 +157,8 @@ public class ActivationService {
 
     JsonNode modelMetadata = knowledgeObject.getModelMetadata();
 
+    HashMap<String, Adapter> adapters = adapterService.getLoadedAdapters();
+
     if (adapters.containsKey(modelMetadata.get("adapterType").asText().toUpperCase())) {
 
       Adapter adapter = adapters.get(modelMetadata.get("adapterType").asText().toUpperCase());
@@ -226,6 +188,7 @@ public class ActivationService {
 
   /**
    * Validates that there is enough information to create an EndPoint
+   * @param knowledgeObject the KO to check (assumes single endpoint spec'd by `functionName`
    */
   protected void validateEndPoint(KnowledgeObject knowledgeObject) {
 
@@ -250,7 +213,6 @@ public class ActivationService {
 
 
   }
-
 }
 
 

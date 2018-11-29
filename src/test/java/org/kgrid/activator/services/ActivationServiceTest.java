@@ -1,24 +1,21 @@
 package org.kgrid.activator.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.file.FileSystems;
-import org.kgrid.activator.EndPoint;
-import org.kgrid.activator.KgridActivatorApplication;
-import org.kgrid.activator.ActivatorException;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.kgrid.adapter.api.Adapter;
+import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.EndPoint;
+import org.kgrid.activator.KgridActivatorApplication;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
@@ -40,29 +37,6 @@ public class ActivationServiceTest {
 
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
-
-  @Test
-  public void loadMockAdapters() {
-    service.loadAndInitializeAdapters();
-    Adapter adapter = service.findAdapter("MOCKADAPTER");
-    assertNotNull(adapter);
-  }
-
-  @Test
-  public void adapterNotFound() {
-    service.loadAndInitializeAdapters();
-    assertNull(service.findAdapter("XXXXX"));
-  }
-
-  @Test
-  public void loadedAdaptersAreInitialized() {
-    service.loadAndInitializeAdapters();
-    Adapter jsAdapter = service.findAdapter("mockadapter");
-    assertEquals("UP", jsAdapter.status());
-
-    jsAdapter = service.findAdapter("mockadaptersupport");
-    assertEquals("UP", jsAdapter.status());
-  }
 
   @Test
   public void activateKnowledgeObjects() throws IOException {

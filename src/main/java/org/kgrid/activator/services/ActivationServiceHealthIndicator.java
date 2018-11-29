@@ -10,20 +10,22 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
 
   @Autowired
   private ActivationService activationService;
+  @Autowired
+  private AdapterService adapterService;
 
 
   @Override
   public Health health() {
 
-    if (activationService.getLoadedAdapters().size() > 0) {
+    if (adapterService.getLoadedAdapters().size() > 0) {
       return Health.up()
           .withDetail("Knowledge Objects found", activationService.getKnowledgeObjectsFound())
-          .withDetail("Adapters loaded", activationService.getLoadedAdapters().keySet())
+          .withDetail("Adapters loaded", adapterService.getLoadedAdapters().keySet())
           .withDetail("EndPoints loaded", activationService.getEndpoints().keySet())
           .build();
     } else {
       return Health.down()
-          .withDetail("there are now adapters loaded", activationService.getLoadedAdapters())
+          .withDetail("there are now adapters loaded", adapterService.getLoadedAdapters())
           .build();
     }
 

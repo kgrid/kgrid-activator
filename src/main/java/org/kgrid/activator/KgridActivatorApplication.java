@@ -1,6 +1,7 @@
 package org.kgrid.activator;
 
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.AdapterService;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class KgridActivatorApplication implements CommandLineRunner {
 
   @Autowired
-  private ActivationService service;
+  private ActivationService activationService;
+  @Autowired
+  private AdapterService adapterService;
 
   public static void main(String[] args) {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
@@ -32,9 +35,9 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    service.loadAndInitializeAdapters();
-    service.loadAndActivateEndPoints();
-    service.startEndpointWatcher();
+    adapterService.loadAndInitializeAdapters();
+    activationService.loadAndActivateEndPoints();
+    activationService.startEndpointWatcher();
   }
 
   //Swagger API Documentation Generation
