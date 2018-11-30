@@ -19,7 +19,9 @@ public class ActivationService extends ActivationServiceDeprecated {
 
   @Override
   public void loadAndActivateEndPoints() {
-    // fetch the MAP<ArkId, Map<ArkId, JsonNode>> using findAllImplementations()
+    // fetch the Map<ArkId, JsonNode> using findAll()
+    // for each ko (== JsonNode) get the Implementations
+    // as a collection of ArkIds, JsonNode pairs and then
     // loop through calling activateEndpoints(ArkId, JsonNode) on each Implementation
     // Add each return Map<ArkId, Endpoint> to the mater Map
     super.loadAndActivateEndPoints();
@@ -43,7 +45,7 @@ public class ActivationService extends ActivationServiceDeprecated {
      * is used to skip objects on the shelf if they aren't valid
      */
     super.validateEndPoint(knowledgeObject);
-    log.info(String.format("valid ko @ " + knowledgeObject.getBaseDir().toAbsolutePath().toString()));
+    log.info(String.format("valid ko @ " + knowledgeObject.getArkId()));
   }
 
   @Override
