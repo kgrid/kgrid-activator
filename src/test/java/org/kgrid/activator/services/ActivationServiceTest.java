@@ -38,6 +38,9 @@ public class ActivationServiceTest {
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
 
+  @Autowired
+  ServiceDescriptionService serviceDescriptionService;
+
   @Test
   public void activateKnowledgeObjects() throws IOException {
 
@@ -174,7 +177,7 @@ public class ActivationServiceTest {
     KnowledgeObject knowledgeObject = knowledgeObjectRepository
         .findByArkIdAndVersion(new ArkId("99999-newko"), "v0.0.0");
 
-    service.getEndPointPath(knowledgeObject);
+    serviceDescriptionService.findPath(knowledgeObject);
 
   }
 }

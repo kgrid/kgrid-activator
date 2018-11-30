@@ -19,7 +19,6 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
 
     if (adapterService.getLoadedAdapters().size() > 0) {
       return Health.up()
-          .withDetail("Knowledge Objects found", activationService.getKnowledgeObjectsFound())
           .withDetail("Adapters loaded", adapterService.getLoadedAdapters().keySet())
           .withDetail("EndPoints loaded", activationService.getEndpoints().keySet())
           .build();
