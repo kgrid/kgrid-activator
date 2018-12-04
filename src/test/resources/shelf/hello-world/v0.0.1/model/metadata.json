@@ -1,0 +1,8 @@
+{
+  "functionName":"welcome",
+  "adapterType":"JAVASCRIPT",
+  "resource":"resource/welcome.js",
+  "adapters":[
+    {"name":"JavaScript","version":"0.0.1","filename":"javascript-adapter-0.0.1-SNAPSHOT.jar","download_url":"https://github.com/kgrid/ko-templates/releases/download/0.1/", "target":"adapters/"}
+  ]
+}
