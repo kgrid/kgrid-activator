@@ -6,9 +6,6 @@
   "contributors": "Kgrid Team",
   "description": "Test Hello World ",
   "keywords": "test hello world",
-  "hasImplementation":[
-    "hello-world/koio.v1",
-    "hello-world/koio.v2"
-  ],
+  "hasImplementation": "hello-world/koio.v1",
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 }

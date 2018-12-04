@@ -36,8 +36,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Override
   public void run(String... strings) throws Exception {
     adapterService.loadAndInitializeAdapters();
-    activationService.loadAndActivateEndPoints();
-    activationService.startEndpointWatcher();
+//    activationService.loadAndActivateEndPoints();
+//    activationService.startEndpointWatcher();
   }
 
   //Swagger API Documentation Generation
