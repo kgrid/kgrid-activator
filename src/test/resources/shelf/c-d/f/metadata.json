@@ -1,0 +1,12 @@
+{
+  "@id": "f",
+  "@type": "koio:Implementation",
+  "identifier": "ark:c/d/f",
+  "title": "Implementation koio v1 of Hello World",
+  "hasServiceSpecification": "f/service.yaml",
+  "hasDeploymentSpecification": "f/deployment.yaml",
+  "hasPayload": "f/welcome.js",
+  "@context": [
+    "http://kgrid.org/koio/contexts/implementation.jsonld"
+  ]
+}

@@ -36,7 +36,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Override
   public void run(String... strings) throws Exception {
     adapterService.loadAndInitializeAdapters();
-//    activationService.loadAndActivateEndPoints();
+//    activationService.loadEndpoints();
 //    activationService.startEndpointWatcher();
   }
 

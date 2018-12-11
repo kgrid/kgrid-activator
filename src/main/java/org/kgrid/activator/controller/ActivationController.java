@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.kgrid.activator.ActivatorException;
-import org.kgrid.activator.EndPoint;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.Endpoint;
 import org.kgrid.adapter.api.AdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,8 @@ public class ActivationController {
   @GetMapping("/endpoints")
   public Set<String> reloadAndActivateEndPoints() {
     log.info("Reload and activiate endpoints");
-    service.loadAndActivateEndPoints();
+    Map<String, Endpoint> eps = service.loadEndpoints();
+    service.activate(eps);
     return service.getEndpoints().keySet();
 
   }
@@ -59,9 +60,10 @@ public class ActivationController {
 
       try {
 
-        EndPoint endPoint = service.getEndpoints().get(key);
+        Endpoint endPoint = service.getEndpoints().get(key);
 
-        EndPointResult<Object> result = new EndPointResult<>(endPoint.executeEndPoint(inputs));
+//        EndPointResult<Object> result = new EndPointResult<>(endPoint.executeEndPoint(inputs));
+        EndPointResult result = new EndPointResult("result");
         result.getInfo().put("inputs", inputs);
         result.getInfo().put("ko", naan + "/" + name + "/" + version);
 
