@@ -15,8 +15,11 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Properties;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.adapter.javascript.JavascriptAdapter;
@@ -29,6 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class EndpointActivationTests {
 
   public static final String C_D_F_WELCOME = C_D_F.getDashArkImplementation() + "/welcome";
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
   @Mock
   AdapterService adapterService;
   @Mock
@@ -104,6 +109,20 @@ public class EndpointActivationTests {
     }});
 
     assertEquals("Welcome to Knowledge Grid, Bob", output);
-
   }
+
+  @Test
+  public void endpointWithNoMatchingDeploymentSpecThrowsActivationException() {
+    expectedException.expect(ActivatorException.class);
+    expectedException.expectMessage("No deployment specification");
+
+    final Endpoint endpoint = Endpoint.Builder
+        .anEndpoint()
+        .withDeployment(null)
+        .build();
+
+    // when
+    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+  }
+
 }

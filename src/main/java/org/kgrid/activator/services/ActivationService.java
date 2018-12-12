@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -102,6 +103,7 @@ public class ActivationService {
     return endpoints;
   }
 
+  @Deprecated
   Endpoint activateKnowledgeObjectEndpoint(KnowledgeObject knowledgeObject)
       throws AdapterException {
     // Rename as 'activateEndpoints(ArkId, JsonNode)'
@@ -125,7 +127,12 @@ public class ActivationService {
 
   public void activate(Map<String, Endpoint> eps) {
     eps.forEach((key, value) -> {
-      Executor executor = activate(key, value);
+      Executor executor = null;
+      try {
+        executor = activate(key, value);
+      } catch (ActivatorException e) {
+        log.warn(e.getMessage());
+      }
       value.setExecutor(executor);
     });
   }
@@ -135,6 +142,9 @@ public class ActivationService {
     ArkId ark = new ArkId(StringUtils.substringBeforeLast(endpointKey, "/"));
 
     final JsonNode deploymentSpec = endpoint.getDeployment();
+
+    if (null == deploymentSpec )
+      throw new ActivatorException("No deployment specification for " + endpointKey);
 
     Adapter adapter = adapterService
         .findAdapter(deploymentSpec.get("adapterType").asText());
@@ -152,9 +162,14 @@ public class ActivationService {
   public EndPointResult execute(String endpointPath, Object inputs) {
 
     Executor executor = endpoints.get(endpointPath).getExecutor();
+
+    if (null == executor)
+      throw(new ActivatorException("Executor not found for " + endpointPath));
+
     final Object output = executor.execute(inputs);
 
     final EndPointResult endPointResult = new EndPointResult(output);
+
     endPointResult.getInfo().put("inputs", inputs);
 
     return endPointResult;

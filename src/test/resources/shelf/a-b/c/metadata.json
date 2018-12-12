@@ -3,7 +3,7 @@
   "@type": "koio:Implementation",
   "identifier": "ark:a/b/c",
   "title": "Implementation koio v1 of Hello World",
-  "hasServiceSpecifications": "c/service.yaml",
+  "hasServiceSpecification": "c/service.yaml",
   "hasDeploymentSpecification": "c/deployment.yaml",
   "hasPayload": "c/welcome.js",
   "@context": [

@@ -46,6 +46,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+  /goodbye:
+    post:
+      tags:
+        - KO Endpoints
+      description: Goodbye.
+      operationId: goodbye
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/welcomeOutput'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
 components:
   schemas:
     user:

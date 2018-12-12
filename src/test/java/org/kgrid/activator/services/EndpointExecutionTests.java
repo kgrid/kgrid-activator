@@ -9,8 +9,11 @@ import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
@@ -23,18 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class EndpointExecutionTests {
 
   public static final String C_D_F_WELCOME = C_D_F.getDashArkImplementation() + "/welcome";
-  public static final String PAYLOAD = "function welcome(inputs){\n"
-      + "  var name = inputs.name;\n"
-      + "  return \"Welcome to Knowledge Grid, \" + name;\n"
-      + "}";
-
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
   @Mock
   AdapterService adapterService;
   @Mock
   Adapter adapter;
   @Mock
   CompoundDigitalObjectStore cdoStore;
-
   @InjectMocks
   ActivationService activationService;
   private JsonNode dep;
@@ -69,5 +68,20 @@ public class EndpointExecutionTests {
     assertEquals(inputs, result.getInfo().get("inputs"));
   }
 
+  @Test
+  public void executeThrowsMissingExecutorException() {
+    expectedException.expect(ActivatorException.class);
+    expectedException.expectMessage("Executor not found");
+
+    final Endpoint endpoint = Endpoint.Builder
+        .anEndpoint()
+        .withDeployment(null)
+        .build();
+
+    activationService.getEndpoints().put(C_D_F_WELCOME, endpoint);
+
+    // when
+    EndPointResult result = activationService.execute(C_D_F_WELCOME, "");
+  }
 
 }

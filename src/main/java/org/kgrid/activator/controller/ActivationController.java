@@ -53,34 +53,15 @@ public class ActivationController {
       @PathVariable String version, @PathVariable String endpoint,
       @RequestBody Object inputs) {
 
-    final String key = naan + "/" + name + "/" + version + "/" + endpoint;
-    log.info("Execute endpoint  " + key);
-
-    if (service.getEndpoints().containsKey(key)){
+    final String key = naan + "-" + name + "/" + version + "/" + endpoint;
 
       try {
-
-        Endpoint endPoint = service.getEndpoints().get(key);
-
-//        EndPointResult<Object> result = new EndPointResult<>(endPoint.executeEndPoint(inputs));
-        EndPointResult result = new EndPointResult("result");
-        result.getInfo().put("inputs", inputs);
-        result.getInfo().put("ko", naan + "/" + name + "/" + version);
-
+        EndPointResult result = service.execute(key, inputs);
         return result;
-
       } catch (AdapterException e) {
         log.error("Exception " + e);
         throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
       }
-
-    } else {
-
-      log.error("No endpoint found for path " + key);
-      throw new ActivatorException("No endpoint found for path " + key);
-
-    }
-
   }
 
   @ExceptionHandler(ActivatorException.class)

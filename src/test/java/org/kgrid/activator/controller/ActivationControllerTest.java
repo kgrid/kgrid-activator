@@ -1,21 +1,22 @@
 package org.kgrid.activator.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.KgridActivatorApplication;
-import org.kgrid.activator.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
@@ -40,20 +41,24 @@ public class ActivationControllerTest {
     restTemplate = new RestTemplate();
   }
 
-  @Ignore
   @Test
-  public void processKnowledgeObjectEndPoint() throws Exception {
+  public void endpointInvocationReturnsResult() throws Exception {
+    MvcResult result = getResultActions("/c/d/f/welcome", "{\"name\" : \"tester\"}")
+        .andExpect(status().isOk())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
 
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
 
-     ResultActions result = mockMvc.perform(
-        post("/99999/newko/v0.0.0/welcome").content("{\"name\" : \"tester\"}")
+    assertEquals("Welcome to Knowledge Grid, tester", content.get("result").asText());
+
+  }
+  private ResultActions getResultActions(String endpointPath, String content) throws Exception {
+    return mockMvc.perform(
+        post(endpointPath).content(content)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .accept(MediaType.APPLICATION_JSON_UTF8));
-
-    result.andExpect(status().isOk())
-        .andExpect(content().contentType(TestUtils.APPLICATION_JSON_UTF8));
-
-    System.out.print( result );
   }
 
 }

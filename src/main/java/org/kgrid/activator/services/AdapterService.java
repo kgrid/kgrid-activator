@@ -35,10 +35,19 @@ public class AdapterService {
 
   }
 
+  private static Properties getProperties(Environment env) {
+    Properties properties = new Properties();
+    MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
+    StreamSupport.stream(propSrcs.spliterator(), false)
+        .filter(ps -> ps instanceof EnumerablePropertySource)
+        .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+        .flatMap(Arrays::stream)
+        .forEach(propName -> properties.setProperty(propName, env.getProperty(propName)));
+    return properties;
+  }
+
   public void loadAndInitializeAdapters() {
     properties = getProperties(env);
-
-
     adapters = new HashMap<>();
 
     ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
@@ -59,24 +68,12 @@ public class AdapterService {
     }
   }
 
-
-
   public HashMap<String, Adapter> getLoadedAdapters() {
     return adapters;
   }
+
   protected Adapter findAdapter(String adapterType) {
     return adapters.get(adapterType.toUpperCase());
-  }
-
-  private static Properties getProperties(Environment env) {
-    Properties properties = new Properties();
-    MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
-    StreamSupport.stream(propSrcs.spliterator(), false)
-        .filter(ps -> ps instanceof EnumerablePropertySource)
-        .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
-        .flatMap(Arrays::stream)
-        .forEach(propName -> properties.setProperty(propName, env.getProperty(propName)));
-    return properties;
   }
 
 

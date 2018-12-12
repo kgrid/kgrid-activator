@@ -3,6 +3,6 @@ function welcome(inputs){
   return "Welcome to Knowledge Grid, " + name;
 }
 
-function infoForMe () {
+function info () {
   return "Greets a person by name."
 }

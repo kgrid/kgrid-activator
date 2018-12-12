@@ -1,7 +1,9 @@
 package org.kgrid.activator;
 
+import java.util.Map;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterService;
+import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Override
   public void run(String... strings) throws Exception {
     adapterService.loadAndInitializeAdapters();
-//    activationService.loadEndpoints();
+    Map<String, Endpoint> eps = activationService.loadEndpoints();
+    activationService.activate(eps);
 //    activationService.startEndpointWatcher();
   }
 
