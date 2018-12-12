@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class EndPointResult<T> {
 
+  //TODO: Refactor
+
   private final T result;
   private final Map<String, Object> info;
 

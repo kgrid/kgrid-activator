@@ -6,6 +6,7 @@ import org.kgrid.adapter.api.Executor;
  * Defines an activated knowledge object endpoint
  *
  * */
+@Deprecated
 public class EndPoint {
 
   private Executor executor;

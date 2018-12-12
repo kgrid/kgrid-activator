@@ -2,11 +2,16 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.EndPointResult;
+import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
@@ -22,11 +27,13 @@ import org.springframework.stereotype.Service;
 public class ActivationService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
+  private final AdapterService adapterService;
+  private final KnowledgeObjectRepository knowledgeObjectRepository;
   Map<String, Endpoint> endpoints = new HashMap<>();
-  private KnowledgeObjectRepository knowledgeObjectRepository;
 
-  public ActivationService(KnowledgeObjectRepository repo) {
+  public ActivationService(KnowledgeObjectRepository repo, AdapterService adapterService) {
     this.knowledgeObjectRepository = repo;
+    this.adapterService = adapterService;
   }
 
   public Map<String, Endpoint> loadEndpoints() {
@@ -72,7 +79,6 @@ public class ActivationService {
       eps.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
     });
 
-
     return eps;
   }
 
@@ -93,7 +99,7 @@ public class ActivationService {
   }
 
   public Map<String, Endpoint> getEndpoints() {
-    return new HashMap<>();
+    return endpoints;
   }
 
   Endpoint activateKnowledgeObjectEndpoint(KnowledgeObject knowledgeObject)
@@ -118,23 +124,40 @@ public class ActivationService {
   }
 
   public void activate(Map<String, Endpoint> eps) {
-    for ( Entry<String, Endpoint> endpointEntry : eps.entrySet() ) {
-
-      byte[] payload = null;
-      final Endpoint endpoint = endpointEntry.getValue();
-      Executor executor = activate(payload, endpoint);
-      endpoint.setExecutor(executor);
-
-    }
+    eps.forEach((key, value) -> {
+      Executor executor = activate(key, value);
+      value.setExecutor(executor);
+    });
   }
 
-  private Executor activate(byte[] payload, Endpoint value) {
-    return new Executor() {
-      @Override
-      public Object execute(Object input) {
-        return null;
-      }
-    };
+  public Executor activate(String endpointKey, Endpoint endpoint) {
+
+    ArkId ark = new ArkId(StringUtils.substringBeforeLast(endpointKey, "/"));
+
+    final JsonNode deploymentSpec = endpoint.getDeployment();
+
+    Adapter adapter = adapterService
+        .findAdapter(deploymentSpec.get("adapterType").asText());
+
+    final Path artifact = Paths.get(
+        ark.getDashArkImplementation(),
+        deploymentSpec.get("artifact").asText()
+    );
+
+    final String entry = deploymentSpec.get("entry").asText();
+
+    return adapter.activate(artifact, entry);
+  }
+
+  public EndPointResult execute(String endpointPath, Object inputs) {
+
+    Executor executor = endpoints.get(endpointPath).getExecutor();
+    final Object output = executor.execute(inputs);
+
+    final EndPointResult endPointResult = new EndPointResult(output);
+    endPointResult.getInfo().put("inputs", inputs);
+
+    return endPointResult;
   }
 }
 

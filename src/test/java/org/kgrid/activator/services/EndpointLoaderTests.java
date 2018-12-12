@@ -5,14 +5,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.kgrid.activator.services.RepoUtils.A_B;
+import static org.kgrid.activator.services.RepoUtils.A_B_C;
+import static org.kgrid.activator.services.RepoUtils.C_D;
+import static org.kgrid.activator.services.RepoUtils.C_D_E;
+import static org.kgrid.activator.services.RepoUtils.C_D_F;
+import static org.kgrid.activator.services.RepoUtils.getJsonTestFile;
+import static org.kgrid.activator.services.RepoUtils.getYamlTestFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +30,6 @@ import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -35,16 +37,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class EndpointLoaderTests {
 
   public static final String IMPL = KnowledgeObject.IMPLEMENTATIONS_TERM;
-  public static final ArkId A_B = new ArkId("a-b");
-  public static final ArkId C_D = new ArkId("c-d");
-  public static final ArkId A_B_C = new ArkId("a-b/c");
-  public static final ArkId C_D_E = new ArkId("c-d/e");
-  public static final ArkId C_D_F = new ArkId("c-d/f");
-
-  @Autowired
-  ResourcePatternResolver resourceResolver;
-  ObjectMapper yamlMapper = new YAMLMapper();
-  ObjectMapper jsonMapper = new ObjectMapper();
 
   @Mock
   private KnowledgeObjectRepository repository;
@@ -134,24 +126,6 @@ public class EndpointLoaderTests {
     });
   }
 
-
-  /*
-  ** Loaders for the mock repo
-  */
-  private JsonNode getYamlTestFile(String ark, String filePath) throws IOException {
-
-    Resource r = resourceResolver.getResource("/shelf/" + ark + "/" + filePath);
-
-    final JsonNode sd = yamlMapper.readTree(r.getFile());
-    return sd;
-  }
-  private JsonNode getJsonTestFile(String ark, String filePath) throws IOException {
-
-    Resource r = resourceResolver.getResource("/shelf/" + ark + "/" + filePath);
-
-    final JsonNode sd = jsonMapper.readTree(r.getFile());
-    return sd;
-  }
 
   private void loadMockRepoWithKOs() throws IOException {
     // All KOs on shelf (A_B, C_D)

@@ -1,7 +1,7 @@
 endpoints:
   /welcome:
     adapterType: JAVASCRIPT
-    artifact: welcome.js
+    artifact:  welcome.js
     entry: welcome
   /info:
     adapterType: JAVASCRIPT
