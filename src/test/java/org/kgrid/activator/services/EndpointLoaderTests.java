@@ -1,28 +1,37 @@
 package org.kgrid.activator.services;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.kgrid.activator.services.RepoUtils.A_B;
+import static org.kgrid.activator.services.RepoUtils.A_B_C;
+import static org.kgrid.activator.services.RepoUtils.C_D;
+import static org.kgrid.activator.services.RepoUtils.C_D_E;
+import static org.kgrid.activator.services.RepoUtils.C_D_F;
+import static org.kgrid.activator.services.RepoUtils.getJsonTestFile;
+import static org.kgrid.activator.services.RepoUtils.getYamlTestFile;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static org.junit.Assert.*;
-import static org.kgrid.activator.services.RepoUtils.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 @RunWith(SpringRunner.class)
 //@SpringBootTest
@@ -118,7 +127,20 @@ public class EndpointLoaderTests {
     });
   }
 
+  @Test
+  public void missingImplementationLogsAndSkips() {
 
+    given(repository.findImplementationMetadata(A_B_C))
+        .willThrow(ShelfResourceNotFound.class);
+
+    Map<String, Endpoint> endpointMap = activationService.loadEndpoints(A_B_C);
+
+    assertNull(endpointMap);
+  }
+
+  /*
+   * Test loader methods
+   */
   private void loadMockRepoWithKOs() throws IOException {
     // All KOs on shelf (A_B, C_D)
     final Map<ArkId, JsonNode> kos = new HashMap<>();
@@ -127,6 +149,7 @@ public class EndpointLoaderTests {
 
     given(repository.findAll()).willReturn(kos);
   }
+
   private void loadMockRepoWithServiceSpecs() throws IOException {
     //service specs
     given(repository.findServiceSpecification(eq(A_B_C), any()))

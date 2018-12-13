@@ -15,6 +15,7 @@ import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -30,6 +31,7 @@ public class ActivationService {
   final Logger log = LoggerFactory.getLogger(this.getClass());
   private final AdapterService adapterService;
   private final KnowledgeObjectRepository knowledgeObjectRepository;
+
   Map<String, Endpoint> endpoints = new HashMap<>();
 
   public ActivationService(KnowledgeObjectRepository repo, AdapterService adapterService) {
@@ -46,7 +48,11 @@ public class ActivationService {
       List<ArkId> arks = getImplementationArkIds(ko.getValue());
 
       for (ArkId ark : arks) {
-        endpoints.putAll(loadEndpoints(ark));
+        final Map<String, Endpoint> endpointMap = loadEndpoints(ark);
+        if (null == endpointMap) {
+          continue;
+        }
+        endpoints.putAll(endpointMap);
       }
     }
     return endpoints;
@@ -55,9 +61,16 @@ public class ActivationService {
   public Map<String, Endpoint> loadEndpoints(ArkId ark) {
     log.info("ArkId: " + ark.getDashArkImplementation());
 
-    JsonNode implementationMetadata = knowledgeObjectRepository
-        .findImplementationMetadata(ark);
+    JsonNode resource = null;
+    try {
+      resource = knowledgeObjectRepository
+          .findImplementationMetadata(ark);
+    } catch (ShelfResourceNotFound e) {
+      log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage());
+      return null;
+    }
 
+    JsonNode implementationMetadata = resource;
     JsonNode deploymentSpecification = knowledgeObjectRepository
         .findDeploymentSpecification(ark, implementationMetadata);
 
@@ -68,10 +81,6 @@ public class ActivationService {
     serviceDescription.get("paths").fields().forEachRemaining(service -> {
 
       JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
-
-//        String adapterType = endpointSpec.get("adapterType").asText();
-//        final String payloadPath = implementationMetadata.get(KnowledgeObject.PAYLOAD_TERM).asText();
-//        byte[] payload = knowledgeObjectRepository.findPayload(ark, payloadPath);
 
       final Endpoint endpoint = new Endpoint();
       endpoint.setDeployment(spec);
@@ -85,8 +94,6 @@ public class ActivationService {
 
   private List<ArkId> getImplementationArkIds(JsonNode ko) {
     JsonNode implementations = ko.get(KnowledgeObject.IMPLEMENTATIONS_TERM);
-
-    assert (!implementations.isNull());
 
     List<ArkId> arks = new ArrayList<>();
     if (implementations.isArray()) {
@@ -143,8 +150,9 @@ public class ActivationService {
 
     final JsonNode deploymentSpec = endpoint.getDeployment();
 
-    if (null == deploymentSpec )
+    if (null == deploymentSpec) {
       throw new ActivatorException("No deployment specification for " + endpointKey);
+    }
 
     Adapter adapter = adapterService
         .findAdapter(deploymentSpec.get("adapterType").asText());
@@ -163,8 +171,9 @@ public class ActivationService {
 
     Executor executor = endpoints.get(endpointPath).getExecutor();
 
-    if (null == executor)
-      throw(new ActivatorException("Executor not found for " + endpointPath));
+    if (null == executor) {
+      throw (new ActivatorException("Executor not found for " + endpointPath));
+    }
 
     final Object output = executor.execute(inputs);
 
