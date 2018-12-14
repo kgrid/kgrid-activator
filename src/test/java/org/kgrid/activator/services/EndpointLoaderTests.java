@@ -133,9 +133,14 @@ public class EndpointLoaderTests {
     given(repository.findImplementationMetadata(A_B_C))
         .willThrow(ShelfResourceNotFound.class);
 
-    Map<String, Endpoint> endpointMap = activationService.loadEndpoints(A_B_C);
+    activationService.loadEndpoints(A_B_C);
 
-    assertNull(endpointMap);
+    assertNull(activationService.getEndpoints().get(A_B_C.getDashArkImplementation() + "/welcome"));
+
+    activationService.loadEndpoints();
+
+    assertNull(activationService.getEndpoints().get(A_B_C.getDashArkImplementation() + "/welcome"));
+
   }
 
   /*

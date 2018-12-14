@@ -32,7 +32,13 @@ public class KgridActivatorApplication implements CommandLineRunner {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
         .build()
         .run(args);
+  }
 
+  @Primary
+  @Bean
+  public static CompoundDigitalObjectStore getCDOStore(
+      @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}") String cdoStoreURI) {
+    return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
   }
 
   @Override
@@ -51,12 +57,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         .apis(RequestHandlerSelectors.basePackage("org.kgrid"))
         .paths(PathSelectors.any())
         .build();
-  }
-
-  @Primary
-  @Bean
-  public static CompoundDigitalObjectStore getCDOStore( @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}") String cdoStoreURI) {
-    return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
   }
 
 }

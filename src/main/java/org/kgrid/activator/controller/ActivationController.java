@@ -55,14 +55,15 @@ public class ActivationController {
 
     final String key = naan + "-" + name + "/" + version + "/" + endpoint;
 
-      try {
-        EndPointResult result = service.execute(key, inputs);
-        return result;
-      } catch (AdapterException e) {
-        log.error("Exception " + e);
-        throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
-      }
+    try {
+      EndPointResult result = service.execute(key, inputs);
+      return result;
+    } catch (AdapterException e) {
+      log.error("Exception " + e);
+      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
+    }
   }
+
 
   @ExceptionHandler(ActivatorException.class)
   public ResponseEntity<Map<String, String>> handleGeneralActivatorExceptions(ActivatorException e,
@@ -78,7 +79,8 @@ public class ActivationController {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  private Map<String, String> generateErrorMap(WebRequest request, String message, HttpStatus status) {
+  private Map<String, String> generateErrorMap(WebRequest request, String message,
+      HttpStatus status) {
     Map<String, String> errorInfo = new HashMap<>();
     errorInfo.put("Status", status.toString());
     errorInfo.put("Error", message);

@@ -44,16 +44,8 @@ public class ActivationService {
     Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
 
     for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-
       List<ArkId> arks = getImplementationArkIds(ko.getValue());
-
-      for (ArkId ark : arks) {
-        final Map<String, Endpoint> endpointMap = loadEndpoints(ark);
-        if (null == endpointMap) {
-          continue;
-        }
-        endpoints.putAll(endpointMap);
-      }
+      arks.forEach(this::loadEndpoints);
     }
     return endpoints;
   }
@@ -63,11 +55,10 @@ public class ActivationService {
 
     JsonNode resource = null;
     try {
-      resource = knowledgeObjectRepository
-          .findImplementationMetadata(ark);
+      resource = knowledgeObjectRepository.findImplementationMetadata(ark);
     } catch (ShelfResourceNotFound e) {
       log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage());
-      return null;
+      return endpoints;
     }
 
     JsonNode implementationMetadata = resource;
@@ -88,8 +79,10 @@ public class ActivationService {
       endpoint.setImpl(implementationMetadata);
       eps.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
     });
-
-    return eps;
+    if (null != eps) {
+      endpoints.putAll(eps);
+    }
+    return endpoints;
   }
 
   private List<ArkId> getImplementationArkIds(JsonNode ko) {
