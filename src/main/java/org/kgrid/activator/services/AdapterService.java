@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
@@ -30,6 +31,7 @@ public class AdapterService {
   private CompoundDigitalObjectStore cdoStore;
 
   private HashMap<String, Adapter> adapters;
+  private Map<String, Endpoint> endpoints;
 
   public AdapterService() {
 
@@ -60,6 +62,12 @@ public class AdapterService {
   protected void initializeAdapter(Adapter adapter) {
     if (adapter instanceof AdapterSupport) {
       ((AdapterSupport) adapter).setCdoStore(cdoStore);
+
+      Map<String, Object> eps = new HashMap<>();
+      endpoints.forEach((s, endpoint) -> {
+        eps.put(s, endpoint);
+      });
+      ((AdapterSupport) adapter).setEndpoints(eps);
     }
     try {
       adapter.initialize(properties);
@@ -77,4 +85,7 @@ public class AdapterService {
   }
 
 
+  public void setEndpoints(Map<String, Endpoint> endpoints) {
+    this.endpoints = endpoints;
+  }
 }

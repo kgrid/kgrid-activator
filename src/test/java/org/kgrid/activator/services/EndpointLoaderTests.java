@@ -5,13 +5,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.kgrid.activator.services.RepoUtils.A_B;
-import static org.kgrid.activator.services.RepoUtils.A_B_C;
-import static org.kgrid.activator.services.RepoUtils.C_D;
-import static org.kgrid.activator.services.RepoUtils.C_D_E;
-import static org.kgrid.activator.services.RepoUtils.C_D_F;
-import static org.kgrid.activator.services.RepoUtils.getJsonTestFile;
-import static org.kgrid.activator.services.RepoUtils.getYamlTestFile;
+import static org.kgrid.activator.utils.RepoUtils.A_B;
+import static org.kgrid.activator.utils.RepoUtils.A_B_C;
+import static org.kgrid.activator.utils.RepoUtils.C_D;
+import static org.kgrid.activator.utils.RepoUtils.C_D_E;
+import static org.kgrid.activator.utils.RepoUtils.C_D_F;
+import static org.kgrid.activator.utils.RepoUtils.getJsonTestFile;
+import static org.kgrid.activator.utils.RepoUtils.getYamlTestFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -41,6 +41,9 @@ public class EndpointLoaderTests {
 
   @Mock
   private KnowledgeObjectRepository repository;
+
+  @Mock
+  AdapterService adapterService;
 
   @InjectMocks
   private ActivationService activationService;
@@ -87,11 +90,13 @@ public class EndpointLoaderTests {
     // when
     Map<String, Endpoint> eps = activationService.loadEndpoints();
 
+    // Loader methods load 2 KOs, with 3 impls, and 5 endpoints (1 service spec has 3 endpoints!)
     assertEquals("Map should have 5 endpoints", 5, eps.size());
 
     assertNotNull("'a-b/c/welcome' exists", eps.get("a-b/c/welcome"));
     assertNotNull("'c-d/e/welcome' exists", eps.get("c-d/e/welcome"));
     assertNotNull("'c-d/f/welcome' exists", eps.get("c-d/f/welcome"));
+    assertNotNull("'c-d/f/goodbye' exists", eps.get("c-d/f/goodbye"));
     assertNotNull("'c-d/f/info' exists", eps.get("c-d/f/info"));
   }
 

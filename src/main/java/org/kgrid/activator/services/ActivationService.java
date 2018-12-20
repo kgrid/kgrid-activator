@@ -32,11 +32,13 @@ public class ActivationService {
   private final AdapterService adapterService;
   private final KnowledgeObjectRepository knowledgeObjectRepository;
 
-  Map<String, Endpoint> endpoints = new HashMap<>();
+  public final Map<String, Endpoint> endpoints;
 
   public ActivationService(KnowledgeObjectRepository repo, AdapterService adapterService) {
     this.knowledgeObjectRepository = repo;
     this.adapterService = adapterService;
+    endpoints = new HashMap<>();
+    this.adapterService.setEndpoints(endpoints);
   }
 
   public Map<String, Endpoint> loadEndpoints() {
@@ -157,7 +159,11 @@ public class ActivationService {
 
     final String entry = deploymentSpec.get("entry").asText();
 
-    return adapter.activate(artifact, entry);
+    try {
+      return adapter.activate(artifact, entry);
+    } catch (AdapterException e) {
+      throw new ActivatorException(e.getMessage(), e);
+    }
   }
 
   public EndPointResult execute(String endpointPath, Object inputs) {

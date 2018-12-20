@@ -1,8 +1,8 @@
 package org.kgrid.activator.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.kgrid.activator.services.RepoUtils.C_D_F;
-import static org.kgrid.activator.services.RepoUtils.getYamlTestFile;
+import static org.kgrid.activator.utils.RepoUtils.C_D_F;
+import static org.kgrid.activator.utils.RepoUtils.getYamlTestFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

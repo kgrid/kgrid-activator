@@ -2,12 +2,14 @@ package org.kgrid.activator.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.kgrid.activator.services.RepoUtils.C_D_F;
-import static org.kgrid.activator.services.RepoUtils.getBinaryTestFile;
-import static org.kgrid.activator.services.RepoUtils.getYamlTestFile;
+import static org.junit.Assert.assertNull;
+import static org.kgrid.activator.utils.RepoUtils.C_D_F;
+import static org.kgrid.activator.utils.RepoUtils.getBinaryTestFile;
+import static org.kgrid.activator.utils.RepoUtils.getYamlTestFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.reset;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.adapter.javascript.JavascriptAdapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
@@ -125,4 +128,63 @@ public class EndpointActivationTests {
     Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
   }
 
+  @Test
+  public void activatingEndpointWithMissingArtifactThrowsActivatorException() {
+    expectedException.expect(ActivatorException.class);
+    expectedException.expectMessage("Binary resource not found");
+
+    final Endpoint endpoint = Endpoint.Builder.anEndpoint()
+        .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
+        .build();
+
+    given(adapterService.findAdapter("JAVASCRIPT"))
+        .willReturn(adapter);
+
+    given(adapter.activate(any(), any()))
+        .willThrow(new AdapterException("Binary resource not found..."));
+
+    // when
+    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+  }
+
+  @Test
+  public void activatingEndpointWithMissingArtifactGivesNullExecutor() {
+
+    final Endpoint endpoint = Endpoint.Builder.anEndpoint()
+        .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
+        .build();
+
+    given(adapterService.findAdapter("JAVASCRIPT"))
+        .willReturn(adapter);
+
+    given(adapter.activate(any(), any()))
+        .willThrow(new AdapterException("Binary resource not found..."));
+
+    // when
+    activationService.activate(new HashMap<String, Endpoint>() {{
+      put(C_D_F_WELCOME, endpoint);
+    }});
+
+    assertNull("Executor should not be available",
+        endpoint.getExecutor());
+
+    // try again with a real Executor returned
+    reset(adapter);
+    given(adapter.activate(any(), any()))
+        .willReturn(new Executor() {
+          @Override
+          public Object execute(Object input) {
+            return input;
+          }
+        });
+
+    // when
+    activationService.activate(new HashMap<String, Endpoint>() {{
+      put(C_D_F_WELCOME, endpoint);
+    }});
+
+    // no exception and it's the configured executor
+    assertNotNull(endpoint.getExecutor());
+    assertEquals("foo", endpoint.getExecutor().execute("foo"));
+  }
 }

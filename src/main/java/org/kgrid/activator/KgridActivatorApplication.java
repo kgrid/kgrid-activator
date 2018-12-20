@@ -43,9 +43,10 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    adapterService.loadAndInitializeAdapters();
     Map<String, Endpoint> eps = activationService.loadEndpoints();
+    adapterService.loadAndInitializeAdapters();
     activationService.activate(eps);
+    adapterService.loadAndInitializeAdapters();
 //    activationService.startEndpointWatcher();
   }
 
