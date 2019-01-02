@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -28,7 +30,6 @@
   <properties>
     <!-- override spring boot parent; sets java source & target -->
     <java.version>1.8</java.version>
-    <mockito.version>2.23.4</mockito.version>
   </properties>
 
   <dependencies>
@@ -73,11 +74,6 @@
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
       <version>0.0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.kgrid</groupId>
-      <artifactId>jupyter-kernel-adapter</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -152,4 +148,13 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.source.skip>true</maven.source.skip>
+      </properties>
+    </profile>
+  </profiles>
 </project>
