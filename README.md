@@ -15,6 +15,7 @@ As a key component of Knowledge Grid, an activator allows knowledge objects to b
 1. [Build and Test Activator](#build-activator)
 2. [Deploy Activator](#deploy-activator)
 2. [Release Activator](#release-activator)
+2. [Docker Activator](docker.md)
 
 
 ## Build Activator
@@ -106,7 +107,6 @@ curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintston
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
 
 ## Release Activator
-
 Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details 
 
 
