@@ -8,7 +8,7 @@ module.exports = {
       { text: 'Guide', link: '/' },
       { text: 'Configuration', link: '/configuration/'},
       { text: 'Adding KOs', link: '/kos/' },
-      { text: 'Service Descriptions', link: '/service/' }
+      { text: 'Service Descriptions', link: '/service/' },
       { text: 'Docker', link: '/docker/' }
 
     ],
