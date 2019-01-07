@@ -1,1 +1,7 @@
-{"hasImplementation": "a-b/c" }
+{  "@id": "a-b",
+  "hasImplementation": ["a-b/c"],
+  "title": "the best a-b ever",
+  "@type":"koio:KnowledgeObject",
+  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+
+}

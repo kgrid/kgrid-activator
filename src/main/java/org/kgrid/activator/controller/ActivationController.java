@@ -34,14 +34,14 @@ public class ActivationController {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
-  private ActivationService service;
+  private ActivationService activationService;
 
   @GetMapping("/endpoints")
   public Set<String> reloadAndActivateEndPoints() {
     log.info("Reload and activiate endpoints");
-    Map<String, Endpoint> eps = service.loadEndpoints();
-    service.activate(eps);
-    return service.getEndpoints().keySet();
+    Map<String, Endpoint> eps = activationService.loadEndpoints();
+    activationService.activate(eps);
+    return activationService.getEndpoints().keySet();
 
   }
 
@@ -56,7 +56,7 @@ public class ActivationController {
     final String key = naan + "-" + name + "/" + version + "/" + endpoint;
 
     try {
-      EndPointResult result = service.execute(key, inputs);
+      EndPointResult result = activationService.execute(key, inputs);
       return result;
     } catch (AdapterException e) {
       log.error("Exception " + e);

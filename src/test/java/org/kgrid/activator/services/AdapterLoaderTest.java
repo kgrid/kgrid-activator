@@ -17,37 +17,40 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {KgridActivatorApplication.class})
-public class AdapterServiceTest {
+public class AdapterLoaderTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
   @Autowired
-  private AdapterService adapterService;
+  private AdapterLoader adapterLoader;
+
+  @Autowired
+  AdapterResolver adapterResolver;
 
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
 
   @Test
   public void loadMockAdapters() {
-    adapterService.loadAndInitializeAdapters();
-    Adapter adapter = adapterService.findAdapter("MOCKADAPTER");
+    adapterLoader.loadAndInitializeAdapters();
+    Adapter adapter = adapterResolver.getAdapter("MOCKADAPTER");
     assertNotNull(adapter);
   }
 
   @Test
   public void adapterNotFound() {
-    adapterService.loadAndInitializeAdapters();
-    assertNull(adapterService.findAdapter("XXXXX"));
+    adapterLoader.loadAndInitializeAdapters();
+    assertNull(adapterResolver.getAdapter("XXXXX"));
   }
 
   @Test
   public void loadedAdaptersAreInitialized() {
-    adapterService.loadAndInitializeAdapters();
-    Adapter jsAdapter = adapterService.findAdapter("mockadapter");
+    adapterLoader.loadAndInitializeAdapters();
+    Adapter jsAdapter = adapterResolver.getAdapter("mockadapter");
     assertEquals("UP", jsAdapter.status());
 
-    jsAdapter = adapterService.findAdapter("mockadaptersupport");
+    jsAdapter = adapterResolver.getAdapter("mockadapterwithsupport");
     assertEquals("UP", jsAdapter.status());
   }
 

@@ -42,9 +42,6 @@ public class EndpointLoaderTests {
   @Mock
   private KnowledgeObjectRepository repository;
 
-  @Mock
-  AdapterService adapterService;
-
   @InjectMocks
   private ActivationService activationService;
 

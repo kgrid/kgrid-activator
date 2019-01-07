@@ -2,7 +2,7 @@
   "@id": "c",
   "@type": "koio:Implementation",
   "identifier": "ark:a/b/c",
-  "title": "Implementation koio v1 of Hello World",
+  "title": "Implementation of a fancy c",
   "hasServiceSpecification": "c/service.yaml",
   "hasDeploymentSpecification": "c/deployment.yaml",
   "hasPayload": "c/welcome.js",

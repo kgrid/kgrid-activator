@@ -29,16 +29,17 @@ import org.springframework.stereotype.Service;
 public class ActivationService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
-  private final AdapterService adapterService;
   private final KnowledgeObjectRepository knowledgeObjectRepository;
 
   public final Map<String, Endpoint> endpoints;
 
-  public ActivationService(KnowledgeObjectRepository repo, AdapterService adapterService) {
+  private AdapterResolver adapterResolver;
+
+  public ActivationService(KnowledgeObjectRepository repo,
+      AdapterResolver adapterResolver) {
     this.knowledgeObjectRepository = repo;
-    this.adapterService = adapterService;
+    this.adapterResolver = adapterResolver;
     endpoints = new HashMap<>();
-    this.adapterService.setEndpoints(endpoints);
   }
 
   public Map<String, Endpoint> loadEndpoints() {
@@ -105,17 +106,6 @@ public class ActivationService {
     return endpoints;
   }
 
-  @Deprecated
-  Endpoint activateKnowledgeObjectEndpoint(KnowledgeObject knowledgeObject)
-      throws AdapterException {
-    // Rename as 'activateEndpoints(ArkId, JsonNode)'
-    // Accepts an ArkId and JsonNode  speccing the Implementation
-    // returns a Map<ArkId, Endpoint> which can be added to the
-    // master Map of Endpoints
-
-    return new Endpoint();
-  }
-
   protected void validateEndPoint(KnowledgeObject knowledgeObject) {
     /* Need a simple way to validate that an object can be activated
      * The ActivatorException thrown in ActivateKnowledgeObjectEndpoint
@@ -149,8 +139,8 @@ public class ActivationService {
       throw new ActivatorException("No deployment specification for " + endpointKey);
     }
 
-    Adapter adapter = adapterService
-        .findAdapter(deploymentSpec.get("adapterType").asText());
+    Adapter adapter = adapterResolver
+        .getAdapter(deploymentSpec.get("adapterType").asText());
 
     final Path artifact = Paths.get(
         ark.getDashArkImplementation(),

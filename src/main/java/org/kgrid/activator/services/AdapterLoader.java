@@ -7,7 +7,9 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.AdapterSupport;
+import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,25 +21,17 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdapterService {
+public class AdapterLoader {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private Properties properties;
-
   @Autowired
   private Environment env;
 
   @Autowired
   private CompoundDigitalObjectStore cdoStore;
 
-  private HashMap<String, Adapter> adapters;
-  private Map<String, Endpoint> endpoints;
-
-  public AdapterService() {
-
-  }
-
-  private static Properties getProperties(Environment env) {
+  private static Properties resolveProperties(Environment env) {
     Properties properties = new Properties();
     MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
     StreamSupport.stream(propSrcs.spliterator(), false)
@@ -48,26 +42,39 @@ public class AdapterService {
     return properties;
   }
 
-  public void loadAndInitializeAdapters() {
-    properties = getProperties(env);
-    adapters = new HashMap<>();
+  public void loadAndInitializeAdapters(){
+    loadAndInitializeAdapters(null);
+  }
+  public AdapterResolver loadAndInitializeAdapters(Map<String, Endpoint> endpoints) {
+    properties = resolveProperties(env);
+
+    Map<String, Adapter> adapters = new HashMap<>();
 
     ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
     for (Adapter adapter : loader) {
-      initializeAdapter(adapter);
+      initializeAdapter(adapter, endpoints);
       adapters.put(adapter.getType().toUpperCase(), adapter);
     }
+    return new AdapterResolver(adapters);
   }
 
-  protected void initializeAdapter(Adapter adapter) {
+  private void initializeAdapter(Adapter adapter, Map<String, Endpoint> endpoints) {
     if (adapter instanceof AdapterSupport) {
-      ((AdapterSupport) adapter).setCdoStore(cdoStore);
+      ((AdapterSupport) adapter).setContext(new ActivationContext() {
+        @Override
+        public Executor getExecutor(String key) {
+          return endpoints.get(key).getExecutor();
+        }
 
-      Map<String, Object> eps = new HashMap<>();
-      endpoints.forEach((s, endpoint) -> {
-        eps.put(s, endpoint);
+        @Override
+        public byte[] getBinary(String pathToBinary) {
+          return cdoStore.getBinary(pathToBinary);
+        }
+
+        public String getProperty(String key) {
+          return env.getProperty(key);
+        }
       });
-      ((AdapterSupport) adapter).setEndpoints(eps);
     }
     try {
       adapter.initialize(properties);
@@ -76,16 +83,4 @@ public class AdapterService {
     }
   }
 
-  public HashMap<String, Adapter> getLoadedAdapters() {
-    return adapters;
-  }
-
-  protected Adapter findAdapter(String adapterType) {
-    return adapters.get(adapterType.toUpperCase());
-  }
-
-
-  public void setEndpoints(Map<String, Endpoint> endpoints) {
-    this.endpoints = endpoints;
-  }
 }

@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
+import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
@@ -38,11 +39,29 @@ public class EndpointActivationTests {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Mock
-  AdapterService adapterService;
+  AdapterResolver adapterResolver;
   @Mock
   Adapter adapter;
   @Mock
   CompoundDigitalObjectStore cdoStore;
+
+  ActivationContext context = new ActivationContext() {
+    @Override
+    public Executor getExecutor(String key) {
+      return null;
+    }
+
+    @Override
+    public byte[] getBinary(String pathToBinary) {
+      return cdoStore.getBinary(pathToBinary);
+    }
+
+    @Override
+    public String getProperty(String key) {
+      return null;
+    }
+  };
+
   @InjectMocks
   ActivationService activationService;
   private byte[] payload;
@@ -57,7 +76,7 @@ public class EndpointActivationTests {
   @Test
   public void activateFindsAdapterAndActivatesEndpoint() throws IOException {
 
-    given(adapterService.findAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
     given(adapter.activate(any(), any()))
@@ -77,7 +96,8 @@ public class EndpointActivationTests {
 
     assertNotNull("Executor should not be null", executor);
 
-    then(adapterService).should().findAdapter("JAVASCRIPT");
+    then(adapterResolver).should()
+        .getAdapter("JAVASCRIPT");
 
     then(adapter).should().activate(
         Paths.get(C_D_F.getDashArkImplementation(), "/welcome.js"),
@@ -90,11 +110,11 @@ public class EndpointActivationTests {
 
     final JavascriptAdapter adapter = new JavascriptAdapter();
     adapter.initialize(new Properties());
-    adapter.setCdoStore(cdoStore);
+    adapter.setContext(context);
 
     given(cdoStore.getBinary(any())).willReturn(payload);
 
-    given(adapterService.findAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
     final Endpoint endpoint = Endpoint.Builder
@@ -137,7 +157,7 @@ public class EndpointActivationTests {
         .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
         .build();
 
-    given(adapterService.findAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
     given(adapter.activate(any(), any()))
@@ -154,7 +174,7 @@ public class EndpointActivationTests {
         .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
         .build();
 
-    given(adapterService.findAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
     given(adapter.activate(any(), any()))

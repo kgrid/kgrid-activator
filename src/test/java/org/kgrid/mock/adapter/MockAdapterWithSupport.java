@@ -2,17 +2,19 @@ package org.kgrid.mock.adapter;
 
 import java.nio.file.Path;
 import java.util.Properties;
+import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterSupport;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 
-public class MockAdapterSupport implements Adapter, AdapterSupport {
+public class MockAdapterWithSupport implements Adapter, AdapterSupport {
   private boolean initialized;
   private boolean cdoStore;
+  private ActivationContext context;
+
   @Override
   public String getType() {
-    return "MockAdapterSupport";
+    return "MockAdapterWithSupport";
   }
 
   @Override
@@ -27,11 +29,16 @@ public class MockAdapterSupport implements Adapter, AdapterSupport {
 
   @Override
   public String status() {
-    return (initialized && cdoStore)?"UP":"DOWN";
+    return (initialized && (getContext()!=null)) ? "UP" : "DOWN";
   }
 
   @Override
-  public void setCdoStore(CompoundDigitalObjectStore compoundDigitalObjectStore) {
-    cdoStore = true;
+  public void setContext(ActivationContext context) {
+    this.context = context;
+  }
+
+  @Override
+  public ActivationContext getContext() {
+    return context;
   }
 }

@@ -1,8 +1,10 @@
 package org.kgrid.activator;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.AdapterService;
+import org.kgrid.activator.services.AdapterLoader;
+import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
@@ -23,10 +25,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class KgridActivatorApplication implements CommandLineRunner {
 
+  private static Map<String, Endpoint> endpoints = new HashMap<>();
   @Autowired
   private ActivationService activationService;
-  @Autowired
-  private AdapterService adapterService;
 
   public static void main(String[] args) {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
@@ -41,16 +42,22 @@ public class KgridActivatorApplication implements CommandLineRunner {
     return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
   }
 
+  @Bean
+  public static AdapterResolver getAdapterResolver(AdapterLoader loader) {
+    return loader.loadAndInitializeAdapters(endpoints);
+  }
+
   @Override
   public void run(String... strings) throws Exception {
     Map<String, Endpoint> eps = activationService.loadEndpoints();
-    adapterService.loadAndInitializeAdapters();
-    activationService.activate(eps);
-    adapterService.loadAndInitializeAdapters();
-//    activationService.startEndpointWatcher();
+    endpoints.clear();
+    endpoints.putAll(eps);
+    activationService.activate(endpoints);
   }
 
+  // *****************************************
   //Swagger API Documentation Generation
+  // *****************************************
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2)
