@@ -22,7 +22,7 @@ kgrid/activator             latest                fbe2de94cfa9        3 minutes 
 
 ```docker run -p 8080:8080 --name activator kgrid/activator```
 
-Mapped to local shelf and running in the backgroud
+Mapped to local shelf and running in the background
 
 ```docker run -p 8080:8080 -v /mydirectory/shelf:/home/kgrid/shelf --name activator -d  kgrid/activator ```
 
@@ -32,15 +32,18 @@ Mapped to local shelf and running in the backgroud
 
 ```docker start activator```
 
-### Push New Image
-
-Activator images are stored on [DockerHub](https://cloud.docker.com/u/kgrid/repository/docker/kgrid/activator) 
-```mvn dockerfile:push -Ddockerfile.tag=1.0.4-rc1 -s /Users/me/.m2/my_settings.xml ```
-
-```mvn dockerfile:push -Ddockerfile.tag=1.0.4-rc1 -s /Users/me/.m2/my_settings.xml ```
-
 
 ### Good to Know
 
 1. View Container Logs  ```docker logs activator```
 1. Access container ```docker exec -it activator sh```
+
+### Push New Image
+
+Activator images are stored on [DockerHub](https://cloud.docker.com/u/kgrid/repository/docker/kgrid/activator) 
+
+```mvn dockerfile:push -Ddockerfile.tag=1.0.4-rc1 -s /Users/me/.m2/my_settings.xml ```
+
+```mvn dockerfile:push -Ddockerfile.tag=1.0.4-rc1 -s /Users/me/.m2/my_settings.xml ```
+
+

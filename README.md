@@ -103,6 +103,7 @@ Run the welcome endpoint on the 99999/newko/v0.0.1 knowledge object
 curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome
 ```
 
+
 ## Deploy Activator
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
 
