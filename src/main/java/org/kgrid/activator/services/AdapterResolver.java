@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import java.util.Map;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 
 //@Service
@@ -13,7 +14,13 @@ public class AdapterResolver {
   }
 
   protected Adapter getAdapter(String adapterType) {
-    return adapters.get(adapterType.toUpperCase());
+
+    Adapter adapter = adapters.get(adapterType.toUpperCase());
+    if(adapter == null ){
+      throw new ActivatorException("No Adapter Found " + adapterType);
+    }
+
+    return adapter;
   }
 
   public Map<String, Adapter> getAdapters() {

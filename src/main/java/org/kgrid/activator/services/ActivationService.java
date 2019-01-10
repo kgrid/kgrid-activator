@@ -123,7 +123,7 @@ public class ActivationService {
       try {
         executor = activate(key, value);
       } catch (ActivatorException e) {
-        log.warn(e.getMessage());
+        log.warn("Could not activate " + key + " " + e.getMessage());
       }
       value.setExecutor(executor);
     });

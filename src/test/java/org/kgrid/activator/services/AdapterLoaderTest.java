@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.KgridActivatorApplication;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -38,10 +39,10 @@ public class AdapterLoaderTest {
     assertNotNull(adapter);
   }
 
-  @Test
+  @Test (expected = ActivatorException.class)
   public void adapterNotFound() {
     adapterLoader.loadAndInitializeAdapters();
-    assertNull(adapterResolver.getAdapter("XXXXX"));
+    adapterResolver.getAdapter("XXXXX");
   }
 
   @Test
