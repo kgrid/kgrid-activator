@@ -1,6 +1,6 @@
 #!/bin/bash
 
- repos=(opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise )
+ repos=(opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise ipp-collection)
 
  for i in "${repos[@]}"
  do
