@@ -132,6 +132,7 @@
         </executions>
         <configuration>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+          <googleContainerRegistryEnabled>false</googleContainerRegistryEnabled>
           <repository>kgrid/activator</repository>
           <buildArgs>
             <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
