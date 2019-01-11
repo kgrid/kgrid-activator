@@ -33,6 +33,7 @@
     <!-- these can be overridden at the command line, e.g. -Dmaven.deploy.skip=false -->
     <maven.gitcommitid.skip>false</maven.gitcommitid.skip>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
   </properties>
 
   <dependencies>
@@ -71,12 +72,12 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.6.8-SNAPSHOT</version>
+      <version>0.6.8</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.0.5-SNAPSHOT</version>
+      <version>0.0.5</version>
     </dependency>
   </dependencies>
 
@@ -121,6 +122,16 @@
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
         <version>1.4.9</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
           <repository>kgrid/activator</repository>
