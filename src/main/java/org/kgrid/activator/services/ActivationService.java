@@ -158,7 +158,8 @@ public class ActivationService {
 
   public EndPointResult execute(String endpointPath, Object inputs) {
 
-    Executor executor = endpoints.get(endpointPath).getExecutor();
+    final Endpoint endpoint = endpoints.get(endpointPath);
+    Executor executor = endpoint.getExecutor();
 
     if (null == executor) {
       throw (new ActivatorException("Executor not found for " + endpointPath));
@@ -169,6 +170,7 @@ public class ActivationService {
     final EndPointResult endPointResult = new EndPointResult(output);
 
     endPointResult.getInfo().put("inputs", inputs);
+    endPointResult.getInfo().put("ko", endpoint.getImpl());
 
     return endPointResult;
   }

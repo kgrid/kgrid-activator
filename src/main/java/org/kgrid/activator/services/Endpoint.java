@@ -8,9 +8,6 @@ public class Endpoint {
   private JsonNode service;
   private JsonNode impl;
   private JsonNode deployment;
-  private byte[] artifact;
-  private String entry;
-  private boolean canActivate;
   private Executor executor;
 
   public Executor getExecutor() {
@@ -19,30 +16,6 @@ public class Endpoint {
 
   public void setExecutor(Executor executor) {
     this.executor = executor;
-  }
-
-  public boolean isCanActivate() {
-    return canActivate;
-  }
-
-  public void setCanActivate(boolean canActivate) {
-    this.canActivate = canActivate;
-  }
-
-  public byte[] getArtifact() {
-    return artifact;
-  }
-
-  public void setArtifact(byte[] artifact) {
-    this.artifact = artifact;
-  }
-
-  public String getEntry() {
-    return entry;
-  }
-
-  public void setEntry(String entry) {
-    this.entry = entry;
   }
 
   public JsonNode getService() {
@@ -101,20 +74,6 @@ public class Endpoint {
       return this;
     }
 
-    public Builder withArtifact(byte[] artifact) {
-      this.artifact = artifact;
-      return this;
-    }
-
-    public Builder withEntry(String entry) {
-      this.entry = entry;
-      return this;
-    }
-
-    public Builder withCanActivate(boolean canActivate) {
-      this.canActivate = canActivate;
-      return this;
-    }
 
     public Builder withExecutor(Executor executor) {
       this.executor = executor;
@@ -126,9 +85,6 @@ public class Endpoint {
       endpoint.setService(service);
       endpoint.setImpl(impl);
       endpoint.setDeployment(deployment);
-      endpoint.setArtifact(artifact);
-      endpoint.setEntry(entry);
-      endpoint.setCanActivate(canActivate);
       endpoint.setExecutor(executor);
       return endpoint;
     }
