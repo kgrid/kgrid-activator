@@ -70,7 +70,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.6.8</version>
+      <version>0.6.9</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
