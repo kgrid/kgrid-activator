@@ -109,8 +109,7 @@ public class EndpointActivationTests {
   public void activateCreatesWorkingExecutor() {
 
     final JavascriptAdapter adapter = new JavascriptAdapter();
-    adapter.initialize(new Properties());
-    adapter.setContext(context);
+    adapter.initialize(context);
 
     given(cdoStore.getBinary(any())).willReturn(payload);
 

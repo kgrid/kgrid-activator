@@ -59,8 +59,8 @@ public class AdapterLoader {
   }
 
   private void initializeAdapter(Adapter adapter, Map<String, Endpoint> endpoints) {
-    if (adapter instanceof AdapterSupport) {
-      ((AdapterSupport) adapter).setContext(new ActivationContext() {
+    try {
+      adapter.initialize(new ActivationContext() {
         @Override
         public Executor getExecutor(String key) {
           return endpoints.get(key).getExecutor();
@@ -75,9 +75,6 @@ public class AdapterLoader {
           return env.getProperty(key);
         }
       });
-    }
-    try {
-      adapter.initialize(properties);
     } catch (Exception e) {
       log.error("Cannot load adapter " + adapter.getType() + " cause: " + e.getMessage());
     }

@@ -50,9 +50,6 @@ public class AdapterLoaderTest {
     adapterLoader.loadAndInitializeAdapters();
     Adapter jsAdapter = adapterResolver.getAdapter("mockadapter");
     assertEquals("UP", jsAdapter.status());
-
-    jsAdapter = adapterResolver.getAdapter("mockadapterwithsupport");
-    assertEquals("UP", jsAdapter.status());
   }
 
 }
