@@ -31,7 +31,7 @@ public class ActivationService {
   final Logger log = LoggerFactory.getLogger(this.getClass());
   private final KnowledgeObjectRepository knowledgeObjectRepository;
 
-  public final Map<String, Endpoint> endpoints;
+  public Map<String, Endpoint> endpoints;
 
   private AdapterResolver adapterResolver;
 
@@ -40,66 +40,6 @@ public class ActivationService {
     this.knowledgeObjectRepository = repo;
     this.adapterResolver = adapterResolver;
     endpoints = new HashMap<>();
-  }
-
-  public Map<String, Endpoint> loadEndpoints() {
-
-    Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-
-    for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-      List<ArkId> arks = getImplementationArkIds(ko.getValue());
-      arks.forEach(this::loadEndpoints);
-    }
-    return endpoints;
-  }
-
-  public Map<String, Endpoint> loadEndpoints(ArkId ark) {
-    log.info("ArkId: " + ark.getDashArkImplementation());
-
-    JsonNode resource = null;
-    try {
-      resource = knowledgeObjectRepository.findImplementationMetadata(ark);
-    } catch (ShelfResourceNotFound e) {
-      log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage());
-      return endpoints;
-    }
-
-    JsonNode implementationMetadata = resource;
-    JsonNode deploymentSpecification = knowledgeObjectRepository
-        .findDeploymentSpecification(ark, implementationMetadata);
-
-    JsonNode serviceDescription = knowledgeObjectRepository
-        .findServiceSpecification(ark, implementationMetadata);
-
-    Map<String, Endpoint> eps = new HashMap<>();
-    serviceDescription.get("paths").fields().forEachRemaining(service -> {
-
-      JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
-
-      final Endpoint endpoint = new Endpoint();
-      endpoint.setDeployment(spec);
-      endpoint.setService(serviceDescription);
-      endpoint.setImpl(implementationMetadata);
-      eps.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
-    });
-    if (null != eps) {
-      endpoints.putAll(eps);
-    }
-    return endpoints;
-  }
-
-  private List<ArkId> getImplementationArkIds(JsonNode ko) {
-    JsonNode implementations = ko.get(KnowledgeObject.IMPLEMENTATIONS_TERM);
-
-    List<ArkId> arks = new ArrayList<>();
-    if (implementations.isArray()) {
-      implementations.elements().forEachRemaining(impl -> {
-        arks.add(new ArkId(impl.asText()));
-      });
-    } else {
-      arks.add(new ArkId(implementations.asText()));
-    }
-    return arks;
   }
 
   public Map<String, Endpoint> getEndpoints() {
@@ -173,6 +113,12 @@ public class ActivationService {
     endPointResult.getInfo().put("ko", endpoint.getImpl());
 
     return endPointResult;
+  }
+
+
+  // TODO: Move to constructor
+  public void setEndpoints(Map<String, Endpoint> endpoints) {
+    this.endpoints = endpoints;
   }
 }
 

@@ -3,11 +3,9 @@ package org.kgrid.activator.controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.Endpoint;
 import org.kgrid.adapter.api.AdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,15 +32,6 @@ public class ActivationController {
 
   @Autowired
   private ActivationService activationService;
-
-  @GetMapping("/endpoints")
-  public Set<String> reloadAndActivateEndPoints() {
-    log.info("Reload and activiate endpoints");
-    Map<String, Endpoint> eps = activationService.loadEndpoints();
-    activationService.activate(eps);
-    return activationService.getEndpoints().keySet();
-
-  }
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
       value = {"/{naan}/{name}/{version}/{endpoint}"},

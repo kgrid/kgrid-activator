@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.EndpointLoader;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
@@ -43,7 +44,7 @@ public class EndpointLoaderTests {
   private KnowledgeObjectRepository repository;
 
   @InjectMocks
-  private ActivationService activationService;
+  private EndpointLoader endpointLoader;
 
   @Before
   public void setUp() throws Exception {
@@ -57,7 +58,7 @@ public class EndpointLoaderTests {
   public void endpointIsLoadedForAnImplementation() throws IOException {
 
     // load single endpoint implementation
-    Map<String, Endpoint> eps = activationService.loadEndpoints(A_B_C);
+    Map<String, Endpoint> eps = endpointLoader.load(A_B_C);
     Endpoint endpoint = eps.get(A_B_C.getDashArkImplementation() + "/welcome");
 
     assertNotNull("endpointPath 'a-b/c/welcome' should exist", endpoint);
@@ -85,7 +86,7 @@ public class EndpointLoaderTests {
   public void activationPopulatesEndpoints() throws IOException {
 
     // when
-    Map<String, Endpoint> eps = activationService.loadEndpoints();
+    Map<String, Endpoint> eps = endpointLoader.load();
 
     // Loader methods load 2 KOs, with 3 impls, and 5 endpoints (1 service spec has 3 endpoints!)
     assertEquals("Map should have 5 endpoints", 5, eps.size());
@@ -101,7 +102,7 @@ public class EndpointLoaderTests {
   public void serviceLoadsImplementationMetadata() throws IOException {
 
     // when
-    Map<String, Endpoint> endpoints = activationService.loadEndpoints();
+    Map<String, Endpoint> endpoints = endpointLoader.load();
 
     then(repository).should().findImplementationMetadata(A_B_C);
     then(repository).should().findImplementationMetadata(C_D_E);
@@ -115,7 +116,7 @@ public class EndpointLoaderTests {
   public void endpointsContainServices() throws IOException {
 
     // when
-    Map<String, Endpoint> endpoints = activationService.loadEndpoints();
+    Map<String, Endpoint> endpoints = endpointLoader.load();
 
     endpoints.forEach((path, endpoint) -> {
       final JsonNode service = endpoint.getService();
@@ -135,13 +136,9 @@ public class EndpointLoaderTests {
     given(repository.findImplementationMetadata(A_B_C))
         .willThrow(ShelfResourceNotFound.class);
 
-    activationService.loadEndpoints(A_B_C);
+    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
 
-    assertNull(activationService.getEndpoints().get(A_B_C.getDashArkImplementation() + "/welcome"));
-
-    activationService.loadEndpoints();
-
-    assertNull(activationService.getEndpoints().get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
 
   }
 

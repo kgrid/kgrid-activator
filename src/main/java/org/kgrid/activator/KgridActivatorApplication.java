@@ -29,6 +29,9 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Autowired
   private ActivationService activationService;
 
+  @Autowired
+  private EndpointLoader endpointLoader;
+
   public static void main(String[] args) {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
         .build()
@@ -49,9 +52,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    Map<String, Endpoint> eps = activationService.loadEndpoints();
-    endpoints.clear();
-    endpoints.putAll(eps);
+    endpoints.putAll(endpointLoader.load());
+    activationService.setEndpoints(endpoints);
     activationService.activate(endpoints);
   }
 
