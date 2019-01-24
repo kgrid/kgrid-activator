@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Executor;
-import org.mockito.InjectMocks;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -24,11 +24,12 @@ public class EndpointExecutionTests {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @InjectMocks
   ActivationService activationService;
 
   @Before
   public void setUp() throws Exception {
+
+    activationService = new ActivationService(null, new HashMap<>());
   }
 
   @Test
@@ -71,5 +72,4 @@ public class EndpointExecutionTests {
     // when
     EndPointResult result = activationService.execute(C_D_F_WELCOME, "");
   }
-
 }

@@ -2,6 +2,7 @@ package org.kgrid.activator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
@@ -15,6 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -23,9 +26,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator"})
 @EnableSwagger2
+@RestController
 public class KgridActivatorApplication implements CommandLineRunner {
 
-  private static Map<String, Endpoint> endpoints = new HashMap<>();
+  @Autowired
+  private Map<String, Endpoint> endpoints;
+
   @Autowired
   private ActivationService activationService;
 
@@ -46,14 +52,19 @@ public class KgridActivatorApplication implements CommandLineRunner {
   }
 
   @Bean
-  public static AdapterResolver getAdapterResolver(AdapterLoader loader) {
+  public static AdapterResolver getAdapterResolver(AdapterLoader loader,
+      Map<String, Endpoint> endpoints) {
     return loader.loadAndInitializeAdapters(endpoints);
+  }
+
+  @Bean
+  public static Map<String, Endpoint> getEndpoints() {
+    return new HashMap<>();
   }
 
   @Override
   public void run(String... strings) throws Exception {
     endpoints.putAll(endpointLoader.load());
-    activationService.setEndpoints(endpoints);
     activationService.activate(endpoints);
   }
 
@@ -67,6 +78,14 @@ public class KgridActivatorApplication implements CommandLineRunner {
         .apis(RequestHandlerSelectors.basePackage("org.kgrid"))
         .paths(PathSelectors.any())
         .build();
+  }
+
+  @GetMapping("/reload")
+  Set<String> reload() {
+    endpoints.clear();
+    endpoints.putAll(endpointLoader.load());
+    activationService.activate(endpoints);
+    return endpoints.keySet();
   }
 
 }
