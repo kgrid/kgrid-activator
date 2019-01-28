@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.shelf.ShelfResourceNotFound;
+import org.kgrid.shelf.ShelfException;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -23,6 +23,13 @@ public class EndpointLoader {
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
 
+  /**
+   * Creates endpoints based on the Implementations specification.
+   * If endpoint resources can not be found not endpoint will be
+   * created.
+   *
+   * @return collection of endpoints
+   */
   public Map<String, Endpoint> load(ArkId ark) {
 
     log.info("ArkId: " + ark.getDashArkImplementation());
@@ -31,32 +38,38 @@ public class EndpointLoader {
     Map<String, Endpoint> endpoints = new HashMap<>();
     try {
       resource = knowledgeObjectRepository.findImplementationMetadata(ark);
-    } catch (ShelfResourceNotFound e) {
-      log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage());
+
+      JsonNode implementationMetadata = resource;
+      JsonNode deploymentSpecification = knowledgeObjectRepository
+          .findDeploymentSpecification(ark, implementationMetadata);
+
+      JsonNode serviceDescription = knowledgeObjectRepository
+          .findServiceSpecification(ark, implementationMetadata);
+
+      serviceDescription.get("paths").fields().forEachRemaining(service -> {
+
+        JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
+
+        final Endpoint endpoint = new Endpoint();
+        endpoint.setDeployment(spec);
+        endpoint.setService(serviceDescription);
+        endpoint.setImpl(implementationMetadata);
+        endpoints.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
+      });
+
+    } catch (ShelfException e) {
+      log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage() ) ;
       return endpoints;
     }
-
-    JsonNode implementationMetadata = resource;
-    JsonNode deploymentSpecification = knowledgeObjectRepository
-        .findDeploymentSpecification(ark, implementationMetadata);
-
-    JsonNode serviceDescription = knowledgeObjectRepository
-        .findServiceSpecification(ark, implementationMetadata);
-
-    serviceDescription.get("paths").fields().forEachRemaining(service -> {
-
-      JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
-
-      final Endpoint endpoint = new Endpoint();
-      endpoint.setDeployment(spec);
-      endpoint.setService(serviceDescription);
-      endpoint.setImpl(implementationMetadata);
-      endpoints.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
-    });
 
     return endpoints;
   }
 
+  /**
+   * Loads all the endpoints
+   *
+   * @return collection of endpoints
+   */
   public Map<String, Endpoint> load() {
     Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
     Map<String, Endpoint> endpoints = new HashMap<>();

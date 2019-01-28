@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
@@ -131,6 +132,32 @@ public class EndpointLoaderTests {
   }
 
   @Test
+  public void missingServiceSpecLogsAndSkips() {
+
+    when(repository.findServiceSpecification(A_B_C,
+        repository.findImplementationMetadata(A_B_C)))
+        .thenThrow(ShelfResourceNotFound.class);
+
+    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+
+    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+
+  }
+
+  @Test
+  public void missingDeploymentSpecLogsAndSkips() {
+
+    when(repository.findDeploymentSpecification(A_B_C,
+        repository.findImplementationMetadata(A_B_C)))
+        .thenThrow(ShelfResourceNotFound.class);
+
+    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+
+    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+
+  }
+
+  @Test
   public void missingImplementationLogsAndSkips() {
 
     given(repository.findImplementationMetadata(A_B_C))
@@ -141,7 +168,6 @@ public class EndpointLoaderTests {
     assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
 
   }
-
   /*
    * Test loader methods
    */
