@@ -11,7 +11,7 @@
 
   <groupId>org.kgrid</groupId>
   <artifactId>kgrid-activator</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <!-- More Project Information -->
@@ -22,7 +22,7 @@
     <url>https://github.com/kgrid/kgrid-activator</url>
     <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
     <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
-    <tag>1.0.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
