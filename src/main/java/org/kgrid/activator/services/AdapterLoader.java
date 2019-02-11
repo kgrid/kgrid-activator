@@ -8,7 +8,6 @@ import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.ActivationContext;
-import org.kgrid.adapter.api.AdapterSupport;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
