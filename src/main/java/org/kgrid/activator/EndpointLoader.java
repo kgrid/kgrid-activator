@@ -97,4 +97,8 @@ public class EndpointLoader {
     return arks;
   }
 
+  String getKORepoLocation(){
+    return knowledgeObjectRepository.getConnection();
+  }
+
 }

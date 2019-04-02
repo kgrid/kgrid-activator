@@ -1,14 +1,25 @@
 package org.kgrid.activator;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
+import org.kgrid.shelf.repository.FilesystemCDOWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -40,6 +51,13 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Autowired
   private EndpointLoader endpointLoader;
 
+  private FilesystemCDOWatcher watcher;
+
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}")
+  private String cdoStoreURI;
+
   public static void main(String[] args) {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
         .build()
@@ -68,6 +86,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
   public void run(String... strings) throws Exception {
     endpoints.putAll(endpointLoader.load());
     activationService.activate(endpoints);
+    this.watchShelf();
   }
 
   // *****************************************
@@ -88,6 +107,48 @@ public class KgridActivatorApplication implements CommandLineRunner {
     endpoints.putAll(endpointLoader.load());
     activationService.activate(endpoints);
     return endpoints.keySet();
+  }
+
+  // Reloads one object if that object has changed or was added
+  // Removes an object if an entire object or implementation was deleted
+  private void watchShelf() throws IOException {
+    if (watcher != null) {
+      return;
+    }
+    watcher = new FilesystemCDOWatcher();
+    watcher.registerAll(Paths.get(endpointLoader.getKORepoLocation()),
+        ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
+    String cdoStoreFilePath = StringUtils.substringAfterLast(cdoStoreURI, ":");
+    HashMap<ArkId, Long> lastModified = new HashMap<>();
+
+    watcher.addFileListener((path, eventType) -> {
+      String[] pathParts = StringUtils.split(path.toString().substring(cdoStoreFilePath.length() - 1), "/");
+      ArkId arkId;
+      if(pathParts.length > 1) {
+        arkId = new ArkId(StringUtils.join(pathParts[0], "/", pathParts[1]));
+      } else {
+        arkId = new ArkId(pathParts[0]);
+      }
+
+      if (eventType == ENTRY_DELETE && path.toFile().isDirectory()) {
+        endpoints.keySet().forEach(key -> {
+          if(StringUtils.isNotEmpty(arkId.getImplementation())) {
+            if (key.contains(arkId.getDashArk())) {
+              endpoints.remove(key);
+            }
+          } else {
+            if(key.contains(arkId.getDashArkImplementation())) {
+              endpoints.remove(key);
+            }
+          }
+        });
+      } else if(StringUtils.isNotEmpty(arkId.getImplementation())){
+        Map<String, Endpoint> newEndpoints = endpointLoader.load(arkId);
+        endpoints.putAll(newEndpoints);
+        activationService.activate(newEndpoints);
+      }
+    });
+    new Thread(watcher).start();
   }
 
 }
