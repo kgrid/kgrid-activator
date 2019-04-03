@@ -84,6 +84,26 @@ public class EndpointLoaderTests {
   }
 
   @Test
+  public void endpointIsLoadedForAnKO() throws IOException {
+
+    // load single endpoint implementation
+    Map<String, Endpoint> eps = endpointLoader.load(C_D);
+    Endpoint endpoint = eps.get(C_D_F.getDashArkImplementation() + "/welcome");
+
+    System.out.println( endpoint );
+
+    assertEquals("should load four end points",4,eps.size());
+
+    assertNotNull("endpointPath 'c-d/f/welcome' should exist", endpoint);
+
+    // test that endpoint parts exists
+    assertNotNull("service descriptor should exist", endpoint.getService());
+    assertNotNull("deployment spec should exist", endpoint.getDeployment());
+    assertNotNull("implementation should exist", endpoint.getImpl());
+
+  }
+
+  @Test
   public void activationPopulatesEndpoints() throws IOException {
 
     // when
@@ -178,6 +198,8 @@ public class EndpointLoaderTests {
     kos.put(C_D, getJsonTestFile(C_D.getDashArk(), "metadata.json"));
 
     given(repository.findAll()).willReturn(kos);
+    given(repository.findKnowledgeObjectMetadata(C_D)).willReturn(
+        getJsonTestFile(C_D.getDashArk(), "metadata.json"));
   }
 
   private void loadMockRepoWithServiceSpecs() throws IOException {

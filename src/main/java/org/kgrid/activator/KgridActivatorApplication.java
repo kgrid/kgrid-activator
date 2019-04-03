@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
@@ -28,8 +27,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -38,7 +35,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator"})
 @EnableSwagger2
-@RestController
 @CrossOrigin
 public class KgridActivatorApplication implements CommandLineRunner {
 
@@ -101,13 +97,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         .build();
   }
 
-  @GetMapping("/reload")
-  Set<String> reload() {
-    endpoints.clear();
-    endpoints.putAll(endpointLoader.load());
-    activationService.activate(endpoints);
-    return endpoints.keySet();
-  }
 
   // Reloads one object if that object has changed or was added
   // Removes an object if an entire object or implementation was deleted

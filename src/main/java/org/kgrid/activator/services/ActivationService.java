@@ -15,13 +15,18 @@ import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ActivationService {
 
-  final public Map<String, Endpoint> endpoints;
   final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Autowired
+  private Map<String, Endpoint> endpoints;
+
+  @Autowired
   private AdapterResolver adapterResolver;
 
   public ActivationService(AdapterResolver adapterResolver, Map<String, Endpoint> endpoints) {
@@ -29,9 +34,6 @@ public class ActivationService {
     this.endpoints = endpoints;
   }
 
-  public Map<String, Endpoint> getEndpoints() {
-    return endpoints;
-  }
 
   protected void validateEndPoint(KnowledgeObject knowledgeObject) {
     /* Need a simple way to validate that an object can be activated
@@ -57,6 +59,8 @@ public class ActivationService {
   }
 
   public Executor activate(String endpointKey, Endpoint endpoint) {
+
+    log.info("Activate endpoint {} ", endpointKey);
 
     ArkId ark = new ArkId(StringUtils.substringBeforeLast(endpointKey, "/"));
 

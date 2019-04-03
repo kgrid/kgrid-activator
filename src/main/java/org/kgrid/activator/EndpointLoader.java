@@ -1,6 +1,7 @@
 package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,26 +21,54 @@ import org.springframework.stereotype.Service;
 public class EndpointLoader {
 
   final Logger log = LoggerFactory.getLogger(EndpointLoader.class);
+
   @Autowired
   KnowledgeObjectRepository knowledgeObjectRepository;
 
   /**
    * Creates endpoints based on the Implementations specification.
-   * If endpoint resources can not be found not endpoint will be
+   * If endpoint resources can not be found no endpoint will be
    * created.
    *
    * @return collection of endpoints
    */
   public Map<String, Endpoint> load(ArkId ark) {
 
-    log.info("ArkId: " + ark.getDashArkImplementation());
-
-    JsonNode resource = null;
     Map<String, Endpoint> endpoints = new HashMap<>();
-    try {
-      resource = knowledgeObjectRepository.findImplementationMetadata(ark);
 
-      JsonNode implementationMetadata = resource;
+    if (ark.isImplementation()) {
+
+      log.info("ArkId: " + ark.getDashArkImplementation());
+      loadKOImplemtation(ark, endpoints);
+
+    } else {
+
+      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+
+      List<ArkId> implementationArkIds = getImplementationArkIds(knowledgeObjectMetadata);
+
+      implementationArkIds.stream().forEach(arkId -> loadKOImplemtation( arkId, endpoints));
+
+    }
+
+    return endpoints;
+  }
+
+  /**
+   *
+   * @param ark
+   * @param endpoints
+   * @return
+   */
+  private boolean loadKOImplemtation(ArkId ark, Map<String, Endpoint> endpoints) {
+
+
+    log.info("Load KO Implementation {}", ark.getDashArkImplementation());
+
+    try {
+
+      JsonNode implementationMetadata = knowledgeObjectRepository.findImplementationMetadata(ark);
+
       JsonNode deploymentSpecification = knowledgeObjectRepository
           .findDeploymentSpecification(ark, implementationMetadata);
 
@@ -51,18 +80,20 @@ public class EndpointLoader {
         JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
 
         final Endpoint endpoint = new Endpoint();
+        endpoint.setActivated(LocalDateTime.now());
+        endpoint.setPath(ark.getDashArkImplementation() + service.getKey());
         endpoint.setDeployment(spec);
         endpoint.setService(serviceDescription);
         endpoint.setImpl(implementationMetadata);
         endpoints.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
+
       });
 
     } catch (ShelfException e) {
       log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage() ) ;
-      return endpoints;
+      return true;
     }
-
-    return endpoints;
+    return false;
   }
 
   /**

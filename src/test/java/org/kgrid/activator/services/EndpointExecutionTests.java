@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,37 +16,38 @@ import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Executor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 public class EndpointExecutionTests {
 
   public static final String C_D_F_WELCOME = C_D_F.getDashArkImplementation() + "/welcome";
+
+
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   ActivationService activationService;
 
-  @Before
-  public void setUp() throws Exception {
-
-    activationService = new ActivationService(null, new HashMap<>());
-  }
 
   @Test
   public void activateCreatesEndpointResultWithKoResultAndInfoHasInput() {
 
     Executor executor = mock(Executor.class);
 
-    given(executor.execute(any()))
-        .willReturn("Welcome to Knowledge Grid, Bob");
-
+    Map<String, Endpoint> endpointMap = new  HashMap<String, Endpoint>();
     final Endpoint endpoint = Endpoint.Builder
         .anEndpoint()
         .withExecutor(executor)
         .build();
+    endpointMap.put(C_D_F_WELCOME, endpoint);
 
-    activationService.getEndpoints().put(C_D_F_WELCOME, endpoint);
+    activationService = new ActivationService(null, endpointMap);
+
+    given(executor.execute(any()))
+        .willReturn("Welcome to Knowledge Grid, Bob");
+
 
     String inputs = "bar";
 
@@ -62,12 +64,14 @@ public class EndpointExecutionTests {
     expectedException.expect(ActivatorException.class);
     expectedException.expectMessage("Executor not found");
 
+    Map<String, Endpoint> endpointMap = new  HashMap<String, Endpoint>();
     final Endpoint endpoint = Endpoint.Builder
         .anEndpoint()
         .withDeployment(null)
         .build();
+    endpointMap.put(C_D_F_WELCOME, endpoint);
 
-    activationService.getEndpoints().put(C_D_F_WELCOME, endpoint);
+    activationService = new ActivationService(null, endpointMap);
 
     // when
     EndPointResult result = activationService.execute(C_D_F_WELCOME, "");
