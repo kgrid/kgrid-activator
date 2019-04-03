@@ -6,7 +6,10 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
@@ -119,7 +122,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
     watcher.registerAll(Paths.get(endpointLoader.getKORepoLocation()),
         ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
     String cdoStoreFilePath = StringUtils.substringAfterLast(cdoStoreURI, ":");
-    HashMap<ArkId, Long> lastModified = new HashMap<>();
 
     watcher.addFileListener((path, eventType) -> {
       String[] pathParts = StringUtils.split(path.toString().substring(cdoStoreFilePath.length() - 1), "/");
@@ -130,18 +132,16 @@ public class KgridActivatorApplication implements CommandLineRunner {
         arkId = new ArkId(pathParts[0]);
       }
 
-      if (eventType == ENTRY_DELETE && path.toFile().isDirectory()) {
+      if (eventType == ENTRY_DELETE) {
+        Set<String> toRemove = new HashSet<>();
         endpoints.keySet().forEach(key -> {
-          if(StringUtils.isNotEmpty(arkId.getImplementation())) {
-            if (key.contains(arkId.getDashArk())) {
-              endpoints.remove(key);
-            }
-          } else {
-            if(key.contains(arkId.getDashArkImplementation())) {
-              endpoints.remove(key);
-            }
+          if((StringUtils.isNotEmpty(arkId.getImplementation())) &&
+              ((key.contains(arkId.getDashArkImplementation()) && path.endsWith(arkId.getImplementation())) ||
+                  (key.contains(arkId.getDashArk()) && path.endsWith(arkId.getDashArk())))) {
+            toRemove.add(key); // Avoid editing the set we're iterating over
           }
         });
+        endpoints.keySet().removeAll(toRemove);
       } else if(StringUtils.isNotEmpty(arkId.getImplementation())){
         Map<String, Endpoint> newEndpoints = endpointLoader.load(arkId);
         endpoints.putAll(newEndpoints);
