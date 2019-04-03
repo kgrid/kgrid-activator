@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.endpoint.ActivateEndpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
@@ -43,6 +44,9 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Autowired
   private ActivationService activationService;
+
+  @Autowired
+  private ActivateEndpoint activateEndpoint;
 
   @Autowired
   private EndpointLoader endpointLoader;
@@ -80,8 +84,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Override
   public void run(String... strings) throws Exception {
-    endpoints.putAll(endpointLoader.load());
-    activationService.activate(endpoints);
+    activateEndpoint.activate();
     this.watchShelf();
   }
 

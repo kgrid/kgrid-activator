@@ -1,10 +1,7 @@
 package org.kgrid.activator.endpoint;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.shelf.domain.ArkId;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Activate Endpoint allows re-activation if the entire shell or a particular knowledge object.
- *
  */
 @Component
 @Endpoint(id = "activate")
@@ -35,15 +31,16 @@ public class ActivateEndpoint {
   @Autowired
   private Map<String, org.kgrid.activator.services.Endpoint> endpoints;
 
+
   /**
    * Re Activates all of the endpoints
    *
    * @return set of activated endpoint paths
    */
   @ReadOperation
-  public Set<String> reActivate() {
+  public Set<String> activate() {
 
-    log.info("ReActivate");
+    log.info("Load and Activate all endpoints ");
 
     endpoints.clear();
     endpoints.putAll(endpointLoader.load());
@@ -60,16 +57,18 @@ public class ActivateEndpoint {
    * @return set of activated endpoint paths
    */
   @ReadOperation
-  public Set<String> reActivateKO(@Selector String naan,
+  public Set<String> activateKO(@Selector String naan,
       @Selector String name) {
 
-    log.info("ReActivate naan:{} name:{}", naan, name );
+    ArkId arkId = new ArkId(naan, name);
+
+    log.info("Activate {}", arkId);
 
     endpoints.entrySet().removeIf(
-        e -> e.getKey().startsWith(naan+"-"+name));
+        e -> e.getKey().startsWith(arkId.getNaan() + "-" + arkId.getName()));
 
     Map<String, org.kgrid.activator.services.Endpoint>
-        loadedEndpoints = endpointLoader.load(new ArkId(naan,name));
+        loadedEndpoints = endpointLoader.load(arkId);
 
     activationService.activate(loadedEndpoints);
 
