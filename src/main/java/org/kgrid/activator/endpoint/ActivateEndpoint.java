@@ -61,7 +61,7 @@ public class ActivateEndpoint {
       @Selector String name) {
 
     ArkId arkId = new ArkId(naan, name);
-
+    log.info("Activate {}", arkId.getSlashArk());
     actitvate(arkId);
 
     return endpoints.keySet();
@@ -81,7 +81,7 @@ public class ActivateEndpoint {
       @Selector String name, @Selector String implementation) {
 
     ArkId arkId = new ArkId(naan, name,implementation);
-
+    log.info("Activate {}", arkId.getSlashArkImplementation());
     actitvate(arkId);
 
     return endpoints.keySet();
@@ -94,8 +94,6 @@ public class ActivateEndpoint {
    * @param arkId
    */
   public void actitvate(ArkId arkId) {
-
-    log.info("Activate {}", arkId);
 
     if (arkId.isImplementation()){
       endpoints.entrySet().removeIf(
