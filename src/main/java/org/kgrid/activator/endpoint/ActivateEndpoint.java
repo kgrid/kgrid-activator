@@ -33,7 +33,7 @@ public class ActivateEndpoint {
 
 
   /**
-   * Re Activates all of the endpoints
+   * Remove all endpoints and load and activate
    *
    * @return set of activated endpoint paths
    */
@@ -50,7 +50,7 @@ public class ActivateEndpoint {
   }
 
   /**
-   * Reactivates all the endpoints for a KO
+   * For A KO remove endpoints, load endpoints, and activate those endpoints
    *
    * @param naan ko naan
    * @param name ko name
@@ -62,10 +62,48 @@ public class ActivateEndpoint {
 
     ArkId arkId = new ArkId(naan, name);
 
+    actitvate(arkId);
+
+    return endpoints.keySet();
+  }
+
+
+  /**
+   * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
+   *
+   * @param naan
+   * @param name
+   * @param implementation
+   * @return
+   */
+  @ReadOperation
+  public Set<String> activateKOImplementation(@Selector String naan,
+      @Selector String name, @Selector String implementation) {
+
+    ArkId arkId = new ArkId(naan, name,implementation);
+
+    actitvate(arkId);
+
+    return endpoints.keySet();
+  }
+
+  /**
+   * Removes and loads endpoints based on ark id, than activates and returns those new
+   * activated endpoints the the endpoints context of the activator
+   *
+   * @param arkId
+   */
+  public void actitvate(ArkId arkId) {
+
     log.info("Activate {}", arkId);
 
-    endpoints.entrySet().removeIf(
-        e -> e.getKey().startsWith(arkId.getNaan() + "-" + arkId.getName()));
+    if (arkId.isImplementation()){
+      endpoints.entrySet().removeIf(
+          e -> e.getKey().startsWith(arkId.getDashArkImplementation()));
+    } else {
+      endpoints.entrySet().removeIf(
+          e -> e.getKey().startsWith(arkId.getDashArk()));
+    }
 
     Map<String, org.kgrid.activator.services.Endpoint>
         loadedEndpoints = endpointLoader.load(arkId);
@@ -73,9 +111,6 @@ public class ActivateEndpoint {
     activationService.activate(loadedEndpoints);
 
     endpoints.putAll(loadedEndpoints);
-
-    return endpoints.keySet();
   }
-
 
 }
