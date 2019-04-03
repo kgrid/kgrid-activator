@@ -1,14 +1,18 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.kgrid.adapter.api.Executor;
 
 public class Endpoint {
 
+  private String path;
   private JsonNode service;
   private JsonNode impl;
   private JsonNode deployment;
   private Executor executor;
+  private LocalDateTime activated;
 
   public Executor getExecutor() {
     return executor;
@@ -42,7 +46,14 @@ public class Endpoint {
     this.deployment = deployment;
   }
 
-  public static final class Builder {
+  public void setActivated(LocalDateTime activated) { this.activated = activated; }
+
+  public LocalDateTime getActivated(){ return activated; }
+
+  public String getPath() {return path; }
+  public void setPath(String path){ this.path=path;}
+
+  public  static final class Builder {
 
     private JsonNode service;
     private JsonNode impl;
@@ -80,13 +91,17 @@ public class Endpoint {
       return this;
     }
 
+
     public Endpoint build() {
       Endpoint endpoint = new Endpoint();
       endpoint.setService(service);
       endpoint.setImpl(impl);
       endpoint.setDeployment(deployment);
       endpoint.setExecutor(executor);
+      endpoint.activated=LocalDateTime.now();
       return endpoint;
     }
+
+
   }
 }
