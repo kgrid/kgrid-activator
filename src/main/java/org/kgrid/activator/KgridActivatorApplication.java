@@ -60,6 +60,9 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}")
   private String cdoStoreURI;
 
+  @Value("${kgrid.activator.autoreload:true}")
+  private String autoReload;
+
   public static void main(String[] args) {
     new SpringApplicationBuilder(KgridActivatorApplication.class)
         .build()
@@ -87,7 +90,9 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Override
   public void run(String... strings) throws Exception {
     activateEndpoint.activate();
-    this.watchShelf();
+    if(Boolean.valueOf(autoReload)) {
+      this.watchShelf();
+    }
   }
 
   // *****************************************
@@ -123,21 +128,12 @@ public class KgridActivatorApplication implements CommandLineRunner {
         arkId = new ArkId(pathParts[0]);
       }
 
-      if (eventType == ENTRY_DELETE) {
-        Set<String> toRemove = new HashSet<>();
-        endpoints.keySet().forEach(key -> {
-          if((StringUtils.isNotEmpty(arkId.getImplementation())) &&
-              ((key.contains(arkId.getDashArkImplementation()) && path.endsWith(arkId.getImplementation())) ||
-                  (key.contains(arkId.getDashArk()) && path.endsWith(arkId.getDashArk())))) {
-            toRemove.add(key); // Avoid editing the set we're iterating over
-          }
-        });
-        endpoints.keySet().removeAll(toRemove);
-      } else if(StringUtils.isNotEmpty(arkId.getImplementation())){
-        Map<String, Endpoint> newEndpoints = endpointLoader.load(arkId);
-        endpoints.putAll(newEndpoints);
-        activationService.activate(newEndpoints);
-      }
+      // With the new activation logic this now handles all modification cases
+      // Throws an error on delete though, maybe could clean it up but problematic because
+      // Delete is always preceded by a modify, could try a using a queue where events are paired
+      // and the first one is held in case the second is a delete but this is simple and works for now
+      activateEndpoint.actitvate(arkId);
+
     });
     new Thread(watcher).start();
   }
