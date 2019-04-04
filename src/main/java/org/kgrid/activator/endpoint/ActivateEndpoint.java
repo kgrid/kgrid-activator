@@ -1,7 +1,9 @@
 package org.kgrid.activator.endpoint;
 
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.util.Map;
-import java.util.Set;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.shelf.domain.ArkId;
@@ -38,7 +40,7 @@ public class ActivateEndpoint {
    * @return set of activated endpoint paths
    */
   @ReadOperation
-  public Set<String> activate() {
+  public String activate() {
 
     log.info("Load and Activate all endpoints ");
 
@@ -46,7 +48,9 @@ public class ActivateEndpoint {
     endpoints.putAll(endpointLoader.load());
     activationService.activate(endpoints);
 
-    return endpoints.keySet();
+    JsonArray joArray = getJsonElements();
+
+    return joArray.toString();
   }
 
   /**
@@ -57,14 +61,16 @@ public class ActivateEndpoint {
    * @return set of activated endpoint paths
    */
   @ReadOperation
-  public Set<String> activateKO(@Selector String naan,
+  public String activateKO(@Selector String naan,
       @Selector String name) {
 
     ArkId arkId = new ArkId(naan, name);
-
+    log.info("Activate {}", arkId.getSlashArk());
     actitvate(arkId);
 
-    return endpoints.keySet();
+    JsonArray joArray = getJsonElements();
+
+    return joArray.toString();
   }
 
 
@@ -77,14 +83,16 @@ public class ActivateEndpoint {
    * @return
    */
   @ReadOperation
-  public Set<String> activateKOImplementation(@Selector String naan,
+  public String activateKOImplementation(@Selector String naan,
       @Selector String name, @Selector String implementation) {
 
     ArkId arkId = new ArkId(naan, name,implementation);
-
+    log.info("Activate {}", arkId.getSlashArkImplementation());
     actitvate(arkId);
 
-    return endpoints.keySet();
+    JsonArray joArray = getJsonElements();
+
+    return joArray.toString();
   }
 
   /**
@@ -94,8 +102,6 @@ public class ActivateEndpoint {
    * @param arkId
    */
   public void actitvate(ArkId arkId) {
-
-    log.info("Activate {}", arkId);
 
     if (arkId.isImplementation()){
       endpoints.entrySet().removeIf(
@@ -111,6 +117,21 @@ public class ActivateEndpoint {
     activationService.activate(loadedEndpoints);
 
     endpoints.putAll(loadedEndpoints);
+  }
+
+  /**
+   * Creates json object array of endpoints to display
+   * @return
+   */
+  private JsonArray getJsonElements() {
+    JsonArray joArray = new JsonArray();
+
+    endpoints.values().forEach(endpoint ->{
+      JsonObject joEndpoint = new JsonObject();
+      joEndpoint.addProperty("path", "/"+endpoint.getPath());
+      joEndpoint.addProperty("activated", endpoint.getActivated().toString());
+      joArray.add(joEndpoint);
+    }); return joArray;
   }
 
 }
