@@ -28,8 +28,6 @@
   mainifest=${mainifest%?}
   mainifest+="]}"
 
-  echo $mainifest
-
   curl -X POST "${shelfUrl}"\
       -H "Content-Type: application/json" \
       -d "$mainifest"

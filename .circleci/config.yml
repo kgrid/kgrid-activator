@@ -45,6 +45,8 @@ jobs:
          name: Build and Test And Verify
          command: |
             mvn verify -s .circleci/settings.xml
+            mkdir -p ~/circle-artifacts/
+            cp .*/target/kgrid-activator*.jar ~/circle-artifacts
 
       # save test results
       - run:
@@ -78,7 +80,7 @@ jobs:
             npm install && .circleci/vuepress_deploy.sh
 
       - store_artifacts:
-          path: target
+          path: ~/circle-artifacts
 
       # Create a shelf with KOs
       - run:
