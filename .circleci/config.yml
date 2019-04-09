@@ -64,9 +64,11 @@ jobs:
       - run:
           name: Deploy/Release
           command: |
+
             if [ $RELEASE ]; then
                 .circleci/release.sh
             else
+                mkdir shelf
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
 
