@@ -7,9 +7,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.endpoint.ActivateEndpoint;
 import org.kgrid.activator.services.ActivationService;
@@ -60,7 +58,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
   @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}")
   private String cdoStoreURI;
 
-  @Value("${kgrid.activator.autoreload:true}")
+  @Value("${kgrid.activator.autoreload:false}")
   private String autoReload;
 
   public static void main(String[] args) {

@@ -35,3 +35,10 @@ By default the endpoints of the activator at the root of the activator server.  
 
 ```java -jar kgrid-activator-0.6.2.jar --server.contextPath=/activator```
 
+**Activator Object Auto-Reload**
+
+By default the activator does not automatically reload objects but it can be configured to activate an object or
+implementation when it detects a change to a file on the shelf by setting this property:
+
+```java -jar kgrid-activator-0.6.2.jar --kgrid.activator.autoreload=true```
+
