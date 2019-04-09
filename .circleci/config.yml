@@ -30,7 +30,6 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-
       #must run install to ensure multi module dependencies(simple-scripts-api) are cached
       - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline -s .circleci/settings.xml
 
@@ -46,6 +45,8 @@ jobs:
          name: Build and Test And Verify
          command: |
             mvn verify -s .circleci/settings.xml
+            mkdir -p ~/circle-artifacts/
+            cp .*/target/kgrid-activator*.jar ~/circle-artifacts
 
       # save test results
       - run:
@@ -58,11 +59,6 @@ jobs:
       - store_test_results:
           path: ~/junit
 
-      #create a shelf with KOs
-      - run:
-         name: Create Shelf
-         command: |
-            .circleci/create_shelf.sh
 
     # Will normally run deploy but if triggered with Release will prepare and perform maven release
     # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
@@ -70,9 +66,11 @@ jobs:
       - run:
           name: Deploy/Release
           command: |
+
             if [ $RELEASE ]; then
                 .circleci/release.sh
             else
+                mkdir shelf
                 HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
             fi
 
@@ -82,10 +80,15 @@ jobs:
             npm install && .circleci/vuepress_deploy.sh
 
       - store_artifacts:
-          path: target
+          path: ~/circle-artifacts
 
+      # Create a shelf with KOs
+      - run:
+          name: Create Heroku Shelf
+          command: |
+            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com "opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise ipp-collection"
 
-    # Tigger Smoke Test
+      # Trigger Smoke Test
       - run:
           name: Trigger Smoke Test
           command: |

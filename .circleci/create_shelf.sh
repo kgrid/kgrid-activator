@@ -1,8 +1,9 @@
 #!/bin/bash
 
- mkdir application/shelf
- repos=(opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise ipp-collection)
+  shelfUrl=$1
+  repos=($2)
 
+  mainifest='{"ko":['
   for i in "${repos[@]}"
   do
      echo -e "Download release  $i "
@@ -13,8 +14,21 @@
      else
        url=(https://api.github.com/repos/kgrid-objects/$i/releases/latest?access_token=$GIT_TOKEN  )
      fi
-     .circleci/download_assets.sh "$url"
+
+     assets=($(curl -s $url | jq -r ".assets[].browser_download_url"))
+     echo ${#assets[@]} assests downloading
+
+     for asseturl in "${assets[@]}"
+     do
+        mainifest+="\"$asseturl\","
+     done
+
   done
 
- find . -name "*.zip" -exec unzip -o -q -d shelf {} \;
+  mainifest=${mainifest%?}
+  mainifest+="]}"
+
+  curl -X POST "${shelfUrl}"\
+      -H "Content-Type: application/json" \
+      -d "$mainifest"
 
