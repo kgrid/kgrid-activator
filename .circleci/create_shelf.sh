@@ -3,7 +3,7 @@
   shelfUrl=$1
   repos=($2)
 
-  mainifest='{"ko":['
+  manifest='{"ko":['
   for i in "${repos[@]}"
   do
      echo -e "Download release  $i "
@@ -20,15 +20,16 @@
 
      for asseturl in "${assets[@]}"
      do
-        mainifest+="\"$asseturl\","
+        manifest+="\"$asseturl\","
      done
 
   done
 
-  mainifest=${mainifest%?}
-  mainifest+="]}"
+  manifest=${manifest%?}
+  manifest+="]}"
 
+  echo "$manifest"
   curl -X POST "${shelfUrl}"\
       -H "Content-Type: application/json" \
-      -d "$mainifest"
+      -d "manifest"
 
