@@ -1,0 +1,13 @@
+{
+  "@id": "onlymetadata",
+  "@type": "koio:Implementation",
+  "identifier": "ark:/bad/koio/functionmismatch",
+  "title": "Implementation of a fancy noservice",
+  "hasDeploymentSpecification": "functionmismatch/deployment.yaml",
+  "hasServiceSpecification": "functionmismatch/service.yaml",
+  "hasPayload": "functionmismatch/welcome.js",
+
+  "@context": [
+    "http://kgrid.org/koio/contexts/implementation.jsonld"
+  ]
+}

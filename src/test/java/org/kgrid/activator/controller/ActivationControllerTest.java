@@ -1,6 +1,7 @@
 package org.kgrid.activator.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +60,84 @@ public class ActivationControllerTest {
         post(endpointPath).content(content)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .accept(MediaType.APPLICATION_JSON_UTF8));
+  }
+
+  @Test
+  public void endpointNoRequestBodyError() throws Exception {
+    MvcResult result = getResultActions("/c/d/f/welcome", "")
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertTrue(content.get("Detail").asText().startsWith("Required request body is missing"));
+  }
+
+  @Test
+  public void endpointBlankServiceError() throws Exception {
+    MvcResult result = getResultActions("/bad/ko/blankservice/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("No endpoint found for bad-ko/blankservice/welcome", content.get("Detail").asText());
+  }
+
+  @Test
+  public void endpointFunctionMismatchError() throws Exception {
+    MvcResult result = getResultActions("/bad/ko/functionmismatch/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("No endpoint found for bad-ko/functionmismatch/welcome", content.get("Detail").asText());
+  }
+
+  @Test
+  public void endpointNoMetadataError() throws Exception {
+    MvcResult result = getResultActions("/bad/ko/nometadata/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("No endpoint found for bad-ko/nometadata/welcome", content.get("Detail").asText());
+  }
+
+  @Test
+  public void endpointNoServiceError() throws Exception {
+    MvcResult result = getResultActions("/bad/ko/noservice/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("No endpoint found for bad-ko/noservice/welcome", content.get("Detail").asText());
+  }
+
+  @Test
+  public void onlyMetadata() throws Exception {
+    MvcResult result = getResultActions("/bad/ko/onlymetadata/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("No endpoint found for bad-ko/onlymetadata/welcome", content.get("Detail").asText());
   }
 
 }

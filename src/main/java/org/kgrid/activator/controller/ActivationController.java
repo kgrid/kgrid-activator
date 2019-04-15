@@ -1,5 +1,6 @@
 package org.kgrid.activator.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,23 +57,24 @@ public class ActivationController {
   @ExceptionHandler(ActivatorException.class)
   public ResponseEntity<Map<String, String>> handleGeneralActivatorExceptions(ActivatorException e,
       WebRequest request) {
-    return new ResponseEntity<>(generateErrorMap(request, e.getMessage(), HttpStatus.BAD_REQUEST),
+    return new ResponseEntity<>(generateErrorMap(request, e, "Activator Error", HttpStatus.BAD_REQUEST),
         HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception e,
       WebRequest request) {
-    return new ResponseEntity<>(generateErrorMap(request, e.getMessage(), HttpStatus.BAD_REQUEST),
+    return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  private Map<String, String> generateErrorMap(WebRequest request, String message,
+  private Map<String, String> generateErrorMap(WebRequest request, Exception e, String title,
       HttpStatus status) {
     Map<String, String> errorInfo = new HashMap<>();
-    errorInfo.put("Status", status.toString());
-    errorInfo.put("Error", message);
-    errorInfo.put("Request", request.getDescription(false));
+    errorInfo.put("Title", title);
+    errorInfo.put("Status", status.value() + " " + status.getReasonPhrase());
+    errorInfo.put("Detail", e.getMessage());
+    errorInfo.put("Instance", request.getDescription(false));
     errorInfo.put("Time", new Date().toString());
     return errorInfo;
 

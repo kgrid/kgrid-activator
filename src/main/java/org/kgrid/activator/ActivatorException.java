@@ -32,5 +32,13 @@ public class ActivatorException extends RuntimeException {
 
   }
 
+  public ActivatorException(String title, String message, Throwable cause) {
+
+  }
+
+  public ActivatorException(String title, String message) {
+
+  }
+
 
 }

@@ -92,6 +92,9 @@ public class EndpointLoader {
     } catch (ShelfException e) {
       log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage() ) ;
       return true;
+    } catch (NullPointerException ex) {
+      log.warn("Cannot load " + ark.getDashArkImplementation() + ": missing required model metadata path(s) for implementation, deployment and/or service." ) ;
+      return true;
     }
     return false;
   }

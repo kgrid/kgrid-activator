@@ -90,6 +90,10 @@ public class ActivationService {
   public EndPointResult execute(String endpointPath, Object inputs) {
 
     final Endpoint endpoint = endpoints.get(endpointPath);
+    if(null == endpoint) {
+      throw new ActivatorException("No endpoint found for " + endpointPath);
+    }
+
     Executor executor = endpoint.getExecutor();
 
     if (null == executor) {
