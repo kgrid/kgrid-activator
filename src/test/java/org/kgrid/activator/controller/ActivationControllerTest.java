@@ -154,7 +154,7 @@ public class ActivationControllerTest {
   }
 
   @Test
-  public void endpointRuntimeCodeErrorError() throws Exception {
+  public void endpointRuntimeCodeError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/runtimecodeerror/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
@@ -163,9 +163,7 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals(
-        "Exception for endpoint bad-koio/runtimecodeerror/welcome Could not execute bad-koio/runtimecodeerror/welcome.js "
-            + "at entry point welcome got error \"TypeError: Cannot read property \"broken\" from undefined\" on line 2",
-        content.get("Detail").asText());
+    assertTrue(content.get("Detail").asText().startsWith("Exception for endpoint bad-koio/runtimecodeerror/welcome"
+        + " Could not execute bad-koio/runtimecodeerror/welcome.js at entry point welcome got error \"TypeError:"));
   }
 }
