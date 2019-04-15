@@ -77,7 +77,7 @@ public class ActivationControllerTest {
 
   @Test
   public void endpointBlankServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/ko/blankservice/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/blankservice/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -85,12 +85,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-ko/blankservice/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad-koio/blankservice/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointFunctionMismatchError() throws Exception {
-    MvcResult result = getResultActions("/bad/ko/functionmismatch/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/functionmismatch/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -98,12 +98,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-ko/functionmismatch/welcome", content.get("Detail").asText());
+    assertEquals("Executor not found for bad-koio/functionmismatch/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointNoMetadataError() throws Exception {
-    MvcResult result = getResultActions("/bad/ko/nometadata/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/nometadata/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -111,12 +111,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-ko/nometadata/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad-koio/nometadata/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointNoServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/ko/noservice/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/noservice/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -124,12 +124,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-ko/noservice/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad-koio/noservice/welcome", content.get("Detail").asText());
   }
 
   @Test
-  public void onlyMetadata() throws Exception {
-    MvcResult result = getResultActions("/bad/ko/onlymetadata/welcome", "{\"name\":\"tester\"}")
+  public void endpointOnlyMetadataError() throws Exception {
+    MvcResult result = getResultActions("/bad/koio/onlymetadata/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -137,7 +137,35 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-ko/onlymetadata/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad-koio/onlymetadata/welcome", content.get("Detail").asText());
   }
 
+  @Test
+  public void endpointNoDeploymentError() throws Exception {
+    MvcResult result = getResultActions("/bad/koio/nodeployment/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals("Executor not found for bad-koio/nodeployment/welcome", content.get("Detail").asText());
+  }
+
+  @Test
+  public void endpointRuntimeCodeErrorError() throws Exception {
+    MvcResult result = getResultActions("/bad/koio/runtimecodeerror/welcome", "{\"name\":\"tester\"}")
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andReturn();
+
+    JsonNode content = mapper
+        .readTree(result.getResponse().getContentAsByteArray());
+
+    assertEquals(
+        "Exception for endpoint bad-koio/runtimecodeerror/welcome Could not execute bad-koio/runtimecodeerror/welcome.js "
+            + "at entry point welcome got error \"TypeError: Cannot read property \"broken\" from undefined\" on line 2",
+        content.get("Detail").asText());
+  }
 }

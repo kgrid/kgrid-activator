@@ -1,9 +1,9 @@
 {
-  "@id": "onlymetadata",
+  "@id": "nodeployment",
   "@type": "koio:Implementation",
-  "identifier": "ark:/bad/koio/noservice",
-  "title": "Implementation of a fancy noservice",
-  "hasDeploymentSpecification": "noservice/deployment.yaml",
+  "identifier": "ark:/bad/koio/nodeployment",
+  "title": "Implementation of a fancy nodeployment",
+  "hasDeploymentSpecification": "nodeployment/deployment.yaml",
   "hasPayload": "noservice/welcome.js",
   "@context": [
     "http://kgrid.org/koio/contexts/implementation.jsonld"

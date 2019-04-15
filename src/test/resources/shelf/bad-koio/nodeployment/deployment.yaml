@@ -1,0 +1,12 @@
+endpoints:
+  /hello:
+    adapterType: JAVASCRIPT
+    artifact: welcome.js
+    entry: welcome
+  /info:
+    adapterType: JAVASCRIPT
+    artifact: welcome.js
+    entry: info
+    mySpecialProperties:
+      a: b
+      b: http://whatevs
