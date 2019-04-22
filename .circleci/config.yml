@@ -103,3 +103,11 @@ workflows:
         filters:
           branches:
             only: master
+  earlymorning:
+    triggers:
+      - schedule:
+          cron: "0 0 10 * *"
+          filters:
+            branches:
+              only:
+                - master
