@@ -89,8 +89,8 @@ public class ActivationControllerTest {
   }
 
   @Test
-  public void endpointFunctionMismatchError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/functionmismatch/welcome", "{\"name\":\"tester\"}")
+  public void serviceSpecFunctionMismatchError() throws Exception {
+    MvcResult result = getResultActions("/bad/koio/servicespecmismatch/welcome", "{\"name\":\"tester\"}")
         .andExpect(status().isBadRequest())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -98,7 +98,7 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("Executor not found for bad-koio/functionmismatch/welcome", content.get("Detail").asText());
+    assertEquals("Executor not found for bad-koio/servicespecmismatch/welcome", content.get("Detail").asText());
   }
 
   @Test
@@ -138,19 +138,6 @@ public class ActivationControllerTest {
         .readTree(result.getResponse().getContentAsByteArray());
 
     assertEquals("No endpoint found for bad-koio/onlymetadata/welcome", content.get("Detail").asText());
-  }
-
-  @Test
-  public void endpointNoDeploymentError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/nodeployment/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
-        .andReturn();
-
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
-
-    assertEquals("Executor not found for bad-koio/nodeployment/welcome", content.get("Detail").asText());
   }
 
 }

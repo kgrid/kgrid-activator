@@ -1,6 +1,8 @@
 package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,15 +71,28 @@ public class EndpointLoader {
 
       JsonNode implementationMetadata = knowledgeObjectRepository.findImplementationMetadata(ark);
 
-      JsonNode deploymentSpecification = knowledgeObjectRepository
-          .findDeploymentSpecification(ark, implementationMetadata);
-
       JsonNode serviceDescription = knowledgeObjectRepository
           .findServiceSpecification(ark, implementationMetadata);
 
       serviceDescription.get("paths").fields().forEachRemaining(service -> {
 
-        JsonNode spec = deploymentSpecification.get("endpoints").get(service.getKey());
+        JsonNode spec = new ObjectMapper().createObjectNode();
+        try {
+          JsonNode deploymentSpecification = knowledgeObjectRepository
+              .findDeploymentSpecification(ark, implementationMetadata);
+          spec = deploymentSpecification.get("endpoints").get(service.getKey());
+        } catch (ShelfException e) {
+          log.info(ark.getDashArkImplementation() + " has no deployment descriptor, looking for info in the service spec." ) ;
+        }
+
+        JsonNode post = service.getValue().get("post");
+        if(post.has("x-kgrid-artifact") &&
+            post.has("x-kgrid-adapterType") &&
+            post.has("x-kgrid-entry")) {
+          ((ObjectNode)spec).set("artifact", post.get("x-kgrid-artifact").get("value"));
+          ((ObjectNode)spec).set("adapterType", post.get("x-kgrid-adapterType").get("value"));
+          ((ObjectNode)spec).set("entry", post.get("x-kgrid-entry").get("value"));
+        }
 
         final Endpoint endpoint = new Endpoint();
         endpoint.setActivated(LocalDateTime.now());

@@ -4,7 +4,7 @@ info:
   title: 'Hello, World'
   description: 'hello world c-style'
 servers:
-  - url: '/bad/koio/functionmismatch/'
+  - url: '/bad/koio/servicespecmismatch/'
     description: Hello world
 tags:
   - name: KO Endpoints
@@ -36,6 +36,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+      x-kgrid-artifact:
+        type: String
+        value: hi.js
+      x-kgrid-adapterType:
+        type: String
+        value: JAVASCRIPT
+      x-kgrid-entry:
+        type: String
+        value: welcome
 components:
   schemas:
     user:
