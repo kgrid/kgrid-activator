@@ -1,1 +1,2 @@
-{"hasImplementation": ["c-d/e", "c-d/f"] }
+{ "@id":"c-d",
+  "hasImplementation": ["c-d/e", "c-d/f"] }
