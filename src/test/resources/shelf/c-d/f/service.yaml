@@ -46,15 +46,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-      x-kgrid-artifact:
-        type: String
-        value: welcome.js
-      x-kgrid-adapterType:
-        type: String
-        value: JAVASCRIPT
-      x-kgrid-entry:
-        type: String
-        value: welcome
+      x-kgrid-activation:
+        artifact: 'welcome.js'
+        adapter: 'JAVASCRIPT'
+        entry: 'welcome'
   /goodbye:
     post:
       tags:
@@ -81,15 +76,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-      x-kgrid-artifact:
-        type: String
-        value: solong.js
-      x-kgrid-adapterType:
-        type: String
-        value: JAVASCRIPT
-      x-kgrid-entry:
-        type: String
-        value: bye
+      x-kgrid-activation:
+        artifact: 'solong.js'
+        adapter: 'JAVASCRIPT'
+        entry: 'bye'
 components:
   schemas:
     user:

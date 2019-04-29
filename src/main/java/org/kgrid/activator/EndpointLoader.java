@@ -86,12 +86,10 @@ public class EndpointLoader {
         }
 
         JsonNode post = service.getValue().get("post");
-        if(post.has("x-kgrid-artifact") &&
-            post.has("x-kgrid-adapterType") &&
-            post.has("x-kgrid-entry")) {
-          ((ObjectNode)spec).set("artifact", post.get("x-kgrid-artifact").get("value"));
-          ((ObjectNode)spec).set("adapterType", post.get("x-kgrid-adapterType").get("value"));
-          ((ObjectNode)spec).set("entry", post.get("x-kgrid-entry").get("value"));
+        if(post.has("x-kgrid-activation")) {
+          ((ObjectNode)spec).set("artifact", post.get("x-kgrid-activation").get("artifact"));
+          ((ObjectNode)spec).set("adapterType", post.get("x-kgrid-activation").get("adapter"));
+          ((ObjectNode)spec).set("entry", post.get("x-kgrid-activation").get("entry"));
         }
 
         final Endpoint endpoint = new Endpoint();

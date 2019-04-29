@@ -91,14 +91,14 @@ public class ActivationControllerTest {
   @Test
   public void serviceSpecFunctionMismatchError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/servicespecmismatch/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
 
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("Executor not found for bad-koio/servicespecmismatch/welcome", content.get("Detail").asText());
+    assertEquals("java.lang.NoSuchMethodException: No such function hello", content.get("Detail").asText());
   }
 
   @Test
