@@ -13,6 +13,7 @@ import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
+import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class ActivationService {
 
   @Autowired
   private AdapterResolver adapterResolver;
+
+  @Autowired
+  private KnowledgeObjectRepository koRepo;
 
   public ActivationService(AdapterResolver adapterResolver, Map<String, Endpoint> endpoints) {
     this.adapterResolver = adapterResolver;
@@ -74,7 +78,7 @@ public class ActivationService {
         .getAdapter(deploymentSpec.get("adapterType").asText());
 
     final Path artifact = Paths.get(
-        ark.getDashArkImplementation(),
+        koRepo.getObjectLocation(ark), ark.getImplementation(),
         deploymentSpec.get("artifact").asText()
     );
 

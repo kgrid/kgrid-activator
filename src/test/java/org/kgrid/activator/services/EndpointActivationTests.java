@@ -27,9 +27,12 @@ import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.adapter.javascript.JavascriptAdapter;
+import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
+import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -44,6 +47,8 @@ public class EndpointActivationTests {
   Adapter adapter;
   @Mock
   CompoundDigitalObjectStore cdoStore;
+  @Mock
+  KnowledgeObjectRepository koRepo;
 
   ActivationContext context = new ActivationContext() {
     @Override
@@ -69,6 +74,7 @@ public class EndpointActivationTests {
 
   @Before
   public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
     dep = getYamlTestFile(C_D_F.getDashArkImplementation(), "deployment.yaml");
     payload = getBinaryTestFile(C_D_F.getDashArkImplementation(), "welcome.js");
   }
@@ -78,6 +84,9 @@ public class EndpointActivationTests {
 
     given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
+
+    given(koRepo.getObjectLocation(new ArkId("c-d/f")))
+        .willReturn("c-d");
 
     given(adapter.activate(any(), any()))
         .willReturn(new Executor() {
@@ -155,6 +164,8 @@ public class EndpointActivationTests {
     final Endpoint endpoint = Endpoint.Builder.anEndpoint()
         .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
         .build();
+
+    given(koRepo.getObjectLocation(new ArkId("c-d/f"))).willReturn("c-d");
 
     given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
