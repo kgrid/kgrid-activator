@@ -7,9 +7,6 @@ git config --global user.name "circleci"
 
 # build
 npm run docs:build
-# copy web demo to github pages dist
-mkdir -p docs/.vuepress/dist/.circleci
-cp -a .circleci/. docs/.vuepress/dist/.circleci/.
 
 # navigate into the build output directory
 cd docs/.vuepress/dist
