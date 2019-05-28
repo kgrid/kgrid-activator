@@ -1,9 +1,16 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+# Do Nothing Circle Ci config.. only must have properties
+
 version: 2
 jobs:
+
   build:
-    branches:
-      only: master
+
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
