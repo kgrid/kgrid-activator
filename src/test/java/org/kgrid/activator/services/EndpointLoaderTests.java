@@ -129,8 +129,6 @@ public class EndpointLoaderTests {
     then(repository).should().findImplementationMetadata(C_D_E);
     then(repository).should().findImplementationMetadata(C_D_F);
 
-    assertThat(endpoints.get(A_B_C.getDashArkImplementation() + "/welcome").getImpl().toString(),
-        hasJsonPath(KnowledgeObject.PAYLOAD_TERM));
   }
 
   @Test
