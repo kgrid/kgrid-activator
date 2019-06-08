@@ -70,12 +70,12 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>0.7.6-SNAPSHOT</version>
+      <version>0.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.8.1</version>
+      <version>0.8.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jena</groupId>
