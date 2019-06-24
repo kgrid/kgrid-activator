@@ -1,5 +1,6 @@
 package org.kgrid.activator.controller;
 
+import io.swagger.annotations.Api;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @CrossOrigin
 @Primary
+@Api(tags = "Knowledge Object Implementation Service API", hidden = true)
 public class ActivationController {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());

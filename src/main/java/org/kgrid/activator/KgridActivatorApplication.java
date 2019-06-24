@@ -28,10 +28,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator"})
@@ -92,19 +88,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
       this.watchShelf();
     }
   }
-
-  // *****************************************
-  //Swagger API Documentation Generation
-  // *****************************************
-  @Bean
-  public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .select()
-        .apis(RequestHandlerSelectors.basePackage("org.kgrid"))
-        .paths(PathSelectors.any())
-        .build();
-  }
-
 
   // Reloads one object if that object has changed or was added
   // Removes an object if an entire object or implementation was deleted
