@@ -20,7 +20,9 @@
 
      for asseturl in "${assets[@]}"
      do
-        manifest+="\"$asseturl\","
+        if [[ $asseturl != *"-all.zip" ]]; then
+            manifest+="\"$asseturl\","
+        fi
      done
 
   done
