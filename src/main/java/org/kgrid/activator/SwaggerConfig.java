@@ -26,7 +26,14 @@ public class SwaggerConfig {
   private ApiInfo getApiInfo() {
     return new ApiInfoBuilder()
         .title("Knowledge Grid Activator API")
-        .description("The Knowledge Grid Activator API provides access to Knowledge Object and Endpoint services.")
+        .description("The Knowledge Grid Activator API provides access to Knowledge Object and Endpoint services.<ul> "
+            + "<li><b>Knowledge Object API</b> provides basic read, import and export functions. "
+            + "Further details, examples can be found at <a target=_blank href=\"http://kgrid.org\">Knowledge Object API</a>"
+            + "<li><b>Endpoint API</b> displays the activator endpoints loaded, the endpoints are the activatoed services "
+            + "defined in the service specifications of each Knowledge Object Implementation. "
+            + "Further details, examples can be found at <a target=_blank href=\"http://kgrid.org\">Endpoint API</a> "
+            + "<li><b>Administrative API</b> basic <a target=_blank href=\"/info\">info</a> and <a target=_blank href=\"/health\">health</a> endpoints are defined "
+            + "</ul>")
         .termsOfServiceUrl("http://kgrid.org")
         .license("Apache License Version 2.0")
         .licenseUrl("https://github.com/kgrid")

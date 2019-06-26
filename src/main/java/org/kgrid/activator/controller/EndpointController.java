@@ -5,15 +5,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.Operation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.controller.ShelfController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -29,27 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Endpoint API" )
 public class EndpointController {
 
-  private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-  @Autowired
-  private ActivationService activationService;
-
   @Autowired
   private Map<String, Endpoint> endpoints;
 
 
   @GetMapping(produces = { "application/hal+json" })
   @ApiOperation(value = "Finds all knowledge object endpoints",
-      notes = "Multiple status values can be provided with comma seperated strings",
+      notes = "Returns a collection of endpoints",
       response = EndpointResource.class,
       responseContainer = "List")
-  public Resources<EndpointResource> findAllEndponts() {
+  public Resources<EndpointResource> findAllEndpoints() {
 
     Collection<EndpointResource> resources = new ArrayList();
 
+
     endpoints.forEach((s, endpoint) -> {
 
-      EndpointResource resource = createEnpointResource(endpoint);
+      EndpointResource resource = createEndpointResource(endpoint);
 
       resources.add(resource);
 
@@ -57,6 +49,7 @@ public class EndpointController {
 
     Link link = linkTo(EndpointController.class).withSelfRel();
     Resources<EndpointResource> result = new Resources<>(resources, link);
+    result.add(linkTo(EndpointController.class).withSelfRel());
     return result;
   }
 
@@ -67,9 +60,7 @@ public class EndpointController {
       notes = "Returns the Endpoint Resource which has access to the knowledge object implementation, "
           + "the service description in the form of an Open Api specification, etc")
   public EndpointResource findEndpoint(
-      @ApiParam(value="Ark NAA number, Name Assigning Authority"
-          + "(NAA) and a unique NAA Number (NAAN) that is permanently associated with"
-          + "it for the purposes of name (identifier) assignment", example="hello")
+      @ApiParam(value="Name Assigning Authority unique number", example="hello")
       @PathVariable String naan,
       @ApiParam(value="Ark Name", example="world") @PathVariable String name,
       @ApiParam(value="Ark Implementation", example="v0.1.0")  @PathVariable String version,
@@ -77,12 +68,12 @@ public class EndpointController {
 
     final String key = naan + "-" + name + "/" + version + "/" + endpoint;
 
-    EndpointResource resource = createEnpointResource( endpoints.get( key ));
+    EndpointResource resource = createEndpointResource( endpoints.get( key ));
 
     return resource;
   }
 
-  private EndpointResource  createEnpointResource(Endpoint endpoint) {
+  private EndpointResource createEndpointResource(Endpoint endpoint) {
     EndpointResource resource = new EndpointResource(endpoint);
     Link self = linkTo(EndpointController.class).
         slash(resource.getEndpointPath()).withSelfRel();
