@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.shelf.controller.ShelfController;
+import org.kgrid.shelf.controller.KnowledgeObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -79,7 +79,7 @@ public class EndpointController {
         slash(resource.getEndpointPath()).withSelfRel();
 
     Link swaggerEditor = new Link("https://editor.swagger.io?url="+
-        linkTo(ShelfController.class).slash(resource.getServicePath()),
+        linkTo(KnowledgeObjects.class).slash(resource.getServicePath()),
         "swagger_editor");
 
     resource.add(self);

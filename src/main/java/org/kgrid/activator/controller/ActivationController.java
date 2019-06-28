@@ -1,6 +1,8 @@
 package org.kgrid.activator.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @CrossOrigin
 @Primary
-@Api(tags = "Knowledge Object Implementation Service API", hidden = true)
+@Api(tags = "Knowledge Object Service API", hidden = true)
 public class ActivationController {
 
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -38,14 +40,19 @@ public class ActivationController {
   private ActivationService activationService;
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
-      value = {"/{naan}/{name}/{version}/{endpoint}"},
+      value = {"/{naan}/{name}/{implementation}/{endpoint}"},
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
-  public Object processWithBareJsonInputOutput(@PathVariable String naan, @PathVariable String name,
-      @PathVariable String version, @PathVariable String endpoint,
+  @ApiOperation(value = "Executes the service provide by the Knowledge Object Implementation",
+      notes = "Executes the service provide by the Knowledge Object Implementation as defined"
+          + "in the Knowledge Object Implementation's Open Api specification")
+  public Object processWithBareJsonInputOutput(
+      @ApiParam(value="Name Assigning Authority unique number", example="hello") @PathVariable String naan,
+      @ApiParam(value="Ark Name", example="world") @PathVariable String name,
+      @ApiParam(value="Ark Implementation", example="v0.1.0")  @PathVariable String implementation ,
+      @ApiParam(value="Implementation path/endpoint", example="welcome")@PathVariable String endpoint,
       @RequestBody Object inputs) {
-
-    final String key = naan + "-" + name + "/" + version + "/" + endpoint;
+    final String key = naan + "-" + name + "/" + implementation + "/" + endpoint;
 
     try {
       EndPointResult result = activationService.execute(key, inputs);
