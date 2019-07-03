@@ -2,42 +2,36 @@ package org.kgrid.activator.controller;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.controller.KnowledgeObjects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/endpoints" )
-@Api(tags = "Endpoint API" )
+@CrossOrigin
 public class EndpointController {
 
   @Autowired
   private Map<String, Endpoint> endpoints;
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @GetMapping(value= "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
+  public  Resources<EndpointResource>  findAllEndpoints() {
 
 
-  @GetMapping(produces = { "application/hal+json" })
-  @ApiOperation(value = "Finds all knowledge object endpoints",
-      notes = "Returns a collection of endpoints",
-      response = EndpointResource.class,
-      responseContainer = "List")
-  public Resources<EndpointResource> findAllEndpoints() {
-
+    log.info("find all endpoints");
     Collection<EndpointResource> resources = new ArrayList();
-
 
     endpoints.forEach((s, endpoint) -> {
 
@@ -49,24 +43,20 @@ public class EndpointController {
 
     Link link = linkTo(EndpointController.class).withSelfRel();
     Resources<EndpointResource> result = new Resources<>(resources, link);
-    result.add(linkTo(EndpointController.class).withSelfRel());
     return result;
   }
 
 
-  @GetMapping( value = {"/{naan}/{name}/{version}/{endpoint}"}, produces = { "application/hal+json" })
-  @ResponseStatus(HttpStatus.OK)
-  @ApiOperation(value = "Finds a knowledge object's endpoint based ",
-      notes = "Returns the Endpoint Resource which has access to the knowledge object implementation, "
-          + "the service description in the form of an Open Api specification, etc")
+  @GetMapping( value = "/endpoints/{naan}/{name}/{implementation}/{endpoint}", produces = MediaType.APPLICATION_JSON_VALUE)
   public EndpointResource findEndpoint(
-      @ApiParam(value="Name Assigning Authority unique number", example="hello")
       @PathVariable String naan,
-      @ApiParam(value="Ark Name", example="world") @PathVariable String name,
-      @ApiParam(value="Ark Implementation", example="v0.1.0")  @PathVariable String version,
-      @ApiParam(value="Endpoint Path", example="welcome") @PathVariable String endpoint) {
+      @PathVariable String name,
+      @PathVariable String implementation,
+      @PathVariable String endpoint) {
 
-    final String key = naan + "-" + name + "/" + version + "/" + endpoint;
+    log.info("getting ko endpoint " + naan + "/" + name + "/" + implementation);
+
+    final String key = naan + "-" + name + "/" + implementation + "/" + endpoint;
 
     EndpointResource resource = createEndpointResource( endpoints.get( key ));
 
