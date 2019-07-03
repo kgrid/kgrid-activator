@@ -35,3 +35,5 @@
       -H "Content-Type: application/json" \
       -d "$manifest"
 
+
+  curl -X GET "https://kgrid-activator.herokuapp.com/activate" -H "accept: application/json"
