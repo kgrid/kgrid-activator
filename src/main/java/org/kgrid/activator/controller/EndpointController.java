@@ -64,7 +64,7 @@ public class EndpointController {
 
   private EndpointResource createEndpointResource(Endpoint endpoint) {
     EndpointResource resource = new EndpointResource(endpoint);
-    Link self = linkTo(EndpointController.class).
+    Link self = linkTo(EndpointController.class).slash("endpoints").
         slash(resource.getEndpointPath()).withSelfRel();
 
     Link swaggerEditor = new Link("https://editor.swagger.io?url="+
