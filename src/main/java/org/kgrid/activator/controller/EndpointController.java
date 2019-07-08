@@ -27,23 +27,22 @@ public class EndpointController {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @GetMapping(value= "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
-  public  Resources<EndpointResource>  findAllEndpoints() {
+  public EndpointResources  findAllEndpoints() {
 
 
     log.info("find all endpoints");
-    Collection<EndpointResource> resources = new ArrayList();
+    EndpointResources resources = new EndpointResources();
 
     endpoints.forEach((s, endpoint) -> {
 
       EndpointResource resource = createEndpointResource(endpoint);
 
-      resources.add(resource);
+      resources.addEndpointResource(resource);
 
     });
 
-    Link link = linkTo(EndpointController.class).withSelfRel();
-    Resources<EndpointResource> result = new Resources<>(resources, link);
-    return result;
+    resources.add(linkTo(EndpointController.class).withSelfRel());
+    return resources;
   }
 
 
@@ -69,7 +68,7 @@ public class EndpointController {
         slash(resource.getEndpointPath()).withSelfRel();
 
     Link swaggerEditor = new Link("https://editor.swagger.io?url="+
-        linkTo(KnowledgeObjectContoller.class).slash(resource.getServicePath()),
+        linkTo(KnowledgeObjectContoller.class).slash("kos").slash(resource.getServicePath()),
         "swagger_editor");
 
     resource.add(self);
