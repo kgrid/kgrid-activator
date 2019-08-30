@@ -54,14 +54,6 @@ public class ActivationController {
     }
   }
 
-
-  @ExceptionHandler(ActivatorException.class)
-  public ResponseEntity<Map<String, String>> handleGeneralActivatorExceptions(ActivatorException e,
-      WebRequest request) {
-    return new ResponseEntity<>(generateErrorMap(request, e, "Activator Error", HttpStatus.BAD_REQUEST),
-        HttpStatus.BAD_REQUEST);
-  }
-
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception e,
       WebRequest request) {

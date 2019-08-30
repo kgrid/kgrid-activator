@@ -78,7 +78,7 @@ public class ActivationControllerTest {
   @Test
   public void endpointBlankServiceError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/blankservice/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
 
@@ -104,7 +104,7 @@ public class ActivationControllerTest {
   @Test
   public void endpointNoMetadataError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/nometadata/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
 
@@ -117,7 +117,7 @@ public class ActivationControllerTest {
   @Test
   public void endpointNoServiceError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/noservice/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
 
@@ -130,7 +130,7 @@ public class ActivationControllerTest {
   @Test
   public void endpointOnlyMetadataError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/onlymetadata/welcome", "{\"name\":\"tester\"}")
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
 
