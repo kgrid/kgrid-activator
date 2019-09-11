@@ -7,10 +7,12 @@ import { check } from 'k6'
 
 let url =
   getFromEnv(__ENV.baseUrl, 'http://localhost:8080') +
-  getFromEnv(__ENV.endpoint, '/hello/world/v0.0.1/welcome')
+  getFromEnv(__ENV.endpoint, '/99999/10103/v0.0.2/tripleThreatDetector')
 
 const params = {headers: {'content-type': 'application/json'}}
-const body = JSON.stringify({name: 'Bob'})
+const body = JSON.stringify({
+  "rxcuis": "106500,200240,856917,994226,197446,801958"
+})
 
 export function setup () {
   console.log('Checking connection: ')

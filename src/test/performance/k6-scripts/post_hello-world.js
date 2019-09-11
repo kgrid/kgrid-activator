@@ -1,19 +1,12 @@
 import http from 'k6/http'
 import { check } from 'k6'
 
-// const url = "http://localhost:8080/hello/world/v0.0.1/welcome"
-// const url = "https://kgrid-activator.herokuapp.com/99999/newko/v0.0.1/welcome"
-// const url = "http://e367381a.ngrok.io/hello/world/v0.0.1/welcome"
-
 let url =
   getFromEnv(__ENV.baseUrl, 'http://localhost:8080') +
-  getFromEnv(__ENV.endpoint, '/99999/10103/v0.0.1/tripleThreatDetector')
+  getFromEnv(__ENV.endpoint, '/hello/world/v0.1.0/welcome')
 
 const params = {headers: {'content-type': 'application/json'}}
-const body = JSON.stringify({
-  // "rxcuis": "106500"
-  "rxcuis": [106500,200240,856917,994226,197446,801958]
-})
+const body = JSON.stringify({name: 'Bob'})
 
 export function setup () {
   console.log('Checking connection: ')
