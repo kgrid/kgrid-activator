@@ -45,7 +45,7 @@ public class AdapterLoader {
   public void loadAndInitializeAdapters(){
     loadAndInitializeAdapters(null);
   }
-  public AdapterResolver loadAndInitializeAdapters(Map<String, Endpoint> endpoints) {
+  public AdapterResolver loadAndInitializeAdapters(Map<EndpointId, Endpoint> endpoints) {
     properties = resolveProperties(env);
 
     Map<String, Adapter> adapters = new HashMap<>();
@@ -58,7 +58,7 @@ public class AdapterLoader {
     return new AdapterResolver(adapters);
   }
 
-  private void initializeAdapter(Adapter adapter, Map<String, Endpoint> endpoints) {
+  private void initializeAdapter(Adapter adapter, Map<EndpointId, Endpoint> endpoints) {
     try {
       adapter.initialize(new ActivationContext() {
         @Override
@@ -75,7 +75,7 @@ public class AdapterLoader {
         public byte[] getBinary(String pathToBinary) {
           return cdoStore.getBinary(pathToBinary);
         }
-
+        @Override
         public String getProperty(String key) {
           return env.getProperty(key);
         }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.ShelfException;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
@@ -34,9 +35,9 @@ public class EndpointLoader {
    *
    * @return collection of endpoints
    */
-  public Map<String, Endpoint> load(ArkId ark) {
+  public Map<EndpointId, Endpoint> load(ArkId ark) {
 
-    Map<String, Endpoint> endpoints = new HashMap<>();
+    Map<EndpointId, Endpoint> endpoints = new HashMap<>();
 
     if (ark.isImplementation()) {
 
@@ -62,7 +63,7 @@ public class EndpointLoader {
    * @param endpoints
    * @return
    */
-  private boolean loadKOImplemtation(ArkId ark, Map<String, Endpoint> endpoints) {
+  private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
 
 
     log.info("Load KO Implementation {}", ark.getDashArkImplementation());
@@ -94,11 +95,11 @@ public class EndpointLoader {
 
         final Endpoint endpoint = new Endpoint();
         endpoint.setActivated(LocalDateTime.now());
-        endpoint.setPath(ark.getDashArkImplementation() + service.getKey());
+        endpoint.setPath("/" + ark.getSlashArk() + service.getKey() + (ark.getImplementation() != null ?  "?v=" + ark.getImplementation() : ""));
         endpoint.setDeployment(spec);
         endpoint.setService(serviceDescription);
         endpoint.setImpl(implementationMetadata);
-        endpoints.put(ark.getDashArkImplementation() + service.getKey(), endpoint);
+        endpoints.put(new EndpointId(ark, service.getKey()), endpoint);
 
       });
 
@@ -117,9 +118,9 @@ public class EndpointLoader {
    *
    * @return collection of endpoints
    */
-  public Map<String, Endpoint> load() {
+  public Map<EndpointId, Endpoint> load() {
     Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-    Map<String, Endpoint> endpoints = new HashMap<>();
+    Map<EndpointId, Endpoint> endpoints = new HashMap<>();
 
     for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
       List<ArkId> arks = getImplementationArkIds(ko.getValue());

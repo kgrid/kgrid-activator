@@ -44,7 +44,7 @@ public class ActivationControllerTest {
 
   @Test
   public void endpointInvocationReturnsResult() throws Exception {
-    MvcResult result = getResultActions("/c/d/f/welcome", "{\"name\" : \"tester\"}")
+    MvcResult result = getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
         .andExpect(status().isOk())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -64,7 +64,7 @@ public class ActivationControllerTest {
 
   @Test
   public void endpointNoRequestBodyError() throws Exception {
-    MvcResult result = getResultActions("/c/d/f/welcome", "")
+    MvcResult result = getResultActions("/c/d/welcome?v=f", "")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -77,7 +77,7 @@ public class ActivationControllerTest {
 
   @Test
   public void endpointBlankServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/blankservice/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -85,12 +85,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-koio/blankservice/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad/koio/blankservice/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void serviceSpecFunctionMismatchError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/servicespecmismatch/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -103,7 +103,7 @@ public class ActivationControllerTest {
 
   @Test
   public void endpointNoMetadataError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/nometadata/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -111,12 +111,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-koio/nometadata/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad/koio/nometadata/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointNoServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/noservice/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -124,12 +124,12 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-koio/noservice/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad/koio/noservice/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointOnlyMetadataError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/onlymetadata/welcome", "{\"name\":\"tester\"}")
+    MvcResult result = getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andReturn();
@@ -137,7 +137,7 @@ public class ActivationControllerTest {
     JsonNode content = mapper
         .readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad-koio/onlymetadata/welcome", content.get("Detail").asText());
+    assertEquals("No endpoint found for bad/koio/onlymetadata/welcome", content.get("Detail").asText());
   }
 
 }

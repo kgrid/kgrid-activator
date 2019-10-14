@@ -23,7 +23,7 @@ public class EndpointResource extends ResourceSupport {
 
     this.servicePath = new ArkId(
         endpoint.getImpl().get("identifier").textValue()).
-                          getSlashArkImplementation()+"/service";
+                          getSlashArk()+"/service";
 
     this.activated = endpoint.getActivated();
   }

@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 public class EndpointExecutionTests {
 
-  public static final String C_D_F_WELCOME = C_D_F.getDashArkImplementation() + "/welcome";
+  public static final EndpointId C_D_F_WELCOME = new EndpointId(C_D_F, "welcome");
 
 
   @Rule
@@ -36,7 +36,7 @@ public class EndpointExecutionTests {
 
     Executor executor = mock(Executor.class);
 
-    Map<String, Endpoint> endpointMap = new  HashMap<String, Endpoint>();
+    Map<EndpointId, Endpoint> endpointMap = new  HashMap<>();
     final Endpoint endpoint = Endpoint.Builder
         .anEndpoint()
         .withExecutor(executor)
@@ -64,7 +64,7 @@ public class EndpointExecutionTests {
     expectedException.expect(ActivatorException.class);
     expectedException.expectMessage("Executor not found");
 
-    Map<String, Endpoint> endpointMap = new  HashMap<String, Endpoint>();
+    Map<EndpointId, Endpoint> endpointMap = new  HashMap<>();
     final Endpoint endpoint = Endpoint.Builder
         .anEndpoint()
         .withDeployment(null)
