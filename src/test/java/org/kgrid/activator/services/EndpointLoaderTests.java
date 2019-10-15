@@ -156,9 +156,9 @@ public class EndpointLoaderTests {
         repository.findImplementationMetadata(A_B_C)))
         .thenThrow(ShelfResourceNotFound.class);
 
-    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
 
-    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
 
   }
 
@@ -168,9 +168,9 @@ public class EndpointLoaderTests {
     given(repository.findImplementationMetadata(A_B_C))
         .willThrow(ShelfResourceNotFound.class);
 
-    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
 
-    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
 
   }
   /*
