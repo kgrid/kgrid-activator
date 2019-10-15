@@ -36,6 +36,33 @@ public class ActivationController {
   @Autowired
   private ActivationService activationService;
 
+
+  //Add back in old /naan/name/version/endpoint
+  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
+      value = {"/{naan}/{name}/{version}/{endpoint}"},
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  @ResponseStatus(HttpStatus.OK)
+  public Object processWithBareJsonInputOutputOldVersion(
+      @PathVariable String naan,
+      @PathVariable String name,
+      @PathVariable String endpoint,
+      @PathVariable String version,
+      @RequestBody Object inputs) {
+    EndpointId key;
+    ArkId arkid = new ArkId(naan, name, version);
+    key = new EndpointId(arkid, endpoint);
+
+    try {
+      EndPointResult result = activationService.execute(key, version, inputs);
+      return result;
+    } catch (AdapterException e) {
+      log.error("Exception " + e);
+      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
+    }
+  }
+
+
+
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
       value = {"/{naan}/{name}/{endpoint}"},
       produces = {MediaType.APPLICATION_JSON_VALUE})

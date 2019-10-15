@@ -44,6 +44,28 @@ public class EndpointController {
     return resources;
   }
 
+  @GetMapping( value = "/endpoints/{naan}/{name}/{version}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public EndpointResource findEndpointOldVersion(
+      @PathVariable String naan,
+      @PathVariable String name,
+      @PathVariable String endpointName,
+      @PathVariable String version) {
+
+    log.info("getting ko endpoint " + naan + "/" + name );
+
+    EndpointId id = new EndpointId(naan, name, version, endpointName);
+
+    Endpoint endpoint = endpoints.get(id);
+
+    if(endpoint == null) {
+      throw new ActivatorException("Cannot find endpoint with id " + id);
+    }
+
+    EndpointResource resource = createEndpointResource(endpoint);
+
+    return resource;
+  }
+
   @GetMapping( value = "/endpoints/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
   public EndpointResource findEndpoint(
       @PathVariable String naan,
