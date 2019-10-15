@@ -24,7 +24,6 @@ public class EndpointId implements Comparable {
     } else {
       this.endpointName = "/" + endpointName;
     }
-
   }
 
   public void setArkId(ArkId arkId) {
@@ -87,6 +86,7 @@ public class EndpointId implements Comparable {
     if (this == o) {
       return 0;
     }
+
     EndpointId that = (EndpointId)o;
 
     if(this.getArkId().getNaan().compareTo(that.getArkId().getNaan()) != 0) {
@@ -102,6 +102,7 @@ public class EndpointId implements Comparable {
         return this.getArkId().getImplementation().compareTo(that.getArkId().getImplementation());
       }
     }
+
     return this.getEndpointName().compareTo(that.endpointName);
   }
 }

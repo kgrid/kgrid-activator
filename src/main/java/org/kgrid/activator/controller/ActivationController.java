@@ -53,15 +53,12 @@ public class ActivationController {
     key = new EndpointId(arkid, endpoint);
 
     try {
-      EndPointResult result = activationService.execute(key, version, inputs);
-      return result;
+      return activationService.execute(key, version, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
       throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
     }
   }
-
-
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
       value = {"/{naan}/{name}/{endpoint}"},
@@ -83,8 +80,7 @@ public class ActivationController {
     key = new EndpointId(arkid, endpoint);
 
     try {
-      EndPointResult result = activationService.execute(key, version, inputs);
-      return result;
+      return activationService.execute(key, version, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
       throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
