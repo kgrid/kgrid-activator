@@ -59,8 +59,8 @@ public class EndpointLoaderTests {
   public void endpointIsLoadedForAnImplementation() throws IOException {
 
     // load single endpoint implementation
-    Map<String, Endpoint> eps = endpointLoader.load(A_B_C);
-    Endpoint endpoint = eps.get(A_B_C.getDashArkImplementation() + "/welcome");
+    Map<EndpointId, Endpoint> eps = endpointLoader.load(A_B_C);
+    Endpoint endpoint = eps.get(new EndpointId(A_B_C,"/welcome"));
 
     assertNotNull("endpointPath 'a-b/c/welcome' should exist", endpoint);
 
@@ -87,8 +87,8 @@ public class EndpointLoaderTests {
   public void endpointIsLoadedForAnKO() throws IOException {
 
     // load single endpoint implementation
-    Map<String, Endpoint> eps = endpointLoader.load(C_D);
-    Endpoint endpoint = eps.get(C_D_F.getDashArkImplementation() + "/welcome");
+    Map<EndpointId, Endpoint> eps = endpointLoader.load(C_D);
+    Endpoint endpoint = eps.get(new EndpointId(C_D_F,"/welcome"));
 
     System.out.println( endpoint );
 
@@ -107,23 +107,23 @@ public class EndpointLoaderTests {
   public void activationPopulatesEndpoints() throws IOException {
 
     // when
-    Map<String, Endpoint> eps = endpointLoader.load();
+    Map<EndpointId, Endpoint> eps = endpointLoader.load();
 
     // Loader methods load 2 KOs, with 3 impls, and 5 endpoints (1 service spec has 3 endpoints!)
     assertEquals("Map should have 5 endpoints", 5, eps.size());
 
-    assertNotNull("'a-b/c/welcome' exists", eps.get("a-b/c/welcome"));
-    assertNotNull("'c-d/e/welcome' exists", eps.get("c-d/e/welcome"));
-    assertNotNull("'c-d/f/welcome' exists", eps.get("c-d/f/welcome"));
-    assertNotNull("'c-d/f/goodbye' exists", eps.get("c-d/f/goodbye"));
-    assertNotNull("'c-d/f/info' exists", eps.get("c-d/f/info"));
+    assertNotNull("'a-b/c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
+    assertNotNull("'c-d/e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
+    assertNotNull("'c-d/f/welcome' exists", eps.get(new EndpointId(C_D_F, "/welcome")));
+    assertNotNull("'c-d/f/goodbye' exists", eps.get(new EndpointId(C_D_F, "/goodbye")));
+    assertNotNull("'c-d/f/info' exists", eps.get(new EndpointId(C_D_F, "/info")));
   }
 
   @Test
   public void serviceLoadsImplementationMetadata() throws IOException {
 
     // when
-    Map<String, Endpoint> endpoints = endpointLoader.load();
+    Map<EndpointId, Endpoint> endpoints = endpointLoader.load();
 
     then(repository).should().findImplementationMetadata(A_B_C);
     then(repository).should().findImplementationMetadata(C_D_E);
@@ -135,7 +135,7 @@ public class EndpointLoaderTests {
   public void endpointsContainServices() throws IOException {
 
     // when
-    Map<String, Endpoint> endpoints = endpointLoader.load();
+    Map<EndpointId, Endpoint> endpoints = endpointLoader.load();
 
     endpoints.forEach((path, endpoint) -> {
       final JsonNode service = endpoint.getService();
@@ -144,7 +144,7 @@ public class EndpointLoaderTests {
           service.toString(),
           hasJsonPath("paths")
       );
-      String endpointKey = "/" + StringUtils.substringAfterLast(path, "/");
+      String endpointKey = path.getEndpointName();
       assertNotNull("Service contains endpoint path", service.get("paths").get(endpointKey));
     });
   }
@@ -156,9 +156,9 @@ public class EndpointLoaderTests {
         repository.findImplementationMetadata(A_B_C)))
         .thenThrow(ShelfResourceNotFound.class);
 
-    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
 
-    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
 
   }
 
@@ -168,9 +168,9 @@ public class EndpointLoaderTests {
     given(repository.findImplementationMetadata(A_B_C))
         .willThrow(ShelfResourceNotFound.class);
 
-    assertNull(endpointLoader.load(A_B_C).get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
 
-    assertNull(endpointLoader.load().get(A_B_C.getDashArkImplementation() + "/welcome"));
+    assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
 
   }
   /*

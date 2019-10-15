@@ -12,7 +12,7 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
   @Autowired
   private AdapterResolver adapterResolver;
   @Autowired
-  private Map<String, Endpoint> endpoints;
+  private Map<EndpointId, Endpoint> endpoints;
 
 
   @Override

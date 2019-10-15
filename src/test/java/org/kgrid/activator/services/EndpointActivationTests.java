@@ -38,7 +38,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 public class EndpointActivationTests {
 
-  public static final String C_D_F_WELCOME = C_D_F.getDashArkImplementation() + "/welcome";
+  public static final EndpointId C_D_F_WELCOME = new EndpointId(C_D_F, "/welcome");
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Mock
@@ -191,7 +191,7 @@ public class EndpointActivationTests {
         .willThrow(new AdapterException("Binary resource not found..."));
 
     // when
-    activationService.activate(new HashMap<String, Endpoint>() {{
+    activationService.activate(new HashMap<EndpointId, Endpoint>() {{
       put(C_D_F_WELCOME, endpoint);
     }});
 
@@ -209,7 +209,7 @@ public class EndpointActivationTests {
         });
 
     // when
-    activationService.activate(new HashMap<String, Endpoint>() {{
+    activationService.activate(new HashMap<EndpointId, Endpoint>() {{
       put(C_D_F_WELCOME, endpoint);
     }});
 

@@ -4,8 +4,10 @@ package org.kgrid.activator.endpoint;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.Map;
+import java.util.TreeMap;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,7 @@ public class ActivateEndpoint {
   private EndpointLoader endpointLoader;
 
   @Autowired
-  private Map<String, org.kgrid.activator.services.Endpoint> endpoints;
+  private TreeMap<EndpointId, org.kgrid.activator.services.Endpoint> endpoints;
 
 
   /**
@@ -103,15 +105,16 @@ public class ActivateEndpoint {
    */
   public void actitvate(ArkId arkId) {
 
+
     if (arkId.isImplementation()){
-      endpoints.entrySet().removeIf(
-          e -> e.getKey().startsWith(arkId.getDashArkImplementation()));
-    } else {
-      endpoints.entrySet().removeIf(
-          e -> e.getKey().startsWith(arkId.getDashArk()));
+        endpoints.entrySet().removeIf(
+            e -> e.getKey().getArkId().getDashArkImplementation().equals(arkId.getDashArkImplementation()));
+      } else {
+        endpoints.entrySet().removeIf(
+            e -> e.getKey().getArkId().getDashArk().equals(arkId.getDashArk()));
     }
 
-    Map<String, org.kgrid.activator.services.Endpoint>
+    Map<EndpointId, org.kgrid.activator.services.Endpoint>
         loadedEndpoints = endpointLoader.load(arkId);
 
     activationService.activate(loadedEndpoints);

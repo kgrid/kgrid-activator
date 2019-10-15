@@ -6,14 +6,16 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.endpoint.ActivateEndpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
@@ -36,7 +38,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class KgridActivatorApplication implements CommandLineRunner {
 
   @Autowired
-  private Map<String, Endpoint> endpoints;
+  private Map<EndpointId, Endpoint> endpoints;
 
   @Autowired
   private ActivationService activationService;
@@ -72,13 +74,13 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Bean
   public static AdapterResolver getAdapterResolver(AdapterLoader loader,
-      Map<String, Endpoint> endpoints) {
+      Map<EndpointId, Endpoint> endpoints) {
     return loader.loadAndInitializeAdapters(endpoints);
   }
 
   @Bean
-  public static Map<String, Endpoint> getEndpoints() {
-    return new HashMap<>();
+  public static TreeMap<EndpointId, Endpoint> getEndpoints() {
+    return new TreeMap<>(Collections.reverseOrder());
   }
 
   @Override

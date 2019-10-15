@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Map.Entry;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
@@ -25,7 +25,7 @@ public class ActivationService {
   final Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
-  private Map<String, Endpoint> endpoints;
+  private Map<EndpointId, Endpoint> endpoints;
 
   @Autowired
   private AdapterResolver adapterResolver;
@@ -33,7 +33,7 @@ public class ActivationService {
   @Autowired
   private KnowledgeObjectRepository koRepo;
 
-  public ActivationService(AdapterResolver adapterResolver, Map<String, Endpoint> endpoints) {
+  public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints) {
     this.adapterResolver = adapterResolver;
     this.endpoints = endpoints;
   }
@@ -50,7 +50,7 @@ public class ActivationService {
   public void startEndpointWatcher() throws IOException {
   }
 
-  public void activate(Map<String, Endpoint> eps) {
+  public void activate(Map<EndpointId, Endpoint> eps) {
     eps.forEach((key, value) -> {
       Executor executor = null;
       try {
@@ -62,11 +62,11 @@ public class ActivationService {
     });
   }
 
-  public Executor activate(String endpointKey, Endpoint endpoint) {
+  public Executor activate(EndpointId endpointKey, Endpoint endpoint) {
 
     log.info("Activate endpoint {} ", endpointKey);
 
-    ArkId ark = new ArkId(StringUtils.substringBeforeLast(endpointKey, "/"));
+    ArkId ark = endpointKey.getArkId();
 
     final JsonNode deploymentSpec = endpoint.getDeployment();
 
@@ -91,7 +91,39 @@ public class ActivationService {
     }
   }
 
-  public EndPointResult execute(String endpointPath, Object inputs) {
+  public EndPointResult execute (EndpointId id, String version, Object inputs) {
+    Endpoint endpoint = endpoints.get(id);
+
+    // How to pick unspecified version?
+    if(version == null) {
+      for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
+        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
+            && entry.getKey().getEndpointName().equals(id.getEndpointName())) {
+          id.setArkId(new ArkId(entry.getKey().getArkId().getDashArkImplementation()));
+          endpoint = entry.getValue();
+          break;        }
+      }
+    }
+    if(null == endpoint) {
+      throw new ActivatorException("No endpoint found for " + id);
+    }
+    Executor executor = endpoint.getExecutor();
+
+    if (null == executor) {
+      throw new ActivatorException("No executor found for " + id);
+    }
+
+    final Object output = executor.execute(inputs);
+
+    final EndPointResult endPointResult = new EndPointResult(output);
+
+    endPointResult.getInfo().put("inputs", inputs);
+    endPointResult.getInfo().put("ko", endpoint.getImpl());
+
+    return endPointResult;
+  }
+
+  public EndPointResult execute(EndpointId endpointPath, Object inputs) {
 
     final Endpoint endpoint = endpoints.get(endpointPath);
     if(null == endpoint) {
