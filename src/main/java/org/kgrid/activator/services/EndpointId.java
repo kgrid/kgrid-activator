@@ -9,12 +9,21 @@ public class EndpointId {
 
   public EndpointId(ArkId arkId, String endpointName){
     this.arkId = arkId;
-    this.endpointName = endpointName;
+    if(endpointName.startsWith("/")) {
+      this.endpointName = endpointName;
+    } else {
+      this.endpointName = "/" + endpointName;
+    }
   }
 
   public EndpointId(String naan, String name, String version, String endpointName) {
     this.arkId = new ArkId(naan, name, version);
-    this.endpointName = endpointName;
+    if(endpointName.startsWith("/")) {
+      this.endpointName = endpointName;
+    } else {
+      this.endpointName = "/" + endpointName;
+    }
+
   }
 
   public void setArkId(ArkId arkId) {

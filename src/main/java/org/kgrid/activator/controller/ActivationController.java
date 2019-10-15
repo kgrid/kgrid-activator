@@ -53,7 +53,7 @@ public class ActivationController {
     } else {
       arkid = new ArkId(naan, name, version);
     }
-    key = new EndpointId(arkid, "/" + endpoint);
+    key = new EndpointId(arkid, endpoint);
 
     try {
       EndPointResult result = activationService.execute(key, version, inputs);

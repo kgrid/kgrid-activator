@@ -4,6 +4,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.controller.KnowledgeObjectContoller;
@@ -43,7 +44,7 @@ public class EndpointController {
     return resources;
   }
 
-  @GetMapping( value = "/endpoints/{naan}/{name}/{endpoint}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping( value = "/endpoints/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
   public EndpointResource findEndpoint(
       @PathVariable String naan,
       @PathVariable String name,
@@ -57,13 +58,18 @@ public class EndpointController {
     Endpoint endpoint = null;
     if(version == null){
       for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
-        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())) {
+        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
+            && entry.getKey().getEndpointName().equals("/" + endpointName)) {
           endpoint = entry.getValue();
           break;
         }
       }
     } else {
       endpoint = endpoints.get(id);
+    }
+
+    if(endpoint == null) {
+      throw new ActivatorException("Cannot find endpoint with id " + id);
     }
 
     EndpointResource resource = createEndpointResource(endpoint);

@@ -97,7 +97,8 @@ public class ActivationService {
     // How to pick unspecified version?
     if(version == null) {
       for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
-        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())) {
+        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
+            && entry.getKey().getEndpointName().equals(id.getEndpointName())) {
           endpoint = entry.getValue();
           break;
         }
