@@ -95,7 +95,7 @@ public class EndpointLoader {
 
         final Endpoint endpoint = new Endpoint();
         endpoint.setActivated(LocalDateTime.now());
-        endpoint.setPath("/" + ark.getSlashArk() + service.getKey() + (ark.getImplementation() != null ?  "?v=" + ark.getImplementation() : ""));
+        endpoint.setPath(ark.getSlashArk() + service.getKey() + (ark.getImplementation() != null ?  "?v=" + ark.getImplementation() : ""));
         endpoint.setDeployment(spec);
         endpoint.setService(serviceDescription);
         endpoint.setImpl(implementationMetadata);
