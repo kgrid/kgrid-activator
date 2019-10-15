@@ -1,8 +1,9 @@
 package org.kgrid.activator.services;
 
+import javax.validation.constraints.NotNull;
 import org.kgrid.shelf.domain.ArkId;
 
-public class EndpointId {
+public class EndpointId implements Comparable {
 
   private ArkId arkId;
   private String endpointName;
@@ -79,5 +80,28 @@ public class EndpointId {
     int result = arkId != null ? arkId.hashCode() : 0;
     result = 31 * result + (endpointName != null ? endpointName.hashCode() : 0);
     return result;
+  }
+
+  @Override
+  public int compareTo(@NotNull Object o) {
+    if (this == o) {
+      return 0;
+    }
+    EndpointId that = (EndpointId)o;
+
+    if(this.getArkId().getNaan().compareTo(that.getArkId().getNaan()) != 0) {
+      return this.getArkId().getNaan().compareTo(that.getArkId().getNaan());
+    }
+
+    if(this.getArkId().getName().compareTo(that.getArkId().getName()) != 0) {
+      return this.getArkId().getName().compareTo(that.getArkId().getName());
+    }
+
+    if(this.getArkId().getImplementation() != null && that.getArkId().getImplementation() != null){
+      if(this.getArkId().getImplementation().compareTo(that.getArkId().getImplementation()) != 0) {
+        return this.getArkId().getImplementation().compareTo(that.getArkId().getImplementation());
+      }
+    }
+    return this.getEndpointName().compareTo(that.endpointName);
   }
 }

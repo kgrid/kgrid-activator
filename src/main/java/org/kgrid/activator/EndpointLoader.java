@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.ShelfException;
@@ -120,14 +122,19 @@ public class EndpointLoader {
    */
   public Map<EndpointId, Endpoint> load() {
     Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-    Map<EndpointId, Endpoint> endpoints = new HashMap<>();
+    Map<EndpointId, Endpoint> temp = new HashMap<>();
 
     for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
       List<ArkId> arks = getImplementationArkIds(ko.getValue());
       arks.forEach(arkId -> {
-        endpoints.putAll(load(arkId));
+        temp.putAll(load(arkId));
       });
     }
+
+    // Putting everything in a treemap sorts them alphabetically
+    TreeMap<EndpointId, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
+    endpoints.putAll(temp);
+
     return endpoints;
   }
 

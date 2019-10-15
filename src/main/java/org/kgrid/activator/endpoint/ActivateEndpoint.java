@@ -4,6 +4,7 @@ package org.kgrid.activator.endpoint;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.Map;
+import java.util.TreeMap;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.EndpointId;
@@ -32,7 +33,7 @@ public class ActivateEndpoint {
   private EndpointLoader endpointLoader;
 
   @Autowired
-  private Map<EndpointId, org.kgrid.activator.services.Endpoint> endpoints;
+  private TreeMap<EndpointId, org.kgrid.activator.services.Endpoint> endpoints;
 
 
   /**

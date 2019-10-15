@@ -99,9 +99,9 @@ public class ActivationService {
       for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
         if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
             && entry.getKey().getEndpointName().equals(id.getEndpointName())) {
+          id.setArkId(new ArkId(entry.getKey().getArkId().getDashArkImplementation()));
           endpoint = entry.getValue();
-          break;
-        }
+          break;        }
       }
     }
     if(null == endpoint) {

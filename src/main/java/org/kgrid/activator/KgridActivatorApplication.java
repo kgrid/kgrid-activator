@@ -6,8 +6,9 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.endpoint.ActivateEndpoint;
 import org.kgrid.activator.services.ActivationService;
@@ -78,8 +79,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
   }
 
   @Bean
-  public static Map<EndpointId, Endpoint> getEndpoints() {
-    return new HashMap<>();
+  public static TreeMap<EndpointId, Endpoint> getEndpoints() {
+    return new TreeMap<>(Collections.reverseOrder());
   }
 
   @Override
