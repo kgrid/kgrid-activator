@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.kgrid.activator.ActivatorException;
-import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.EndpointId;
 import org.kgrid.adapter.api.AdapterException;
@@ -48,9 +47,8 @@ public class ActivationController {
       @PathVariable String endpoint,
       @PathVariable String version,
       @RequestBody Object inputs) {
-    EndpointId key;
     ArkId arkid = new ArkId(naan, name, version);
-    key = new EndpointId(arkid, endpoint);
+    EndpointId key = new EndpointId(arkid, endpoint);
 
     try {
       return activationService.execute(key, version, inputs);
@@ -70,14 +68,13 @@ public class ActivationController {
       @PathVariable String endpoint,
       @RequestParam(name = "v", required = false) String version,
       @RequestBody Object inputs) {
-    EndpointId key;
     ArkId arkid;
     if(version == null) {
       arkid = new ArkId(naan, name);
     } else {
       arkid = new ArkId(naan, name, version);
     }
-    key = new EndpointId(arkid, endpoint);
+    EndpointId key = new EndpointId(arkid, endpoint);
 
     try {
       return activationService.execute(key, version, inputs);
