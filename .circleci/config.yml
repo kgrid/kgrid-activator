@@ -70,6 +70,18 @@ jobs:
             mkdir -p ~/circle-artifacts/
             cp .*/target/kgrid-activator*.jar ~/circle-artifacts
 
+
+      # Triggered with Release will prepare and perform maven release
+      # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
+      # Release runs maven release and adds a Release to GitHub based on the tag via github api
+      - run:
+          name: Release
+          command: |
+
+            if [ $RELEASE ]; then
+                .circleci/release.sh
+            fi
+
       # save test results
       - run:
           name: Save test results
@@ -99,19 +111,13 @@ jobs:
       - attach_workspace:
           at: ~/project
 
-    # Will normally run deploy but if triggered with Release will prepare and perform maven release
-    # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
-    # Release runs maven release and adds a Release to GitHub based on the tag via github api
-      - run:
-          name: Deploy/Release
-          command: |
 
-            if [ $RELEASE ]; then
-                .circleci/release.sh
-            else
-                mkdir shelf
-                HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
-            fi
+    # Deploy to Heroku gets the KOs and adds them to the shelf on Heroku
+      - run:
+          name: Deploy
+          command: |
+            mkdir shelf
+            HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
 
       - store_artifacts:
           path: ~/circle-artifacts
