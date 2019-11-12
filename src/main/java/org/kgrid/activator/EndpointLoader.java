@@ -2,6 +2,7 @@ package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,15 +48,17 @@ public class EndpointLoader {
       loadKOImplemtation(ark, endpoints);
 
     } else {
-//
-//      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
-//
-//      List<ArkId> implementationArkIds = getImplementationArkIds(knowledgeObjectMetadata);
-//
-//      implementationArkIds.stream().forEach(arkId -> loadKOImplemtation( arkId, endpoints));
 
+      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+      if(knowledgeObjectMetadata.isArray()) {
+        knowledgeObjectMetadata.forEach(ko -> {
+          if(ko.has("version")) {
+            ArkId id = new ArkId(ark.getNaan(), ark.getName(), (ko.get("version").asText()));
+            loadKOImplemtation(id, endpoints);
+          }
+        });
+      }
     }
-
     return endpoints;
   }
 
@@ -134,20 +137,6 @@ public class EndpointLoader {
 
     return endpoints;
   }
-
-//  private List<ArkId> getImplementationArkIds(JsonNode ko) {
-//    JsonNode implementations = ko.get(KnowledgeObject.IMPLEMENTATIONS_TERM);
-//
-//    List<ArkId> arks = new ArrayList<>();
-//    if (implementations.isArray()) {
-//      implementations.elements().forEachRemaining(impl -> {
-//        arks.add(new ArkId(impl.asText()));
-//      });
-//    } else {
-//      arks.add(new ArkId(implementations.asText()));
-//    }
-//    return arks;
-//  }
 
   String getKORepoLocation(){
     return knowledgeObjectRepository.getConnection();
