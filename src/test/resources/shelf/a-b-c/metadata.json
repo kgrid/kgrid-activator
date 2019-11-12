@@ -1,7 +1,13 @@
 {  "@id": "a-b",
-  "hasImplementation": ["a-b/c"],
-  "title": "the best a-b ever",
   "@type":"koio:KnowledgeObject",
+  "title": "the best a-b ever",
+  "identifier" : "ark:/a/b",
+  "version":"c",
+  "contributors" : "Kgrid Team",
+  "keywords":["Hello","example"],
+  "hasServiceSpecification": "service.yaml",
+  "hasDeploymentSpecification": "$.paths.*.x-kgrid-activation",
+  "hasPayload": "$.paths.*.x-kgrid-activation.artifact",
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 
 }

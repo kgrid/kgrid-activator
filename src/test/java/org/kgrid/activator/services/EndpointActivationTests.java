@@ -75,8 +75,8 @@ public class EndpointActivationTests {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    dep = getYamlTestFile(C_D_F.getDashArkVersion(), "deployment.yaml");
-    payload = getBinaryTestFile(C_D_F.getDashArkVersion(), "welcome.js");
+    dep = getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "deployment.yaml");
+    payload = getBinaryTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "welcome.js");
   }
 
   @Test
@@ -86,7 +86,7 @@ public class EndpointActivationTests {
         .willReturn(adapter);
 
     given(koRepo.getObjectLocation(new ArkId("c-d/f")))
-        .willReturn("c-d");
+        .willReturn("c-d-f");
 
     given(adapter.activate(any(), any()))
         .willReturn(new Executor() {

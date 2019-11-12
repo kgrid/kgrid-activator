@@ -11,6 +11,7 @@ import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.ShelfException;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -77,17 +78,21 @@ public class ActivationService {
     Adapter adapter = adapterResolver
         .getAdapter(deploymentSpec.get("adapterType").asText());
 
-    final Path artifact = Paths.get(
-        koRepo.getObjectLocation(ark), ark.getVersion(),
-        deploymentSpec.get("artifact").asText()
-    );
-
-    final String entry = deploymentSpec.get("entry").asText();
-
     try {
-      return adapter.activate(artifact, entry);
-    } catch (AdapterException e) {
-      throw new ActivatorException(e.getMessage(), e);
+      final Path artifact = Paths.get(
+          koRepo.getObjectLocation(ark),
+          deploymentSpec.get("artifact").asText()
+      );
+
+      final String entry = deploymentSpec.get("entry").asText();
+
+      try {
+        return adapter.activate(artifact, entry);
+      } catch (AdapterException e) {
+        throw new ActivatorException(e.getMessage(), e);
+      }
+    } catch (ShelfException e) {
+      throw new AdapterException("Cannot load object with ark id " + ark);
     }
   }
 

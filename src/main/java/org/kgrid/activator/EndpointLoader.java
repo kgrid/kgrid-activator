@@ -47,12 +47,12 @@ public class EndpointLoader {
       loadKOImplemtation(ark, endpoints);
 
     } else {
-
-      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
-
-      List<ArkId> implementationArkIds = getImplementationArkIds(knowledgeObjectMetadata);
-
-      implementationArkIds.stream().forEach(arkId -> loadKOImplemtation( arkId, endpoints));
+//
+//      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+//
+//      List<ArkId> implementationArkIds = getImplementationArkIds(knowledgeObjectMetadata);
+//
+//      implementationArkIds.stream().forEach(arkId -> loadKOImplemtation( arkId, endpoints));
 
     }
 
@@ -125,10 +125,7 @@ public class EndpointLoader {
     Map<EndpointId, Endpoint> temp = new HashMap<>();
 
     for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-      List<ArkId> arks = getImplementationArkIds(ko.getValue());
-      arks.forEach(arkId -> {
-        temp.putAll(load(arkId));
-      });
+      temp.putAll(load(ko.getKey()));
     }
 
     // Putting everything in a treemap sorts them alphabetically
@@ -138,19 +135,19 @@ public class EndpointLoader {
     return endpoints;
   }
 
-  private List<ArkId> getImplementationArkIds(JsonNode ko) {
-    JsonNode implementations = ko.get(KnowledgeObject.IMPLEMENTATIONS_TERM);
-
-    List<ArkId> arks = new ArrayList<>();
-    if (implementations.isArray()) {
-      implementations.elements().forEachRemaining(impl -> {
-        arks.add(new ArkId(impl.asText()));
-      });
-    } else {
-      arks.add(new ArkId(implementations.asText()));
-    }
-    return arks;
-  }
+//  private List<ArkId> getImplementationArkIds(JsonNode ko) {
+//    JsonNode implementations = ko.get(KnowledgeObject.IMPLEMENTATIONS_TERM);
+//
+//    List<ArkId> arks = new ArrayList<>();
+//    if (implementations.isArray()) {
+//      implementations.elements().forEachRemaining(impl -> {
+//        arks.add(new ArkId(impl.asText()));
+//      });
+//    } else {
+//      arks.add(new ArkId(implementations.asText()));
+//    }
+//    return arks;
+//  }
 
   String getKORepoLocation(){
     return knowledgeObjectRepository.getConnection();
