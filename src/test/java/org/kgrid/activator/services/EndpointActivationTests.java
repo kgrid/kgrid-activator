@@ -75,8 +75,8 @@ public class EndpointActivationTests {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    dep = getYamlTestFile(C_D_F.getDashArkImplementation(), "deployment.yaml");
-    payload = getBinaryTestFile(C_D_F.getDashArkImplementation(), "welcome.js");
+    dep = getYamlTestFile(C_D_F.getDashArkVersion(), "deployment.yaml");
+    payload = getBinaryTestFile(C_D_F.getDashArkVersion(), "welcome.js");
   }
 
   @Test
@@ -109,7 +109,7 @@ public class EndpointActivationTests {
         .getAdapter("JAVASCRIPT");
 
     then(adapter).should().activate(
-        Paths.get(C_D_F.getDashArkImplementation(), "/welcome.js"),
+        Paths.get(C_D_F.getDashArkVersion(), "/welcome.js"),
         "welcome");
 
   }

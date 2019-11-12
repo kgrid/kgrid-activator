@@ -3,7 +3,7 @@ package org.kgrid.activator.controller;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
-import org.kgrid.shelf.controller.KnowledgeObjectContoller;
+import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.MediaType;
@@ -25,7 +25,7 @@ public class HomeController {
     Link  apiDocs = new Link("https://kgrid.org/api").withRel("activator_api_docs");
     activatorResource.add(apiDocs);
 
-    Link  koList = linkTo(KnowledgeObjectContoller.class).slash("kos").withRel("activator_ko_list");
+    Link  koList = linkTo(KnowledgeObjectController.class).slash("kos").withRel("activator_ko_list");
     activatorResource.add(koList);
 
     Link  endpointList = linkTo(HomeController.class).slash("endpoints").withRel("activator_endpoint_list");

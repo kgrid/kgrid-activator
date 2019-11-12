@@ -70,7 +70,7 @@ public class EndpointLoaderTests {
     assertNotNull("implementation should exist", endpoint.getImpl());
 
     // test deployment descriptor example
-    JsonNode deploymentSpec = getYamlTestFile(A_B_C.getDashArkImplementation(), "deployment.yaml");
+    JsonNode deploymentSpec = getYamlTestFile(A_B_C.getDashArkVersion(), "deployment.yaml");
 
     assertEquals("endpoint path exists in deployment descriptor",
         endpoint.getDeployment().toString(),
@@ -79,7 +79,7 @@ public class EndpointLoaderTests {
     assertNotNull("enpoint spec 'a-b/c/info' is in original spec",
         deploymentSpec.get("endpoints").get("/info"));
 
-    endpoint = eps.get(A_B_C.getDashArkImplementation() + "/info");
+    endpoint = eps.get(A_B_C.getDashArkVersion() + "/info");
     assertNull("endpointPath 'a-b/c/info' should not exist", endpoint);
   }
 
@@ -125,9 +125,9 @@ public class EndpointLoaderTests {
     // when
     Map<EndpointId, Endpoint> endpoints = endpointLoader.load();
 
-    then(repository).should().findImplementationMetadata(A_B_C);
-    then(repository).should().findImplementationMetadata(C_D_E);
-    then(repository).should().findImplementationMetadata(C_D_F);
+    then(repository).should().findKnowledgeObjectMetadata(A_B_C);
+    then(repository).should().findKnowledgeObjectMetadata(C_D_E);
+    then(repository).should().findKnowledgeObjectMetadata(C_D_F);
 
   }
 
@@ -153,7 +153,7 @@ public class EndpointLoaderTests {
   public void missingServiceSpecLogsAndSkips() {
 
     when(repository.findServiceSpecification(A_B_C,
-        repository.findImplementationMetadata(A_B_C)))
+        repository.findKnowledgeObjectMetadata(A_B_C)))
         .thenThrow(ShelfResourceNotFound.class);
 
     assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
@@ -165,7 +165,7 @@ public class EndpointLoaderTests {
   @Test
   public void missingImplementationLogsAndSkips() {
 
-    given(repository.findImplementationMetadata(A_B_C))
+    given(repository.findKnowledgeObjectMetadata(A_B_C))
         .willThrow(ShelfResourceNotFound.class);
 
     assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
@@ -190,30 +190,30 @@ public class EndpointLoaderTests {
   private void loadMockRepoWithServiceSpecs() throws IOException {
     //service specs
     given(repository.findServiceSpecification(eq(A_B_C), any()))
-        .willReturn(getYamlTestFile(A_B_C.getDashArkImplementation(), "service.yaml"));
+        .willReturn(getYamlTestFile(A_B_C.getDashArkVersion(), "service.yaml"));
     given(repository.findServiceSpecification(eq(C_D_E), any()))
-        .willReturn(getYamlTestFile(C_D_E.getDashArkImplementation(), "service.yaml"));
+        .willReturn(getYamlTestFile(C_D_E.getDashArkVersion(), "service.yaml"));
     given(repository.findServiceSpecification(eq(C_D_F), any()))
-        .willReturn(getYamlTestFile(C_D_F.getDashArkImplementation(), "service.yaml"));
+        .willReturn(getYamlTestFile(C_D_F.getDashArkVersion(), "service.yaml"));
   }
 
   private void loadMockRepoWithImplementations() throws IOException {
     // implementations for those KOs
-    given(repository.findImplementationMetadata(eq(A_B_C)))
-        .willReturn(getJsonTestFile(A_B_C.getDashArkImplementation(), "metadata.json"));
-    given(repository.findImplementationMetadata(eq(C_D_E)))
-        .willReturn(getJsonTestFile(C_D_E.getDashArkImplementation(), "metadata.json"));
-    given(repository.findImplementationMetadata(eq(C_D_F)))
-        .willReturn(getJsonTestFile(C_D_F.getDashArkImplementation(), "metadata.json"));
+    given(repository.findKnowledgeObjectMetadata(eq(A_B_C)))
+        .willReturn(getJsonTestFile(A_B_C.getDashArkVersion(), "metadata.json"));
+    given(repository.findKnowledgeObjectMetadata(eq(C_D_E)))
+        .willReturn(getJsonTestFile(C_D_E.getDashArkVersion(), "metadata.json"));
+    given(repository.findKnowledgeObjectMetadata(eq(C_D_F)))
+        .willReturn(getJsonTestFile(C_D_F.getDashArkVersion(), "metadata.json"));
   }
 
   private void loadMockRepoWithDeploymentSpecs() throws IOException {
     // implementations for those KOs
     given(repository.findDeploymentSpecification(eq(A_B_C), any()))
-        .willReturn(getYamlTestFile(A_B_C.getDashArkImplementation(), "deployment.yaml"));
+        .willReturn(getYamlTestFile(A_B_C.getDashArkVersion(), "deployment.yaml"));
     given(repository.findDeploymentSpecification(eq(C_D_E), any()))
-        .willReturn(getYamlTestFile(C_D_E.getDashArkImplementation(), "deployment.yaml"));
+        .willReturn(getYamlTestFile(C_D_E.getDashArkVersion(), "deployment.yaml"));
     given(repository.findDeploymentSpecification(eq(C_D_F), any()))
-        .willReturn(getYamlTestFile(C_D_F.getDashArkImplementation(), "deployment.yaml"));
+        .willReturn(getYamlTestFile(C_D_F.getDashArkVersion(), "deployment.yaml"));
   }
 }

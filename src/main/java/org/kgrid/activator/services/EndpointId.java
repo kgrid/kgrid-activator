@@ -44,7 +44,7 @@ public class EndpointId implements Comparable {
 
   @Override
   public String toString() {
-    return arkId.getSlashArkImplementation() +  endpointName;
+    return arkId.getSlashArkVersion() +  endpointName;
   }
 
   @Override
@@ -63,7 +63,7 @@ public class EndpointId implements Comparable {
     }
 
     // Custom matching if one ark is missing a version:
-    if(arkId.getImplementation() == null || that.arkId.getImplementation() == null){
+    if(arkId.getVersion() == null || that.arkId.getVersion() == null){
        if(arkId.getNaan() == that.getArkId().getNaan() && arkId.getName() == that.getArkId().getName()){
          return endpointName != null ? endpointName.equals(that.endpointName)
              : that.endpointName == null;
@@ -97,9 +97,9 @@ public class EndpointId implements Comparable {
       return this.getArkId().getName().compareTo(that.getArkId().getName());
     }
 
-    if(this.getArkId().getImplementation() != null && that.getArkId().getImplementation() != null){
-      if(this.getArkId().getImplementation().compareTo(that.getArkId().getImplementation()) != 0) {
-        return this.getArkId().getImplementation().compareTo(that.getArkId().getImplementation());
+    if(this.getArkId().getVersion() != null && that.getArkId().getVersion() != null){
+      if(this.getArkId().getVersion().compareTo(that.getArkId().getVersion()) != 0) {
+        return this.getArkId().getVersion().compareTo(that.getArkId().getVersion());
       }
     }
 

@@ -89,7 +89,7 @@ public class ActivateEndpoint {
       @Selector String name, @Selector String implementation) {
 
     ArkId arkId = new ArkId(naan, name,implementation);
-    log.info("Activate {}", arkId.getSlashArkImplementation());
+    log.info("Activate {}", arkId.getSlashArkVersion());
     actitvate(arkId);
 
     JsonArray joArray = getJsonElements();
@@ -106,9 +106,9 @@ public class ActivateEndpoint {
   public void actitvate(ArkId arkId) {
 
 
-    if (arkId.isImplementation()){
+    if (arkId.hasVersion()){
         endpoints.entrySet().removeIf(
-            e -> e.getKey().getArkId().getDashArkImplementation().equals(arkId.getDashArkImplementation()));
+            e -> e.getKey().getArkId().getDashArkVersion().equals(arkId.getDashArkVersion()));
       } else {
         endpoints.entrySet().removeIf(
             e -> e.getKey().getArkId().getDashArk().equals(arkId.getDashArk()));

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
-import org.kgrid.shelf.controller.KnowledgeObjectContoller;
+import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public class EndpointController {
         slash(resource.getEndpointPath()).withSelfRel();
 
     Link swaggerEditor = new Link("https://editor.swagger.io?url="+
-        linkTo(KnowledgeObjectContoller.class).slash("kos").slash(resource.getServicePath()),
+        linkTo(KnowledgeObjectController.class).slash("kos").slash(resource.getServicePath()),
         "swagger_editor");
 
     resource.add(self);

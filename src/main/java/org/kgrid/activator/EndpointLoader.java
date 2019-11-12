@@ -41,9 +41,9 @@ public class EndpointLoader {
 
     Map<EndpointId, Endpoint> endpoints = new HashMap<>();
 
-    if (ark.isImplementation()) {
+    if (ark.hasVersion()) {
 
-      log.info("ArkId: " + ark.getDashArkImplementation());
+      log.info("ArkId: " + ark.getDashArkVersion());
       loadKOImplemtation(ark, endpoints);
 
     } else {
@@ -68,11 +68,11 @@ public class EndpointLoader {
   private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
 
 
-    log.info("Load KO Implementation {}", ark.getDashArkImplementation());
+    log.info("Load KO Implementation {}", ark.getDashArkVersion());
 
     try {
 
-      JsonNode implementationMetadata = knowledgeObjectRepository.findImplementationMetadata(ark);
+      JsonNode implementationMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
 
       JsonNode serviceDescription = knowledgeObjectRepository
           .findServiceSpecification(ark, implementationMetadata);
@@ -85,7 +85,7 @@ public class EndpointLoader {
               .findDeploymentSpecification(ark, implementationMetadata);
           spec = deploymentSpecification.get("endpoints").get(service.getKey());
         } catch (ShelfException e) {
-          log.info(ark.getDashArkImplementation() + " has no deployment descriptor, looking for info in the service spec." ) ;
+          log.info(ark.getDashArkVersion() + " has no deployment descriptor, looking for info in the service spec." ) ;
         }
 
         JsonNode post = service.getValue().get("post");
@@ -97,7 +97,7 @@ public class EndpointLoader {
 
         final Endpoint endpoint = new Endpoint();
         endpoint.setActivated(LocalDateTime.now());
-        endpoint.setPath(ark.getSlashArk() + service.getKey() + (ark.getImplementation() != null ?  "?v=" + ark.getImplementation() : ""));
+        endpoint.setPath(ark.getSlashArk() + service.getKey() + (ark.getVersion() != null ?  "?v=" + ark.getVersion() : ""));
         endpoint.setDeployment(spec);
         endpoint.setService(serviceDescription);
         endpoint.setImpl(implementationMetadata);
@@ -106,10 +106,10 @@ public class EndpointLoader {
       });
 
     } catch (ShelfException e) {
-      log.warn("Cannot load " + ark.getDashArkImplementation() + ": " + e.getMessage() ) ;
+      log.warn("Cannot load " + ark.getDashArkVersion() + ": " + e.getMessage() ) ;
       return true;
     } catch (NullPointerException ex) {
-      log.warn("Cannot load " + ark.getDashArkImplementation() + ": missing required model metadata path(s) for implementation, deployment and/or service." ) ;
+      log.warn("Cannot load " + ark.getDashArkVersion() + ": missing required model metadata path(s) for implementation, deployment and/or service." ) ;
       return true;
     }
     return false;
