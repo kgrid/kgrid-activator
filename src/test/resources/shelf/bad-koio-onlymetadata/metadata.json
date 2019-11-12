@@ -1,0 +1,11 @@
+{  "@id": "bad-koio",
+  "title": "the best bad-koio ever",
+  "identifier" : "ark:/hello/world",
+  "version":"onlymetadata",
+  "contributors" : "Kgrid Team",
+  "keywords":["Hello","example"],
+  "hasServiceSpecification": "",
+  "hasDeploymentSpecification": "",
+  "hasPayload": "",
+  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

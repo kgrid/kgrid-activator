@@ -1,0 +1,12 @@
+{
+  "@id": "onlymetadata",
+  "@type": "koio:Implementation",
+  "identifier": "ark:/bad/koio/onlymetadata",
+  "title": "Implementation of a fancy onlymetadata",
+  "hasServiceSpecification": "",
+  "hasDeploymentSpecification": "",
+  "hasPayload": "",
+  "@context": [
+    "http://kgrid.org/koio/contexts/implementation.jsonld"
+  ]
+}

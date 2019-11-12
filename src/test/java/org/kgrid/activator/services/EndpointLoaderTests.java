@@ -77,7 +77,7 @@ public class EndpointLoaderTests {
     assertNotNull("enpoint spec 'a-b-c/info' is in original spec",
         deploymentSpec.get("endpoints").get("/info"));
 
-    endpoint = eps.get(A_B_C.getDashArkVersion() + "/info");
+    endpoint = eps.get(A_B_C.getDashArk() + "-" + A_B_C.getVersion() + "/info");
     assertNull("endpointPath 'a-b-c/info' should not exist", endpoint);
   }
 
@@ -85,12 +85,12 @@ public class EndpointLoaderTests {
   public void endpointIsLoadedForAnKO() throws IOException {
 
     // load single endpoint implementation
-    Map<EndpointId, Endpoint> eps = endpointLoader.load(C_D_E);
+    Map<EndpointId, Endpoint> eps = endpointLoader.load(C_D_F);
     Endpoint endpoint = eps.get(new EndpointId(C_D_F,"/welcome"));
 
     System.out.println( endpoint );
 
-    assertEquals("should load four end points",1, eps.size());
+    assertEquals("should load four end points",3, eps.size());
 
     assertNotNull("endpointPath 'c-d-f/welcome' should exist", endpoint);
 
@@ -108,13 +108,13 @@ public class EndpointLoaderTests {
     Map<EndpointId, Endpoint> eps = endpointLoader.load();
 
     // Loader methods load 2 KOs, with 3 impls, and 5 endpoints (1 service spec has 3 endpoints!)
-    assertEquals("Map should have 5 endpoints", 2, eps.size());
+    assertEquals("Map should have 5 endpoints", 5, eps.size());
 
-    assertNotNull("'a-b/c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
-    assertNotNull("'c-d/e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
-    assertNotNull("'c-d/f/welcome' exists", eps.get(new EndpointId(C_D_F, "/welcome")));
-    assertNotNull("'c-d/f/goodbye' exists", eps.get(new EndpointId(C_D_F, "/goodbye")));
-    assertNotNull("'c-d/f/info' exists", eps.get(new EndpointId(C_D_F, "/info")));
+    assertNotNull("'a-b-c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
+    assertNotNull("'c-d-e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
+    assertNotNull("'c-d-f/welcome' exists", eps.get(new EndpointId(C_D_F, "/welcome")));
+    assertNotNull("'c-d-f/goodbye' exists", eps.get(new EndpointId(C_D_F, "/goodbye")));
+    assertNotNull("'c-d-f/info' exists", eps.get(new EndpointId(C_D_F, "/info")));
   }
 
   @Test
@@ -179,6 +179,7 @@ public class EndpointLoaderTests {
     final Map<ArkId, JsonNode> kos = new HashMap<>();
     kos.put(A_B_C, getJsonTestFile(A_B_C.getDashArk() + "-" + A_B_C.getVersion(), "metadata.json"));
     kos.put(C_D_E, getJsonTestFile(C_D_E.getDashArk() + "-" + C_D_E.getVersion(), "metadata.json"));
+    kos.put(C_D_F, getJsonTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "metadata.json"));
 
     given(repository.findAll()).willReturn(kos);
     given(repository.findKnowledgeObjectMetadata(C_D_E)).willReturn(

@@ -71,7 +71,7 @@ public class ActivationService {
 
     final JsonNode deploymentSpec = endpoint.getDeployment();
 
-    if (null == deploymentSpec) {
+    if (null == deploymentSpec || null == deploymentSpec.get("adapterType")) {
       throw new ActivatorException("No deployment specification for " + endpointKey);
     }
 

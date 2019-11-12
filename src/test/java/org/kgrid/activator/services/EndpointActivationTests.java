@@ -109,7 +109,7 @@ public class EndpointActivationTests {
         .getAdapter("JAVASCRIPT");
 
     then(adapter).should().activate(
-        Paths.get(C_D_F.getDashArkVersion(), "/welcome.js"),
+        Paths.get(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "/welcome.js"),
         "welcome");
 
   }

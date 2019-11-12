@@ -1,0 +1,8 @@
+{  "@id": "bad-koio",
+  "hasImplementation": ["bad-koio/onlymetadata","bad-koio/nometadata","bad-koio/noservice","bad-koio/blankservice",
+    "bad-koio/servicespecmismatch", "bad-koio/nodeployment", "bad-koio/runtimecodeerror", "bad-koio/compiletimecodeerror"],
+  "title": "the best bad-koio ever",
+  "@type":"koio:KnowledgeObject",
+  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+
+}
