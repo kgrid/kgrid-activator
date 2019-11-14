@@ -9,7 +9,7 @@ public class Endpoint {
 
   private String path;
   private JsonNode service;
-  private JsonNode impl;
+  private JsonNode metadata;
   private JsonNode deployment;
   private Executor executor;
   private LocalDateTime activated;
@@ -30,12 +30,12 @@ public class Endpoint {
     this.service = service;
   }
 
-  public JsonNode getImpl() {
-    return impl;
+  public JsonNode getMetadata() {
+    return metadata;
   }
 
-  public void setImpl(JsonNode impl) {
-    this.impl = impl;
+  public void setMetadata(JsonNode metadata) {
+    this.metadata = metadata;
   }
 
   public JsonNode getDeployment() {
@@ -56,7 +56,7 @@ public class Endpoint {
   public  static final class Builder {
 
     private JsonNode service;
-    private JsonNode impl;
+    private JsonNode metadata;
     private JsonNode deployment;
     private byte[] artifact;
     private String entry;
@@ -75,8 +75,8 @@ public class Endpoint {
       return this;
     }
 
-    public Builder withImpl(JsonNode impl) {
-      this.impl = impl;
+    public Builder withMetadata(JsonNode metadata) {
+      this.metadata = metadata;
       return this;
     }
 
@@ -95,7 +95,6 @@ public class Endpoint {
     public Endpoint build() {
       Endpoint endpoint = new Endpoint();
       endpoint.setService(service);
-      endpoint.setImpl(impl);
       endpoint.setDeployment(deployment);
       endpoint.setExecutor(executor);
       endpoint.activated=LocalDateTime.now();

@@ -123,7 +123,7 @@ public class ActivationService {
     final EndPointResult endPointResult = new EndPointResult(output);
 
     endPointResult.getInfo().put("inputs", inputs);
-    endPointResult.getInfo().put("ko", endpoint.getImpl());
+    endPointResult.getInfo().put("ko", endpoint.getMetadata());
 
     return endPointResult;
   }
@@ -146,7 +146,7 @@ public class ActivationService {
     final EndPointResult endPointResult = new EndPointResult(output);
 
     endPointResult.getInfo().put("inputs", inputs);
-    endPointResult.getInfo().put("ko", endpoint.getImpl());
+    endPointResult.getInfo().put("ko", endpoint.getMetadata());
 
     return endPointResult;
   }

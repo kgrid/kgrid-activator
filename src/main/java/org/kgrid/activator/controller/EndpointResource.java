@@ -18,11 +18,11 @@ public class EndpointResource extends ResourceSupport {
 
   public EndpointResource(Endpoint endpoint) {
 
-    this.title = endpoint.getImpl().get("title").textValue();
+    this.title = endpoint.getMetadata().get("title").textValue();
     this.endpointPath = endpoint.getPath().replaceFirst("-","/");
 
     this.servicePath = new ArkId(
-        endpoint.getImpl().get("identifier").textValue()).
+        endpoint.getMetadata().get("identifier").textValue()).
                           getSlashArk()+"/service";
 
     this.activated = endpoint.getActivated();

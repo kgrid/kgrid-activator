@@ -81,14 +81,14 @@ public class ActivateEndpoint {
    *
    * @param naan
    * @param name
-   * @param implementation
+   * @param version
    * @return
    */
   @ReadOperation
-  public String activateKOImplementation(@Selector String naan,
-      @Selector String name, @Selector String implementation) {
+  public String activateKOVersion(@Selector String naan,
+      @Selector String name, @Selector String version) {
 
-    ArkId arkId = new ArkId(naan, name,implementation);
+    ArkId arkId = new ArkId(naan, name,version);
     log.info("Activate {}", arkId.getSlashArkVersion());
     actitvate(arkId);
 

@@ -65,7 +65,7 @@ public class EndpointLoaderTests {
     // test that endpoint parts exists
     assertNotNull("service descriptor should exist", endpoint.getService());
     assertNotNull("deployment spec should exist", endpoint.getDeployment());
-    assertNotNull("implementation should exist", endpoint.getImpl());
+    assertNotNull("metadata should exist", endpoint.getMetadata());
 
     // test deployment descriptor example
     JsonNode deploymentSpec = getYamlTestFile(A_B_C.getDashArk() + "-" + A_B_C.getVersion(), "deployment.yaml");
@@ -97,7 +97,7 @@ public class EndpointLoaderTests {
     // test that endpoint parts exists
     assertNotNull("service descriptor should exist", endpoint.getService());
     assertNotNull("deployment spec should exist", endpoint.getDeployment());
-    assertNotNull("implementation should exist", endpoint.getImpl());
+    assertNotNull("metadata should exist", endpoint.getMetadata());
 
   }
 

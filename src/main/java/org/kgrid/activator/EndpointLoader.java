@@ -75,18 +75,22 @@ public class EndpointLoader {
 
     try {
 
-      JsonNode implementationMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+      JsonNode koMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
 
       JsonNode serviceDescription = knowledgeObjectRepository
-          .findServiceSpecification(ark, implementationMetadata);
+          .findServiceSpecification(ark, koMetadata);
 
       serviceDescription.get("paths").fields().forEachRemaining(service -> {
 
         JsonNode spec = new ObjectMapper().createObjectNode();
         try {
           JsonNode deploymentSpecification = knowledgeObjectRepository
-              .findDeploymentSpecification(ark, implementationMetadata);
-          spec = deploymentSpecification.get("endpoints").get(service.getKey());
+              .findDeploymentSpecification(ark, koMetadata);
+          if(deploymentSpecification.has("endpoints")) {
+            spec = deploymentSpecification.get("endpoints").get(service.getKey());
+          } else {
+            throw new ShelfException("No endpoint list in the deployment descriptor");
+          }
         } catch (ShelfException e) {
           log.info(ark.getDashArkVersion() + " has no deployment descriptor, looking for info in the service spec." ) ;
         }
@@ -103,7 +107,7 @@ public class EndpointLoader {
         endpoint.setPath(ark.getSlashArk() + service.getKey() + (ark.getVersion() != null ?  "?v=" + ark.getVersion() : ""));
         endpoint.setDeployment(spec);
         endpoint.setService(serviceDescription);
-        endpoint.setImpl(implementationMetadata);
+        endpoint.setMetadata(koMetadata);
         endpoints.put(new EndpointId(ark, service.getKey()), endpoint);
 
       });
