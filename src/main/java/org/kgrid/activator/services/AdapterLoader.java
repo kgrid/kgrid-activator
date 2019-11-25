@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
+import org.apache.commons.lang3.StringUtils;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +65,11 @@ public class AdapterLoader {
       adapter.initialize(new ActivationContext() {
         @Override
         public Executor getExecutor(String key) {
-          if(endpoints.containsKey(key)) {
-            return endpoints.get(key).getExecutor();
+          String endpoint = StringUtils.substringAfterLast(key, "/");
+          ArkId ark = new ArkId(StringUtils.substringBeforeLast(key, "/"));
+          EndpointId id = new EndpointId(ark, endpoint);
+          if(endpoints.containsKey(id)) {
+            return endpoints.get(id).getExecutor();
           } else {
             log.error("Can't find executor in app context for endpoint ", key, " endpoints ", endpoints);
             throw new AdapterException("Can't find executor in app context for endpoint "+ key);
