@@ -6,8 +6,8 @@
   "contributors" : "Kgrid Team",
   "keywords":["Hello","example"],
   "hasServiceSpecification": "service.yaml",
-  "hasDeploymentSpecification": "$.paths.*.x-kgrid-activation",
-  "hasPayload": "$.paths.*.x-kgrid-activation.artifact",
+  "hasDeploymentSpecification": "deployment.yaml",
+  "hasPayload": "welcome.js",
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 
 }
