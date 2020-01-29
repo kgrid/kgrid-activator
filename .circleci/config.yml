@@ -125,8 +125,8 @@ jobs:
       # Create a shelf with KOs
       - run:
           name: Create Heroku Shelf
-          # command: |
-          #   .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise ipp-collection"
-
           command: |
-            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "cpic-collection example-collection"
+            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "opioid-collection cpic-collection example-collection cancer-risk-collection icon-array script-numerate postpci labwise ipp-collection"
+
+          # command: |
+          #   .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "cpic-collection example-collection"
