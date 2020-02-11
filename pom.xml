@@ -72,6 +72,11 @@
       <version>0.8.2</version>
     </dependency>
     <dependency>
+      <groupId>org.kgrid</groupId>
+      <artifactId>proxy-adapter</artifactId>
+      <version>0.0.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-arq</artifactId>
       <version>3.9.0</version>
