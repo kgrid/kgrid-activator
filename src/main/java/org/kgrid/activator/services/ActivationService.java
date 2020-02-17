@@ -71,29 +71,29 @@ public class ActivationService {
 
     final JsonNode deploymentSpec = endpoint.getDeployment();
 
-    if (null == deploymentSpec || null == deploymentSpec.get("adapterType")) {
+    if (null == deploymentSpec) {
       throw new ActivatorException("No deployment specification for " + endpointKey);
+    }
+    String adapterName;
+    if(null == deploymentSpec.get("adapterType")) {
+      if(null == deploymentSpec.get("adapter")) {
+        throw new ActivatorException("No adapter specified for " + endpointKey);
+      } else {
+        adapterName = deploymentSpec.get("adapter").asText();
+      }
+    } else {
+      adapterName = deploymentSpec.get("adapterType").asText();
     }
 
     Adapter adapter = adapterResolver
-        .getAdapter(deploymentSpec.get("adapterType").asText());
+        .getAdapter(adapterName);
 
     try {
-      final Path artifact = Paths.get(
-          koRepo.getObjectLocation(ark),
-          deploymentSpec.get("artifact").asText()
-      );
-
-      final String entry = deploymentSpec.get("entry").asText();
-
-      try {
-        return adapter.activate(artifact, entry);
-      } catch (AdapterException e) {
-        throw new ActivatorException(e.getMessage(), e);
-      }
-    } catch (ShelfException e) {
-      throw new AdapterException("Cannot load object with ark id " + ark);
+      return adapter.activate(koRepo.getObjectLocation(ark), deploymentSpec);
+    } catch (AdapterException e) {
+      throw new ActivatorException(e.getMessage(), e);
     }
+
   }
 
   public EndPointResult execute (EndpointId id, String version, Object inputs) {

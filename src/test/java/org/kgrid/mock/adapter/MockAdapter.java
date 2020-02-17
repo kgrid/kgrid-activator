@@ -1,5 +1,6 @@
 package org.kgrid.mock.adapter;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.nio.file.Path;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
@@ -18,6 +19,9 @@ public class MockAdapter implements Adapter {
   public void initialize(ActivationContext activationContext) {
     status = "UP";
   }
+
+  @Override
+  public Executor activate(String s, JsonNode n) {return null;}
 
   @Override
   public Executor activate(Path path, String s) {
