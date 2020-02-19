@@ -97,9 +97,7 @@ public class EndpointLoader {
 
         JsonNode post = service.getValue().get("post");
         if(post.has("x-kgrid-activation")) {
-          ((ObjectNode)spec).set("artifact", post.get("x-kgrid-activation").get("artifact"));
-          ((ObjectNode)spec).set("adapterType", post.get("x-kgrid-activation").get("adapter"));
-          ((ObjectNode)spec).set("entry", post.get("x-kgrid-activation").get("entry"));
+          spec = post.get("x-kgrid-activation");
         }
 
         final Endpoint endpoint = new Endpoint();
