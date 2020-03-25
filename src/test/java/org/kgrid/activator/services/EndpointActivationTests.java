@@ -86,7 +86,7 @@ public class EndpointActivationTests {
     given(koRepo.getObjectLocation(new ArkId("c-d/f")))
         .willReturn("c-d-f");
 
-    given(adapter.activate(any(), any(), any(JsonNode.class)))
+    given(adapter.activate(any(), any(), any(), any(JsonNode.class)))
         .willReturn(new Executor() {
           @Override
           public Object execute(Object input) {
@@ -115,7 +115,7 @@ public class EndpointActivationTests {
         .getAdapter("JAVASCRIPT");
 
     then(adapter).should().activate(
-        C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F,
+        C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F, C_D_F_WELCOME.getEndpointName(),
         dep.get("endpoints").get("/welcome"));
 
   }
@@ -176,7 +176,7 @@ public class EndpointActivationTests {
     given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
-    given(adapter.activate(any(String.class), any(), any()))
+    given(adapter.activate(any(String.class), any(), any(), any()))
         .willThrow(new AdapterException("Binary resource not found..."));
 
     // when
@@ -193,7 +193,7 @@ public class EndpointActivationTests {
     given(adapterResolver.getAdapter("JAVASCRIPT"))
         .willReturn(adapter);
 
-    given(adapter.activate(any(String.class), any(), any(JsonNode.class)))
+    given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
         .willThrow(new AdapterException("Binary resource not found..."));
 
     // when
@@ -206,7 +206,7 @@ public class EndpointActivationTests {
 
     // try again with a real Executor returned
     reset(adapter);
-    given(adapter.activate(any(String.class), any(), any(JsonNode.class)))
+    given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
         .willReturn(new Executor() {
           @Override
           public Object execute(Object input) {

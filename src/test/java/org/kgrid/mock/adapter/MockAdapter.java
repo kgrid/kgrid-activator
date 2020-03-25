@@ -22,7 +22,7 @@ public class MockAdapter implements Adapter {
   }
 
   @Override
-  public Executor activate(String s, ArkId arkId, JsonNode n) {return null;}
+  public Executor activate(String s, ArkId arkId, String endpointName, JsonNode n) {return null;}
 
   @Override
   public Executor activate(Path path, String s) {
