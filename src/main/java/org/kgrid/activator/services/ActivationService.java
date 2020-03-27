@@ -89,7 +89,7 @@ public class ActivationService {
         .getAdapter(adapterName);
 
     try {
-      return adapter.activate(koRepo.getObjectLocation(ark), ark, deploymentSpec);
+      return adapter.activate(koRepo.getObjectLocation(ark), ark, endpointKey.getEndpointName().substring(1), deploymentSpec);
     } catch (AdapterException e) {
       throw new ActivatorException(e.getMessage(), e);
     }
