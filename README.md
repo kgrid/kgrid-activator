@@ -4,7 +4,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Overview
-As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data. 
+As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
 
 ## Table of Contents
 
@@ -54,14 +54,14 @@ Once Running access the [Activators Health Endpoint](http://localhost:8080/healt
 "status": "UP",
     "shelf": {
         "status": "UP",
-    
+
     ...
-    
+
     "activationService": {
             "status": "UP",
-    
+
     ...
-    
+
    "diskSpace": {
            "status": "UP",     
 ```
@@ -71,7 +71,7 @@ The activator will detect when a file in the shelf directory or in a knowledge o
 
 ## Running the tests
 
-#### Automated tests 
+#### Automated tests
 Unit and Integration tests can be executed via
 ```
 mvn clean test
@@ -103,8 +103,10 @@ curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintston
 ## Deploy Activator
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
 
+__Important:__ When deploying to HEROKU, DO NOT use `Deploy Branch`. 
+
 ## Release Activator
-Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details 
+Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details
 
 
 ## Publish Documentation
@@ -121,6 +123,6 @@ Build dist directory ready for publish
 npm run docs:build`
 ```
 
-CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org/) and 
+CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org/) and
 the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
 GitHub repository's GitHub Pages.
