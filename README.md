@@ -103,8 +103,13 @@ curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintston
 ## Deploy Activator
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
 
-__Important:__ When deploying to HEROKU, DO NOT use `Deploy Branch`. 
+__Important:__ When deploying to HEROKU, DO NOT use `Deploy Branch`.
 
+__Note:__
+Configuration Variable Currently set for Krid-activator on Heroku:
+```
+--kgrid.shelf.cdostore.url=filesystem:file://shelf --cors.url=*  --kgrid.adapter.proxy.url=https://node-express-runtime.herokuapp.com  --kgrid.adapter.proxy.self=https://kgrid-activator.herokuapp.com --management.info.git.mode=full --management.endpoints.web.exposure.include=*
+```
 ## Release Activator
 Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details
 
