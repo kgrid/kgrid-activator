@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator"})
+@SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
 @EnableSwagger2
 @CrossOrigin
 public class KgridActivatorApplication implements CommandLineRunner {
