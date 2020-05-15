@@ -7,8 +7,8 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.StringUtils;
-import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.ActivationContext;
+import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
@@ -16,6 +16,9 @@ import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthContributorRegistry;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -33,6 +36,10 @@ public class AdapterLoader {
   @Autowired
   private CompoundDigitalObjectStore cdoStore;
 
+  @Autowired
+  private HealthContributorRegistry registry;
+
+  // TODO: delete, for real
   private static Properties resolveProperties(Environment env) {
     Properties properties = new Properties();
     MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
@@ -54,6 +61,20 @@ public class AdapterLoader {
 
     ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
     for (Adapter adapter : loader) {
+      HealthIndicator indicator = new HealthIndicator() {
+        @Override
+        public Health health() {
+          adapter.status();
+          return Health
+              .up()
+              .withDetail("type","Generic Adapter Health Indicator")
+              .build();
+        }
+      };
+
+      registry.unregisterContributor(adapter.getType());
+      registry.registerContributor(adapter.getType(), indicator);
+
       initializeAdapter(adapter, endpoints);
       adapters.put(adapter.getType().toUpperCase(), adapter);
     }
