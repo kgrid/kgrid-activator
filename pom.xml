@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>shelf-api</artifactId>
-      <version>2.1.1</version>
+      <version>2.1.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.10.1</version>
+      <version>0.10.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jena</groupId>
