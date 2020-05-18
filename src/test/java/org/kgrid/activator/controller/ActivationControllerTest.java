@@ -46,7 +46,7 @@ public class ActivationControllerTest {
   public void endpointInvocationReturnsResult() throws Exception {
     MvcResult result = getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -58,15 +58,15 @@ public class ActivationControllerTest {
   private ResultActions getResultActions(String endpointPath, String content) throws Exception {
     return mockMvc.perform(
         post(endpointPath).content(content)
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .accept(MediaType.APPLICATION_JSON_UTF8));
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void endpointNoRequestBodyError() throws Exception {
     MvcResult result = getResultActions("/c/d/welcome?v=f", "")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -79,7 +79,7 @@ public class ActivationControllerTest {
   public void endpointBlankServiceError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -92,7 +92,7 @@ public class ActivationControllerTest {
   public void serviceSpecFunctionMismatchError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -105,7 +105,7 @@ public class ActivationControllerTest {
   public void endpointNoMetadataError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -118,7 +118,7 @@ public class ActivationControllerTest {
   public void endpointNoServiceError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
@@ -131,7 +131,7 @@ public class ActivationControllerTest {
   public void endpointOnlyMetadataError() throws Exception {
     MvcResult result = getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
         .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 
     JsonNode content = mapper
