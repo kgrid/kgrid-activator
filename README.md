@@ -50,7 +50,7 @@ mvn clean spring-boot:run
 
 Once Running access the [Activators Health Endpoint](http://localhost:8080/health).  All _statuses_ reported should be **UP**
 
-```$xslt
+```json
 "status": "UP",
     "shelf": {
         "status": "UP",
@@ -63,11 +63,27 @@ Once Running access the [Activators Health Endpoint](http://localhost:8080/healt
     ...
 
    "diskSpace": {
-           "status": "UP",     
+           "status": "UP",  
+   ...
+   "org.kgrid.adapter.javascript.JavascriptAdapter": {
+           "status": "UP",
+           "details": {
+              "type": "JAVASCRIPT",
+              "created": "2020-05-18T19:41:12.951Z"
+           }
+    },
+	"org.kgrid.adapter.proxy.ProxyAdapter": {
+           "status": "UP",
+           "details": {
+              "type": "PROXY",
+              "created": "2020-05-18T19:41:12.951Z"
+		}
+	}
+}   
 ```
 
 #### Auto-Reload
-The activator will detect when a file in the shelf directory or in a knowledge object in the shelf directory has been added, changed or removed and reload the available objects in the activator. This allows a user to add or remove knowledge objects or versions of knowledge objects and have them be ready for activation without needing to reload the shelf manually.
+> Coming soon
 
 ## Running the tests
 
