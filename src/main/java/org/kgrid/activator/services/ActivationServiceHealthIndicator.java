@@ -20,9 +20,9 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
 
     int kos = repository.findAll().size();
     int eps = endpoints.size();
-    boolean somethingWorked = kos == 0 || (eps >= kos);
+    boolean hasNoObjectsOrAtLeastOneEndpoint = (kos == 0 || eps > 0);
 
-    Builder status = somethingWorked ? Health.up() : Health.down();
+    Builder status = hasNoObjectsOrAtLeastOneEndpoint ? Health.up() : Health.down();
 
     return status.withDetail("kos", kos).withDetail("endpoints", eps).build();
   }
