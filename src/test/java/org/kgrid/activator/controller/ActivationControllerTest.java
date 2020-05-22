@@ -1,11 +1,5 @@
 package org.kgrid.activator.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -20,124 +14,128 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = KgridActivatorApplication.class)
 public class ActivationControllerTest {
 
-  @Autowired
-  private WebApplicationContext webApplicationContext;
+  @Autowired private WebApplicationContext webApplicationContext;
   private MockMvc mockMvc;
-  @Autowired
-  private ObjectMapper mapper;
-  private RestTemplate restTemplate;
-
+  @Autowired private ObjectMapper mapper;
 
   @Before
-  public void setUp(){
+  public void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    restTemplate = new RestTemplate();
   }
 
   @Test
   public void endpointInvocationReturnsResult() throws Exception {
-    MvcResult result = getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
     assertEquals("Welcome to Knowledge Grid, tester", content.get("result").asText());
-
   }
+
   private ResultActions getResultActions(String endpointPath, String content) throws Exception {
     return mockMvc.perform(
-        post(endpointPath).content(content)
+        post(endpointPath)
+            .content(content)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void endpointNoRequestBodyError() throws Exception {
-    MvcResult result = getResultActions("/c/d/welcome?v=f", "")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/c/d/welcome?v=f", "")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
     assertTrue(content.get("Detail").asText().startsWith("Required request body is missing"));
   }
 
   @Test
   public void endpointBlankServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad/koio/blankservice/welcome", content.get("Detail").asText());
+    assertEquals(
+        "No endpoint found for bad/koio/blankservice/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void serviceSpecFunctionMismatchError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("java.lang.NoSuchMethodException: No such function hello", content.get("Detail").asText());
+    assertEquals(
+        "java.lang.NoSuchMethodException: No such function hello", content.get("Detail").asText());
   }
 
   @Test
   public void endpointNoMetadataError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad/koio/nometadata/welcome", content.get("Detail").asText());
+    assertEquals(
+        "No endpoint found for bad/koio/nometadata/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointNoServiceError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad/koio/noservice/welcome", content.get("Detail").asText());
+    assertEquals(
+        "No endpoint found for bad/koio/noservice/welcome", content.get("Detail").asText());
   }
 
   @Test
   public void endpointOnlyMetadataError() throws Exception {
-    MvcResult result = getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
-        .andExpect(status().isInternalServerError())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
+    MvcResult result =
+        getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
-    JsonNode content = mapper
-        .readTree(result.getResponse().getContentAsByteArray());
+    JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
-    assertEquals("No endpoint found for bad/koio/onlymetadata/welcome", content.get("Detail").asText());
+    assertEquals(
+        "No endpoint found for bad/koio/onlymetadata/welcome", content.get("Detail").asText());
   }
-
 }
