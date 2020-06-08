@@ -10,6 +10,7 @@ import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -23,6 +24,8 @@ import java.util.ServiceLoader;
 
 @Service
 public class AdapterLoader {
+  @Autowired
+  private AutowireCapableBeanFactory beanFactory;
 
   private final Logger log = LoggerFactory.getLogger(getClass());
   @Autowired private Environment env;
@@ -36,6 +39,7 @@ public class AdapterLoader {
     Map<String, Adapter> adapters = new HashMap<>();
     ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
     for (Adapter adapter : loader) {
+      beanFactory.autowireBean(adapter);
       initializeAdapter(adapter, endpoints);
       adapters.put(adapter.getType().toUpperCase(), adapter);
       registerHealthEndpoint(adapter);

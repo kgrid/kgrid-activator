@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -22,6 +23,8 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AdapterLoaderHealthEndpointTest {
 
+  @Mock
+  AutowireCapableBeanFactory beanFactory;
   @Mock HealthContributorRegistry healthContributorRegistry;
   @InjectMocks AdapterLoader adapterLoader;
 
