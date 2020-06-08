@@ -52,9 +52,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       #must run install to ensure multi module dependencies(simple-scripts-api) are cached
       - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline -s .circleci/settings.xml
@@ -68,8 +68,8 @@ jobs:
 
       # run build and test
       - run:
-         name: Build and Test And Verify
-         command: |
+          name: Build and Test And Verify
+          command: |
             mvn verify -s .circleci/settings.xml
             mkdir -p ~/circle-artifacts/
             cp .*/target/kgrid-activator*.jar ~/circle-artifacts
@@ -116,7 +116,7 @@ jobs:
           at: ~/project
 
 
-    # Deploy to Heroku gets the KOs and adds them to the shelf on Heroku
+      # Deploy to Heroku gets the KOs and adds them to the shelf on Heroku
       - run:
           name: Deploy
           command: |
@@ -126,7 +126,7 @@ jobs:
       - store_artifacts:
           path: ~/circle-artifacts
 
-      # Create a shelf with KOs
+      # Create a shelf with KOs About to go away
       - run:
           name: Create Heroku Shelf
           command: |
