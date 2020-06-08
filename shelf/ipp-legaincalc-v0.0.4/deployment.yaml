@@ -1,5 +1,0 @@
-endpoints:
-  /lifeexpectancygains:
-    adapterType: JAVASCRIPT
-    artifact: lifeexpectancygains.js
-    entry: lifeexpectancygains

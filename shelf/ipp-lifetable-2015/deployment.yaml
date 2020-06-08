@@ -1,5 +1,0 @@
-endpoints:
-  /mortalityrateset:
-    adapterType: JAVASCRIPT
-    artifact: mortalityrateset.js
-    entry: mortalityrateset

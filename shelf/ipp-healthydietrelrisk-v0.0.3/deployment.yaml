@@ -1,5 +1,0 @@
-endpoints:
-  /healthydietrelrisk:
-    adapterType: JAVASCRIPT
-    artifact: healthydietrelrisk.js
-    entry: healthydietrelrisk

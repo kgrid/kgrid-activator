@@ -1,5 +1,0 @@
-endpoints:
-  /recommendationlist:
-    adapterType: JAVASCRIPT
-    artifact: recommendationlist.js
-    entry: recommendationlist

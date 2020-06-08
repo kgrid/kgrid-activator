@@ -1,9 +1,0 @@
-endpoints:
-  /bgabsoluterisk:
-    adapterType: JAVASCRIPT
-    artifact: bgabsoluterisk.js
-    entry: bgabsoluterisk
-  /extractedFeatures:
-    adapterType: JAVASCRIPT
-    artifact: bgabsoluterisk.js
-    entry: extractedFeatures

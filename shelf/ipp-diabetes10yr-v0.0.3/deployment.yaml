@@ -1,5 +1,0 @@
-endpoints:
-  /diabetes10yr:
-    adapterType: JAVASCRIPT
-    artifact: diabetes10yr.js
-    entry: diabetes10yr

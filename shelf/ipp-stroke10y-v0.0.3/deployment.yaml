@@ -1,5 +1,0 @@
-endpoints:
-  /stroke10y:
-    adapterType: JAVASCRIPT
-    artifact: stroke10y.js
-    entry: stroke10y

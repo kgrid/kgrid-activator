@@ -1,5 +1,0 @@
-endpoints:
-  /bgrelrisktotal:
-    adapterType: JAVASCRIPT
-    artifact: bgrelrisktotal.js
-    entry: bgrelrisktotal
