@@ -8,7 +8,7 @@ workflows:
   build: # build, test, resolve dependencies, and deploy if branch is master
     jobs:
       - maven/test:
-          command: '-s .circleci/settings.xml'
+          settings_file: ".circleci/settings.xml"
       - heroku/deploy-via-git:
           requires:
             - maven/test
