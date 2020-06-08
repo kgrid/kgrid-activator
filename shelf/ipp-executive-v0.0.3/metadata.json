@@ -1,0 +1,15 @@
+{
+  "@id" : "ipp-executive",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/executive",
+  "version" : "v0.0.3",
+  "title" : "IPP Project : Prioritization of USPSTF Recommendations",
+  "contributors" : "KGRID TEAM",
+  "desription" : "IPP Recommendation Model Object for Colorectal Cancer Screening",
+  "citations" : [ "https://www.uspreventiveservicestaskforce.org/Page/Name/uspstf-a-and-b-recommendations/" ],
+  "keywords" : [ "IPP Project", "Prioritization", "USPSTF Recommendations", "executive object" ],
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "process.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

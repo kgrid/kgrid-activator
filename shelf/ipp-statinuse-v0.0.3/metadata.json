@@ -1,0 +1,15 @@
+{
+  "@id" : "ipp-statinuse",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/statinuse",
+  "version" : "v0.0.3",
+  "title" : "Lower Cholesterol - Statin Use",
+  "contributors" : "KGRID TEAM",
+  "desription" : "Retrieve mortality rate set based on race, gender from CDC published life table.",
+  "citations" : [ "https://www.uspreventiveservicestaskforce.org/Page/Name/uspstf-a-and-b-recommendations/" ],
+  "keywords" : [ "cholesterol", "statin", "IPP" ],
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "netbenefit.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

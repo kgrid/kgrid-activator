@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: AAA risk v0.0.2
+  description: >-
+    Mortality rate sets for different population groups and national average for
+    Year v0.0.2.
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+servers:
+  - url: /ipp/brcaprevmed
+    description: Mortality rate sets.
+tags:
+  - name: KO Endpoints
+    description: >-
+      Mortality rate sets for different population groups and national average
+      for Year v0.0.2.
+paths:
+  /netbenefit:
+    post:
+      tags:
+        - KO Endpoints
+      description: Retrieve  the mortality rate set for the pateint's population group.
+      operationId: q_x
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+  /extractedFeatures:
+    post:
+      tags:
+        - KO Endpoints
+      description: Retrieve  the mortality rate set for the pateint's population group.
+      operationId: features
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+components:
+  schemas:
+    input:
+      required:
+        - features
+      properties:
+        features:
+          type: object
+          example:
+            $ref: 'https://demo.kgrid.org/schemas/ippPatientFeaturesSample.json#/patient/features'
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            type: object
+          example:
+            colorectal-cancer: {}

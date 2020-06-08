@@ -1,0 +1,5 @@
+endpoints:
+  /mirisk:
+    adapterType: JAVASCRIPT
+    artifact: mirisk.js
+    entry: mirisk

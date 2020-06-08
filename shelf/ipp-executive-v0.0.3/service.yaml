@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Recommendation Ranking
+  description: >-
+    Individualized Precision Prevention (IPP) algorithm systematically combines
+    risk and benefit evidence with individual patient data for both
+    personalizing and prioritizing recommended preventive care services.
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+servers:
+  - url: /ipp/executive
+    description: Recommendation Ranking KO
+tags:
+  - name: KO Endpoints
+    description: IPP Recommendation Ranking
+paths:
+  /process:
+    post:
+      tags:
+        - KO Endpoints
+      description: >-
+        (IPP) algorithm systematically combines risk and benefit evidence with
+        individual patient data for both personalizing and prioritizing
+        recommended preventive care services.
+      operationId: ippexecutive
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+components:
+  schemas:
+    input:
+      required:
+        - patient
+      properties:
+        patient:
+          type: object
+          properties:
+            id:
+              type: string
+            features:
+              type: object
+          example:
+            $ref: 'https://demo.kgrid.org/schemas/ippPatientFeaturesSample.json#/patient'
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            type: object
+          example:
+            lifeexpectancy: {}

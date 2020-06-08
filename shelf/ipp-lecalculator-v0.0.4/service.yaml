@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Life Expectancy Calculator
+  description: Life Expectancy Calculator.
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+servers:
+  - url: /ipp/lecalculator
+    description: Life Expectancy Calculator.
+tags:
+  - name: KO Endpoints
+    description: Life Expectancy Calculator
+paths:
+  /lifeexpectancy:
+    post:
+      tags:
+        - KO Endpoints
+      description: Life Expectancy Calculator.
+      operationId: aspirin
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+components:
+  schemas:
+    input:
+      required:
+        - age_start
+        - age_end
+        - mortalityrate
+        - options
+      properties:
+        age_start:
+          type: number
+          example: 51
+        age_end:
+          type: number
+          example: 100
+        mortalityrate:
+          type: string
+          example: >-
+            0.0051123, 0.0003717, 0.0002415, 0.0001666, 0.0001368,
+            0.0001399,0.0001320,0.0001247,0.0001146,0.0001024,0.0000927,0.0000931,0.0001123,0.0001547,0.0002136,0.0002805,0.0003420,0.0003902,
+            0.0004179, 0.0004299, 0.0004401, 0.0004535, 0.0004622, 0.0004664,
+            0.0004681, 0.0004693, 0.0004737, 0.0004851, 0.0005062, 0.0005361,
+            0.0005741,
+            0.0006172,0.0006671,0.0007092,0.0007597,0.0008146,0.0008811,0.0009662,0.0010720,0.0011915,0.0013137,0.0014367,0.0015687,0.0017133,0.0018707,0.0020418,0.0022194,0.0023984,0.0025771,0.0027628,0.0029652,0.0031942,0.0034518,0.0037388,0.0040526,0.0043864,0.0047490,0.0051637,0.0056565,0.0062408,0.0069429,0.0077309,0.0085437,0.0093225,0.0100877,0.0109375,0.0118241,0.0128656,0.0140734,0.0154561,0.0170200,0.0188131,
+            0.0208832,0.0232588,0.0259688,0.0290645,0.0324350,0.0361818,0.0403434,0.0449613,0.0500802,0.0557479,0.0620152,0.0689356,0.0765653,0.0849623,0.0941863,0.1042975,0.1153560,0.1274202,0.1405457,0.1547834,0.1701778,0.1867650,0.2045704,0.2236065,0.2438709,0.265344,0.2879880,0.3117442,1.0000000
+        options:
+          type: object
+          properties:
+            includeintermediateresult:
+              type: boolean
+              example: false
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            type: object
+          example:
+            colorectal-cancer: {}

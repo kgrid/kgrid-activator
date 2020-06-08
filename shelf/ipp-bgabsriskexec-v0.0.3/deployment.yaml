@@ -1,0 +1,5 @@
+endpoints:
+  /bgabsrisktotal:
+    adapterType: JAVASCRIPT
+    artifact: bgabsrisktotal.js
+    entry: bgabsrisktotal

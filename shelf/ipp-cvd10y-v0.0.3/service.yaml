@@ -1,0 +1,65 @@
+openapi: 3.0.2
+info:
+  version: one
+  title: 'Hello, World'
+  description: hello world
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+servers:
+  - url: /ipp/cvd10y
+    description: Hello world
+paths:
+  /riskscore:
+    post:
+      description: Welcome.
+      operationId: welcome
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+      x-kgrid-activation:
+        artifact: src/index.js
+        adapter: JAVASCRIPT
+        entry: riskscore
+components:
+  schemas:
+    input:
+      required:
+        - features
+      properties:
+        features:
+          type: object
+          example:
+            $ref: 'https://demo.kgrid.org/schemas/ippPatientFeaturesSample.json#/patient/features'
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          properties:
+            riskscore:
+              type: number
+              format: float

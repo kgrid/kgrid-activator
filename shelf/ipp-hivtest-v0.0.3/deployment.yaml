@@ -1,0 +1,9 @@
+endpoints:
+  /expectedincrease:
+    adapterType: JAVASCRIPT
+    artifact: expectedincrease.js
+    entry: expectedincrease
+  /extractedFeatures:
+    adapterType: JAVASCRIPT
+    artifact: expectedincrease.js
+    entry: extractedFeatures

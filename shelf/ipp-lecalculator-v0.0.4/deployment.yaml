@@ -1,0 +1,5 @@
+endpoints:
+  /lifeexpectancy:
+    adapterType: JAVASCRIPT
+    artifact: lifeexpectancy.js
+    entry: lifeexpectancy

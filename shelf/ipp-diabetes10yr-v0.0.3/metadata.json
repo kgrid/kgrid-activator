@@ -1,0 +1,14 @@
+{
+  "@id" : "ipp-diabetes10yr",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/diabetes10yr",
+  "version" : "v0.0.3",
+  "title" : "Diabetes Risk Calculator",
+  "contributors" : "Kgrid Team",
+  "description" : "Calculates diabetes risk ",
+  "keywords" : [ "Diabetes risk calculator", "IPP" ],
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "diabetes10yr.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

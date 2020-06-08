@@ -1,0 +1,9 @@
+endpoints:
+  /bgrelativerisk:
+    adapterType: JAVASCRIPT
+    artifact: bgrelativerisk.js
+    entry: bgrelativerisk
+  /extractedFeatures:
+    adapterType: JAVASCRIPT
+    artifact: bgrelativerisk.js
+    entry: extractedFeatures

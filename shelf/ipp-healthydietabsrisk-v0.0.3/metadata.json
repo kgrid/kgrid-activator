@@ -1,0 +1,14 @@
+{
+  "@id" : "ipp-healthydietabsrisk",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/healthydietabsrisk",
+  "version" : "v0.0.3",
+  "title" : "Healthy Diet Absolute Risk Calculator",
+  "contributors" : "Kgrid Team",
+  "description" : "Calculates Healthy Diet Absolute Risk",
+  "keywords" : "Healthy Diet Absolute Risk calculator, IPP",
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "healthydietabsrisk.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

@@ -1,0 +1,14 @@
+{
+  "@id" : "ipp-healthydietrelrisk",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/healthydietrelrisk",
+  "version" : "v0.0.3",
+  "title" : "Healthy diet relative risk calculator",
+  "contributors" : "Kgrid Team",
+  "description" : "healthy diet relative risk calculator",
+  "keywords" : [ "healthy diet relative risk calculator", "IPP" ],
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "healthydietrelrisk.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

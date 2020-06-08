@@ -1,0 +1,9 @@
+endpoints:
+  /netbenefit:
+    adapterType: JAVASCRIPT
+    artifact: netbenefit.js
+    entry: netbenefit
+  /extractedFeatures:
+    adapterType: JAVASCRIPT
+    artifact: netbenefit.js
+    entry: extractedFeatures

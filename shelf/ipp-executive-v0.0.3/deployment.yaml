@@ -1,0 +1,5 @@
+endpoints:
+  /process:
+    adapterType: JAVASCRIPT
+    artifact: process.js
+    entry: process

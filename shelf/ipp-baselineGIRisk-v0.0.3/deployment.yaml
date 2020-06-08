@@ -1,0 +1,5 @@
+endpoints:
+  /baselineGIRisk:
+    adapterType: JAVASCRIPT
+    artifact: baselineGIRisk.js
+    entry: baselineGIRisk

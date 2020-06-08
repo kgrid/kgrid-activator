@@ -1,0 +1,13 @@
+{
+  "@id" : "ipp-cvd10y",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/cvd10y",
+  "version" : "v0.0.3",
+  "title" : "Cardiovascular Disease 10 Year Risk Score Calculation",
+  "contributors" : "Brooke",
+  "creator" : "org.kgrid",
+  "description" : "Knowledge Object Description",
+  "keywords" : [ "Cardiovacular Disease", "Risk Score" ],
+  "hasServiceSpecification" : "service.yaml",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

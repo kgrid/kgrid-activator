@@ -1,0 +1,14 @@
+{
+  "@id" : "ipp-bmicalculator",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/ipp/bmicalculator",
+  "version" : "v0.0.3",
+  "title" : "BMI Calculator",
+  "contributors" : "Kgrid Team",
+  "description" : "Calculates BMI ",
+  "keywords" : "bmi calulator, ipp",
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "bmi.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}

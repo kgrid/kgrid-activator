@@ -7,11 +7,11 @@ orbs:
 workflows:
   build: # build, test, resolve dependencies, and deploy if branch is master
     jobs:
-      - maven/test
+      - maven/test:
+          command: '-s .circleci/settings.xml'
       - heroku/deploy-via-git:
           requires:
-            - maven/test:
-                command: '-s .circleci/settings.xml'
+            - maven/test
           filters:
             branches:
               only: master
