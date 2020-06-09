@@ -9,12 +9,6 @@ workflows:
     jobs:
       - maven/test:
           settings_file: ".circleci/settings.xml"
-      - heroku/deploy-via-git:
-          requires:
-            - maven/test
-          filters:
-            branches:
-              only: master
   earlymorning: # build and deploy master at the crack-o-dawn
     triggers:
       - schedule:
