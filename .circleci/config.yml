@@ -1,136 +1,31 @@
-version: 2
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.0.1
+  heroku: circleci/heroku@1.0.1
+
 workflows:
-  version: 2
-  build-and-deploy:
+  build: # build, test, resolve dependencies, and deploy if branch is master
     jobs:
-      - build:
-          context: kgrid
-      - deploy:
-          context: kgrid
+      - maven/test:
+          settings_file: ".circleci/settings.xml"
+      - heroku/deploy-via-git:
           requires:
-            - build
+            - maven/test
           filters:
             branches:
               only: master
-  earlymorning:
+  earlymorning: # build and deploy master at the crack-o-dawn
     triggers:
       - schedule:
-          cron: "0 10 * * *"
+          cron: "* 10 * * *"
           filters:
             branches:
               only:
                 - master
     jobs:
-      - build:
-          context: kgrid
-      - deploy:
-          context: kgrid
+      - maven/test:
+          settings_file: ".circleci/settings.xml"
+      - heroku/deploy-via-git:
           requires:
-            - build
-          filters:
-            branches:
-              only: master
-jobs:
-
-  ##############
-  # Build job uses a go cli tool to create a github release
-  ##############
-  build:
-
-    working_directory: ~/repo
-
-    docker:
-      - image: circleci/openjdk:11-jdk-node
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      #must run install to ensure multi module dependencies(simple-scripts-api) are cached
-      - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline -s .circleci/settings.xml
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      - setup_remote_docker
-
-      # run build and test
-      - run:
-         name: Build and Test And Verify
-         command: |
-            mvn verify -s .circleci/settings.xml
-            mkdir -p ~/circle-artifacts/
-            cp .*/target/kgrid-activator*.jar ~/circle-artifacts
-
-
-      # Triggered with Release will prepare and perform maven release
-      # run deploy to Heroku gets the mopen KOs and adds them to the shelf on Heroku
-      # Release runs maven release and adds a Release to GitHub based on the tag via github api
-      - run:
-          name: Release
-          command: |
-
-            if [ $RELEASE ]; then
-                .circleci/release.sh
-            fi
-
-      # save test results
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/junit/
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/junit/ \;
-          when: always
-
-      - store_test_results:
-          path: ~/junit
-
-      - persist_to_workspace:
-          root: . # Persist current working directory
-          paths: ./* # Glob. Will persist everything in folder
-
-  deploy:
-
-    docker:
-      - image: circleci/openjdk:11.0.1-jdk
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-
-      - attach_workspace:
-          at: ~/project
-
-
-    # Deploy to Heroku gets the KOs and adds them to the shelf on Heroku
-      - run:
-          name: Deploy
-          command: |
-            mkdir shelf
-            HEROKU_API_KEY=$HEROKU_API_KEY mvn heroku:deploy -s .circleci/settings.xml
-
-      - store_artifacts:
-          path: ~/circle-artifacts
-
-      # Create a shelf with KOs
-      - run:
-          name: Create Heroku Shelf
-          command: |
-            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "ipp-collection"
-            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "cpic-collection"
-            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "example-collection"
-            .circleci/create_shelf.sh https://kgrid-activator.herokuapp.com/kos "opioid-collection cancer-risk-collection icon-array script-numerate postpci labwise"
+            - maven/test
