@@ -111,6 +111,26 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>com.heroku.sdk</groupId>
+        <artifactId>heroku-maven-plugin</artifactId>
+        <version>2.0.3</version>
+        <configuration>
+          <appName>kgrid-activator</appName>
+          <includeTarget>false</includeTarget>
+          <includes>
+            <include>${project.build.directory}/${project.build.finalName}.jar</include>
+            <include>${project.basedir}/shelf</include>
+          </includes>
+          <configVars>
+            <JAVA_OPTS>-Xss512k -XX:+UseCompressedOops</JAVA_OPTS>
+          </configVars>
+          <jdkVersion>10</jdkVersion>
+          <processTypes>
+            <web>java -jar /app/target/${project.build.finalName}.jar $KGRID_CONFIG</web>
+          </processTypes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
         <configuration>
