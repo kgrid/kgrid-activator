@@ -12,7 +12,7 @@ workflows:
   earlymorning: # build and deploy master at the crack-o-dawn
     triggers:
       - schedule:
-          cron: "* 10 * * *"
+          cron: "0 10 * * *"
           filters:
             branches:
               only:
