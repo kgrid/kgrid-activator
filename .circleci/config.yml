@@ -8,6 +8,7 @@ workflows:
   build: # build, test, resolve dependencies, and deploy if branch is master
     jobs:
       - maven/test:
+          context: kgrid
           settings_file: ".circleci/settings.xml"
   earlymorning: # build and deploy master at the crack-o-dawn
     triggers:
@@ -19,7 +20,9 @@ workflows:
                 - master
     jobs:
       - maven/test:
+          context: kgrid
           settings_file: ".circleci/settings.xml"
       - heroku/deploy-via-git:
+          context: kgrid
           requires:
             - maven/test
