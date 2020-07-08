@@ -69,12 +69,12 @@
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>proxy-adapter</artifactId>
-      <version>0.10.3</version>
+      <version>0.10.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.kgrid</groupId>
       <artifactId>javascript-adapter</artifactId>
-      <version>0.10.3</version>
+      <version>0.10.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jena</groupId>
