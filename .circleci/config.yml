@@ -24,6 +24,5 @@ workflows:
           settings_file: ".circleci/settings.xml"
       - heroku/deploy-via-git:
           context: kgrid
-          branch: main
           requires:
             - maven/test
