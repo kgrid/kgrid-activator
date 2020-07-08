@@ -84,7 +84,7 @@ public class ExternalAdapterLoaderTest {
     }
 
     @Override
-    public Executor activate(String s, ArkId arkId, String s1, JsonNode jsonNode) {
+    public Executor activate(String s, String arkId, String s1, JsonNode jsonNode) {
       return null;
     }
 
