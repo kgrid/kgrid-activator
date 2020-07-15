@@ -115,7 +115,7 @@ public class EndpointActivationTests {
         .getAdapter("JAVASCRIPT");
 
     then(adapter).should().activate(
-        C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F, C_D_F_WELCOME.getEndpointName().substring(1),
+        C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
         dep.get("endpoints").get("/welcome"));
 
   }
