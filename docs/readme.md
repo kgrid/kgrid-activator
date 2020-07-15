@@ -7,7 +7,7 @@ These instructions will get the Kgrid Activator running with sample set of Knowl
 
 For running the application you need:
 
-- [Java 8 or higher](https://www.oracle.com/java/)
+- [Java 11 or higher](https://www.oracle.com/java/)
 
 ### Running the Activator
 

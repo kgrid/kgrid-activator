@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11-jdk-alpine
 
 MAINTAINER KGrid Team "kgrid-developers@umich.edu"
 
