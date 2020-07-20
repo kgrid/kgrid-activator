@@ -46,10 +46,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-      x-kgrid-activation:
-        artifact: 'welcome.js'
-        adapter: 'JAVASCRIPT'
-        entry: 'welcome'
   /goodbye:
     post:
       tags:
