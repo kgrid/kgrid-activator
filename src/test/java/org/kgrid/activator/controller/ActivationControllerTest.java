@@ -94,7 +94,7 @@ public class ActivationControllerTest {
     JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
     assertEquals(
-        "java.lang.NoSuchMethodException: No such function hello", content.get("Detail").asText());
+        "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error", content.get("Detail").asText());
   }
 
   @Test

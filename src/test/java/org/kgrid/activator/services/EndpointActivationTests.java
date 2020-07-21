@@ -24,7 +24,7 @@ import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.adapter.javascript.JavascriptAdapter;
+import org.kgrid.adapter.v8.JsV8Adapter;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -80,7 +80,7 @@ public class EndpointActivationTests {
   @Test
   public void activateFindsAdapterAndActivatesEndpoint() throws IOException {
 
-    given(adapterResolver.getAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("V8"))
         .willReturn(adapter);
 
     given(koRepo.getObjectLocation(new ArkId("c-d/f")))
@@ -112,7 +112,7 @@ public class EndpointActivationTests {
     assertNotNull("Executor should not be null", executor);
 
     then(adapterResolver).should()
-        .getAdapter("JAVASCRIPT");
+        .getAdapter("V8");
 
     then(adapter).should().activate(
         C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
@@ -123,12 +123,12 @@ public class EndpointActivationTests {
   @Test
   public void activateCreatesWorkingExecutor() {
 
-    final JavascriptAdapter adapter = new JavascriptAdapter();
+    final JsV8Adapter adapter = new JsV8Adapter();
     adapter.initialize(context);
 
     given(cdoStore.getBinary(any())).willReturn(payload);
 
-    given(adapterResolver.getAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("V8"))
         .willReturn(adapter);
 
     final Endpoint endpoint = Endpoint.Builder
@@ -141,9 +141,7 @@ public class EndpointActivationTests {
 
     assertNotNull("Executor should not be null", executor);
 
-    Object output = executor.execute(new HashMap<String, String>() {{
-      put("name", "Bob");
-    }});
+    Object output = executor.execute("{\"name\": \"Bob\"}");
 
     assertEquals("Welcome to Knowledge Grid, Bob", output);
   }
@@ -173,7 +171,7 @@ public class EndpointActivationTests {
 
     given(koRepo.getObjectLocation(new ArkId("c-d/f"))).willReturn("c-d");
 
-    given(adapterResolver.getAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("V8"))
         .willReturn(adapter);
 
     given(adapter.activate(any(String.class), any(), any(), any()))
@@ -190,7 +188,7 @@ public class EndpointActivationTests {
         .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
         .build();
 
-    given(adapterResolver.getAdapter("JAVASCRIPT"))
+    given(adapterResolver.getAdapter("V8"))
         .willReturn(adapter);
 
     given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))

@@ -38,8 +38,8 @@ paths:
                 $ref: '#/components/schemas/error'
       x-kgrid-activation:
         artifact: 'welcome.js'
-        adapter: 'JAVASCRIPT'
-        entry: 'hello'
+        adapter: 'V8'
+        function: 'hello'
 components:
   schemas:
     user:
