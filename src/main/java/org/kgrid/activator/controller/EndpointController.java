@@ -8,6 +8,7 @@ import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
+import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,11 +102,13 @@ public class EndpointController {
 
   private EndpointResource createEndpointResource(Endpoint endpoint) {
     EndpointResource resource = new EndpointResource(endpoint);
-    Link self = linkTo(EndpointController.class).slash("endpoints").
-        slash(resource.getEndpointPath()).withSelfRel();
 
+    Link self = linkTo(EndpointController.class).slash("endpoints").
+        slash(resource.getEndpoint().getPath().replaceFirst("-","/")).withSelfRel();
     Link swaggerEditor = new Link("https://editor.swagger.io?url="+
-        linkTo(KnowledgeObjectController.class).slash("kos").slash(resource.getServicePath()),
+        linkTo(KnowledgeObjectController.class).slash("kos").slash(new ArkId(
+        endpoint.getMetadata().get("identifier").textValue()).
+                          getSlashArk()+"/service"),
         "swagger_editor");
 
     resource.add(self);

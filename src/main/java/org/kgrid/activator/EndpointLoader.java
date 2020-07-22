@@ -1,22 +1,14 @@
 package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
-import org.kgrid.shelf.ShelfException;
 import org.kgrid.shelf.domain.ArkId;
-import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +37,12 @@ public class EndpointLoader {
     if (ark.hasVersion()) {
 
       log.info("ArkId: " + ark.getDashArkVersion());
+
+      // load required activation files for KO with `ark`
+      // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
       loadKOImplemtation(ark, endpoints);
 
     } else {
-
       JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
       if(knowledgeObjectMetadata.isArray()) {
         knowledgeObjectMetadata.forEach(ko -> {
@@ -69,55 +63,84 @@ public class EndpointLoader {
    * @return
    */
   private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
-
-
     log.info("Load KO Implementation {}", ark.getDashArkVersion());
+    final JsonNode koMetadata;
+    final JsonNode serviceDescription;
+    final JsonNode deploymentSpecification;
 
     try {
 
-      JsonNode koMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+      // Load the parts
+      koMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
 
-      JsonNode serviceDescription = knowledgeObjectRepository
+      serviceDescription = knowledgeObjectRepository
           .findServiceSpecification(ark, koMetadata);
 
-      serviceDescription.get("paths").fields().forEachRemaining(service -> {
+//        if (koMetadata.get("deploymentSpecification") != null) {
+//          deploymentSpecification = knowledgeObjectRepository
+//              .findDeploymentSpecification(ark, koMetadata);
+//        } else {
+//          deploymentSpecification = null;
+//        }
 
-        JsonNode spec = new ObjectMapper().createObjectNode();
-        try {
-          JsonNode deploymentSpecification = knowledgeObjectRepository
-              .findDeploymentSpecification(ark, koMetadata);
-          if(deploymentSpecification.has("endpoints")) {
-            spec = deploymentSpecification.get("endpoints").get(service.getKey());
-          } else {
-            throw new ShelfException("No endpoint list in the deployment descriptor");
-          }
-        } catch (ShelfException e) {
-          log.info(ark.getDashArkVersion() + " has no deployment descriptor, looking for info in the service spec." ) ;
+      JsonNode t = null;
+      try {
+        t = knowledgeObjectRepository
+                .findDeploymentSpecification(ark, koMetadata);
+      } catch (Exception e) {
+        log.warn("no deployment spec found for " + ark.getSlashArkVersion());
+      }
+      deploymentSpecification = t;
+
+      validateMetadata(koMetadata); //
+      validateServiceDescription(serviceDescription); //
+      validateDeploymentSpecification(deploymentSpecification); //
+
+      // For each endpoint path, create an Endpoint that wraps the deployment spec for that path
+      serviceDescription.get("paths").fields().forEachRemaining(path -> {
+
+        JsonNode spec = path.getValue().get("post").get("x-kgrid-activation");
+
+        if (spec == null && deploymentSpecification != null) {
+          spec = deploymentSpecification.get("endpoints").get(path.getKey());
         }
 
-        JsonNode post = service.getValue().get("post");
-        if(post.has("x-kgrid-activation")) {
-          spec = post.get("x-kgrid-activation");
-        }
+        Endpoint endpoint = Endpoint.Builder.anEndpoint()
+            .withService(serviceDescription)
+            .withDeployment(spec)
+            .withMetadata(koMetadata)
+            .withStatus(
+                (spec==null) ? "Missing deployment spec for " + path.getKey() : "GOOD")
+            .withPath(ark.getSlashArk()
+                + path.getKey()
+                + (ark.getVersion() != null ? "?v=" + ark.getVersion(): ""))
+            .build();
 
-        final Endpoint endpoint = new Endpoint();
-        endpoint.setActivated(LocalDateTime.now());
-        endpoint.setPath(ark.getSlashArk() + service.getKey() + (ark.getVersion() != null ?  "?v=" + ark.getVersion() : ""));
-        endpoint.setDeployment(spec);
-        endpoint.setService(serviceDescription);
-        endpoint.setMetadata(koMetadata);
-        endpoints.put(new EndpointId(ark, service.getKey()), endpoint);
+        endpoints.put(new EndpointId(ark, path.getKey()), endpoint);
 
       });
 
-    } catch (ShelfException e) {
-      log.warn("Cannot load " + ark.getDashArkVersion() + ": " + e.getMessage() ) ;
-      return true;
-    } catch (NullPointerException ex) {
-      log.warn("Cannot load " + ark.getDashArkVersion() + ": missing required model metadata path(s) for implementation, deployment and/or service." ) ;
-      return true;
+    } catch (Exception e) {
+      // Log only; don't throw the ActivatorException. Just keep processing KOs.
+      final ActivatorException activatorException = new ActivatorException(
+          "Failed to load " + ark.getSlashArkVersion(),
+          e);
+      log.warn(activatorException.getMessage());
     }
+
     return false;
+  }
+
+  private void validateDeploymentSpecification(JsonNode deploymentSpecification) {
+
+  }
+
+  private void validateServiceDescription(JsonNode serviceDescription) {
+
+  }
+
+  private void validateMetadata(JsonNode koMetadata) {
+
   }
 
   /**
