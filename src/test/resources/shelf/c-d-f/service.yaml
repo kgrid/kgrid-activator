@@ -74,8 +74,8 @@ paths:
                 $ref: '#/components/schemas/error'
       x-kgrid-activation:
         artifact: 'solong.js'
-        adapter: 'JAVASCRIPT'
-        entry: 'bye'
+        adapter: 'V8'
+        function: 'bye'
 components:
   schemas:
     user:

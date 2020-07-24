@@ -1,9 +1,9 @@
 endpoints:
   /welcome:
-    adapterType: JAVASCRIPT
+    adapter: V8
     artifact: welcome.js
-    entry: welcome
+    function: welcome
   /info:
-    adapterType: JAVASCRIPT
+    adapter: V8
     artifact: welcome.js
-    entry: info
+    function: info

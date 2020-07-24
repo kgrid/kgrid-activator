@@ -36,7 +36,7 @@ public class KoValidationService {
             throwWithMessage(HAS_MISSING_DEPLOYMENT_SPECIFICATION);
     }
 
-    public void validateServiceDescription(JsonNode serviceSpecification) {
+    public void validateServiceSpecification(JsonNode serviceSpecification) {
         if (serviceSpecification.at("/paths").isMissingNode())
             throwWithMessage(HAS_MISSING_PATHS);
         if (serviceSpecification.at("/paths").size() == 0)

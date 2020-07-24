@@ -45,9 +45,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       x-kgrid-activation:
-        adapter: JAVASCRIPT
+        adapter: V8
         artifact: recommendation.js
-        entry: dosingrecommendation
+        function: dosingrecommendation
 components:
   schemas:
     phenotype:

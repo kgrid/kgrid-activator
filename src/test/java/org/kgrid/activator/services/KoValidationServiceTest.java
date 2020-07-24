@@ -51,7 +51,7 @@ public class KoValidationServiceTest {
     public void validateServiceSpecification_validServiceSpecPassesValidation() {
         ObjectNode serviceSpec = objectMapper.createObjectNode();
         serviceSpec.putArray("paths").add("tyvkh");
-        koValidationService.validateServiceDescription(serviceSpec);
+        koValidationService.validateServiceSpecification(serviceSpec);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class KoValidationServiceTest {
         ObjectNode serviceSpec = objectMapper.createObjectNode();
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateServiceDescription(serviceSpec));
+                () -> koValidationService.validateServiceSpecification(serviceSpec));
         assertEquals(KoValidationService.HAS_MISSING_PATHS, activatorException.getMessage());
     }
 
@@ -69,7 +69,7 @@ public class KoValidationServiceTest {
         serviceSpec.putArray("paths");
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateServiceDescription(serviceSpec));
+                () -> koValidationService.validateServiceSpecification(serviceSpec));
         assertEquals(KoValidationService.HAS_NO_DEFINED_PATHS, activatorException.getMessage());
     }
 
@@ -89,7 +89,7 @@ public class KoValidationServiceTest {
         serviceSpec.set("paths", paths);
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
-                        "{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"entry\":\"doorway\"}}"));
+                        "{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}"));
         koValidationService.validateActivatability(serviceSpec, deploymentSpec);
     }
 

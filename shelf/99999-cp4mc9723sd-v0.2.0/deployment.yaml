@@ -1,5 +1,5 @@
 endpoints:
   /dosingrecommendation:
-    adapterType: JAVASCRIPT
+    adapter: V8
     artifact: recommendation.js
-    entry: dosingrecommendation
+    function: dosingrecommendation

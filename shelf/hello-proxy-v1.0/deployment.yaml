@@ -4,5 +4,5 @@ endpoints:
       - 'src/welcome.js'
     adapter: 'PROXY'
     engine: 'node'
-    entry: 'src/welcome.js'
+    function: 'src/welcome.js'
     function: 'welcome'
