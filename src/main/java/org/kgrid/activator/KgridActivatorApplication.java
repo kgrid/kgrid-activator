@@ -115,7 +115,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
       // Throws an error on delete though, maybe could clean it up but problematic because
       // Delete is always preceded by a modify, could try a using a queue where events are paired
       // and the first one is held in case the second is a delete but this is simple and works for now
-      activateEndpoint.actitvate(arkId);
+      activateEndpoint.activate(arkId);
 
     });
     new Thread(watcher).start();

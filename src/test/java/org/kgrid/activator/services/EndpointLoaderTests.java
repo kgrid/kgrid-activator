@@ -1,43 +1,31 @@
 package org.kgrid.activator.services;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.kgrid.activator.utils.RepoUtils.A_B_C;
-import static org.kgrid.activator.utils.RepoUtils.C_D_E;
-import static org.kgrid.activator.utils.RepoUtils.C_D_F;
-import static org.kgrid.activator.utils.RepoUtils.getJsonTestFile;
-import static org.kgrid.activator.utils.RepoUtils.getYamlTestFile;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
-import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-//@SpringBootTest
-public class EndpointLoaderTests {
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-  public static final String IMPL = KnowledgeObject.IMPLEMENTATIONS_TERM;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.junit.Assert.*;
+import static org.kgrid.activator.utils.RepoUtils.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
+@RunWith(SpringRunner.class)
+public class EndpointLoaderTests {
 
   @Mock
   private KnowledgeObjectRepository repository;
@@ -117,17 +105,6 @@ public class EndpointLoaderTests {
     assertNotNull("'c-d-f/info' exists", eps.get(new EndpointId(C_D_F, "/info")));
   }
 
-  @Test
-  public void serviceLoadsImplementationMetadata() throws IOException {
-
-    // when
-    Map<EndpointId, Endpoint> endpoints = endpointLoader.load();
-
-//    then(repository).should().findKnowledgeObjectMetadata(A_B_C);
-//    then(repository).should().findKnowledgeObjectMetadata(C_D_E);
-//    then(repository).should().findKnowledgeObjectMetadata(C_D_F);
-
-  }
 
   @Test
   public void endpointsContainServices() throws IOException {
