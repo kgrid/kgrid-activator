@@ -14,6 +14,7 @@ public class KoValidationService {
     public static final String HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION = "Has no defined artifact in Deployment Specification";
     public static final String HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION = "Has no defined adapter in Deployment Specification";
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
+    public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
 
 
     public void validateActivatability(JsonNode serviceSpec, JsonNode deploymentSpec) {
@@ -45,19 +46,24 @@ public class KoValidationService {
     }
 
     public void validateDeploymentSpecification(JsonNode deploymentSpecification, String pathName) {
-        JsonNode endpointNode = deploymentSpecification.at("/endpoints/~1" + pathName.substring(1));
-        if (endpointNode.has("artifact")) {
-            if (!endpointNode.at("/artifact").asText().equals("")) {
-                if (!endpointNode.has("adapter")) {
-                    throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
+        JsonNode endpointsNode = deploymentSpecification.at("/endpoints");
+        if (endpointsNode.fields().hasNext()) {
+            JsonNode endpointNode = deploymentSpecification.at("/endpoints/~1" + pathName.substring(1));
+            if (endpointNode.has("artifact")) {
+                if (!endpointNode.at("/artifact").asText().equals("")) {
+                    if (!endpointNode.has("adapter")) {
+                        throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
+                    }
+                } else {
+                    throwWithMessage(HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION);
                 }
             } else {
-                throwWithMessage(HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION);
-
+                throwWithMessage(HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION);
             }
         } else {
-            throwWithMessage(HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION);
+            throwWithMessage(HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION);
         }
+
     }
 
     private void throwWithMessage(String message) {
