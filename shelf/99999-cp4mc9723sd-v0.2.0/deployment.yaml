@@ -1,5 +1,0 @@
-endpoints:
-  /dosingrecommendation:
-    adapter: V8
-    artifact: recommendation.js
-    function: dosingrecommendation

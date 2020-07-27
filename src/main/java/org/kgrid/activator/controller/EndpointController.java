@@ -96,10 +96,11 @@ public class EndpointController {
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
+        endpoint.setExecutor(null);
         EndpointResource resource = new EndpointResource(endpoint);
 
         Link self = linkTo(EndpointController.class).slash("endpoints").
-                slash(resource.getEndpoint().getPath().replaceFirst("-", "/")).withSelfRel();
+                slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
         Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
                 linkTo(KnowledgeObjectController.class).slash("kos").slash(new ArkId(
                         endpoint.getMetadata().get("identifier").textValue()).
