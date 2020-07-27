@@ -119,4 +119,17 @@ public class KoValidationServiceTest {
         assertEquals(KoValidationService.HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
+    @Test
+    public void validateActivatability_KoHasNoArtifactsDefinedInDeploymentSpec() throws JsonProcessingException {
+        ObjectNode serviceSpec = objectMapper.createObjectNode();
+        JsonNode paths = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}");
+        serviceSpec.set("paths", paths);
+        ObjectNode deploymentSpec = objectMapper.createObjectNode()
+                .set("endpoints", objectMapper.readTree(
+                        "{\"/endpoint\":{\"artifact\":\"\"}}"));
+        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+                () -> koValidationService.validateActivatability(serviceSpec, deploymentSpec));
+        assertEquals(KoValidationService.HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
+    }
+
 }

@@ -13,6 +13,7 @@ public class KoValidationService {
     public static final String HAS_NO_DEFINED_PATHS = "Has an empty Paths node in Service Specification";
     public static final String HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION = "Has no defined artifact in Deployment Specification";
     public static final String HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION = "Has no defined adapter in Deployment Specification";
+    public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
 
 
     public void validateActivatability(JsonNode serviceSpec, JsonNode deploymentSpec) {
@@ -46,8 +47,14 @@ public class KoValidationService {
     public void validateDeploymentSpecification(JsonNode deploymentSpecification, String pathName) {
         JsonNode endpointNode = deploymentSpecification.at("/endpoints/~1" + pathName.substring(1));
         if (endpointNode.has("artifact")) {
-            if (!endpointNode.has("adapter"))
-                throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
+            if (!endpointNode.at("/artifact").asText().equals("")) {
+                if (!endpointNode.has("adapter")) {
+                    throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
+                }
+            } else {
+                throwWithMessage(HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION);
+
+            }
         } else {
             throwWithMessage(HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION);
         }
