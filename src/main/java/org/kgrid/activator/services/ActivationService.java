@@ -90,7 +90,7 @@ public class ActivationService {
 
     try {
       return adapter.activate(koRepo.getObjectLocation(ark), ark.getDashArkVersion(), endpointKey.getEndpointName().substring(1), deploymentSpec);
-    } catch (AdapterException e) {
+    } catch (AdapterException | NullPointerException e) {
       throw new ActivatorException(e.getMessage(), e);
     }
 

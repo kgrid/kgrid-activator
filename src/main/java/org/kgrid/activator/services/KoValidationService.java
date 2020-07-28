@@ -2,10 +2,14 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.ActivatorException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KoValidationService {
+
+    @Autowired
+    AdapterLoader adapterLoader;
 
     public static final String HAS_MISSING_SERVICE_SPECIFICATION = "Has missing Service Specification";
     public static final String HAS_MISSING_DEPLOYMENT_SPECIFICATION = "Has missing Deployment Specification";
@@ -13,6 +17,7 @@ public class KoValidationService {
     public static final String HAS_NO_DEFINED_PATHS = "Has an empty Paths node in Service Specification";
     public static final String HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION = "Has no defined artifact in Deployment Specification";
     public static final String HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION = "Has no defined adapter in Deployment Specification";
+    public static final String ADAPTER_NOT_AVAILABLE = " adapter not available in this activator";
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
     public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
 
@@ -50,8 +55,13 @@ public class KoValidationService {
         if (endpointsNode.fields().hasNext()) {
             JsonNode endpointNode = deploymentSpecification.at("/endpoints/~1" + pathName.substring(1));
             if (endpointNode.has("artifact")) {
-                if (!endpointNode.at("/artifact").asText().equals("")) {
-                    if (!endpointNode.has("adapter")) {
+                if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {
+                    if (endpointNode.has("adapter")) {
+                        String adapter = endpointNode.get("adapter").asText();
+                        if(!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter)) {
+                            throwWithMessage(adapter + ADAPTER_NOT_AVAILABLE);
+                        }
+                    } else {
                         throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
                     }
                 } else {
