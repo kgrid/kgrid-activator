@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,11 +97,25 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasDeploymentInServiceSpec() throws JsonProcessingException {
         ObjectNode serviceSpec = objectMapper.createObjectNode();
-        ObjectNode deploymentSpec = objectMapper.createObjectNode();
         JsonNode paths = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}");
         serviceSpec.set("paths", paths);
-        koValidationService.validateActivatability(serviceSpec, deploymentSpec);
+        koValidationService.validateActivatability(serviceSpec, null);
     }
+
+    @Test
+    public void validateActivatability_KoHasDeploymentInServiceSpecAndDeploymentSpec() throws JsonProcessingException {
+        ObjectNode serviceSpec = objectMapper.createObjectNode();
+        JsonNode paths = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}");
+        serviceSpec.set("paths", paths);
+        ObjectNode deploymentSpec = objectMapper.createObjectNode()
+                .set("endpoints", objectMapper.readTree(
+                        "{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}"));
+        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+                () -> koValidationService.validateActivatability(serviceSpec, deploymentSpec));
+        assertEquals(KoValidationService.HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID, activatorException.getMessage());
+
+    }
+
 
     @Test
     public void validateActivatability_KoHasDeploymentInDeploymentSpec() throws JsonProcessingException {

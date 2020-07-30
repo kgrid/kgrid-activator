@@ -20,150 +20,159 @@ import java.util.TreeMap;
 @Service
 public class EndpointLoader {
 
-    final Logger log = LoggerFactory.getLogger(EndpointLoader.class);
+  final Logger log = LoggerFactory.getLogger(EndpointLoader.class);
 
-    @Autowired
-    KnowledgeObjectRepository knowledgeObjectRepository;
+  @Autowired KnowledgeObjectRepository knowledgeObjectRepository;
 
-    @Autowired
-    KoValidationService koValidationService;
+  @Autowired KoValidationService koValidationService;
 
-    /**
-     * Creates endpoints based on the Implementations specification.
-     * If endpoint resources can not be found no endpoint will be
-     * created.
-     *
-     * @return collection of endpoints
-     */
-    public Map<EndpointId, Endpoint> load(ArkId ark) {
+  /**
+   * Creates endpoints based on the Implementations specification. If endpoint resources can not be
+   * found no endpoint will be created.
+   *
+   * @return collection of endpoints
+   */
+  public Map<EndpointId, Endpoint> load(ArkId ark) {
 
-        Map<EndpointId, Endpoint> endpoints = new HashMap<>();
+    Map<EndpointId, Endpoint> endpoints = new HashMap<>();
 
-        if (ark.hasVersion()) {
+    if (ark.hasVersion()) {
 
-            log.info("ArkId: " + ark.getDashArkVersion());
+      log.info("ArkId: " + ark.getDashArkVersion());
 
-            // load required activation files for KO with `ark`
-            // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
-            loadKOImplemtation(ark, endpoints);
+      // load required activation files for KO with `ark`
+      // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
+      loadKOImplemtation(ark, endpoints);
 
-        } else {
-            JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
-            if (knowledgeObjectMetadata.isArray()) {
-                knowledgeObjectMetadata.forEach(ko -> {
-                    if (ko.has("version")) {
-                        ArkId id = new ArkId(ark.getNaan(), ark.getName(), (ko.get("version").asText()));
-                        loadKOImplemtation(id, endpoints);
-                    }
-                });
-            }
-        }
-        return endpoints;
+    } else {
+      JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+      if (knowledgeObjectMetadata.isArray()) {
+        knowledgeObjectMetadata.forEach(
+            ko -> {
+              if (ko.has("version")) {
+                ArkId id = new ArkId(ark.getNaan(), ark.getName(), (ko.get("version").asText()));
+                loadKOImplemtation(id, endpoints);
+              }
+            });
+      }
     }
+    return endpoints;
+  }
 
-    /**
-     * @param ark
-     * @param endpoints
-     * @return
-     */
-    private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
-        log.info("Load KO Implementation {}", ark.getDashArkVersion());
-        final JsonNode koMetadata;
-        final JsonNode serviceSpecification;
-        final JsonNode deploymentSpecification;
+  /**
+   * @param ark
+   * @param endpoints
+   * @return
+   */
+  private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
+    log.info("Load KO Implementation {}", ark.getDashArkVersion());
+    final JsonNode koMetadata;
+    final JsonNode serviceSpecification;
+    final JsonNode deploymentSpecification;
 
-        try {
+    try {
 
-            koMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
-            koValidationService.validateMetadata(koMetadata);
+      koMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
+      koValidationService.validateMetadata(koMetadata);
 
-            serviceSpecification = knowledgeObjectRepository
-                    .findServiceSpecification(ark, koMetadata);
-            koValidationService.validateServiceSpecification(serviceSpecification);
+      serviceSpecification = knowledgeObjectRepository.findServiceSpecification(ark, koMetadata);
+      koValidationService.validateServiceSpecification(serviceSpecification);
 
-            deploymentSpecification = getDeploymentSpec(ark, koMetadata);
+      deploymentSpecification = getDeploymentSpec(ark, koMetadata);
 
-            serviceSpecification.get("paths").fields().forEachRemaining(path -> {
+      serviceSpecification
+          .get("paths")
+          .fields()
+          .forEachRemaining(
+              path -> {
                 String status = "";
                 try {
-                    koValidationService.validateActivatability(serviceSpecification, deploymentSpecification);
+                  koValidationService.validateActivatability(
+                      serviceSpecification, deploymentSpecification);
                 } catch (ActivatorException e) {
-                    status = e.getMessage();
+                  status = e.getMessage();
                 }
 
                 JsonNode spec = getEndpointDeployment(deploymentSpecification, path);
-                Endpoint endpoint = buildEndpoint(ark, koMetadata, serviceSpecification, path, status, spec);
+                Endpoint endpoint =
+                    buildEndpoint(ark, koMetadata, serviceSpecification, path, status, spec);
                 endpoints.put(new EndpointId(ark, path.getKey()), endpoint);
+              });
 
-            });
-
-        } catch (Exception e) {
-            final ActivatorException activatorException = new ActivatorException(
-                    "Failed to load " + ark.getSlashArkVersion(),
-                    e);
-            log.warn(activatorException.getMessage());
-        }
-
-        return false;
+    } catch (Exception e) {
+      final ActivatorException activatorException =
+          new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
+      log.warn(activatorException.getMessage());
     }
 
-    private Endpoint buildEndpoint(ArkId ark, JsonNode koMetadata, JsonNode serviceSpecification, Entry<String, JsonNode> path, String status, JsonNode spec) {
-        return Endpoint.Builder.anEndpoint()
-                .withService(serviceSpecification)
-                .withDeployment(spec)
-                .withMetadata(koMetadata)
-                .withStatus(
-                        status.equals("") ? "GOOD" : status)
-                .withPath(ark.getSlashArk()
-                        + path.getKey()
-                        + (ark.getVersion() != null ? "?v=" + ark.getVersion() : ""))
-                .build();
+    return false;
+  }
+
+  private Endpoint buildEndpoint(
+      ArkId ark,
+      JsonNode koMetadata,
+      JsonNode serviceSpecification,
+      Entry<String, JsonNode> path,
+      String status,
+      JsonNode spec) {
+    return Endpoint.Builder.anEndpoint()
+        .withService(serviceSpecification)
+        .withDeployment(spec)
+        .withMetadata(koMetadata)
+        .withStatus(status.equals("") ? "GOOD" : status)
+        .withPath(
+            ark.getSlashArk()
+                + path.getKey()
+                + (ark.getVersion() != null ? "?v=" + ark.getVersion() : ""))
+        .build();
+  }
+
+  private JsonNode getEndpointDeployment(JsonNode deploymentSpecification, Entry<String, JsonNode> path) {
+    JsonNode spec = path.getValue().get("post").get("x-kgrid-activation");
+
+    if (spec == null && deploymentSpecification != null) {
+        spec = deploymentSpecification.get("endpoints").get(path.getKey());
+
+    } else {
+       log.warn(
+            "Extension of `x-kgrid-activation` has been deprecated from the service specification. Please use the deployment specification file instead.");
+    }
+    return spec;
+  }
+
+  private JsonNode getDeploymentSpec(ArkId ark, JsonNode koMetadata) {
+    JsonNode deploymentSpecification;
+    JsonNode t = null;
+    try {
+      t = knowledgeObjectRepository.findDeploymentSpecification(ark, koMetadata);
+    } catch (Exception e) {
+      log.warn("no deployment spec found for " + ark.getSlashArkVersion());
+    }
+    deploymentSpecification = t;
+    return deploymentSpecification;
+  }
+
+  /**
+   * Loads all the endpoints
+   *
+   * @return collection of endpoints
+   */
+  public Map<EndpointId, Endpoint> load() {
+    Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
+    Map<EndpointId, Endpoint> temp = new HashMap<>();
+
+    for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
+      temp.putAll(load(ko.getKey()));
     }
 
-    private JsonNode getEndpointDeployment(JsonNode deploymentSpecification, Entry<String, JsonNode> path) {
-        JsonNode spec = path.getValue().get("post").get("x-kgrid-activation");
+    // Putting everything in a treemap sorts them alphabetically
+    TreeMap<EndpointId, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
+    endpoints.putAll(temp);
 
-        if (spec == null && deploymentSpecification != null) {
-            spec = deploymentSpecification.get("endpoints").get(path.getKey());
-        }
-        return spec;
-    }
+    return endpoints;
+  }
 
-    private JsonNode getDeploymentSpec(ArkId ark, JsonNode koMetadata) {
-        JsonNode deploymentSpecification;
-        JsonNode t = null;
-        try {
-            t = knowledgeObjectRepository
-                    .findDeploymentSpecification(ark, koMetadata);
-        } catch (Exception e) {
-            log.warn("no deployment spec found for " + ark.getSlashArkVersion());
-        }
-        deploymentSpecification = t;
-        return deploymentSpecification;
-    }
-
-    /**
-     * Loads all the endpoints
-     *
-     * @return collection of endpoints
-     */
-    public Map<EndpointId, Endpoint> load() {
-        Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-        Map<EndpointId, Endpoint> temp = new HashMap<>();
-
-        for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-            temp.putAll(load(ko.getKey()));
-        }
-
-        // Putting everything in a treemap sorts them alphabetically
-        TreeMap<EndpointId, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
-        endpoints.putAll(temp);
-
-        return endpoints;
-    }
-
-    String getKORepoLocation() {
-        return knowledgeObjectRepository.getConnection();
-    }
-
+  String getKORepoLocation() {
+    return knowledgeObjectRepository.getConnection();
+  }
 }

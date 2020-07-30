@@ -96,7 +96,7 @@ public class EndpointLoaderTests {
         Map<EndpointId, Endpoint> eps = endpointLoader.load();
 
         // Loader methods load 2 KOs, with 3 impls, and 5 endpoints (1 service spec has 3 endpoints!)
-        assertEquals("Map should have 5 endpoints", 5, eps.size());
+        assertEquals("Map should have 5 endpoints", 6, eps.size());
 
         assertNotNull("'a-b-c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
         assertNotNull("'c-d-e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
@@ -122,6 +122,15 @@ public class EndpointLoaderTests {
             String endpointKey = path.getEndpointName();
             assertNotNull("Service contains endpoint path", service.get("paths").get(endpointKey));
         });
+    }
+
+    @Test
+    public void shouldloadWhenOnlyServiceSpecHasextension() throws IOException {
+        // load single endpoint implementation
+        Map<EndpointId, Endpoint> eps = endpointLoader.load(TEST_SERVICE_EXTENSIONONLY);
+
+        // test that endpoint won't load when both x-kgrid-activation extension and deployment spec exists
+        assertNotNull("Activate with extension only",  eps.get(new EndpointId(TEST_SERVICE_EXTENSIONONLY,"/welcome")));
     }
 
     @Test
@@ -181,6 +190,7 @@ public class EndpointLoaderTests {
         kos.put(A_B_C, getJsonTestFile(A_B_C.getDashArk() + "-" + A_B_C.getVersion(), "metadata.json"));
         kos.put(C_D_E, getJsonTestFile(C_D_E.getDashArk() + "-" + C_D_E.getVersion(), "metadata.json"));
         kos.put(C_D_F, getJsonTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "metadata.json"));
+        kos.put(TEST_SERVICE_EXTENSIONONLY, getJsonTestFile(TEST_SERVICE_EXTENSIONONLY.getDashArk() + "-" + TEST_SERVICE_EXTENSIONONLY.getVersion(), "metadata.json"));
 
         given(repository.findAll()).willReturn(kos);
         given(repository.findKnowledgeObjectMetadata(C_D_E)).willReturn(
@@ -195,6 +205,8 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E.getDashArk() + "-" + C_D_E.getVersion(), "service.yaml"));
         given(repository.findServiceSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "service.yaml"));
+        given(repository.findServiceSpecification(eq(TEST_SERVICE_EXTENSIONONLY), any()))
+                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSIONONLY.getDashArk() + "-" + TEST_SERVICE_EXTENSIONONLY.getVersion(), "service.yaml"));
     }
 
     private void loadMockRepoWithImplementations() throws IOException {
@@ -205,6 +217,9 @@ public class EndpointLoaderTests {
                 .willReturn(getJsonTestFile(C_D_E.getDashArk() + "-" + C_D_E.getVersion(), "metadata.json"));
         given(repository.findKnowledgeObjectMetadata(eq(C_D_F)))
                 .willReturn(getJsonTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "metadata.json"));
+        given(repository.findKnowledgeObjectMetadata(eq(TEST_SERVICE_EXTENSIONONLY)))
+                .willReturn(getJsonTestFile(TEST_SERVICE_EXTENSIONONLY.getDashArk() + "-" + TEST_SERVICE_EXTENSIONONLY.getVersion(), "metadata.json"));
+
     }
 
     private void loadMockRepoWithDeploymentSpecs() throws IOException {
@@ -215,5 +230,8 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E.getDashArk() + "-" + C_D_E.getVersion(), "deployment.yaml"));
         given(repository.findDeploymentSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "deployment.yaml"));
+        given(repository.findDeploymentSpecification(eq(TEST_SERVICE_EXTENSIONONLY), any()))
+                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSIONONLY.getDashArk() + "-" + TEST_SERVICE_EXTENSIONONLY.getVersion(), "service.yaml"));
+
     }
 }
