@@ -75,7 +75,7 @@ public class ActivateEndpoint {
 
         ArkId arkId = new ArkId(naan, name);
         log.info("Activate {}", arkId.getSlashArk());
-        actitvate(arkId);
+        activate(arkId);
 
         JsonArray joArray = getJsonElements();
 
@@ -97,7 +97,7 @@ public class ActivateEndpoint {
 
         ArkId arkId = new ArkId(naan, name, version);
         log.info("Activate {}", arkId.getSlashArkVersion());
-        actitvate(arkId);
+        activate(arkId);
 
         JsonArray joArray = getJsonElements();
 
@@ -110,7 +110,7 @@ public class ActivateEndpoint {
      *
      * @param arkId
      */
-    public void actitvate(ArkId arkId) {
+    public void activate(ArkId arkId) {
 
 
         if (arkId.hasVersion()) {

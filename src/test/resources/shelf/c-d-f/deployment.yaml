@@ -4,7 +4,7 @@ endpoints:
     artifact:  welcome.js
     function: welcome
   /goodbye:
-    adapterType: JAVASCRIPT
+    adapter: V8
     artifact: solong.js
-    entry: bye
+    function: bye
 

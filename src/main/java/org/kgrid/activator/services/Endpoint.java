@@ -2,7 +2,6 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import org.kgrid.adapter.api.Executor;
 
 public class Endpoint {
@@ -13,6 +12,8 @@ public class Endpoint {
   private JsonNode deployment;
   private Executor executor;
   private LocalDateTime activated;
+
+  private String status;
 
   public Executor getExecutor() {
     return executor;
@@ -34,10 +35,6 @@ public class Endpoint {
     return metadata;
   }
 
-  public void setMetadata(JsonNode metadata) {
-    this.metadata = metadata;
-  }
-
   public JsonNode getDeployment() {
     return deployment;
   }
@@ -46,22 +43,24 @@ public class Endpoint {
     this.deployment = deployment;
   }
 
-  public void setActivated(LocalDateTime activated) { this.activated = activated; }
-
   public LocalDateTime getActivated(){ return activated; }
 
   public String getPath() {return path; }
+
   public void setPath(String path){ this.path=path;}
+
+  public String getStatus() {
+    return status;
+  }
 
   public  static final class Builder {
 
     private JsonNode service;
     private JsonNode metadata;
     private JsonNode deployment;
-    private byte[] artifact;
-    private String entry;
-    private boolean canActivate;
     private Executor executor;
+    private String path;
+    private String status;
 
     private Builder() {
     }
@@ -91,16 +90,28 @@ public class Endpoint {
       return this;
     }
 
+    public Builder withStatus(String status) {
+      this.status = status;
+      return this;
+    }
+
+    public Builder withPath(String path) {
+      this.path = path;
+      return this;
+    }
+
 
     public Endpoint build() {
       Endpoint endpoint = new Endpoint();
-      endpoint.setService(service);
-      endpoint.setDeployment(deployment);
-      endpoint.setExecutor(executor);
+      endpoint.metadata = metadata;
+      endpoint.service = service;
+      endpoint.deployment = deployment;
+      endpoint.executor = executor;
       endpoint.activated=LocalDateTime.now();
+      endpoint.path = path;
+      endpoint.status=status;
       return endpoint;
     }
-
 
   }
 }

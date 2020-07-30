@@ -34,6 +34,8 @@ public class AdapterLoader {
 
   @Autowired private HealthContributorRegistry registry;
 
+  private static AdapterResolver resolver;
+
   public AdapterResolver loadAndInitializeAdapters(Map<EndpointId, Endpoint> endpoints) {
 
     Map<String, Adapter> adapters = new HashMap<>();
@@ -44,7 +46,12 @@ public class AdapterLoader {
       adapters.put(adapter.getType().toUpperCase(), adapter);
       registerHealthEndpoint(adapter);
     }
-    return new AdapterResolver(adapters);
+    resolver = new AdapterResolver(adapters);
+    return resolver;
+  }
+
+  public AdapterResolver getAdapterResolver(){
+    return resolver;
   }
 
   private void registerHealthEndpoint(Adapter adapter) {

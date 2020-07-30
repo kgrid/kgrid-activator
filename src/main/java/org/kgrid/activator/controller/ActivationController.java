@@ -80,7 +80,7 @@ public class ActivationController {
       return activationService.execute(key, version, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
-      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
+      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage(), e);
     }
   }
 
