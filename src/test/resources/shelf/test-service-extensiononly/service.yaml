@@ -4,7 +4,7 @@ info:
   title: 'Hello, World'
   description: 'hello world c-style'
 servers:
-  - url: '/a/b/c/'
+  - url: '/test/service'
     description: Hello world
 tags:
   - name: KO Endpoints
@@ -36,6 +36,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+      x-kgrid-activation:
+        artifact: 'welcome.js'
+        adapter: 'V8'
+        function: 'welcome'
 components:
   schemas:
     user:

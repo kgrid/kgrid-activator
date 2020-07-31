@@ -1,0 +1,13 @@
+{  "@id": "test-service",
+  "@type":"koio:KnowledgeObject",
+  "title": "the best a-b ever",
+  "identifier" : "ark:/test/service",
+  "version":"extensiononly",
+  "contributors" : "Kgrid Team",
+  "keywords":["Hello","example"],
+  "hasServiceSpecification": "service.yaml",
+  "hasDeploymentSpecification": "service.yaml",
+  "hasPayload": "welcome.js",
+  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+
+}

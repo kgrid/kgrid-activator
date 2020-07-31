@@ -21,14 +21,18 @@ public class KoValidationService {
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
     public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
 
+    public static final String HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID = "Deployment defined in both x-kgrid extension and Deployment Specification. Use Deployment Specification Only.";
 
-    public void validateActivatability(JsonNode serviceSpec, JsonNode deploymentSpec) {
+
+  public void validateActivatability(JsonNode serviceSpec, JsonNode deploymentSpec) {
         JsonNode pathNode = serviceSpec.at("/paths");
         pathNode.fields().forEachRemaining(path -> {
             path.getValue().fields().forEachRemaining(httpMethod -> {
                 JsonNode xKgridActivationNode = httpMethod.getValue().at("/x-kgrid-activation");
                 if (xKgridActivationNode.isMissingNode()) {
                     validateDeploymentSpecification(deploymentSpec, path.getKey());
+                } else {
+                    if (deploymentSpec!=null) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
                 }
             });
         });

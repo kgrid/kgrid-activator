@@ -1,0 +1,5 @@
+endpoints:
+  /welcome:
+    artifact: 'welcome.js'
+    adapter: 'V8'
+    function: 'hello'
