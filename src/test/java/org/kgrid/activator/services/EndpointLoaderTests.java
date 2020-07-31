@@ -129,8 +129,9 @@ public class EndpointLoaderTests {
         // load single endpoint implementation
         Map<EndpointId, Endpoint> eps = endpointLoader.load(TEST_SERVICE_EXTENSIONONLY);
 
-        // test that endpoint won't load when both x-kgrid-activation extension and deployment spec exists
-        assertNotNull("Activate with extension only",  eps.get(new EndpointId(TEST_SERVICE_EXTENSIONONLY,"/welcome")));
+        // test that endpoint should load with x-kgrid-activation extension only
+        Endpoint endpoint = eps.get(new EndpointId(TEST_SERVICE_EXTENSIONONLY, "/welcome"));
+        assertEquals("V8", endpoint.getDeployment().get("adapter").asText());
     }
 
     @Test

@@ -127,6 +127,7 @@ public class EndpointLoader {
         .build();
   }
 
+  //TODO: Remove the usage of `x-kgrid-activation`
   private JsonNode getEndpointDeployment(JsonNode deploymentSpecification, Entry<String, JsonNode> path) {
     JsonNode spec = path.getValue().get("post").get("x-kgrid-activation");
 
