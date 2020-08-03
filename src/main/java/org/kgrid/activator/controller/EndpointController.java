@@ -96,7 +96,6 @@ public class EndpointController {
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
-        endpoint.setExecutor(null);
         EndpointResource resource = new EndpointResource(endpoint);
 
         Link self = linkTo(EndpointController.class).slash("endpoints").
