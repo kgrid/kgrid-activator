@@ -12,8 +12,10 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.reset;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import java.io.IOException;
 import java.util.HashMap;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,189 +38,189 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 public class EndpointActivationTests {
 
-  public static final EndpointId C_D_F_WELCOME = new EndpointId(C_D_F, "/welcome");
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-  @Mock
-  AdapterResolver adapterResolver;
-  @Mock
-  Adapter adapter;
-  @Mock
-  CompoundDigitalObjectStore cdoStore;
-  @Mock
-  KnowledgeObjectRepository koRepo;
+    public static final EndpointId C_D_F_WELCOME = new EndpointId(C_D_F, "/welcome");
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+    @Mock
+    AdapterResolver adapterResolver;
+    @Mock
+    Adapter adapter;
+    @Mock
+    CompoundDigitalObjectStore cdoStore;
+    @Mock
+    KnowledgeObjectRepository koRepo;
 
-  ActivationContext context = new ActivationContext() {
-    @Override
-    public Executor getExecutor(String key) {
-      return null;
-    }
-
-    @Override
-    public byte[] getBinary(String pathToBinary) {
-      return cdoStore.getBinary(pathToBinary);
-    }
-
-    @Override
-    public String getProperty(String key) {
-      return null;
-    }
-  };
-
-  @InjectMocks
-  ActivationService activationService;
-  private byte[] payload;
-  private JsonNode dep;
-
-  @Before
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    dep = getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "deployment.yaml");
-    payload = getBinaryTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "welcome.js");
-  }
-
-  @Test
-  public void activateFindsAdapterAndActivatesEndpoint() throws IOException {
-
-    given(adapterResolver.getAdapter("V8"))
-        .willReturn(adapter);
-
-    given(koRepo.getObjectLocation(new ArkId("c-d/f")))
-        .willReturn("c-d-f");
-
-    given(adapter.activate(any(), any(), any(), any(JsonNode.class)))
-        .willReturn(new Executor() {
-          @Override
-          public Object execute(Object input) {
+    ActivationContext context = new ActivationContext() {
+        @Override
+        public Executor getExecutor(String key) {
             return null;
-          }
-        });
+        }
 
-    given(adapter.activate(any(), any(String.class)))
-        .willReturn(new Executor() {
-          @Override
-          public Object execute(Object input) {
+        @Override
+        public byte[] getBinary(String pathToBinary) {
+            return cdoStore.getBinary(pathToBinary);
+        }
+
+        @Override
+        public String getProperty(String key) {
             return null;
-          }
-        });
+        }
+    };
 
-    final Endpoint endpoint = Endpoint.Builder
-        .anEndpoint()
-        .withDeployment(dep.get("endpoints").get("/welcome")).build();
+    @InjectMocks
+    ActivationService activationService;
+    private byte[] payload;
+    private JsonNode dep;
 
-    // when
-    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        dep = getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "deployment.yaml");
+        payload = getBinaryTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "welcome.js");
+    }
 
-    assertNotNull("Executor should not be null", executor);
+    @Test
+    public void activateFindsAdapterAndActivatesEndpoint() throws IOException {
 
-    then(adapterResolver).should()
-        .getAdapter("V8");
+        given(adapterResolver.getAdapter("V8"))
+                .willReturn(adapter);
 
-    then(adapter).should().activate(
-        C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
-        dep.get("endpoints").get("/welcome"));
+        given(koRepo.getObjectLocation(new ArkId("c", "d", "f")))
+                .willReturn("c-d-f");
 
-  }
+        given(adapter.activate(any(), any(), any(), any(JsonNode.class)))
+                .willReturn(new Executor() {
+                    @Override
+                    public Object execute(Object input) {
+                        return null;
+                    }
+                });
 
-  @Test
-  public void activateCreatesWorkingExecutor() {
+        given(adapter.activate(any(), any(String.class)))
+                .willReturn(new Executor() {
+                    @Override
+                    public Object execute(Object input) {
+                        return null;
+                    }
+                });
 
-    final JsV8Adapter adapter = new JsV8Adapter();
-    adapter.initialize(context);
+        final Endpoint endpoint = Endpoint.Builder
+                .anEndpoint()
+                .withDeployment(dep.get("endpoints").get("/welcome")).build();
 
-    given(cdoStore.getBinary(any())).willReturn(payload);
+        // when
+        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
 
-    given(adapterResolver.getAdapter("V8"))
-        .willReturn(adapter);
+        assertNotNull("Executor should not be null", executor);
 
-    final Endpoint endpoint = Endpoint.Builder
-        .anEndpoint()
-        .withDeployment(dep.get("endpoints").get("/welcome"))
-        .build();
+        then(adapterResolver).should()
+                .getAdapter("V8");
 
-    // when
-    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+        then(adapter).should().activate(
+                C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
+                dep.get("endpoints").get("/welcome"));
 
-    assertNotNull("Executor should not be null", executor);
+    }
 
-    Object output = executor.execute("{\"name\": \"Bob\"}");
+    @Test
+    public void activateCreatesWorkingExecutor() {
 
-    assertEquals("Welcome to Knowledge Grid, Bob", output);
-  }
+        final JsV8Adapter adapter = new JsV8Adapter();
+        adapter.initialize(context);
 
-  @Test
-  public void endpointWithNoMatchingDeploymentSpecThrowsActivationException() {
-    expectedException.expect(ActivatorException.class);
-    expectedException.expectMessage("No deployment specification");
+        given(cdoStore.getBinary(any())).willReturn(payload);
 
-    final Endpoint endpoint = Endpoint.Builder
-        .anEndpoint()
-        .withDeployment(null)
-        .build();
+        given(adapterResolver.getAdapter("V8"))
+                .willReturn(adapter);
 
-    // when
-    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
-  }
+        final Endpoint endpoint = Endpoint.Builder
+                .anEndpoint()
+                .withDeployment(dep.get("endpoints").get("/welcome"))
+                .build();
 
-  @Test
-  public void activatingEndpointWithMissingArtifactThrowsActivatorException() {
-    expectedException.expect(ActivatorException.class);
-    expectedException.expectMessage("Binary resource not found");
+        // when
+        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
 
-    final Endpoint endpoint = Endpoint.Builder.anEndpoint()
-        .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
-        .build();
+        assertNotNull("Executor should not be null", executor);
 
-    given(koRepo.getObjectLocation(new ArkId("c-d/f"))).willReturn("c-d");
+        Object output = executor.execute("{\"name\": \"Bob\"}");
 
-    given(adapterResolver.getAdapter("V8"))
-        .willReturn(adapter);
+        assertEquals("Welcome to Knowledge Grid, Bob", output);
+    }
 
-    given(adapter.activate(any(String.class), any(), any(), any()))
-        .willThrow(new AdapterException("Binary resource not found..."));
+    @Test
+    public void endpointWithNoMatchingDeploymentSpecThrowsActivationException() {
+        expectedException.expect(ActivatorException.class);
+        expectedException.expectMessage("No deployment specification");
 
-    // when
-    Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
-  }
+        final Endpoint endpoint = Endpoint.Builder
+                .anEndpoint()
+                .withDeployment(null)
+                .build();
 
-  @Test
-  public void activatingEndpointWithMissingArtifactGivesNullExecutor() {
+        // when
+        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+    }
 
-    final Endpoint endpoint = Endpoint.Builder.anEndpoint()
-        .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
-        .build();
+    @Test
+    public void activatingEndpointWithMissingArtifactThrowsActivatorException() {
+        expectedException.expect(ActivatorException.class);
+        expectedException.expectMessage("Binary resource not found");
 
-    given(adapterResolver.getAdapter("V8"))
-        .willReturn(adapter);
+        final Endpoint endpoint = Endpoint.Builder.anEndpoint()
+                .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
+                .build();
 
-    given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
-        .willThrow(new AdapterException("Binary resource not found..."));
+        given(koRepo.getObjectLocation(new ArkId("c", "d", "f"))).willReturn("c-d");
 
-    // when
-    activationService.activate(new HashMap<EndpointId, Endpoint>() {{
-      put(C_D_F_WELCOME, endpoint);
-    }});
+        given(adapterResolver.getAdapter("V8"))
+                .willReturn(adapter);
 
-    assertNull("Executor should not be available",
-        endpoint.getExecutor());
+        given(adapter.activate(any(String.class), any(), any(), any()))
+                .willThrow(new AdapterException("Binary resource not found..."));
 
-    // try again with a real Executor returned
-    reset(adapter);
-    given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
-        .willReturn(new Executor() {
-          @Override
-          public Object execute(Object input) {
-            return input;
-          }
-        });
+        // when
+        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+    }
 
-    // when
-    activationService.activate(new HashMap<EndpointId, Endpoint>() {{
-      put(C_D_F_WELCOME, endpoint);
-    }});
+    @Test
+    public void activatingEndpointWithMissingArtifactGivesNullExecutor() {
 
-    // no exception and it's the configured executor
+        final Endpoint endpoint = Endpoint.Builder.anEndpoint()
+                .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
+                .build();
+
+        given(adapterResolver.getAdapter("V8"))
+                .willReturn(adapter);
+
+        given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
+                .willThrow(new AdapterException("Binary resource not found..."));
+
+        // when
+        activationService.activate(new HashMap<EndpointId, Endpoint>() {{
+            put(C_D_F_WELCOME, endpoint);
+        }});
+
+        assertNull("Executor should not be available",
+                endpoint.getExecutor());
+
+        // try again with a real Executor returned
+        reset(adapter);
+        given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
+                .willReturn(new Executor() {
+                    @Override
+                    public Object execute(Object input) {
+                        return input;
+                    }
+                });
+
+        // when
+        activationService.activate(new HashMap<EndpointId, Endpoint>() {{
+            put(C_D_F_WELCOME, endpoint);
+        }});
+
+        // no exception and it's the configured executor
 //    assertNotNull(endpoint.getExecutor());
 //    assertEquals("foo", endpoint.getExecutor().execute("foo"));
-  }
+    }
 }

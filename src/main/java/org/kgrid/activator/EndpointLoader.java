@@ -174,6 +174,6 @@ public class EndpointLoader {
   }
 
   String getKORepoLocation() {
-    return knowledgeObjectRepository.getConnection();
+    return knowledgeObjectRepository.getKoRepoLocation();
   }
 }
