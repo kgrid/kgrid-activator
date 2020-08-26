@@ -2,8 +2,6 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.kgrid.activator.ActivatorException;
@@ -11,9 +9,7 @@ import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.ShelfException;
 import org.kgrid.shelf.domain.ArkId;
-import org.kgrid.shelf.domain.KnowledgeObject;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +36,12 @@ public class ActivationService {
   }
 
 
-  protected void validateEndPoint(KnowledgeObject knowledgeObject) {
+  protected void validateEndPoint(ArkId arkId) {
     /* Need a simple way to validate that an object can be activated
      * The ActivatorException thrown in ActivateKnowledgeObjectEndpoint
      * is used to skip objects on the shelf if they aren't valid
      */
-    log.info(String.format("valid ko @ " + knowledgeObject.getArkId()));
+    log.info(String.format("valid ko @ " + arkId));
   }
 
   public void startEndpointWatcher() throws IOException {
