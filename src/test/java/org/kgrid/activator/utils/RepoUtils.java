@@ -13,13 +13,13 @@ import java.nio.file.Files;
 
 public class RepoUtils {
 
-    public static final ArkId A_B_C = new ArkId("a", "b", "c");
-    public static final ArkId C_D_E = new ArkId("c", "d", "e");
-    public static final ArkId C_D_F = new ArkId("c", "d", "f");
-    public static final ArkId TEST_SERVICE_EXTENSIONONLY = new ArkId("test", "service", "extensiononly");
-    static ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-    static ObjectMapper yamlMapper = new YAMLMapper();
-    static ObjectMapper jsonMapper = new ObjectMapper();
+  public static final ArkId A_B_C = new ArkId("a","b", "c");
+  public static final ArkId C_D_E = new ArkId("c", "d","e");
+  public static final ArkId C_D_F = new ArkId("c", "d", "f");
+  public static final ArkId TEST_SERVICE_EXTENSIONONLY = new ArkId("test", "service", "extensiononly");
+  static ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+  static ObjectMapper yamlMapper = new YAMLMapper();
+  static ObjectMapper jsonMapper = new ObjectMapper();
 
     /*
      ** Loaders for the mock repo

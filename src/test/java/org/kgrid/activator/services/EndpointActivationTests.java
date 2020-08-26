@@ -12,10 +12,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.reset;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,8 +83,8 @@ public class EndpointActivationTests {
         given(adapterResolver.getAdapter("V8"))
                 .willReturn(adapter);
 
-        given(koRepo.getObjectLocation(new ArkId("c", "d", "f")))
-                .willReturn("c-d-f");
+    given(koRepo.getObjectLocation(new ArkId("c", "d", "f")))
+        .willReturn("c-d-f");
 
         given(adapter.activate(any(), any(), any(), any(JsonNode.class)))
                 .willReturn(new Executor() {
@@ -171,7 +169,7 @@ public class EndpointActivationTests {
                 .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
                 .build();
 
-        given(koRepo.getObjectLocation(new ArkId("c", "d", "f"))).willReturn("c-d");
+    given(koRepo.getObjectLocation(new ArkId("c", "d","f"))).willReturn("c-d");
 
         given(adapterResolver.getAdapter("V8"))
                 .willReturn(adapter);
@@ -197,7 +195,7 @@ public class EndpointActivationTests {
                 .willThrow(new AdapterException("Binary resource not found..."));
 
         // when
-        activationService.activate(new HashMap<EndpointId, Endpoint>() {{
+        activationService.activate(new HashMap<>() {{
             put(C_D_F_WELCOME, endpoint);
         }});
 
@@ -215,7 +213,7 @@ public class EndpointActivationTests {
                 });
 
         // when
-        activationService.activate(new HashMap<EndpointId, Endpoint>() {{
+        activationService.activate(new HashMap<>() {{
             put(C_D_F_WELCOME, endpoint);
         }});
 

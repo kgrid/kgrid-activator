@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
@@ -98,7 +99,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
       return;
     }
     watcher = new FilesystemCDOWatcher();
-    watcher.registerAll(Paths.get(endpointLoader.getKORepoLocation()),
+    final URI koRepoLocation = endpointLoader.getKORepoLocation();
+    watcher.registerAll(Paths.get(koRepoLocation),
         ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
     String cdoStoreFilePath = StringUtils.substringAfterLast(cdoStoreURI, ":");
 
