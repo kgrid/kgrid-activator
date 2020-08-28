@@ -24,25 +24,25 @@ public class RepoUtils {
     /*
      ** Loaders for the mock repo
      */
-    public static JsonNode getYamlTestFile(String ark, String filePath) throws IOException {
+    public static JsonNode getYamlTestFile(ArkId ark, String filePath) throws IOException {
 
-        Resource r = resourceResolver.getResource("/shelf/" + ark + "/" + filePath);
+        Resource r = resourceResolver.getResource("/shelf/" + ark.getFullDashArk() + "/" + filePath);
 
         final JsonNode sd = yamlMapper.readTree(r.getFile());
         return sd;
     }
 
-    public static JsonNode getJsonTestFile(String ark, String filePath) throws IOException {
+    public static JsonNode getJsonTestFile(ArkId ark, String filePath) throws IOException {
 
-        Resource r = resourceResolver.getResource("/shelf/" + ark + "/" + filePath);
+        Resource r = resourceResolver.getResource("/shelf/" + ark.getFullDashArk() + "/" + filePath);
 
         final JsonNode sd = jsonMapper.readTree(r.getFile());
         return sd;
     }
 
-    public static byte[] getBinaryTestFile(String ark, String filePath) throws IOException {
+    public static byte[] getBinaryTestFile(ArkId ark, String filePath) throws IOException {
 
-        Resource r = resourceResolver.getResource("/shelf/" + ark + "/" + filePath);
+        Resource r = resourceResolver.getResource("/shelf/" + ark.getFullDashArk() + "/" + filePath);
 
         byte[] binary = Files.readAllBytes(r.getFile().toPath());
 

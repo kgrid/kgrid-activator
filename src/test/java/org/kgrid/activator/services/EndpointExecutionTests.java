@@ -43,7 +43,7 @@ public class EndpointExecutionTests {
         .build();
     endpointMap.put(C_D_F_WELCOME, endpoint);
 
-    activationService = new ActivationService(null, endpointMap);
+    activationService = new ActivationService(null, endpointMap, null);
 
     given(executor.execute(any()))
         .willReturn("Welcome to Knowledge Grid, Bob");
@@ -71,7 +71,7 @@ public class EndpointExecutionTests {
         .build();
     endpointMap.put(C_D_F_WELCOME, endpoint);
 
-    activationService = new ActivationService(null, endpointMap);
+    activationService = new ActivationService(null, endpointMap, null);
 
     // when
     EndPointResult result = activationService.execute(C_D_F_WELCOME, "");

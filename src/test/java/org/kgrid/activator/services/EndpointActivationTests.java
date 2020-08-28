@@ -8,12 +8,12 @@ import static org.kgrid.activator.utils.RepoUtils.getBinaryTestFile;
 import static org.kgrid.activator.utils.RepoUtils.getYamlTestFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
+
 import java.util.HashMap;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,29 +73,29 @@ public class EndpointActivationTests {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        dep = getYamlTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "deployment.yaml");
-        payload = getBinaryTestFile(C_D_F.getDashArk() + "-" + C_D_F.getVersion(), "welcome.js");
+        dep = getYamlTestFile(C_D_F, "deployment.yaml");
+        payload = getBinaryTestFile(C_D_F, "welcome.js");
     }
 
     @Test
-    public void activateFindsAdapterAndActivatesEndpoint() throws IOException {
+    public void activateFindsAdapterAndActivatesEndpoint() {
 
-        given(adapterResolver.getAdapter("V8"))
-                .willReturn(adapter);
+        when(adapterResolver.getAdapter("V8"))
+                .thenReturn(adapter);
 
-    given(koRepo.getObjectLocation(new ArkId("c", "d", "f")))
-        .willReturn("c-d-f");
+        when(koRepo.getObjectLocation(C_D_F))
+                .thenReturn(C_D_F.getFullDashArk());
 
-        given(adapter.activate(any(), any(), any(), any(JsonNode.class)))
-                .willReturn(new Executor() {
+        when(adapter.activate(any(), any(), any(), any(JsonNode.class)))
+                .thenReturn(new Executor() {
                     @Override
                     public Object execute(Object input) {
                         return null;
                     }
                 });
 
-        given(adapter.activate(any(), any(String.class)))
-                .willReturn(new Executor() {
+        when(adapter.activate(any(), any(String.class)))
+                .thenReturn(new Executor() {
                     @Override
                     public Object execute(Object input) {
                         return null;
@@ -106,16 +106,14 @@ public class EndpointActivationTests {
                 .anEndpoint()
                 .withDeployment(dep.get("endpoints").get("/welcome")).build();
 
-        // when
         Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
 
         assertNotNull("Executor should not be null", executor);
 
-        then(adapterResolver).should()
-                .getAdapter("V8");
+        verify(adapterResolver).getAdapter("V8");
 
-        then(adapter).should().activate(
-                C_D_F.getDashArk() + "-" + C_D_F.getVersion(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
+        verify(adapter).activate(
+                C_D_F.getFullDashArk(), C_D_F.getDashArkVersion(), C_D_F_WELCOME.getEndpointName().substring(1),
                 dep.get("endpoints").get("/welcome"));
 
     }
@@ -136,7 +134,6 @@ public class EndpointActivationTests {
                 .withDeployment(dep.get("endpoints").get("/welcome"))
                 .build();
 
-        // when
         Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
 
         assertNotNull("Executor should not be null", executor);
@@ -156,8 +153,7 @@ public class EndpointActivationTests {
                 .withDeployment(null)
                 .build();
 
-        // when
-        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+        activationService.activate(C_D_F_WELCOME, endpoint);
     }
 
     @Test
@@ -169,7 +165,7 @@ public class EndpointActivationTests {
                 .withDeployment(dep.get("endpoints").get("/welcome")) // test deployment file
                 .build();
 
-    given(koRepo.getObjectLocation(new ArkId("c", "d","f"))).willReturn("c-d");
+        given(koRepo.getObjectLocation(new ArkId("c", "d", "f"))).willReturn("c-d");
 
         given(adapterResolver.getAdapter("V8"))
                 .willReturn(adapter);
@@ -177,8 +173,7 @@ public class EndpointActivationTests {
         given(adapter.activate(any(String.class), any(), any(), any()))
                 .willThrow(new AdapterException("Binary resource not found..."));
 
-        // when
-        Executor executor = activationService.activate(C_D_F_WELCOME, endpoint);
+        activationService.activate(C_D_F_WELCOME, endpoint);
     }
 
     @Test
@@ -194,7 +189,6 @@ public class EndpointActivationTests {
         given(adapter.activate(any(String.class), any(), any(), any(JsonNode.class)))
                 .willThrow(new AdapterException("Binary resource not found..."));
 
-        // when
         activationService.activate(new HashMap<>() {{
             put(C_D_F_WELCOME, endpoint);
         }});
@@ -212,13 +206,10 @@ public class EndpointActivationTests {
                     }
                 });
 
-        // when
         activationService.activate(new HashMap<>() {{
             put(C_D_F_WELCOME, endpoint);
         }});
 
-        // no exception and it's the configured executor
-//    assertNotNull(endpoint.getExecutor());
-//    assertEquals("foo", endpoint.getExecutor().execute("foo"));
+
     }
 }

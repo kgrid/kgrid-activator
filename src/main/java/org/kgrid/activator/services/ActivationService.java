@@ -1,7 +1,6 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.kgrid.activator.ActivatorException;
@@ -13,7 +12,6 @@ import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,30 +19,16 @@ public class ActivationService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired
   private Map<EndpointId, Endpoint> endpoints;
 
-  @Autowired
   private AdapterResolver adapterResolver;
 
-  @Autowired
-  private KnowledgeObjectRepository koRepo;
+  private final KnowledgeObjectRepository koRepo;
 
-  public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints) {
+  public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints, KnowledgeObjectRepository koRepo) {
     this.adapterResolver = adapterResolver;
     this.endpoints = endpoints;
-  }
-
-
-  protected void validateEndPoint(ArkId arkId) {
-    /* Need a simple way to validate that an object can be activated
-     * The ActivatorException thrown in ActivateKnowledgeObjectEndpoint
-     * is used to skip objects on the shelf if they aren't valid
-     */
-    log.info(String.format("valid ko @ " + arkId));
-  }
-
-  public void startEndpointWatcher() throws IOException {
+    this.koRepo = koRepo;
   }
 
   public void activate(Map<EndpointId, Endpoint> eps) {
@@ -98,9 +82,10 @@ public class ActivationService {
     // How to pick unspecified version?
     if(version == null) {
       for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
-        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
-            && entry.getKey().getEndpointName().equals(id.getEndpointName())) {
-          id.setArkId(new ArkId(entry.getKey().getArkId().getDashArkVersion()));
+        final EndpointId endpointKey = entry.getKey();
+        if(endpointKey.getArkId().equals(id.getArkId())
+            && endpointKey.getEndpointName().equals(id.getEndpointName())) {
+          id.setArkId(endpointKey.getArkId());
           endpoint = entry.getValue();
           break;        }
       }

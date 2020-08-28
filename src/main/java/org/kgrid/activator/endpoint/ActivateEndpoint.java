@@ -115,10 +115,10 @@ public class ActivateEndpoint {
 
         if (arkId.hasVersion()) {
             endpoints.entrySet().removeIf(
-                    e -> e.getKey().getArkId().getDashArkVersion().equals(arkId.getDashArkVersion()));
+                    e -> e.getKey().getArkId().equals(arkId));
         } else {
             endpoints.entrySet().removeIf(
-                    e -> e.getKey().getArkId().getDashArk().equals(arkId.getDashArk()));
+                    e -> e.getKey().getArkId().getFullArk().equals(arkId.getFullArk()));
         }
 
         Map<EndpointId, org.kgrid.activator.services.Endpoint>
