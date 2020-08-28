@@ -1,151 +1,102 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class ActivationService {
 
-  final Logger log = LoggerFactory.getLogger(this.getClass());
+    final Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired
-  private Map<EndpointId, Endpoint> endpoints;
+    private Map<EndpointId, Endpoint> endpoints;
 
-  @Autowired
-  private AdapterResolver adapterResolver;
+    private AdapterResolver adapterResolver;
 
-  @Autowired
-  private KnowledgeObjectRepository koRepo;
+    private final KnowledgeObjectRepository koRepo;
 
-  public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints) {
-    this.adapterResolver = adapterResolver;
-    this.endpoints = endpoints;
-  }
-
-
-  protected void validateEndPoint(ArkId arkId) {
-    /* Need a simple way to validate that an object can be activated
-     * The ActivatorException thrown in ActivateKnowledgeObjectEndpoint
-     * is used to skip objects on the shelf if they aren't valid
-     */
-    log.info(String.format("valid ko @ " + arkId));
-  }
-
-  public void startEndpointWatcher() throws IOException {
-  }
-
-  public void activate(Map<EndpointId, Endpoint> eps) {
-    eps.forEach((key, value) -> {
-      Executor executor = null;
-      try {
-        executor = activate(key, value);
-      } catch (ActivatorException e) {
-        log.warn("Could not activate " + key + " " + e.getMessage());
-      }
-      value.setExecutor(executor);
-    });
-  }
-
-  public Executor activate(EndpointId endpointKey, Endpoint endpoint) {
-
-    log.info("Activate endpoint {} ", endpointKey);
-
-    ArkId ark = endpointKey.getArkId();
-
-    final JsonNode deploymentSpec = endpoint.getDeployment();
-
-    if (null == deploymentSpec) {
-      throw new ActivatorException("No deployment specification for " + endpointKey);
-    }
-    String adapterName;
-    if(null == deploymentSpec.get("adapterType")) {
-      if(null == deploymentSpec.get("adapter")) {
-        throw new ActivatorException("No adapter specified for " + endpointKey);
-      } else {
-        adapterName = deploymentSpec.get("adapter").asText();
-      }
-    } else {
-      adapterName = deploymentSpec.get("adapterType").asText();
+    public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints, KnowledgeObjectRepository koRepo) {
+        this.adapterResolver = adapterResolver;
+        this.endpoints = endpoints;
+        this.koRepo = koRepo;
     }
 
-    Adapter adapter = adapterResolver
-        .getAdapter(adapterName);
-
-    try {
-      return adapter.activate(koRepo.getObjectLocation(ark), ark.getDashArkVersion(), endpointKey.getEndpointName().substring(1), deploymentSpec);
-    } catch (AdapterException | NullPointerException e) {
-      throw new ActivatorException(e.getMessage(), e);
+    public void activate(Map<EndpointId, Endpoint> eps) {
+        eps.forEach((key, value) -> {
+            Executor executor = null;
+            try {
+                executor = getExecutor(key, value);
+            } catch (ActivatorException e) {
+                log.warn("Could not activate " + key + " " + e.getMessage());
+            }
+            value.setExecutor(executor);
+        });
     }
 
-  }
+    private Executor getExecutor(EndpointId endpointKey, Endpoint endpoint) {
 
-  public EndPointResult execute (EndpointId id, String version, Object inputs) {
-    Endpoint endpoint = endpoints.get(id);
+        log.info("Activate endpoint {} ", endpointKey);
 
-    // How to pick unspecified version?
-    if(version == null) {
-      for(Entry<EndpointId, Endpoint> entry : endpoints.entrySet() ){
-        if(entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
-            && entry.getKey().getEndpointName().equals(id.getEndpointName())) {
-          id.setArkId(new ArkId(entry.getKey().getArkId().getDashArkVersion()));
-          endpoint = entry.getValue();
-          break;        }
-      }
-    }
-    if(null == endpoint) {
-      throw new ActivatorException("No endpoint found for " + id);
-    }
-    Executor executor = endpoint.getExecutor();
+        ArkId ark = endpointKey.getArkId();
 
-    if (null == executor) {
-      throw new ActivatorException("No executor found for " + id);
-    }
+        final JsonNode deploymentSpec = endpoint.getDeployment();
 
-    final Object output = executor.execute(inputs);
+        if (null == deploymentSpec) {
+            throw new ActivatorException("No deployment specification for " + endpointKey);
+        }
+        String adapterName;
+        if (null == deploymentSpec.get("adapterType")) {
+            if (null == deploymentSpec.get("adapter")) {
+                throw new ActivatorException("No adapter specified for " + endpointKey);
+            } else {
+                adapterName = deploymentSpec.get("adapter").asText();
+            }
+        } else {
+            adapterName = deploymentSpec.get("adapterType").asText();
+        }
 
-    final EndPointResult endPointResult = new EndPointResult(output);
+        Adapter adapter = adapterResolver
+                .getAdapter(adapterName);
 
-    endPointResult.getInfo().put("inputs", inputs);
-    endPointResult.getInfo().put("ko", endpoint.getMetadata());
+        try {
+            return adapter.activate(koRepo.getObjectLocation(ark), ark.getDashArkVersion(), endpointKey.getEndpointName().substring(1), deploymentSpec);
+        } catch (RuntimeException e) {
+            throw new ActivatorException(e.getMessage(), e);
+        }
 
-    return endPointResult;
-  }
-
-  public EndPointResult execute(EndpointId endpointPath, Object inputs) {
-
-    final Endpoint endpoint = endpoints.get(endpointPath);
-    if(null == endpoint) {
-      throw new ActivatorException("No endpoint found for " + endpointPath);
     }
 
-    Executor executor = endpoint.getExecutor();
+    public EndPointResult execute(EndpointId id, String version, Object inputs) {
+        Endpoint endpoint = endpoints.get(id);
 
-    if (null == executor) {
-      throw (new ActivatorException("Executor not found for " + endpointPath));
+        if (null == endpoint) {
+            throw new ActivatorException("No endpoint found for " + id);
+        }
+        Executor executor = endpoint.getExecutor();
+
+        if (null == executor) {
+            throw new ActivatorException("No executor found for " + id);
+        }
+
+        final Object output = executor.execute(inputs);
+
+        final EndPointResult endPointResult = new EndPointResult(output);
+
+        endPointResult.getInfo().put("inputs", inputs);
+        endPointResult.getInfo().put("ko", endpoint.getMetadata());
+
+        return endPointResult;
     }
 
-    final Object output = executor.execute(inputs);
-
-    final EndPointResult endPointResult = new EndPointResult(output);
-
-    endPointResult.getInfo().put("inputs", inputs);
-    endPointResult.getInfo().put("ko", endpoint.getMetadata());
-
-    return endPointResult;
-  }
 }
 
 

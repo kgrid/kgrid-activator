@@ -39,7 +39,7 @@ public class EndpointLoader {
 
     if (ark.hasVersion()) {
 
-      log.info("ArkId: " + ark.getDashArkVersion());
+      log.info("ArkId: " + ark.getFullArk());
 
       // load required activation files for KO with `ark`
       // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
@@ -66,7 +66,7 @@ public class EndpointLoader {
    * @return
    */
   private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
-    log.info("Load KO Implementation {}", ark.getDashArkVersion());
+    log.info("Load KO Implementation {}", ark.getFullArk());
     final JsonNode koMetadata;
     final JsonNode serviceSpecification;
     final JsonNode deploymentSpecification;
