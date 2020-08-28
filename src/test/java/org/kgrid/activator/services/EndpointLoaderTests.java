@@ -115,9 +115,9 @@ public class EndpointLoaderTests {
 
     @Test
     public void shouldLoadWhenOnlyServiceSpecHasExtension() {
-        Map<EndpointId, Endpoint> eps = endpointLoader.load(TEST_SERVICE_EXTENSIONONLY);
+        Map<EndpointId, Endpoint> eps = endpointLoader.load(TEST_SERVICE_EXTENSION_ONLY);
 
-        Endpoint endpoint = eps.get(new EndpointId(TEST_SERVICE_EXTENSIONONLY, "/welcome"));
+        Endpoint endpoint = eps.get(new EndpointId(TEST_SERVICE_EXTENSION_ONLY, "/welcome"));
         assertEquals("V8", endpoint.getDeployment().get("adapter").asText());
     }
 
@@ -177,7 +177,7 @@ public class EndpointLoaderTests {
         kos.put(A_B_C, getJsonTestFile(A_B_C, "metadata.json"));
         kos.put(C_D_E, getJsonTestFile(C_D_E, "metadata.json"));
         kos.put(C_D_F, getJsonTestFile(C_D_F, "metadata.json"));
-        kos.put(TEST_SERVICE_EXTENSIONONLY, getJsonTestFile(TEST_SERVICE_EXTENSIONONLY, "metadata.json"));
+        kos.put(TEST_SERVICE_EXTENSION_ONLY, getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
 
         given(repository.findAll()).willReturn(kos);
         given(repository.findKnowledgeObjectMetadata(C_D_E)).willReturn(
@@ -191,8 +191,8 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E, "service.yaml"));
         given(repository.findServiceSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F, "service.yaml"));
-        given(repository.findServiceSpecification(eq(TEST_SERVICE_EXTENSIONONLY), any()))
-                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSIONONLY, "service.yaml"));
+        given(repository.findServiceSpecification(eq(TEST_SERVICE_EXTENSION_ONLY), any()))
+                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
     }
 
     private void loadMockRepoWithImplementations() throws IOException {
@@ -202,8 +202,8 @@ public class EndpointLoaderTests {
                 .willReturn(getJsonTestFile(C_D_E, "metadata.json"));
         given(repository.findKnowledgeObjectMetadata(eq(C_D_F)))
                 .willReturn(getJsonTestFile(C_D_F, "metadata.json"));
-        given(repository.findKnowledgeObjectMetadata(eq(TEST_SERVICE_EXTENSIONONLY)))
-                .willReturn(getJsonTestFile(TEST_SERVICE_EXTENSIONONLY, "metadata.json"));
+        given(repository.findKnowledgeObjectMetadata(eq(TEST_SERVICE_EXTENSION_ONLY)))
+                .willReturn(getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
 
     }
 
@@ -214,8 +214,8 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E, "deployment.yaml"));
         given(repository.findDeploymentSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F, "deployment.yaml"));
-        given(repository.findDeploymentSpecification(eq(TEST_SERVICE_EXTENSIONONLY), any()))
-                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSIONONLY, "service.yaml"));
+        given(repository.findDeploymentSpecification(eq(TEST_SERVICE_EXTENSION_ONLY), any()))
+                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
 
     }
 }
