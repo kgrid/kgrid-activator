@@ -97,18 +97,22 @@ public class EndpointController {
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
         EndpointResource resource = new EndpointResource(endpoint);
+        try {
+            Link self = linkTo(EndpointController.class).slash("endpoints").
+                    slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
+            Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
+                    linkTo(KnowledgeObjectController.class).slash("kos").slash(new ArkId(
+                            endpoint.getMetadata().get("identifier").textValue()).
+                            getSlashArk() + "/service"),
+                    "swagger_editor");
 
-        Link self = linkTo(EndpointController.class).slash("endpoints").
-                slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
-        Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
-                linkTo(KnowledgeObjectController.class).slash("kos").slash(new ArkId(
-                        endpoint.getMetadata().get("identifier").textValue()).
-                        getSlashArk() + "/service"),
-                "swagger_editor");
-
-        resource.add(self);
-        resource.add(swaggerEditor);
-
+            resource.add(self);
+            resource.add(swaggerEditor);
+        } catch (Exception e) {
+            endpoint.setStatus("Could not create Endpoint Resource from malformed endpoint: " + e.getMessage());
+            resource = new EndpointResource(endpoint);
+        }
         return resource;
+
     }
 }

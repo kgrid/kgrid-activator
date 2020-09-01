@@ -19,16 +19,22 @@ public class EndpointResource extends ResourceSupport {
 
 
     public EndpointResource(Endpoint endpoint) {
+        ArkId arkId = null;
+        try {
+            arkId = new ArkId(
+                    endpoint.getMetadata().get("identifier").textValue());
+            this.title = endpoint.getMetadata().get("title").textValue();
+            this.endpointPath = endpoint.getPath().replaceFirst("-", "/");
 
-        this.title = endpoint.getMetadata().get("title").textValue();
-        this.endpointPath = endpoint.getPath().replaceFirst("-", "/");
+            this.servicePath = arkId.
+                    getSlashArk() + "/service";
 
-        this.servicePath = new ArkId(
-                endpoint.getMetadata().get("identifier").textValue()).
-                getSlashArk() + "/service";
+            this.activated = endpoint.getActivated();
+            this.status = endpoint.getStatus();
+        } catch (Exception e) {
+            this.status = "Could not create endpoint resource for malformed endpoint for ArkId: " + arkId;
+        }
 
-        this.activated = endpoint.getActivated();
-        this.status = endpoint.getStatus();
     }
 
     @ApiModelProperty(value = "The Knowledge Object Implementation title")
