@@ -70,6 +70,7 @@ public class ActivationService {
         try {
             return adapter.activate(koRepo.getObjectLocation(ark), ark.getDashArkVersion(), endpointKey.getEndpointName().substring(1), deploymentSpec);
         } catch (RuntimeException e) {
+            endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
             throw new ActivatorException(e.getMessage(), e);
         }
 

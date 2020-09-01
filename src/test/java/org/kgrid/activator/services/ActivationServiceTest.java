@@ -110,9 +110,10 @@ public class ActivationServiceTest {
 
     @Test
     public void activateCatchesExceptionsFromAdapter() {
-        when(adapter.activate(any(), any(), any(), any())).thenThrow(new AdapterException("ope"));
+        String exceptionMessage = "ope";
+        when(adapter.activate(any(), any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activate(endpointMap);
-        verify(endpoint1).setExecutor(null);
+        verify(endpoint1).setStatus("Adapter could not create executor: " + exceptionMessage);
     }
 
     @Test
