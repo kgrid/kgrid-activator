@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.kgrid.activator.ActivatorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,15 @@ public class KoValidationService {
     public static final String HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID = "Deployment defined in both x-kgrid extension and Deployment Specification. Use Deployment Specification Only.";
 
 
-  public void validateActivatability(JsonNode serviceSpec, JsonNode deploymentSpec) {
-        JsonNode pathNode = serviceSpec.at("/paths");
-        pathNode.fields().forEachRemaining(path -> {
-            path.getValue().fields().forEachRemaining(httpMethod -> {
-                JsonNode xKgridActivationNode = httpMethod.getValue().at("/x-kgrid-activation");
-                if (xKgridActivationNode.isMissingNode()) {
-                    validateDeploymentSpecification(deploymentSpec, path.getKey());
-                } else {
-                    if (deploymentSpec!=null) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
-                }
-            });
+    public void validateActivatability(String pathName, JsonNode serviceSpec, JsonNode deploymentSpec) {
+        ObjectNode path = (ObjectNode)serviceSpec.at("/paths").get(pathName);
+        path.fields().forEachRemaining(httpMethod -> {
+            JsonNode xKgridActivationNode = httpMethod.getValue().at("/x-kgrid-activation");
+            if (xKgridActivationNode.isMissingNode()) {
+                validateDeploymentSpecification(deploymentSpec, pathName);
+            } else {
+                if (deploymentSpec != null) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
+            }
         });
     }
 
@@ -62,7 +61,7 @@ public class KoValidationService {
                 if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {
                     if (endpointNode.has("adapter")) {
                         String adapter = endpointNode.get("adapter").asText();
-                        if(!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter)) {
+                        if (!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter)) {
                             throwWithMessage(adapter + ADAPTER_NOT_AVAILABLE);
                         }
                     } else {

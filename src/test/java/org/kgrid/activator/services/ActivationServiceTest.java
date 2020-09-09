@@ -62,6 +62,7 @@ public class ActivationServiceTest {
         when(adapter.activate(any(), any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
         when(endpoint1.getMetadata()).thenReturn(metadata);
+        when(endpoint1.getStatus()).thenReturn("GOOD");
     }
 
     @Test
