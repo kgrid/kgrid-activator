@@ -32,13 +32,15 @@ public class ActivationService {
 
     public void activate(Map<EndpointId, Endpoint> eps) {
         eps.forEach((key, value) -> {
-            Executor executor = null;
-            try {
-                executor = getExecutor(key, value);
-            } catch (ActivatorException e) {
-                log.warn("Could not activate " + key + " " + e.getMessage());
+            if (eps.get(key).getStatus().equals("GOOD")) {
+                Executor executor = null;
+                try {
+                    executor = getExecutor(key, value);
+                } catch (ActivatorException e) {
+                    log.warn("Could not activate " + key + " " + e.getMessage());
+                }
+                value.setExecutor(executor);
             }
-            value.setExecutor(executor);
         });
     }
 

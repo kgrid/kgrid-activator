@@ -86,7 +86,7 @@ public class EndpointLoader {
                             path -> {
                                 String status = "";
                                 try {
-                                    koValidationService.validateActivatability(
+                                    koValidationService.validateActivatability(path.getKey(),
                                             serviceSpecification, deploymentSpecification);
                                 } catch (ActivatorException e) {
                                     status = e.getMessage();

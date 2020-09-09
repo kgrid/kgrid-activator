@@ -166,7 +166,7 @@ public class EndpointLoaderTests {
         endpointLoader.load(C_D_F);
         JsonNode serviceSpec = getYamlTestFile(C_D_F, "service.yaml");
         JsonNode deploymentSpec = getYamlTestFile(C_D_F, "deployment.yaml");
-        verify(koValidationService, times(3)).validateActivatability(serviceSpec, deploymentSpec);
+        verify(koValidationService, times(1)).validateActivatability("/welcome", serviceSpec, deploymentSpec);
     }
 
     /*

@@ -1,6 +1,6 @@
 endpoints:
   /welcome:
-    adapterType: V8
+    adapter: V8
     artifact:  welcome.js
     function: welcome
   /goodbye:
