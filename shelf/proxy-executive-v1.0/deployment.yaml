@@ -1,0 +1,8 @@
+endpoints:
+  /process:
+    adapter: 'PROXY'
+    engine: 'node'
+    entry: 'src/index.js'
+    function: 'process'
+    artifact:
+      - src/index.js

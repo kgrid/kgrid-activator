@@ -1,0 +1,79 @@
+openapi: 3.0.2
+info:
+  version: '1.0'
+  title: New Hello world
+  description: Hello world v1.0 with webpack-built payload
+  license:
+    name: GNU General Public License v3 (GPL-3)
+    url: >-
+      https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)#fulltext
+  contact:
+    name: KGrid Team
+    email: kgrid-developers@umich.edu
+    url: 'http://kgrid.org'
+servers:
+  - url: /js/bundled/
+    description: Hello world
+tags:
+  - name: KO Endpoints
+    description: Hello world Endpoints
+paths:
+  /welcome:
+    post:
+      tags:
+        - KO Endpoints
+      description: Hello
+      operationId: hello
+      requestBody:
+        description: inputs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/input'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/output'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: 'https://demo.kgrid.org/schemas/basicerror.yaml'
+components:
+  schemas:
+    input:
+      required:
+        - name
+        - language
+      properties:
+        name:
+          type: string
+          x-kgrid-label: Please enter your name
+          x-kgrid-unit: ''
+          example: Carol
+        language:
+          type: string
+          enum:
+            - English
+            - French
+            - German
+            - Italian
+            - Portuguese
+            - Spanish
+            - Turkish
+          x-kgrid-label: Please select your language
+          x-kgrid-unit: ''
+          example: Spanish
+    output:
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            type: object

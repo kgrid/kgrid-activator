@@ -1,0 +1,13 @@
+{
+  "@id" : "js-bundled",
+  "@type" : "koio:KnowledgeObject",
+  "identifier" : "ark:/js/bundled",
+  "version" : "v1.0",
+  "title" : "Implementation of bundled Hello KGrid",
+  "description" : "An example of bundled KO",
+  "keywords" : [ "Hello", "example" ],
+  "hasServiceSpecification" : "service.yaml",
+  "hasDeploymentSpecification" : "deployment.yaml",
+  "hasPayload" : "dist/main.js",
+  "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+}
