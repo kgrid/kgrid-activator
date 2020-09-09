@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -17,6 +18,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,8 +93,8 @@ public class AdapterLoader {
             }
 
             @Override
-            public byte[] getBinary(String pathToBinary) {
-              return cdoStore.getBinary(pathToBinary);
+            public byte[] getBinary(URI pathToBinary) {
+                return cdoStore.getBinary(pathToBinary);
             }
 
             @Override

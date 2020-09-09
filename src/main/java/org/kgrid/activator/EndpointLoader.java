@@ -63,7 +63,7 @@ public class EndpointLoader {
     }
 
 
-    private boolean loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
+    private void loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
         log.info("Load KO Implementation {}", ark.getFullArk());
         final JsonNode koMetadata;
         final JsonNode serviceSpecification;
@@ -97,14 +97,13 @@ public class EndpointLoader {
                                         buildEndpoint(ark, koMetadata, serviceSpecification, path, status, endpointDeployment);
                                 endpoints.put(new EndpointId(ark, path.getKey()), endpoint);
                             });
+            System.out.println(endpoints);
 
         } catch (Exception e) {
             final ActivatorException activatorException =
                     new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
             log.warn(activatorException.getMessage());
         }
-
-        return false;
     }
 
     private Endpoint buildEndpoint(

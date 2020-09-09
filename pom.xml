@@ -71,17 +71,17 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>shelf-api</artifactId>
-            <version>3.0</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>javascript-v8-adapter</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>proxy-adapter</artifactId>
-            <version>0.10.5</version>
+            <version>0.10.8</version>
         </dependency>
 
         <dependency>

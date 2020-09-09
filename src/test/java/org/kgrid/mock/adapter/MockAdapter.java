@@ -1,6 +1,8 @@
 package org.kgrid.mock.adapter;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import java.net.URI;
 import java.nio.file.Path;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
@@ -22,12 +24,7 @@ public class MockAdapter implements Adapter {
   }
 
   @Override
-  public Executor activate(String s, String arkId, String endpointName, JsonNode n) {return null;}
-
-  @Override
-  public Executor activate(Path path, String s) {
-    return null;
-  }
+  public Executor activate(URI objectLocation, String naan, String name, String version, String endpointName, JsonNode deploymentSpec) {return null;}
 
   @Override
   public String status() {

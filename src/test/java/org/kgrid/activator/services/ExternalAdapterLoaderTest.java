@@ -3,6 +3,7 @@ package org.kgrid.activator.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -79,12 +80,7 @@ public class ExternalAdapterLoaderTest {
     }
 
     @Override
-    public Executor activate(Path path, String s) {
-      return null;
-    }
-
-    @Override
-    public Executor activate(String s, String arkId, String s1, JsonNode jsonNode) {
+    public Executor activate(URI objectLocation, String naan, String name, String version, String endpointName, JsonNode deploymentSpec) {
       return null;
     }
 
