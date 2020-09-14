@@ -1,9 +1,11 @@
 package org.kgrid.activator.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KoFields;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.time.LocalDateTime;
@@ -21,13 +23,14 @@ public class EndpointResource extends ResourceSupport {
     public EndpointResource(Endpoint endpoint) {
         ArkId arkId = null;
         try {
+            JsonNode metadata = endpoint.getMetadata();
             arkId = new ArkId(
-                    endpoint.getMetadata().get("identifier").textValue());
-            this.title = endpoint.getMetadata().get("title").textValue();
+                    metadata.get("identifier").textValue(), metadata.get("version").asText());
+            this.title = metadata.get("title").textValue();
             this.endpointPath = endpoint.getPath().replaceFirst("-", "/");
 
             this.servicePath = arkId.
-                    getSlashArk() + "/service";
+                    getSlashArkVersion() + "/" + metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText();
 
             this.activated = endpoint.getActivated();
             this.status = endpoint.getStatus();

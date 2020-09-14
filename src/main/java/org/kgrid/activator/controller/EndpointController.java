@@ -1,10 +1,12 @@
 package org.kgrid.activator.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KoFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,13 +99,19 @@ public class EndpointController {
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
         EndpointResource resource = new EndpointResource(endpoint);
+        JsonNode metadata = endpoint.getMetadata();
+        ArkId arkId = new ArkId(
+                metadata.get("identifier").textValue());
         try {
-            Link self = linkTo(EndpointController.class).slash("endpoints").
-                    slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
+            Link self = linkTo(EndpointController.class).slash("endpoints")
+                    .slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
+
             Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
-                    linkTo(KnowledgeObjectController.class).slash("kos").slash(new ArkId(
-                            endpoint.getMetadata().get("identifier").textValue()).
-                            getSlashArk() + "/service"),
+                    linkTo(KnowledgeObjectController.class)
+                            .slash("kos")
+                            .slash(arkId.getSlashArk())
+                            .slash(metadata.get("version").asText())
+                            .slash(metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()),
                     "swagger_editor");
 
             resource.add(self);
