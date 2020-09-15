@@ -1,5 +1,0 @@
-endpoints:
-  /execute:
-    adapter: JAVASCRIPT
-    artifact: src/index.js
-    function: main

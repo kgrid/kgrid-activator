@@ -6,3 +6,4 @@ python-execution-stack.iml
 *.iml
 
 node_modules/
+shelf/

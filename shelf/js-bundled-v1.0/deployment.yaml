@@ -1,5 +1,0 @@
-endpoints:
-  /welcome:
-    adapter: JAVASCRIPT
-    artifact: dist/main.js
-    function: welcome
