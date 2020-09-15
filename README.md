@@ -148,4 +148,4 @@ CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org
 the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
 GitHub repository's GitHub Pages.
 
-test-42 1
+test-42
