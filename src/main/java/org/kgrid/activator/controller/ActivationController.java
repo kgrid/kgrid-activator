@@ -46,7 +46,7 @@ public class ActivationController {
       @PathVariable String name,
       @PathVariable String endpoint,
       @PathVariable String version,
-      @RequestBody Object inputs) {
+      @RequestBody String inputs) {
     ArkId arkid = new ArkId(naan, name, version);
     EndpointId key = new EndpointId(arkid, endpoint);
 
