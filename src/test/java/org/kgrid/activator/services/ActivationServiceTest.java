@@ -58,6 +58,7 @@ public class ActivationServiceTest {
         metadata = generateMetadata();
 
         when(endpoint1.getDeployment()).thenReturn(deploymentJson);
+        when(endpoint1.getId()).thenReturn(ARK_ID);
         when(endpoint1.getExecutor()).thenReturn(executor);
         when(adapterResolver.getAdapter(ADAPTER)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any(), any(), any(), any())).thenReturn(executor);

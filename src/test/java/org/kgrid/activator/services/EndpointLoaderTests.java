@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -49,7 +50,7 @@ public class EndpointLoaderTests {
         Map<EndpointId, Endpoint> eps = endpointLoader.load(A_B_C);
         Endpoint endpoint = eps.get(new EndpointId(A_B_C, "/welcome"));
 
-        assertNotNull("endpointPath 'a-b/c/welcome' should exist", endpoint);
+        assertNotNull("endpointPath 'a/b/c/welcome' should exist", endpoint);
 
         assertNotNull("service descriptor should exist", endpoint.getService());
         assertNotNull("deployment spec should exist", endpoint.getDeployment());
@@ -89,7 +90,7 @@ public class EndpointLoaderTests {
 
         Map<EndpointId, Endpoint> eps = endpointLoader.load();
 
-        assertEquals("Map should have 5 endpoints", 6, eps.size());
+        assertEquals("Map should have 6 endpoints", 6, eps.size());
 
         assertNotNull("'a-b-c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
         assertNotNull("'c-d-e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
@@ -122,22 +123,9 @@ public class EndpointLoaderTests {
     }
 
     @Test
-    public void missingServiceSpecLogsAndSkips() {
-
-        when(repository.findServiceSpecification(A_B_C,
-                repository.findKnowledgeObjectMetadata(A_B_C)))
-                .thenThrow(ShelfResourceNotFound.class);
-
-        assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
-
-        assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
-
-    }
-
-    @Test
     public void missingImplementationLogsAndSkips() {
 
-        given(repository.findKnowledgeObjectMetadata(A_B_C))
+        given(repository.getKow(A_B_C))
                 .willThrow(ShelfResourceNotFound.class);
 
         assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
@@ -174,11 +162,25 @@ public class EndpointLoaderTests {
      */
     private void loadMockRepoWithKOs() throws IOException {
         final Map<ArkId, JsonNode> kos = new HashMap<>();
+        final KnowledgeObjectWrapper abcKow = new KnowledgeObjectWrapper(getJsonTestFile(A_B_C, "metadata.json"));
+        abcKow.addDeployment(getYamlTestFile(A_B_C, "deployment.yaml"));
+        abcKow.addService(getYamlTestFile(A_B_C, "service.yaml"));
+        final KnowledgeObjectWrapper cdeKow = new KnowledgeObjectWrapper(getJsonTestFile(C_D_E, "metadata.json"));
+        cdeKow.addDeployment(getYamlTestFile(C_D_E, "deployment.yaml"));
+        cdeKow.addService(getYamlTestFile(C_D_E, "service.yaml"));
+        final KnowledgeObjectWrapper cdfKow = new KnowledgeObjectWrapper(getJsonTestFile(C_D_F, "metadata.json"));
+        cdfKow.addDeployment(getYamlTestFile(C_D_F, "deployment.yaml"));
+        cdfKow.addService(getYamlTestFile(C_D_F, "service.yaml"));
+        final KnowledgeObjectWrapper testServiceKow = new KnowledgeObjectWrapper(getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
+        testServiceKow.addService(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
         kos.put(A_B_C, getJsonTestFile(A_B_C, "metadata.json"));
         kos.put(C_D_E, getJsonTestFile(C_D_E, "metadata.json"));
         kos.put(C_D_F, getJsonTestFile(C_D_F, "metadata.json"));
         kos.put(TEST_SERVICE_EXTENSION_ONLY, getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
-
+        given(repository.getKow(A_B_C)).willReturn(abcKow);
+        given(repository.getKow(C_D_E)).willReturn(cdeKow);
+        given(repository.getKow(C_D_F)).willReturn(cdfKow);
+        given(repository.getKow(TEST_SERVICE_EXTENSION_ONLY)).willReturn(testServiceKow);
         given(repository.findAll()).willReturn(kos);
         given(repository.findKnowledgeObjectMetadata(C_D_E)).willReturn(
                 getJsonTestFile(C_D_E, "metadata.json"));

@@ -48,7 +48,7 @@ public class ActivationService {
 
         log.info("Activate endpoint {} ", endpointKey);
 
-        ArkId ark = endpointKey.getArkId();
+        ArkId ark = endpoint.getId();
 
         final JsonNode deploymentSpec = endpoint.getDeployment();
 

@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: extensiononly
   title: 'Hello, World'
   description: 'hello world c-style'
 servers:
-  - url: '/test/service'
+  - url: '/test/service/extensiononly'
     description: Hello world
 tags:
   - name: KO Endpoints

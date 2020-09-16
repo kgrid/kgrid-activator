@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.ArkId;
 
 import java.time.LocalDateTime;
 
@@ -62,6 +63,15 @@ public class Endpoint {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public ArkId getId() {
+
+        ArkId arkId = new ArkId(metadata.at("/identifier").asText());
+        if(!arkId.hasVersion()){
+            arkId = new ArkId(metadata.at("/identifier").asText() + "/" + metadata.at("/version").asText());
+        }
+        return arkId;
     }
 
     public static final class Builder {
