@@ -65,13 +65,24 @@ public class Endpoint {
         this.status = status;
     }
 
-    public ArkId getId() {
-
+    public ArkId getArkId() {
         ArkId arkId = new ArkId(metadata.at("/identifier").asText());
-        if(!arkId.hasVersion()){
+        if (!arkId.hasVersion()) {
             arkId = new ArkId(metadata.at("/identifier").asText() + "/" + metadata.at("/version").asText());
         }
         return arkId;
+    }
+
+    public String getNaan() {
+        return this.getArkId().getNaan();
+    }
+
+    public String getName() {
+        return this.getArkId().getName();
+    }
+
+    public String getApiVersion() {
+        return this.service.at("info/version").asText();
     }
 
     public static final class Builder {
@@ -104,7 +115,6 @@ public class Endpoint {
             this.deployment = deployment;
             return this;
         }
-
 
         public Builder withExecutor(Executor executor) {
             this.executor = executor;

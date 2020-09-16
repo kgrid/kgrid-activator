@@ -46,7 +46,7 @@ public class EndpointLoader {
 
             // load required activation files for KO with `ark`
             // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
-            loadKOImplemtation(ark, endpoints);
+            loadKOImplentation(ark, endpoints);
 
         } else {
             JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
@@ -55,7 +55,7 @@ public class EndpointLoader {
                         ko -> {
                             if (ko.has("version")) {
                                 ArkId id = new ArkId(ark.getNaan(), ark.getName(), (ko.get("version").asText()));
-                                loadKOImplemtation(id, endpoints);
+                                loadKOImplentation(id, endpoints);
                             }
                         });
             }
@@ -63,20 +63,20 @@ public class EndpointLoader {
         return endpoints;
     }
 
-
-    private void loadKOImplemtation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
+    private void loadKOImplentation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
         log.info("Load KO Implementation {}", ark.getFullArk());
 
-
         try {
-
             KnowledgeObjectWrapper wrapper = knowledgeObjectRepository.getKow(ark);
-            koValidationService.validateMetadata(wrapper.getMetadata());
-            koValidationService.validateServiceSpecification(wrapper.getService());
+            JsonNode deploymentSpec = wrapper.getDeployment();
+            JsonNode metadata = wrapper.getMetadata();
+            koValidationService.validateMetadata(metadata);
+            JsonNode serviceSpec = wrapper.getService();
+            koValidationService.validateServiceSpecification(serviceSpec);
 
-            String apiVersion = wrapper.getService().at("/info/version").asText();
+            String apiVersion = serviceSpec.at("/info/version").asText();
 
-            wrapper.getService()
+            serviceSpec
                     .get("paths")
                     .fields()
                     .forEachRemaining(
@@ -84,16 +84,23 @@ public class EndpointLoader {
                                 String status = "";
                                 try {
                                     koValidationService.validateActivatability(path.getKey(),
-                                            wrapper.getService(), wrapper.getDeployment());
+                                            serviceSpec, deploymentSpec);
                                 } catch (ActivatorException e) {
                                     status = e.getMessage();
                                 }
 
-                                JsonNode endpointDeployment = getEndpointDeployment(wrapper.getDeployment(), path);
-                                ArkId endpointArk = new ArkId(ark.getNaan(), ark.getName(), apiVersion);
                                 Endpoint endpoint =
-                                        buildEndpoint(ark, apiVersion, wrapper.getMetadata(), wrapper.getService(), path, status, endpointDeployment);
-                                endpoints.put(new EndpointId(endpointArk, path.getKey()), endpoint);
+                                        Endpoint.Builder.anEndpoint()
+                                                .withService(serviceSpec)
+                                                .withDeployment(deploymentSpec)
+                                                .withMetadata(metadata)
+                                                .withStatus(status.equals("") ? "GOOD" : status)
+                                                .withPath(
+                                                        metadata.at("@id")
+                                                                + path.getKey()
+                                                                + (apiVersion != null ? "?v=" + apiVersion : ""))
+                                                .build();
+                                endpoints.put(new EndpointId(endpoint.getNaan(), endpoint.getName(), endpoint.getApiVersion(), path.getKey()), endpoint);
                             });
 
         } catch (Exception e) {
@@ -101,26 +108,6 @@ public class EndpointLoader {
                     new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
             log.warn(activatorException.getMessage());
         }
-    }
-
-    private Endpoint buildEndpoint(
-            ArkId ark,
-            String apiVersion,
-            JsonNode koMetadata,
-            JsonNode serviceSpecification,
-            Entry<String, JsonNode> path,
-            String status,
-            JsonNode spec) {
-        return Endpoint.Builder.anEndpoint()
-                .withService(serviceSpecification)
-                .withDeployment(spec)
-                .withMetadata(koMetadata)
-                .withStatus(status.equals("") ? "GOOD" : status)
-                .withPath(
-                        ark.getSlashArk()
-                                + path.getKey()
-                                + (apiVersion != null ? "?v=" + apiVersion : ""))
-                .build();
     }
 
     //TODO: Remove the usage of `x-kgrid-activation`
@@ -135,18 +122,6 @@ public class EndpointLoader {
                     "Extension of `x-kgrid-activation` has been deprecated from the service specification. Please use the deployment specification file instead.");
         }
         return spec;
-    }
-
-    private JsonNode getDeploymentSpec(ArkId ark, JsonNode koMetadata) {
-        JsonNode deploymentSpecification;
-        JsonNode t = null;
-        try {
-            t = knowledgeObjectRepository.findDeploymentSpecification(ark, koMetadata);
-        } catch (Exception e) {
-            log.warn("no deployment spec found for " + ark.getSlashArkVersion());
-        }
-        deploymentSpecification = t;
-        return deploymentSpecification;
     }
 
     /**

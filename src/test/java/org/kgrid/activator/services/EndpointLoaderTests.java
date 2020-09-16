@@ -22,7 +22,8 @@ import static org.kgrid.activator.utils.RepoUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 public class EndpointLoaderTests {
@@ -116,9 +117,9 @@ public class EndpointLoaderTests {
 
     @Test
     public void shouldLoadWhenOnlyServiceSpecHasExtension() {
-        Map<EndpointId, Endpoint> eps = endpointLoader.load(TEST_SERVICE_EXTENSION_ONLY);
+        Map<EndpointId, Endpoint> endpointMap = endpointLoader.load(TEST_SERVICE_EXTENSION_ONLY);
 
-        Endpoint endpoint = eps.get(new EndpointId(TEST_SERVICE_EXTENSION_ONLY, "/welcome"));
+        Endpoint endpoint = endpointMap.get(new EndpointId(TEST_SERVICE_EXTENSION_ONLY, "/welcome"));
         assertEquals("V8", endpoint.getDeployment().get("adapter").asText());
     }
 
