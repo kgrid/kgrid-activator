@@ -34,7 +34,7 @@ public class ActivationServiceTest {
     public static final URI OBJECT_LOCATION = URI.create("ObjectLocation");
     private EndpointId endpointId1;
     private Endpoint endpoint1 = Mockito.mock(Endpoint.class);
-    private Map<EndpointId, Endpoint> endpointMap = new HashMap<>();
+    private Map<URI, Endpoint> endpointMap = new HashMap<>();
     @Mock
     private AdapterResolver adapterResolver;
     @Mock
@@ -51,8 +51,8 @@ public class ActivationServiceTest {
 
     @Before
     public void setup() throws IOException {
-        endpointId1 = new EndpointId(ARK_ID, ENDPOINT_NAME);
-        endpointMap.put(endpointId1, endpoint1);
+        final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
+        endpointMap.put(uri, endpoint1);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
         deploymentJson = getEndpointDeploymentJson();
         metadata = generateMetadata();
@@ -121,26 +121,26 @@ public class ActivationServiceTest {
 
     @Test
     public void executeGetsExecutorFromEndpoint() {
-        activationService.execute(endpointId1, VERSION, "input");
+        activationService.execute(endpointId1, "input");
         verify(endpoint1).getExecutor();
     }
 
     @Test
     public void executeExecutesExecutor() {
-        activationService.execute(endpointId1, VERSION, input);
+        activationService.execute(endpointId1, input);
         verify(executor).execute(input);
     }
 
     @Test
     public void executeSetsInputOnEndpointResult() {
         EndPointResult result;
-        result = activationService.execute(endpointId1, VERSION, input);
+        result = activationService.execute(endpointId1, input);
         assertEquals(input, result.getInfo().get("inputs"));
     }
 
     @Test
     public void executeSetsMetadataOnEndpointResult() {
-        EndPointResult result = activationService.execute(endpointId1, VERSION, input);
+        EndPointResult result = activationService.execute(endpointId1, input);
         assertEquals(metadata, result.getInfo().get("ko"));
     }
 
@@ -152,7 +152,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             missingId,
-                            VERSION, input);
+                        input);
                 });
         assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
     }
@@ -164,7 +164,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             endpointId1,
-                            VERSION, input);
+                        input);
                 });
         assertEquals("No executor found for " + endpointId1, activatorException.getMessage());
     }

@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
@@ -18,19 +19,19 @@ public class ActivationService {
 
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<EndpointId, Endpoint> endpoints;
+    private Map<URI, Endpoint> endpoints;
 
     private AdapterResolver adapterResolver;
 
     private final KnowledgeObjectRepository koRepo;
 
-    public ActivationService(AdapterResolver adapterResolver, Map<EndpointId, Endpoint> endpoints, KnowledgeObjectRepository koRepo) {
+    public ActivationService(AdapterResolver adapterResolver, Map<URI, Endpoint> endpoints, KnowledgeObjectRepository koRepo) {
         this.adapterResolver = adapterResolver;
         this.endpoints = endpoints;
         this.koRepo = koRepo;
     }
 
-    public void activate(Map<EndpointId, Endpoint> eps) {
+    public void activate(Map<URI, Endpoint> eps) {
         eps.forEach((key, value) -> {
             if (eps.get(key).getStatus().equals("GOOD")) {
                 Executor executor = null;
@@ -44,11 +45,10 @@ public class ActivationService {
         });
     }
 
-    private Executor getExecutor(EndpointId endpointKey, Endpoint endpoint) {
+    private Executor getExecutor(URI endpointKey, Endpoint endpoint) {
 
         log.info("Activate endpoint {} ", endpointKey);
 
-        ArkId ark = endpoint.getArkId();
 
         final JsonNode deploymentSpec = endpoint.getDeployment();
 
@@ -68,9 +68,16 @@ public class ActivationService {
 
         Adapter adapter = adapterResolver
                 .getAdapter(adapterName);
+        ArkId ark = endpoint.getArkId();
 
         try {
-            return adapter.activate(koRepo.getObjectLocation(ark), ark.getNaan(), ark.getName(), ark.getVersion(), endpointKey.getEndpointName().substring(1), deploymentSpec);
+            return adapter.activate(
+                koRepo.getObjectLocation(ark),
+                endpoint.getNaan(),
+                endpoint.getName(),
+                endpoint.getApiVersion(),
+                endpoint.getEndpointName(),
+                deploymentSpec);
         } catch (RuntimeException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
             throw new ActivatorException(e.getMessage(), e);
@@ -78,7 +85,7 @@ public class ActivationService {
 
     }
 
-    public EndPointResult execute(EndpointId id, String version, Object inputs) {
+    public EndPointResult execute(EndpointId id, Object inputs) {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint) {

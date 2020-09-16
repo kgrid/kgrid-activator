@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ public class EndpointLoaderTests {
     @Test
     public void endpointIsLoadedForAnImplementation() throws IOException {
 
-        Map<EndpointId, Endpoint> eps = endpointLoader.load(A_B_C);
+        Map<URI, Endpoint> eps = endpointLoader.load(A_B_C);
         Endpoint endpoint = eps.get(new EndpointId(A_B_C, "/welcome"));
 
         assertNotNull("endpointPath 'a/b/c/welcome' should exist", endpoint);
@@ -74,7 +75,7 @@ public class EndpointLoaderTests {
     public void endpointIsLoadedForAnKO() {
 
         // load single endpoint implementation
-        Map<EndpointId, Endpoint> eps = endpointLoader.load(C_D_F);
+        Map<URI, Endpoint> eps = endpointLoader.load(C_D_F);
         Endpoint endpoint = eps.get(new EndpointId(C_D_F, "/welcome"));
 
         assertEquals("should load 3 end points", 3, eps.size());
@@ -89,7 +90,7 @@ public class EndpointLoaderTests {
     @Test
     public void activationPopulatesEndpointsWithMultipleVersions() {
 
-        Map<EndpointId, Endpoint> eps = endpointLoader.load();
+        Map<URI, Endpoint> eps = endpointLoader.load();
 
         assertEquals("Map should have 5 endpoints", 5, eps.size());
 
@@ -104,13 +105,13 @@ public class EndpointLoaderTests {
     @Test
     public void endpointsContainServices() {
 
-        Map<EndpointId, Endpoint> endpoints = endpointLoader.load();
+        Map<URI, Endpoint> endpoints = endpointLoader.load();
 
         endpoints.forEach((path, endpoint) -> {
             final JsonNode service = endpoint.getService();
             assertNotNull("Service spec must exist", service);
             assertTrue("Service spec must have endpoint path(service)", service.has("paths"));
-            String endpointKey = path.getEndpointName();
+            String endpointKey = endpoint.getEndpointName();
             assertNotNull("Service contains endpoint path", service.get("paths").get(endpointKey));
         });
     }

@@ -38,23 +38,23 @@ public class ActivationController {
 
   //Add back in old /naan/name/version/endpoint
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
-      value = {"/{naan}/{name}/{version}/{endpoint}"},
+      value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
       produces = {MediaType.APPLICATION_JSON_VALUE})
   @ResponseStatus(HttpStatus.OK)
   public Object processWithBareJsonInputOutputOldVersion(
       @PathVariable String naan,
       @PathVariable String name,
       @PathVariable String endpoint,
-      @PathVariable String version,
+      @PathVariable String apiVersion,
       @RequestBody String inputs) {
-    ArkId arkid = new ArkId(naan, name, version);
-    EndpointId key = new EndpointId(arkid, endpoint);
+
+    EndpointId endpointId = new EndpointId(naan, name, apiVersion, endpoint);
 
     try {
-      return activationService.execute(key, version, inputs);
+      return activationService.execute(endpointId, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
-      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage());
+      throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage());
     }
   }
 
@@ -66,18 +66,13 @@ public class ActivationController {
       @PathVariable String naan,
       @PathVariable String name,
       @PathVariable String endpoint,
-      @RequestParam(name = "v", required = false) String version,
+      @RequestParam(name = "v", required = false) String apiVersion,
       @RequestBody String inputs) {
-    ArkId arkid;
-    if(version == null) {
-      arkid = new ArkId(naan, name);
-    } else {
-      arkid = new ArkId(naan, name, version);
-    }
-    EndpointId key = new EndpointId(arkid, endpoint);
+
+    EndpointId key = new EndpointId(naan, name, apiVersion, endpoint);
 
     try {
-      return activationService.execute(key, version, inputs);
+      return activationService.execute(key, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
       throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage(), e);

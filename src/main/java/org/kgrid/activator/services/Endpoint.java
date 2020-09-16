@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 
@@ -14,8 +15,8 @@ public class Endpoint {
     private JsonNode deployment;
     private Executor executor;
     private LocalDateTime activated;
-
     private String status;
+    private String endpointName;
 
     public Executor getExecutor() {
         return executor;
@@ -85,6 +86,14 @@ public class Endpoint {
         return this.service.at("/info/version").asText();
     }
 
+    public URI getId() {
+        return URI.create(URI.create(getPath()).getPath());
+    }
+
+    public String getEndpointName() {
+        return endpointName;
+    }
+
     public static final class Builder {
 
         private JsonNode service;
@@ -93,6 +102,7 @@ public class Endpoint {
         private Executor executor;
         private String path;
         private String status;
+        private String endpointName;
 
         private Builder() {
         }
@@ -130,6 +140,10 @@ public class Endpoint {
             this.path = path;
             return this;
         }
+        public Builder withEndpointName(String name) {
+            this.endpointName = name;
+            return this;
+        }
 
 
         public Endpoint build() {
@@ -141,6 +155,7 @@ public class Endpoint {
             endpoint.activated = LocalDateTime.now();
             endpoint.path = path;
             endpoint.status = status;
+            endpoint.endpointName = endpointName;
             return endpoint;
         }
 

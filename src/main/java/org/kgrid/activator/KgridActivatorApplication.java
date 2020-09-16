@@ -39,7 +39,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class KgridActivatorApplication implements CommandLineRunner {
 
   @Autowired
-  private Map<EndpointId, Endpoint> endpoints;
+  private Map<URI, Endpoint> endpoints;
 
   @Autowired
   private ActivationService activationService;
@@ -75,12 +75,12 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
   @Bean
   public static AdapterResolver getAdapterResolver(AdapterLoader loader,
-      Map<EndpointId, Endpoint> endpoints) {
+      Map<URI, Endpoint> endpoints) {
     return loader.loadAndInitializeAdapters(endpoints);
   }
 
   @Bean
-  public static TreeMap<EndpointId, Endpoint> getEndpoints() {
+  public static TreeMap<URI, Endpoint> getEndpoints() {
     return new TreeMap<>(Collections.reverseOrder());
   }
 

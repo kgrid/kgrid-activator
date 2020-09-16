@@ -2,7 +2,6 @@ package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.activator.services.KoValidationService;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
@@ -36,9 +35,9 @@ public class EndpointLoader {
      *
      * @return collection of endpoints
      */
-    public Map<EndpointId, Endpoint> load(ArkId ark) {
+    public Map<URI, Endpoint> load(ArkId ark) {
 
-        Map<EndpointId, Endpoint> endpoints = new HashMap<>();
+        Map<URI, Endpoint> endpoints = new HashMap<>();
 
         if (ark.hasVersion()) {
 
@@ -63,7 +62,7 @@ public class EndpointLoader {
         return endpoints;
     }
 
-    private void loadKOImplentation(ArkId ark, Map<EndpointId, Endpoint> endpoints) {
+    private void loadKOImplentation(ArkId ark, Map<URI, Endpoint> endpoints) {
         log.info("Load KO Implementation {}", ark.getFullArk());
 
         try {
@@ -96,11 +95,12 @@ public class EndpointLoader {
                                                 .withMetadata(metadata)
                                                 .withStatus(status.equals("") ? "GOOD" : status)
                                                 .withPath(
-                                                        metadata.at("/@id")
+                                                        metadata.at("/@id").asText()
                                                                 + path.getKey()
                                                                 + (apiVersion != null ? "?v=" + apiVersion : ""))
+                                                .withEndpointName(path.getKey())
                                                 .build();
-                                endpoints.put(new EndpointId(endpoint.getNaan(), endpoint.getName(), endpoint.getApiVersion(), path.getKey()), endpoint);
+                                endpoints.put(endpoint.getId(), endpoint);
                             });
 
         } catch (Exception e) {
@@ -129,16 +129,16 @@ public class EndpointLoader {
      *
      * @return collection of endpoints
      */
-    public Map<EndpointId, Endpoint> load() {
+    public TreeMap<URI, Endpoint> load() {
         Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-        Map<EndpointId, Endpoint> temp = new HashMap<>();
+        Map<URI, Endpoint> temp = new HashMap<>();
 
         for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
             temp.putAll(load(ko.getKey()));
         }
 
         // Putting everything in a treemap sorts them alphabetically
-        TreeMap<EndpointId, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
+        TreeMap<URI, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
         endpoints.putAll(temp);
 
         return endpoints;
