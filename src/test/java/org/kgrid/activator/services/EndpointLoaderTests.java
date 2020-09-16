@@ -91,7 +91,7 @@ public class EndpointLoaderTests {
 
         Map<EndpointId, Endpoint> eps = endpointLoader.load();
 
-        assertEquals("Map should have 6 endpoints", 6, eps.size());
+        assertEquals("Map should have 5 endpoints", 5, eps.size());
 
         assertNotNull("'a-b-c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
         assertNotNull("'c-d-e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
@@ -113,14 +113,6 @@ public class EndpointLoaderTests {
             String endpointKey = path.getEndpointName();
             assertNotNull("Service contains endpoint path", service.get("paths").get(endpointKey));
         });
-    }
-
-    @Test
-    public void shouldLoadWhenOnlyServiceSpecHasExtension() {
-        Map<EndpointId, Endpoint> endpointMap = endpointLoader.load(TEST_SERVICE_EXTENSION_ONLY);
-
-        Endpoint endpoint = endpointMap.get(new EndpointId(TEST_SERVICE_EXTENSION_ONLY, "/welcome"));
-        assertEquals("V8", endpoint.getDeployment().get("adapter").asText());
     }
 
     @Test
@@ -172,16 +164,12 @@ public class EndpointLoaderTests {
         final KnowledgeObjectWrapper cdfKow = new KnowledgeObjectWrapper(getJsonTestFile(C_D_F, "metadata.json"));
         cdfKow.addDeployment(getYamlTestFile(C_D_F, "deployment.yaml"));
         cdfKow.addService(getYamlTestFile(C_D_F, "service.yaml"));
-        final KnowledgeObjectWrapper testServiceKow = new KnowledgeObjectWrapper(getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
-        testServiceKow.addService(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
         kos.put(A_B_C, getJsonTestFile(A_B_C, "metadata.json"));
         kos.put(C_D_E, getJsonTestFile(C_D_E, "metadata.json"));
         kos.put(C_D_F, getJsonTestFile(C_D_F, "metadata.json"));
-        kos.put(TEST_SERVICE_EXTENSION_ONLY, getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
         given(repository.getKow(A_B_C)).willReturn(abcKow);
         given(repository.getKow(C_D_E)).willReturn(cdeKow);
         given(repository.getKow(C_D_F)).willReturn(cdfKow);
-        given(repository.getKow(TEST_SERVICE_EXTENSION_ONLY)).willReturn(testServiceKow);
         given(repository.findAll()).willReturn(kos);
         given(repository.findKnowledgeObjectMetadata(C_D_E)).willReturn(
                 getJsonTestFile(C_D_E, "metadata.json"));
@@ -194,8 +182,6 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E, "service.yaml"));
         given(repository.findServiceSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F, "service.yaml"));
-        given(repository.findServiceSpecification(eq(TEST_SERVICE_EXTENSION_ONLY), any()))
-                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
     }
 
     private void loadMockRepoWithImplementations() throws IOException {
@@ -205,8 +191,6 @@ public class EndpointLoaderTests {
                 .willReturn(getJsonTestFile(C_D_E, "metadata.json"));
         given(repository.findKnowledgeObjectMetadata(eq(C_D_F)))
                 .willReturn(getJsonTestFile(C_D_F, "metadata.json"));
-        given(repository.findKnowledgeObjectMetadata(eq(TEST_SERVICE_EXTENSION_ONLY)))
-                .willReturn(getJsonTestFile(TEST_SERVICE_EXTENSION_ONLY, "metadata.json"));
 
     }
 
@@ -217,8 +201,5 @@ public class EndpointLoaderTests {
                 .willReturn(getYamlTestFile(C_D_E, "deployment.yaml"));
         given(repository.findDeploymentSpecification(eq(C_D_F), any()))
                 .willReturn(getYamlTestFile(C_D_F, "deployment.yaml"));
-        given(repository.findDeploymentSpecification(eq(TEST_SERVICE_EXTENSION_ONLY), any()))
-                .willReturn(getYamlTestFile(TEST_SERVICE_EXTENSION_ONLY, "service.yaml"));
-
     }
 }

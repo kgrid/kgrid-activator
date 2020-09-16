@@ -92,11 +92,11 @@ public class EndpointLoader {
                                 Endpoint endpoint =
                                         Endpoint.Builder.anEndpoint()
                                                 .withService(serviceSpec)
-                                                .withDeployment(deploymentSpec)
+                                                .withDeployment(deploymentSpec.get("endpoints").get(path.getKey()))
                                                 .withMetadata(metadata)
                                                 .withStatus(status.equals("") ? "GOOD" : status)
                                                 .withPath(
-                                                        metadata.at("@id")
+                                                        metadata.at("/@id")
                                                                 + path.getKey()
                                                                 + (apiVersion != null ? "?v=" + apiVersion : ""))
                                                 .build();

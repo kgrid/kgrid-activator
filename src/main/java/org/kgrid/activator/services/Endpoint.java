@@ -82,7 +82,7 @@ public class Endpoint {
     }
 
     public String getApiVersion() {
-        return this.service.at("info/version").asText();
+        return this.service.at("/info/version").asText();
     }
 
     public static final class Builder {
