@@ -50,7 +50,7 @@ public class EndpointLoaderTests {
     public void endpointIsLoadedForAnImplementation() throws IOException {
 
         Map<URI, Endpoint> eps = endpointLoader.load(A_B_C);
-        Endpoint endpoint = eps.get(new EndpointId(A_B_C, "/welcome"));
+        Endpoint endpoint = eps.get(URI.create("a/b/c/welcome"));
 
         assertNotNull("endpointPath 'a/b/c/welcome' should exist", endpoint);
 
@@ -67,7 +67,7 @@ public class EndpointLoaderTests {
         assertNotNull("enpoint spec 'a-b-c/info' is in original spec",
                 deploymentSpec.get("endpoints").get("/info"));
 
-        endpoint = eps.get(new EndpointId(A_B_C, "info"));
+        endpoint = eps.get(URI.create("a/b/c/info"));
         assertNull("endpointPath 'a-b-c/info' should not exist", endpoint);
     }
 
@@ -76,7 +76,9 @@ public class EndpointLoaderTests {
 
         // load single endpoint implementation
         Map<URI, Endpoint> eps = endpointLoader.load(C_D_F);
-        Endpoint endpoint = eps.get(new EndpointId(C_D_F, "/welcome"));
+
+        URI epUri = URI.create(C_D_F.getSlashArkVersion()+"/").resolve("welcome");
+        Endpoint endpoint = eps.get(epUri);
 
         assertEquals("should load 3 end points", 3, eps.size());
         assertNotNull("endpointPath 'c-d-f/welcome' should exist", endpoint);
@@ -94,11 +96,11 @@ public class EndpointLoaderTests {
 
         assertEquals("Map should have 5 endpoints", 5, eps.size());
 
-        assertNotNull("'a-b-c/welcome' exists", eps.get(new EndpointId(A_B_C, "/welcome")));
-        assertNotNull("'c-d-e/welcome' exists", eps.get(new EndpointId(C_D_E, "/welcome")));
-        assertNotNull("'c-d-f/welcome' exists", eps.get(new EndpointId(C_D_F, "/welcome")));
-        assertNotNull("'c-d-f/goodbye' exists", eps.get(new EndpointId(C_D_F, "/goodbye")));
-        assertNotNull("'c-d-f/info' exists", eps.get(new EndpointId(C_D_F, "/info")));
+        assertNotNull("'a-b-c/welcome' exists", eps.get(URI.create("a/b/c/welcome")));
+        assertNotNull("'c-d-e/welcome' exists", eps.get(URI.create("c/d/e/welcome")));
+        assertNotNull("'c-d-f/welcome' exists", eps.get(URI.create("c/d/f/welcome")));
+        assertNotNull("'c-d-f/goodbye' exists", eps.get(URI.create("c/d/f/goodbye")));
+        assertNotNull("'c-d-f/info' exists", eps.get(URI.create("c/d/f/info")));
     }
 
 
@@ -122,9 +124,9 @@ public class EndpointLoaderTests {
         given(repository.getKow(A_B_C))
                 .willThrow(ShelfResourceNotFound.class);
 
-        assertNull(endpointLoader.load(A_B_C).get(new EndpointId(A_B_C, "/welcome")));
+        assertNull(endpointLoader.load(A_B_C).get(URI.create("a/b/c/welcome")));
 
-        assertNull(endpointLoader.load().get(new EndpointId(A_B_C, "/welcome")));
+        assertNull(endpointLoader.load().get(URI.create("a/b/c/welcome")));
 
     }
 

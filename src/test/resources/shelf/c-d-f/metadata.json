@@ -1,4 +1,4 @@
-{ "@id":"c-d",
+{ "@id":"c/d/f",
   "@type" : "koio:KnowledgeObject",
   "identifier" : "ark:/c/d",
   "version":"f",

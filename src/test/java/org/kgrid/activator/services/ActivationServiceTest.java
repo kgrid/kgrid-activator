@@ -11,7 +11,6 @@ import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.v8.V8Executor;
 import org.kgrid.shelf.ShelfResourceNotFound;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,8 +31,7 @@ import static org.mockito.Mockito.when;
 public class ActivationServiceTest {
 
     public static final URI OBJECT_LOCATION = URI.create("ObjectLocation");
-    private EndpointId endpointId1;
-    private Endpoint endpoint1 = Mockito.mock(Endpoint.class);
+    private Endpoint mockEndpoint = Mockito.mock(Endpoint.class);
     private Map<URI, Endpoint> endpointMap = new HashMap<>();
     @Mock
     private AdapterResolver adapterResolver;
@@ -52,25 +50,32 @@ public class ActivationServiceTest {
     @Before
     public void setup() throws IOException {
         final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
-        endpointMap.put(uri, endpoint1);
+        endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
         deploymentJson = getEndpointDeploymentJson();
         metadata = generateMetadata();
 
-        when(endpoint1.getDeployment()).thenReturn(deploymentJson);
-        when(endpoint1.getArkId()).thenReturn(ARK_ID);
-        when(endpoint1.getExecutor()).thenReturn(executor);
         when(adapterResolver.getAdapter(ADAPTER)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any(), any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
-        when(endpoint1.getMetadata()).thenReturn(metadata);
-        when(endpoint1.getStatus()).thenReturn("GOOD");
+
+        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson);
+        when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
+        when(mockEndpoint.getId()).thenReturn(uri);
+        when(mockEndpoint.getExecutor()).thenReturn(executor);
+        when(mockEndpoint.getNaan()).thenReturn(NAAN);
+        when(mockEndpoint.getName()).thenReturn(NAME);
+        when(mockEndpoint.getApiVersion()).thenReturn(VERSION);
+        when(mockEndpoint.getEndpointName()).thenReturn(ENDPOINT_NAME);
+
+        when(mockEndpoint.getMetadata()).thenReturn(metadata);
+        when(mockEndpoint.getStatus()).thenReturn("GOOD");
     }
 
     @Test
     public void activateGetsDeploymentFromEndpoint() {
         activationService.activate(endpointMap);
-        verify(endpoint1).getDeployment();
+        verify(mockEndpoint).getDeployment();
     }
 
     @Test
@@ -88,27 +93,28 @@ public class ActivationServiceTest {
     @Test
     public void activateCallsActivateOnAdapter() {
         activationService.activate(endpointMap);
-        verify(adapter).activate(OBJECT_LOCATION, ARK_ID.getNaan(), ARK_ID.getName(), ARK_ID.getVersion(), ENDPOINT_NAME.substring(1), deploymentJson);
+        verify(adapter).activate(OBJECT_LOCATION,
+            ARK_ID.getNaan(), ARK_ID.getName(), ARK_ID.getVersion(), ENDPOINT_NAME, deploymentJson);
     }
 
     @Test
     public void activateSetsExecutorInEndpointMap() {
         activationService.activate(endpointMap);
-        verify(endpoint1).setExecutor(executor);
+        verify(mockEndpoint).setExecutor(executor);
     }
 
     @Test
     public void activateDoesNotSetExecutorIfActivatorExceptionIsThrownAnywhere() {
-        when(endpoint1.getDeployment()).thenReturn(null);
+        when(mockEndpoint.getDeployment()).thenReturn(null);
         activationService.activate(endpointMap);
-        verify(endpoint1).setExecutor(null);
+        verify(mockEndpoint).setExecutor(null);
     }
 
     @Test
     public void activateCatchesExceptionsFromShelf() {
         when(koRepo.getObjectLocation(any())).thenThrow(new ShelfResourceNotFound("ope"));
         activationService.activate(endpointMap);
-        verify(endpoint1).setExecutor(null);
+        verify(mockEndpoint).setExecutor(null);
     }
 
     @Test
@@ -116,37 +122,37 @@ public class ActivationServiceTest {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any(), any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activate(endpointMap);
-        verify(endpoint1).setStatus("Adapter could not create executor: " + exceptionMessage);
+        verify(mockEndpoint).setStatus("Adapter could not create executor: " + exceptionMessage);
     }
 
     @Test
     public void executeGetsExecutorFromEndpoint() {
-        activationService.execute(endpointId1, "input");
-        verify(endpoint1).getExecutor();
+        activationService.execute(mockEndpoint.getId(), "input");
+        verify(mockEndpoint).getExecutor();
     }
 
     @Test
     public void executeExecutesExecutor() {
-        activationService.execute(endpointId1, input);
+        activationService.execute(mockEndpoint.getId(), input);
         verify(executor).execute(input);
     }
 
     @Test
     public void executeSetsInputOnEndpointResult() {
         EndPointResult result;
-        result = activationService.execute(endpointId1, input);
+        result = activationService.execute(mockEndpoint.getId(), input);
         assertEquals(input, result.getInfo().get("inputs"));
     }
 
     @Test
     public void executeSetsMetadataOnEndpointResult() {
-        EndPointResult result = activationService.execute(endpointId1, input);
+        EndPointResult result = activationService.execute(mockEndpoint.getId(), input);
         assertEquals(metadata, result.getInfo().get("ko"));
     }
 
     @Test
     public void executeThrowsActivatorExceptionWhenEndpointIsNotInMap() {
-        EndpointId missingId = new EndpointId(new ArkId("not", "in", "map"), "garbage");
+        URI missingId = URI.create("not/in/map/garbage");
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
@@ -159,14 +165,14 @@ public class ActivationServiceTest {
 
     @Test
     public void executeThrowsActivatorExceptionWhenExecutorNotFound() {
-        when(endpoint1.getExecutor()).thenReturn(null);
+        when(mockEndpoint.getExecutor()).thenReturn(null);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
                     activationService.execute(
-                            endpointId1,
+                            mockEndpoint.getId(),
                         input);
                 });
-        assertEquals("No executor found for " + endpointId1, activatorException.getMessage());
+        assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
 
 }

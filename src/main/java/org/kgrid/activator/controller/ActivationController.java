@@ -1,8 +1,10 @@
 package org.kgrid.activator.controller;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.http.client.utils.URIUtils;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.EndpointId;
@@ -48,7 +50,7 @@ public class ActivationController {
       @PathVariable String apiVersion,
       @RequestBody String inputs) {
 
-    EndpointId endpointId = new EndpointId(naan, name, apiVersion, endpoint);
+    URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
 
     try {
       return activationService.execute(endpointId, inputs);
@@ -69,13 +71,13 @@ public class ActivationController {
       @RequestParam(name = "v", required = false) String apiVersion,
       @RequestBody String inputs) {
 
-    EndpointId key = new EndpointId(naan, name, apiVersion, endpoint);
+    URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
 
     try {
-      return activationService.execute(key, inputs);
+      return activationService.execute(endpointId, inputs);
     } catch (AdapterException e) {
       log.error("Exception " + e);
-      throw new ActivatorException("Exception for endpoint " + key + " " + e.getMessage(), e);
+      throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
     }
   }
 

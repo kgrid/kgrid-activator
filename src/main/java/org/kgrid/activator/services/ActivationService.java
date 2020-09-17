@@ -85,7 +85,7 @@ public class ActivationService {
 
     }
 
-    public EndPointResult execute(EndpointId id, Object inputs) {
+    public EndPointResult execute(URI id, Object inputs) {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint) {
