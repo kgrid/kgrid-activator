@@ -1,4 +1,4 @@
-{  "@id": "bad-koio",
+{  "@id": "bad/koio/servicespecmismatch",
   "title": "the best bad-koio ever",
   "identifier" : "ark:/bad/koio",
   "version":"servicespecmismatch",
