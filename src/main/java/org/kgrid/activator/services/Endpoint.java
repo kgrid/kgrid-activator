@@ -75,12 +75,13 @@ public class Endpoint {
     }
 
     public String getNaan() {
-        return this.getArkId().getNaan();
+        return metadata.at("/@id").asText().split("/")[0];
     }
 
     public String getName() {
-        return this.getArkId().getName();
+        return metadata.at("/@id").asText().split("/")[1];
     }
+
 
     public String getApiVersion() {
         return this.service.at("/info/version").asText();

@@ -76,8 +76,7 @@ public class AdapterLoader {
           new ActivationContext() {
             @Override
             public Executor getExecutor(String key) {
-//              String endpoint = StringUtils.substringAfterLast(key, "/");
-//              ArkId ark = new ArkId(StringUtils.substringBeforeLast(key, "/"));
+
               URI id = URI.create(key);
 
               if (endpoints.containsKey(id)) {

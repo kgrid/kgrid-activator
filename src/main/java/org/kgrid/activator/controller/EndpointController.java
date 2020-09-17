@@ -5,7 +5,6 @@ import java.net.URI;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +77,8 @@ public class EndpointController {
         Endpoint endpoint = null;
         if (version == null) {
             for (Entry<URI, Endpoint> entry : endpoints.entrySet()) {
-                if (entry.getValue().getArkId().getSlashArk().equals(String.format("%s/%s",naan,name))
+                if (entry.getValue().getNaan().equals(naan)
+                        && entry.getValue().getName().equals(name)
                         && entry.getValue().getEndpointName().equals("/" + endpointName)) {
                     endpoint = entry.getValue();
                     break;
@@ -100,16 +100,15 @@ public class EndpointController {
     private EndpointResource createEndpointResource(Endpoint endpoint) {
         EndpointResource resource = new EndpointResource(endpoint);
         JsonNode metadata = endpoint.getMetadata();
-        ArkId arkId = new ArkId(
-                metadata.get("identifier").textValue());
         try {
             Link self = linkTo(EndpointController.class).slash("endpoints")
-                    .slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
+                    .slash(resource.getEndpointPath()).withSelfRel();
 
             Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
                     linkTo(KnowledgeObjectController.class)
                             .slash("kos")
-                            .slash(arkId.getSlashArk())
+                            .slash(endpoint.getNaan())
+                            .slash(endpoint.getName())
                             .slash(metadata.get("version").asText())
                             .slash(metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()),
                     "swagger_editor");
