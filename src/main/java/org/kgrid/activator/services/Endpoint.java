@@ -4,11 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class Endpoint {
 
+    //TODO: Further refactor
+
+    private KnowledgeObjectWrapper wrapper;
+    private Map.Entry<String, JsonNode> pathEntry;
+    private String apiVersion;
     private String path;
     private JsonNode service;
     private JsonNode metadata;
@@ -17,6 +24,20 @@ public class Endpoint {
     private LocalDateTime activated;
     private String status;
     private String endpointName;
+
+    public Endpoint(KnowledgeObjectWrapper wrapper, Map.Entry<String, JsonNode> pathEntry, String status) {
+        this.wrapper = wrapper;
+        this.pathEntry = pathEntry;
+        JsonNode serviceSpec = wrapper.getService();
+        this.apiVersion = wrapper.getService().at("/info/version").asText();
+        this.service = serviceSpec;
+        this.deployment = wrapper.getDeployment().get("endpoints").get(pathEntry.getKey());
+        this.metadata = wrapper.getMetadata();
+        this.path = metadata.at("/@id").asText() + pathEntry.getKey() + (apiVersion != null ? "?v=" + apiVersion : "");
+        this.status = status.equals("") ? "GOOD" : status;
+        this.endpointName = pathEntry.getKey();
+        this.activated = LocalDateTime.now();
+    }
 
     public Executor getExecutor() {
         return executor;
@@ -27,7 +48,7 @@ public class Endpoint {
     }
 
     public JsonNode getService() {
-        return service;
+        return wrapper.getService();
     }
 
     public void setService(JsonNode service) {
@@ -35,11 +56,11 @@ public class Endpoint {
     }
 
     public JsonNode getMetadata() {
-        return metadata;
+        return wrapper.getMetadata();
     }
 
     public JsonNode getDeployment() {
-        return deployment;
+        return wrapper.getDeployment().get("endpoints").get(pathEntry.getKey());
     }
 
     public void setDeployment(JsonNode deployment) {
@@ -51,7 +72,7 @@ public class Endpoint {
     }
 
     public String getPath() {
-        return path;
+        return metadata.at("/@id").asText() + pathEntry.getKey() + (apiVersion != null ? "?v=" + apiVersion : "");
     }
 
     public void setPath(String path) {
@@ -82,7 +103,6 @@ public class Endpoint {
         return metadata.at("/@id").asText().split("/")[1];
     }
 
-
     public String getApiVersion() {
         return this.service.at("/info/version").asText();
     }
@@ -96,70 +116,4 @@ public class Endpoint {
         return endpointName;
     }
 
-    public static final class Builder {
-
-        private JsonNode service;
-        private JsonNode metadata;
-        private JsonNode deployment;
-        private Executor executor;
-        private String path;
-        private String status;
-        private String endpointName;
-
-        private Builder() {
-        }
-
-        public static Builder anEndpoint() {
-            return new Builder();
-        }
-
-        public Builder withService(JsonNode service) {
-            this.service = service;
-            return this;
-        }
-
-        public Builder withMetadata(JsonNode metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public Builder withDeployment(JsonNode deployment) {
-            this.deployment = deployment;
-            return this;
-        }
-
-        public Builder withExecutor(Executor executor) {
-            this.executor = executor;
-            return this;
-        }
-
-        public Builder withStatus(String status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder withPath(String path) {
-            this.path = path;
-            return this;
-        }
-        public Builder withEndpointName(String name) {
-            this.endpointName = name;
-            return this;
-        }
-
-
-        public Endpoint build() {
-            Endpoint endpoint = new Endpoint();
-            endpoint.metadata = metadata;
-            endpoint.service = service;
-            endpoint.deployment = deployment;
-            endpoint.executor = executor;
-            endpoint.activated = LocalDateTime.now();
-            endpoint.path = path;
-            endpoint.status = status;
-            endpoint.endpointName = endpointName;
-            return endpoint;
-        }
-
-    }
 }

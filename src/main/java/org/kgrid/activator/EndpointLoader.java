@@ -67,13 +67,9 @@ public class EndpointLoader {
 
         try {
             KnowledgeObjectWrapper wrapper = knowledgeObjectRepository.getKow(ark);
-            JsonNode deploymentSpec = wrapper.getDeployment();
-            JsonNode metadata = wrapper.getMetadata();
-            koValidationService.validateMetadata(metadata);
+            koValidationService.validateMetadata(wrapper.getMetadata());
             JsonNode serviceSpec = wrapper.getService();
             koValidationService.validateServiceSpecification(serviceSpec);
-
-            String apiVersion = serviceSpec.at("/info/version").asText();
 
             serviceSpec
                     .get("paths")
@@ -83,23 +79,13 @@ public class EndpointLoader {
                                 String status = "";
                                 try {
                                     koValidationService.validateActivatability(path.getKey(),
-                                            serviceSpec, deploymentSpec);
+                                            serviceSpec, wrapper.getDeployment());
                                 } catch (ActivatorException e) {
                                     status = e.getMessage();
                                 }
 
-                                Endpoint endpoint =
-                                        Endpoint.Builder.anEndpoint()
-                                                .withService(serviceSpec)
-                                                .withDeployment(deploymentSpec.get("endpoints").get(path.getKey()))
-                                                .withMetadata(metadata)
-                                                .withStatus(status.equals("") ? "GOOD" : status)
-                                                .withPath(
-                                                        metadata.at("/@id").asText()
-                                                                + path.getKey()
-                                                                + (apiVersion != null ? "?v=" + apiVersion : ""))
-                                                .withEndpointName(path.getKey())
-                                                .build();
+                                Endpoint endpoint = new Endpoint(wrapper, path, status);
+
                                 endpoints.put(endpoint.getId(), endpoint);
                             });
 
