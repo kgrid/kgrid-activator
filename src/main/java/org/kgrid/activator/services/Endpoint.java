@@ -87,7 +87,8 @@ public class Endpoint {
     }
 
     public URI getId() {
-        return URI.create(URI.create(getPath()).getPath());
+
+        return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName.substring(1)));
     }
 
     public String getEndpointName() {

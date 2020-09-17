@@ -4,12 +4,10 @@ import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.http.client.utils.URIUtils;
+
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

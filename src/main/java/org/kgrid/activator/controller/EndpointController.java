@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
@@ -52,7 +51,7 @@ public class EndpointController {
 
         log.info("getting ko endpoint " + naan + "/" + name);
 
-        EndpointId id = new EndpointId(naan, name, version, endpointName);
+        URI id = URI.create(String.format("%s/%s/%s/%s", naan, name, version, endpointName));
 
         Endpoint endpoint = endpoints.get(id);
 
@@ -74,12 +73,12 @@ public class EndpointController {
 
         log.info("getting ko endpoint " + naan + "/" + name);
 
-        EndpointId id = new EndpointId(naan, name, version, endpointName);
+        URI id = URI.create(String.format("%s/%s/%s/%s", naan, name, version, endpointName));
 
         Endpoint endpoint = null;
         if (version == null) {
             for (Entry<URI, Endpoint> entry : endpoints.entrySet()) {
-                if (entry.getValue().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
+                if (entry.getValue().getArkId().getSlashArk().equals(String.format("%s/%s",naan,name))
                         && entry.getValue().getEndpointName().equals("/" + endpointName)) {
                     endpoint = entry.getValue();
                     break;

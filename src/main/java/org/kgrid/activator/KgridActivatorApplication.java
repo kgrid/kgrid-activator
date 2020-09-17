@@ -16,7 +16,6 @@ import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;

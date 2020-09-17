@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import java.net.URI;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
