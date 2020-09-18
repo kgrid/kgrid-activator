@@ -76,15 +76,14 @@ public class EndpointLoader {
                     .fields()
                     .forEachRemaining(
                             path -> {
-                                String status = "";
+                                Endpoint endpoint = new Endpoint(wrapper, path.getKey());
+
                                 try {
                                     koValidationService.validateActivatability(path.getKey(),
                                             serviceSpec, wrapper.getDeployment());
                                 } catch (ActivatorException e) {
-                                    status = e.getMessage();
+                                    endpoint.setStatus(e.getMessage());
                                 }
-
-                                Endpoint endpoint = new Endpoint(wrapper, path, status);
 
                                 endpoints.put(endpoint.getId(), endpoint);
                             });

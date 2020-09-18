@@ -11,31 +11,16 @@ import java.util.Map;
 
 public class Endpoint {
 
-    //TODO: Further refactor
-
     private KnowledgeObjectWrapper wrapper;
-    private Map.Entry<String, JsonNode> pathEntry;
-    private String apiVersion;
-    private String path;
-    private JsonNode service;
-    private JsonNode metadata;
-    private JsonNode deployment;
     private Executor executor;
     private LocalDateTime activated;
     private String status;
     private String endpointName;
 
-    public Endpoint(KnowledgeObjectWrapper wrapper, Map.Entry<String, JsonNode> pathEntry, String status) {
+    public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;
-        this.pathEntry = pathEntry;
-        JsonNode serviceSpec = wrapper.getService();
-        this.apiVersion = wrapper.getService().at("/info/version").asText();
-        this.service = serviceSpec;
-        this.deployment = wrapper.getDeployment().get("endpoints").get(pathEntry.getKey());
-        this.metadata = wrapper.getMetadata();
-        this.path = metadata.at("/@id").asText() + pathEntry.getKey() + (apiVersion != null ? "?v=" + apiVersion : "");
-        this.status = status.equals("") ? "GOOD" : status;
-        this.endpointName = pathEntry.getKey();
+        this.status = "GOOD";
+        this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
     }
 
@@ -51,20 +36,12 @@ public class Endpoint {
         return wrapper.getService();
     }
 
-    public void setService(JsonNode service) {
-        this.service = service;
-    }
-
     public JsonNode getMetadata() {
         return wrapper.getMetadata();
     }
 
     public JsonNode getDeployment() {
-        return wrapper.getDeployment().get("endpoints").get(pathEntry.getKey());
-    }
-
-    public void setDeployment(JsonNode deployment) {
-        this.deployment = deployment;
+        return wrapper.getDeployment().get("endpoints").get(endpointName);
     }
 
     public LocalDateTime getActivated() {
@@ -72,11 +49,8 @@ public class Endpoint {
     }
 
     public String getPath() {
-        return metadata.at("/@id").asText() + pathEntry.getKey() + (apiVersion != null ? "?v=" + apiVersion : "");
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+        String apiVersion = getApiVersion();
+        return wrapper.getMetadata().at("/@id").asText() + endpointName + (apiVersion != null ? "?v=" + apiVersion : "");
     }
 
     public String getStatus() {
@@ -88,27 +62,26 @@ public class Endpoint {
     }
 
     public ArkId getArkId() {
-        ArkId arkId = new ArkId(metadata.at("/identifier").asText());
+        ArkId arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText());
         if (!arkId.hasVersion()) {
-            arkId = new ArkId(metadata.at("/identifier").asText() + "/" + metadata.at("/version").asText());
+            arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText() + "/" + wrapper.getMetadata().at("/version").asText());
         }
         return arkId;
     }
 
     public String getNaan() {
-        return metadata.at("/@id").asText().split("/")[0];
+        return wrapper.getMetadata().at("/@id").asText().split("/")[0];
     }
 
     public String getName() {
-        return metadata.at("/@id").asText().split("/")[1];
+        return wrapper.getMetadata().at("/@id").asText().split("/")[1];
     }
 
     public String getApiVersion() {
-        return this.service.at("/info/version").asText();
+        return wrapper.getService().at("/info/version").asText();
     }
 
     public URI getId() {
-
         return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName.substring(1)));
     }
 
