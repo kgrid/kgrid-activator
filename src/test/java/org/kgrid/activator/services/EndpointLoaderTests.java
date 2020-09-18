@@ -147,10 +147,10 @@ public class EndpointLoaderTests {
 
     @Test
     public void loadValidatesObjectForActivation() throws IOException {
-        endpointLoader.load(C_D_F);
-        JsonNode serviceSpec = getYamlTestFile(C_D_F, "service.yaml");
-        JsonNode deploymentSpec = getYamlTestFile(C_D_F, "deployment.yaml");
-        verify(koValidationService, times(1)).validateActivatability("/welcome", serviceSpec, deploymentSpec);
+        Map<URI, Endpoint> load = endpointLoader.load(C_D_F);
+        verify(koValidationService).validateEndpoint(load.get(URI.create("c/d/f/welcome")));
+        verify(koValidationService).validateEndpoint(load.get(URI.create("c/d/f/info")));
+        verify(koValidationService).validateEndpoint(load.get(URI.create("c/d/f/goodbye")));
     }
 
     /*

@@ -24,6 +24,10 @@ public class Endpoint {
         this.activated = LocalDateTime.now();
     }
 
+    public KnowledgeObjectWrapper getWrapper() {
+        return wrapper;
+    }
+
     public Executor getExecutor() {
         return executor;
     }

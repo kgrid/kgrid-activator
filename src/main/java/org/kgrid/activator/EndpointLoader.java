@@ -79,8 +79,7 @@ public class EndpointLoader {
                                 Endpoint endpoint = new Endpoint(wrapper, path.getKey());
 
                                 try {
-                                    koValidationService.validateActivatability(path.getKey(),
-                                            serviceSpec, wrapper.getDeployment());
+                                    koValidationService.validateEndpoint(endpoint);
                                 } catch (ActivatorException e) {
                                     endpoint.setStatus(e.getMessage());
                                 }

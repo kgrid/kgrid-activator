@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -99,7 +100,12 @@ public class KoValidationServiceTest {
         ObjectNode serviceSpec = objectMapper.createObjectNode();
         JsonNode paths = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}");
         serviceSpec.set("paths", paths);
-        koValidationService.validateActivatability("/endpoint", serviceSpec, null);
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(objectMapper.createObjectNode());
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
+        koValidationService.validateEndpoint(endpoint);
     }
 
     @Test
@@ -110,8 +116,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID, activatorException.getMessage());
 
     }
@@ -125,7 +136,12 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}"));
-        koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec);
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
+        koValidationService.validateEndpoint(endpoint);
     }
 
     @Test
@@ -136,8 +152,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{}}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
@@ -149,8 +170,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":\"Arty McFacts\"}}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
@@ -162,8 +188,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":\"\"}}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
@@ -175,7 +206,12 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"adapter\":\"V8\"}}"));
-        koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec);
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
+        koValidationService.validateEndpoint(endpoint);
     }
 
     @Test
@@ -186,8 +222,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
@@ -199,8 +240,13 @@ public class KoValidationServiceTest {
         ObjectNode deploymentSpec = objectMapper.createObjectNode()
                 .set("endpoints", objectMapper.readTree(
                         "{\"/endpoint\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"adapter\":\"cool\"}}"));
+        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id","naan/name/version");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        Endpoint endpoint = new Endpoint(wrapper, "/endpoint");
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateActivatability("/endpoint", serviceSpec, deploymentSpec));
+                () -> koValidationService.validateEndpoint(endpoint));
         assertEquals("cool" + KoValidationService.ADAPTER_NOT_AVAILABLE, activatorException.getMessage());
     }
 
