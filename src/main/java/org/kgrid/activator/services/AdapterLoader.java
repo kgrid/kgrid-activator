@@ -38,7 +38,7 @@ public class AdapterLoader {
 
   private static AdapterResolver resolver;
 
-  public AdapterResolver loadAndInitializeAdapters(Map<EndpointId, Endpoint> endpoints) {
+  public AdapterResolver loadAndInitializeAdapters(Map<URI, Endpoint> endpoints) {
 
     Map<String, Adapter> adapters = new HashMap<>();
     ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
@@ -70,15 +70,15 @@ public class AdapterLoader {
     }
   }
 
-  private void initializeAdapter(Adapter adapter, Map<EndpointId, Endpoint> endpoints) {
+  private void initializeAdapter(Adapter adapter, Map<URI, Endpoint> endpoints) {
     try {
       adapter.initialize(
           new ActivationContext() {
             @Override
             public Executor getExecutor(String key) {
-              String endpoint = StringUtils.substringAfterLast(key, "/");
-              ArkId ark = new ArkId(StringUtils.substringBeforeLast(key, "/"));
-              EndpointId id = new EndpointId(ark, endpoint);
+
+              URI id = URI.create(key);
+
               if (endpoints.containsKey(id)) {
                 return endpoints.get(id).getExecutor();
               } else {

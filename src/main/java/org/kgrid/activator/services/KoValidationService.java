@@ -21,18 +21,19 @@ public class KoValidationService {
     public static final String ADAPTER_NOT_AVAILABLE = " adapter not available in this activator";
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
     public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
-
     public static final String HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID = "Deployment defined in both x-kgrid extension and Deployment Specification. Use Deployment Specification Only.";
 
-
-    public void validateActivatability(String pathName, JsonNode serviceSpec, JsonNode deploymentSpec) {
-        ObjectNode path = (ObjectNode)serviceSpec.at("/paths").get(pathName);
+    public void validateEndpoint(Endpoint endpoint){
+        JsonNode serviceSpec = endpoint.getService();
+        String pathName = endpoint.getEndpointName();
+        JsonNode deploymentSpec = endpoint.getWrapper().getDeployment();
+        ObjectNode path = (ObjectNode) serviceSpec.at("/paths").get(pathName);
         path.fields().forEachRemaining(httpMethod -> {
             JsonNode xKgridActivationNode = httpMethod.getValue().at("/x-kgrid-activation");
             if (xKgridActivationNode.isMissingNode()) {
                 validateDeploymentSpecification(deploymentSpec, pathName);
             } else {
-                if (deploymentSpec != null) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
+                if ( deploymentSpec != null && !deploymentSpec.isEmpty() ) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
             }
         });
     }

@@ -1,11 +1,10 @@
 package org.kgrid.activator.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.services.EndpointId;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class EndpointController {
 
     @Autowired
-    private Map<EndpointId, Endpoint> endpoints;
+    private Map<URI, Endpoint> endpoints;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +50,7 @@ public class EndpointController {
 
         log.info("getting ko endpoint " + naan + "/" + name);
 
-        EndpointId id = new EndpointId(naan, name, version, endpointName);
+        URI id = URI.create(String.format("%s/%s/%s/%s", naan, name, version, endpointName));
 
         Endpoint endpoint = endpoints.get(id);
 
@@ -73,13 +72,14 @@ public class EndpointController {
 
         log.info("getting ko endpoint " + naan + "/" + name);
 
-        EndpointId id = new EndpointId(naan, name, version, endpointName);
+        URI id = URI.create(String.format("%s/%s/%s/%s", naan, name, version, endpointName));
 
         Endpoint endpoint = null;
         if (version == null) {
-            for (Entry<EndpointId, Endpoint> entry : endpoints.entrySet()) {
-                if (entry.getKey().getArkId().getSlashArk().equals(id.getArkId().getSlashArk())
-                        && entry.getKey().getEndpointName().equals("/" + endpointName)) {
+            for (Entry<URI, Endpoint> entry : endpoints.entrySet()) {
+                if (entry.getValue().getNaan().equals(naan)
+                        && entry.getValue().getName().equals(name)
+                        && entry.getValue().getEndpointName().equals("/" + endpointName)) {
                     endpoint = entry.getValue();
                     break;
                 }
@@ -100,16 +100,15 @@ public class EndpointController {
     private EndpointResource createEndpointResource(Endpoint endpoint) {
         EndpointResource resource = new EndpointResource(endpoint);
         JsonNode metadata = endpoint.getMetadata();
-        ArkId arkId = new ArkId(
-                metadata.get("identifier").textValue());
         try {
             Link self = linkTo(EndpointController.class).slash("endpoints")
-                    .slash(resource.getEndpointPath().replaceFirst("-", "/")).withSelfRel();
+                    .slash(resource.getEndpointPath()).withSelfRel();
 
             Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
                     linkTo(KnowledgeObjectController.class)
                             .slash("kos")
-                            .slash(arkId.getSlashArk())
+                            .slash(endpoint.getNaan())
+                            .slash(endpoint.getName())
                             .slash(metadata.get("version").asText())
                             .slash(metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()),
                     "swagger_editor");

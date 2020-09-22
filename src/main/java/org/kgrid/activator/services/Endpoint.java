@@ -1,20 +1,32 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class Endpoint {
 
-    private String path;
-    private JsonNode service;
-    private JsonNode metadata;
-    private JsonNode deployment;
+    private KnowledgeObjectWrapper wrapper;
     private Executor executor;
     private LocalDateTime activated;
-
     private String status;
+    private String endpointName;
+
+    public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
+        this.wrapper = wrapper;
+        this.status = "GOOD";
+        this.endpointName = endpointName;
+        this.activated = LocalDateTime.now();
+    }
+
+    public KnowledgeObjectWrapper getWrapper() {
+        return wrapper;
+    }
 
     public Executor getExecutor() {
         return executor;
@@ -25,23 +37,15 @@ public class Endpoint {
     }
 
     public JsonNode getService() {
-        return service;
-    }
-
-    public void setService(JsonNode service) {
-        this.service = service;
+        return wrapper.getService();
     }
 
     public JsonNode getMetadata() {
-        return metadata;
+        return wrapper.getMetadata();
     }
 
     public JsonNode getDeployment() {
-        return deployment;
-    }
-
-    public void setDeployment(JsonNode deployment) {
-        this.deployment = deployment;
+        return wrapper.getDeployment().get("endpoints").get(endpointName);
     }
 
     public LocalDateTime getActivated() {
@@ -49,11 +53,8 @@ public class Endpoint {
     }
 
     public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+        String apiVersion = getApiVersion();
+        return wrapper.getMetadata().at("/@id").asText() + endpointName + (apiVersion != null ? "?v=" + apiVersion : "");
     }
 
     public String getStatus() {
@@ -64,65 +65,32 @@ public class Endpoint {
         this.status = status;
     }
 
-    public static final class Builder {
-
-        private JsonNode service;
-        private JsonNode metadata;
-        private JsonNode deployment;
-        private Executor executor;
-        private String path;
-        private String status;
-
-        private Builder() {
+    public ArkId getArkId() {
+        ArkId arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText());
+        if (!arkId.hasVersion()) {
+            arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText() + "/" + wrapper.getMetadata().at("/version").asText());
         }
-
-        public static Builder anEndpoint() {
-            return new Builder();
-        }
-
-        public Builder withService(JsonNode service) {
-            this.service = service;
-            return this;
-        }
-
-        public Builder withMetadata(JsonNode metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public Builder withDeployment(JsonNode deployment) {
-            this.deployment = deployment;
-            return this;
-        }
-
-
-        public Builder withExecutor(Executor executor) {
-            this.executor = executor;
-            return this;
-        }
-
-        public Builder withStatus(String status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder withPath(String path) {
-            this.path = path;
-            return this;
-        }
-
-
-        public Endpoint build() {
-            Endpoint endpoint = new Endpoint();
-            endpoint.metadata = metadata;
-            endpoint.service = service;
-            endpoint.deployment = deployment;
-            endpoint.executor = executor;
-            endpoint.activated = LocalDateTime.now();
-            endpoint.path = path;
-            endpoint.status = status;
-            return endpoint;
-        }
-
+        return arkId;
     }
+
+    public String getNaan() {
+        return wrapper.getMetadata().at("/@id").asText().split("/")[0];
+    }
+
+    public String getName() {
+        return wrapper.getMetadata().at("/@id").asText().split("/")[1];
+    }
+
+    public String getApiVersion() {
+        return wrapper.getService().at("/info/version").asText();
+    }
+
+    public URI getId() {
+        return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName.substring(1)));
+    }
+
+    public String getEndpointName() {
+        return endpointName;
+    }
+
 }

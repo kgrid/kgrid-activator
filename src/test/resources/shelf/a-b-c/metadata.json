@@ -1,4 +1,4 @@
-{  "@id": "a-b",
+{  "@id": "a/b/c",
   "@type":"koio:KnowledgeObject",
   "title": "the best a-b ever",
   "identifier" : "ark:/a/b",
