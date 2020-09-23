@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>shelf-api</artifactId>
-            <version>3.1.2-SNAPSHOT</version>
+            <version>3.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>proxy-adapter</artifactId>
-            <version>0.10.10-SNAPSHOT</version>
+            <version>0.10.10</version>
         </dependency>
 
         <dependency>
