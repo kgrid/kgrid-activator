@@ -85,6 +85,11 @@ public class ExternalAdapterLoaderTest {
     }
 
     @Override
+    public Executor activate(URI uri, URI uri1, JsonNode jsonNode) {
+      return null;
+    }
+
+    @Override
     public String status() {
       return null;
     }

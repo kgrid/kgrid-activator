@@ -73,10 +73,7 @@ public class ActivationService {
         try {
             return adapter.activate(
                 koRepo.getObjectLocation(ark),
-                endpoint.getNaan(),
-                endpoint.getName(),
-                endpoint.getApiVersion(),
-                endpoint.getEndpointName(),
+                endpointKey,
                 deploymentSpec);
         } catch (RuntimeException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
