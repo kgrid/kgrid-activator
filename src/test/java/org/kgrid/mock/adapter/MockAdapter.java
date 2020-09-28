@@ -24,9 +24,6 @@ public class MockAdapter implements Adapter {
   }
 
   @Override
-  public Executor activate(URI objectLocation, String naan, String name, String version, String endpointName, JsonNode deploymentSpec) {return null;}
-
-  @Override
   public Executor activate(URI uri, URI uri1, JsonNode jsonNode) {
     return null;
   }

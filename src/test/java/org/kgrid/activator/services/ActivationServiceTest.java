@@ -56,17 +56,13 @@ public class ActivationServiceTest {
         metadata = generateMetadata();
 
         when(adapterResolver.getAdapter(ADAPTER)).thenReturn(adapter);
-        when(adapter.activate(any(), any(), any(), any(), any(), any())).thenReturn(executor);
+        when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
 
         when(mockEndpoint.getDeployment()).thenReturn(deploymentJson);
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
         when(mockEndpoint.getId()).thenReturn(uri);
         when(mockEndpoint.getExecutor()).thenReturn(executor);
-        when(mockEndpoint.getNaan()).thenReturn(NAAN);
-        when(mockEndpoint.getName()).thenReturn(NAME);
-        when(mockEndpoint.getApiVersion()).thenReturn(VERSION);
-        when(mockEndpoint.getEndpointName()).thenReturn(ENDPOINT_NAME);
 
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
@@ -94,7 +90,7 @@ public class ActivationServiceTest {
     public void activateCallsActivateOnAdapter() {
         activationService.activate(endpointMap);
         verify(adapter).activate(OBJECT_LOCATION,
-            ARK_ID.getNaan(), ARK_ID.getName(), ARK_ID.getVersion(), ENDPOINT_NAME, deploymentJson);
+                URI.create(ARK_ID.getNaan() + "/" + ARK_ID.getName() + "/" + ARK_ID.getVersion() + "/" + ENDPOINT_NAME), deploymentJson);
     }
 
     @Test
@@ -120,7 +116,7 @@ public class ActivationServiceTest {
     @Test
     public void activateCatchesExceptionsFromAdapter() {
         String exceptionMessage = "ope";
-        when(adapter.activate(any(), any(), any(), any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
+        when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activate(endpointMap);
         verify(mockEndpoint).setStatus("Adapter could not create executor: " + exceptionMessage);
     }
@@ -158,7 +154,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             missingId,
-                        input);
+                            input);
                 });
         assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
     }
@@ -170,7 +166,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             mockEndpoint.getId(),
-                        input);
+                            input);
                 });
         assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
