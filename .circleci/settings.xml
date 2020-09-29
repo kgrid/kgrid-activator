@@ -19,7 +19,7 @@
         </repository>
         <repository>
           <id>oss</id>
-          <url>https://oss.sonatype.org/content/groups/public</url>
+          <url>https://oss.sonatype.org/content/repositories/releases</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
