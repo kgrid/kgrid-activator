@@ -37,18 +37,18 @@ public class ActivationControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-//    @Test
-//    public void endpointInvocationReturnsResult() throws Exception {
-//        MvcResult result =
-//                getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
-//                        .andExpect(status().isOk())
-//                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                        .andReturn();
-//
-//        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-//
-//        assertEquals("Welcome to Knowledge Grid, tester", content.get("result").asText());
-//    }
+    @Test
+    public void endpointInvocationReturnsResult() throws Exception {
+        MvcResult result =
+                getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                        .andReturn();
+
+        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
+
+        assertEquals("Welcome to Knowledge Grid, tester", content.get("result").asText());
+    }
 
     private ResultActions getResultActions(String endpointPath, String content) throws Exception {
         return mockMvc.perform(
@@ -85,19 +85,19 @@ public class ActivationControllerTest {
                 "No endpoint found for bad/koio/blankservice/welcome", content.get("Detail").asText());
     }
 
-//    @Test
-//    public void serviceSpecFunctionMismatchError() throws Exception {
-//        MvcResult result =
-//                getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
-//                        .andExpect(status().isInternalServerError())
-//                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                        .andReturn();
-//
-//        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-//
-//        assertEquals(
-//                "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error", content.get("Detail").asText());
-//    }
+    @Test
+    public void serviceSpecFunctionMismatchError() throws Exception {
+        MvcResult result =
+                getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
+                        .andExpect(status().isInternalServerError())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                        .andReturn();
+
+        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
+
+        assertEquals(
+                "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error", content.get("Detail").asText());
+    }
 
     @Test
     public void endpointNoMetadataError() throws Exception {
