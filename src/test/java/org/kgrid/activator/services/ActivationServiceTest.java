@@ -9,7 +9,7 @@ import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.adapter.v8.V8Executor;
+import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.Mock;
@@ -40,7 +40,7 @@ public class ActivationServiceTest {
     @Mock
     private Adapter adapter;
     @Mock
-    private V8Executor executor;
+    private Executor executor;
     private ActivationService activationService;
     private JsonNode deploymentJson;
     private JsonNode metadata;
