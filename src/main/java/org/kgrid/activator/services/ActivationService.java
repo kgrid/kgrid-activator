@@ -55,19 +55,15 @@ public class ActivationService {
         if (null == deploymentSpec) {
             throw new ActivatorException("No deployment specification for " + endpointKey);
         }
-        String adapterName;
-        if (null == deploymentSpec.get("adapterType")) {
-            if (null == deploymentSpec.get("adapter")) {
-                throw new ActivatorException("No adapter specified for " + endpointKey);
-            } else {
-                adapterName = deploymentSpec.get("adapter").asText();
-            }
+        String engineName;
+        if(deploymentSpec.has("engine")) {
+            engineName = deploymentSpec.get("engine").asText();
         } else {
-            adapterName = deploymentSpec.get("adapterType").asText();
+            throw new ActivatorException("No engine specified for " + endpointKey);
         }
 
         Adapter adapter = adapterResolver
-                .getAdapter(adapterName);
+                .getAdapter(engineName);
         ArkId ark = endpoint.getArkId();
 
         try {

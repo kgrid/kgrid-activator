@@ -45,7 +45,7 @@ public class AdapterLoader {
     for (Adapter adapter : loader) {
       beanFactory.autowireBean(adapter);
       initializeAdapter(adapter, endpoints);
-      adapters.put(adapter.getType().toUpperCase(), adapter);
+      adapter.getEngines().forEach(engine -> adapters.put(engine.toUpperCase(), adapter));
       registerHealthEndpoint(adapter);
     }
     resolver = new AdapterResolver(adapters);
@@ -60,8 +60,7 @@ public class AdapterLoader {
     HealthIndicator indicator =
         () ->
             Health.status(adapter.status())
-                .withDetail("type", adapter.getType())
-                .withDetail("created", Instant.now())
+                .withDetail("types", adapter.getEngines())
                 .build();
     try {
       registry.registerContributor(adapter.getClass().getName(), indicator);
@@ -103,7 +102,7 @@ public class AdapterLoader {
             }
           });
     } catch (Exception e) {
-      log.error("Cannot load adapter " + adapter.getType() + " cause: " + e.getMessage());
+      log.error("Cannot load adapter " + adapter.getClass().getName() + " cause: " + e.getMessage());
     }
   }
 }

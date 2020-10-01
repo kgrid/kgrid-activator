@@ -18,15 +18,15 @@ public class KoCreationTestHelper {
     public static final String KO_PATH = NAAN + "-" + NAME + "-" + VERSION;
     public static final ArkId ARK_ID = new ArkId(NAAN, NAME, VERSION);
     public static final String ARTIFACT_PATH = "dist/main.js";
-    public static final String ADAPTER = "V8";
+    public static final String ENGINE = "javascript";
     public static final String FUNCTION_NAME = "welcome";
     public static final String ENDPOINT_NAME = "/" + FUNCTION_NAME;
     public static final byte[] DEPLOYMENT_BYTES =
-            ("endpoints:\n" +
-                    "  " + ENDPOINT_NAME + ":\n" +
-                    "    adapter: " + ADAPTER + "\n" +
-                    "    artifact: " + ARTIFACT_PATH + "\n" +
-                    "    function: " + FUNCTION_NAME)
+            ("/" + ENDPOINT_NAME + ":\n" +
+                    "  post:\n" +
+                    "    artifact:" + ARTIFACT_PATH + "\n" +
+                    "    engine:" + ENGINE + "\n" +
+                    "    function:" + FUNCTION_NAME)
                     .getBytes();
 
     public static JsonNode generateMetadata(
@@ -63,6 +63,6 @@ public class KoCreationTestHelper {
     }
 
     public static JsonNode getEndpointDeploymentJson() throws IOException {
-        return new YAMLMapper().readTree(KoCreationTestHelper.DEPLOYMENT_BYTES).get("endpoints").get(ENDPOINT_NAME);
+        return new YAMLMapper().readTree(KoCreationTestHelper.DEPLOYMENT_BYTES).get(ENDPOINT_NAME);
     }
 }

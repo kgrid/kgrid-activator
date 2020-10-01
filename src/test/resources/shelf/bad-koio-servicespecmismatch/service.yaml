@@ -4,7 +4,7 @@ info:
   title: 'Hello, World'
   description: 'hello world c-style'
 servers:
-  - url: '/bad/koio/servicespecmismatch/'
+  - url: '/bad/koio/servicespecmismatch'
     description: Hello world
 tags:
   - name: KO Endpoints

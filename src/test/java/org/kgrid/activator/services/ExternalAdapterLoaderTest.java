@@ -8,10 +8,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.kgrid.adapter.api.ActivationContext;
@@ -60,8 +58,8 @@ public class ExternalAdapterLoaderTest {
 
       ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class, externalClassLoader);
       for (Adapter adapter : loader) {
-        log.info("Loading adapter type: {}", adapter.getType());
-        executionImp.put(adapter.getType(), adapter.getClass());
+        log.info("Loading adapter type: {}", adapter.getClass().getName());
+        adapter.getEngines().forEach(engine -> executionImp.put(engine, adapter.getClass()));
       }
     }
     return executionImp;
@@ -70,8 +68,8 @@ public class ExternalAdapterLoaderTest {
   class TestAdapter implements Adapter {
 
     @Override
-    public String getType() {
-      return "TestAdapter";
+    public List<String> getEngines() {
+      return Collections.singletonList("TestAdapter");
     }
 
     @Override

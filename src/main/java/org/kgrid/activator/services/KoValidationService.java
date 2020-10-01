@@ -55,14 +55,13 @@ public class KoValidationService {
     }
 
     public void validateDeploymentSpecification(JsonNode deploymentSpecification, String pathName) {
-        JsonNode endpointsNode = deploymentSpecification.at("/endpoints");
-        if (endpointsNode.fields().hasNext()) {
-            JsonNode endpointNode = deploymentSpecification.at("/endpoints/~1" + pathName.substring(1));
+        if (deploymentSpecification.fields().hasNext()) {
+            JsonNode endpointNode = deploymentSpecification.at("/~1" + pathName.substring(1) + "/post");
             if (endpointNode.has("artifact")) {
                 if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {
-                    if (endpointNode.has("adapter")) {
-                        String adapter = endpointNode.get("adapter").asText();
-                        if (!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter)) {
+                    if (endpointNode.has("engine")) {
+                        String adapter = endpointNode.get("engine").asText();
+                        if (!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter.toUpperCase())) {
                             throwWithMessage(adapter + ADAPTER_NOT_AVAILABLE);
                         }
                     } else {

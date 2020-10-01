@@ -55,7 +55,7 @@ public class ActivationServiceTest {
         deploymentJson = getEndpointDeploymentJson();
         metadata = generateMetadata();
 
-        when(adapterResolver.getAdapter(ADAPTER)).thenReturn(adapter);
+        when(adapterResolver.getAdapter(ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
 
@@ -77,7 +77,7 @@ public class ActivationServiceTest {
     @Test
     public void activateGetsAdapterFromResolver() {
         activationService.activate(endpointMap);
-        verify(adapterResolver).getAdapter(ADAPTER);
+        verify(adapterResolver).getAdapter(ENGINE);
     }
 
     @Test
