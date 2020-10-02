@@ -45,14 +45,10 @@ public class AdapterLoader {
     for (Adapter adapter : loader) {
       beanFactory.autowireBean(adapter);
       initializeAdapter(adapter, endpoints);
-      adapter.getEngines().forEach(engine -> adapters.put(engine.toUpperCase(), adapter));
+      adapter.getEngines().forEach(engine -> adapters.put(engine, adapter));
       registerHealthEndpoint(adapter);
     }
     resolver = new AdapterResolver(adapters);
-    return resolver;
-  }
-
-  public AdapterResolver getAdapterResolver(){
     return resolver;
   }
 

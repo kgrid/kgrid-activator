@@ -15,20 +15,11 @@ public class AdapterResolver {
 
     protected Adapter getAdapter(String adapterType) {
 
-        Adapter adapter = adapters.get(adapterType.toUpperCase());
+        Adapter adapter = adapters.get(adapterType);
         if (adapter == null) {
             throw new ActivatorException("No Adapter Found " + adapterType);
         }
 
         return adapter;
-    }
-
-    public Map<String, Adapter> getAdapters() {
-        return adapters;
-    }
-
-    public void setAdapters(Map<String, Adapter> adapters) {
-        this.adapters.clear();
-        this.adapters.putAll(adapters);
     }
 }
