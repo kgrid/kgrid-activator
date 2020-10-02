@@ -1,9 +1,10 @@
-endpoints:
-  /welcome:
-    adapter: V8
+/welcome:
+  post:
+    engine: javascript
     artifact: welcome.js
     function: welcome
-  /info:
-    adapter: V8
+/info:
+  post:
+    engine: javascript
     artifact: welcome.js
     function: info

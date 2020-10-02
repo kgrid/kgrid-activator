@@ -62,10 +62,10 @@ public class EndpointLoaderTests {
 
         assertEquals("endpoint path exists in deployment descriptor",
                 endpoint.getDeployment().toString(),
-                deploymentSpec.get("endpoints").get("/welcome").toString());
+                deploymentSpec.get("/welcome").get("post").toString());
 
         assertNotNull("enpoint spec 'a-b-c/info' is in original spec",
-                deploymentSpec.get("endpoints").get("/info"));
+                deploymentSpec.get("/info").get("post"));
 
         endpoint = eps.get(URI.create("a/b/c/info"));
         assertNull("endpointPath 'a-b-c/info' should not exist", endpoint);

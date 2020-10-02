@@ -1,10 +1,11 @@
-endpoints:
-  /welcome:
-    adapter: V8
+/welcome:
+  post:
+    engine: javascript
     artifact:  welcome.js
     function: welcome
-  /goodbye:
-    adapter: V8
+/goodbye:
+  post:
+    engine: javascript
     artifact: solong.js
     function: bye
 

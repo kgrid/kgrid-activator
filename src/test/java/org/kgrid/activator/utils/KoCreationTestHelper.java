@@ -3,13 +3,11 @@ package org.kgrid.activator.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
 
-import java.io.IOException;
-
 public class KoCreationTestHelper {
+    private static final ObjectMapper mapper = new ObjectMapper();
     public static final String SERVICE_YAML_PATH = "service.yaml";
     public static final String DEPLOYMENT_YAML_PATH = "deployment.yaml";
     public static final String NAAN = "naan";
@@ -18,16 +16,14 @@ public class KoCreationTestHelper {
     public static final String KO_PATH = NAAN + "-" + NAME + "-" + VERSION;
     public static final ArkId ARK_ID = new ArkId(NAAN, NAME, VERSION);
     public static final String ARTIFACT_PATH = "dist/main.js";
-    public static final String ADAPTER = "V8";
+    public static final String ENGINE = "javascript";
     public static final String FUNCTION_NAME = "welcome";
-    public static final String ENDPOINT_NAME = "/" + FUNCTION_NAME;
-    public static final byte[] DEPLOYMENT_BYTES =
-            ("endpoints:\n" +
-                    "  " + ENDPOINT_NAME + ":\n" +
-                    "    adapter: " + ADAPTER + "\n" +
-                    "    artifact: " + ARTIFACT_PATH + "\n" +
-                    "    function: " + FUNCTION_NAME)
-                    .getBytes();
+    public static final String ENDPOINT_NAME = FUNCTION_NAME;
+    public static final String POST_HTTP_METHOD = "post";
+    public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE = mapper.createObjectNode()
+            .put("artifact", ARTIFACT_PATH)
+            .put("engine", ENGINE)
+            .put("function", FUNCTION_NAME);
 
     public static JsonNode generateMetadata(
             String serviceYamlPath,
@@ -62,7 +58,7 @@ public class KoCreationTestHelper {
         return generateMetadata(SERVICE_YAML_PATH, DEPLOYMENT_YAML_PATH, true, true, true, true);
     }
 
-    public static JsonNode getEndpointDeploymentJson() throws IOException {
-        return new YAMLMapper().readTree(KoCreationTestHelper.DEPLOYMENT_BYTES).get("endpoints").get(ENDPOINT_NAME);
+    public static JsonNode getEndpointDeploymentJson() {
+        return ENDPOINT_POST_DEPLOYMENT_NODE;
     }
 }

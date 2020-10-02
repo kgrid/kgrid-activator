@@ -1,18 +1,25 @@
-endpoints:
-  /welcome:
+/welcome:
+  post:
     artifact: welcome.js
-    adapter: V8
+    engine: javascript
     function: welcome
-  /info:
-    adapter: V8
+  get:
+    artifact: welcome.js
+    engine: javascript
+    function: welcome
+/info:
+  post:
+    engine: javascript
     artifact: welcome.js
     function: info
     mySpecialProperties:
       a: b
       b: http://whatevs
-  /lookup:
-    adapterType: PROXY
+/lookup:
+  post:
+    engine: PROXY
     url: https://pubmed.com/...
-  /iconArray:
-    adapterType: RESOURCE
+/iconArray:
+  post:
+    engine: RESOURCE
     artifact: icon_array.js

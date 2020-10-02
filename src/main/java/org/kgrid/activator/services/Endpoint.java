@@ -45,7 +45,7 @@ public class Endpoint {
     }
 
     public JsonNode getDeployment() {
-        return wrapper.getDeployment().get("endpoints").get(endpointName);
+        return wrapper.getDeployment().get(endpointName).get("post");
     }
 
     public LocalDateTime getActivated() {

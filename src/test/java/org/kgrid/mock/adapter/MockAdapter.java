@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
@@ -14,8 +17,8 @@ public class MockAdapter implements Adapter {
   private String status;
 
   @Override
-  public String getType() {
-    return "MockAdapter";
+  public List<String> getEngines() {
+    return Collections.singletonList("MockAdapter");
   }
 
   @Override

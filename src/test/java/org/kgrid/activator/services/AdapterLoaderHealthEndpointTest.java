@@ -44,7 +44,6 @@ public class AdapterLoaderHealthEndpointTest {
 
     Health health = healthIndicator.getHealth(true);
     assertEquals(mockAdapter.status(), health.getStatus().toString());
-    assertEquals(mockAdapter.getType(), health.getDetails().get("type"));
-    assertNotNull(health.getDetails().get("created"));
+    assertEquals(mockAdapter.getEngines(), health.getDetails().get("types"));
   }
 }

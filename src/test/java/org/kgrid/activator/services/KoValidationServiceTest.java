@@ -37,7 +37,7 @@ public class KoValidationServiceTest {
     @Before
     public void setUp() {
         Map adapters = new HashMap();
-        adapters.put("V8", "");
+        adapters.put("JAVASCRIPT", "");
 
         when(adapterLoader.getAdapterResolver()).thenReturn(adapterResolver);
         when(adapterResolver.getAdapters()).thenReturn(adapters);
@@ -120,7 +120,7 @@ public class KoValidationServiceTest {
             "{\"paths\":{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}}");
         JsonNode deploymentSpec =
                 objectMapper.readTree(
-                        "{\"endpoints\":{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}}");
+                        "{\"endpoints\":{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
@@ -133,7 +133,7 @@ public class KoValidationServiceTest {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec =
              objectMapper.readTree(
-            "{\"endpoints\":{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"adapter\":\"V8\",\"function\":\"doorway\"}}}");
+            "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
 
          Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         koValidationService.validateEndpoint(endpoint);
@@ -154,7 +154,7 @@ public class KoValidationServiceTest {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec =
             objectMapper.readTree(
-            "{\"endpoints\":{\"/endpoint\":{\"artifact\":\"Arty McFacts\"}}}");
+            "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\"}}}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
@@ -164,7 +164,7 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasNoArtifactsDefinedInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec =objectMapper.readTree("{\"endpoints\":{\"/endpoint\":{\"artifact\":\"\"}}}");
+        JsonNode deploymentSpec =objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":\"\"}}}");
 
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
@@ -175,7 +175,7 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasArtifactArrayDefinedInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec = objectMapper.readTree("{\"endpoints\":{\"/endpoint\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"adapter\":\"V8\"}}}");
+        JsonNode deploymentSpec = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"engine\":\"javascript\"}}}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         koValidationService.validateEndpoint(endpoint);
     }
@@ -183,7 +183,7 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasNoEndpointsDefinedInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec = objectMapper.readTree("{\"endpoints\":{}}");
+        JsonNode deploymentSpec = objectMapper.readTree("{}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
@@ -193,7 +193,7 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoUsesUnloadedAdapterInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec = objectMapper.readTree("{\"endpoints\":{\"/endpoint\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"adapter\":\"cool\"}}}");
+        JsonNode deploymentSpec = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"engine\":\"cool\"}}}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
