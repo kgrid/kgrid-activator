@@ -1,7 +1,6 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
@@ -12,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.Map;
 
 @Service
@@ -48,15 +48,13 @@ public class ActivationService {
     private Executor getExecutor(URI endpointKey, Endpoint endpoint) {
 
         log.info("Activate endpoint {} ", endpointKey);
-
-
         final JsonNode deploymentSpec = endpoint.getDeployment();
 
         if (null == deploymentSpec) {
             throw new ActivatorException("No deployment specification for " + endpointKey);
         }
         String engineName;
-        if(deploymentSpec.has("engine")) {
+        if (deploymentSpec.has("engine")) {
             engineName = deploymentSpec.get("engine").asText();
         } else {
             throw new ActivatorException("No engine specified for " + endpointKey);
@@ -68,9 +66,9 @@ public class ActivationService {
 
         try {
             return adapter.activate(
-                koRepo.getObjectLocation(ark),
-                endpointKey,
-                deploymentSpec);
+                    koRepo.getObjectLocation(ark),
+                    endpointKey,
+                    deploymentSpec);
         } catch (RuntimeException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
             throw new ActivatorException(e.getMessage(), e);

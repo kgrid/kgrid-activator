@@ -3,6 +3,10 @@
     artifact: welcome.js
     engine: javascript
     function: welcome
+  get:
+    artifact: welcome.js
+    engine: javascript
+    function: welcome
 /info:
   post:
     engine: javascript

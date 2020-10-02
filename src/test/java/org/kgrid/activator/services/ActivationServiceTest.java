@@ -13,10 +13,8 @@ import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +29,8 @@ import static org.mockito.Mockito.when;
 public class ActivationServiceTest {
 
     public static final URI OBJECT_LOCATION = URI.create("ObjectLocation");
-    private Endpoint mockEndpoint = Mockito.mock(Endpoint.class);
+    @Mock
+    private Endpoint mockEndpoint;
     private Map<URI, Endpoint> endpointMap = new HashMap<>();
     @Mock
     private AdapterResolver adapterResolver;
@@ -48,24 +47,21 @@ public class ActivationServiceTest {
 
 
     @Before
-    public void setup() throws IOException {
-        final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
-        endpointMap.put(uri, mockEndpoint);
-        activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
+    public void setup() {
         deploymentJson = getEndpointDeploymentJson();
         metadata = generateMetadata();
-
+        final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
         when(adapterResolver.getAdapter(ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
-
         when(mockEndpoint.getDeployment()).thenReturn(deploymentJson);
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
         when(mockEndpoint.getId()).thenReturn(uri);
         when(mockEndpoint.getExecutor()).thenReturn(executor);
-
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
+        endpointMap.put(uri, mockEndpoint);
+        activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
 
     @Test
