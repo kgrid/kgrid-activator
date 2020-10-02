@@ -3,27 +3,21 @@ package org.kgrid.activator.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.kgrid.activator.ActivatorException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KoValidationService {
-
-    @Autowired
-    AdapterLoader adapterLoader;
-
     public static final String HAS_MISSING_SERVICE_SPECIFICATION = "Has missing Service Specification";
     public static final String HAS_MISSING_DEPLOYMENT_SPECIFICATION = "Has missing Deployment Specification";
     public static final String HAS_MISSING_PATHS = "Has missing paths node in Service Specification";
     public static final String HAS_NO_DEFINED_PATHS = "Has an empty Paths node in Service Specification";
     public static final String HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION = "Has no defined artifact in Deployment Specification";
     public static final String HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION = "Has no defined adapter in Deployment Specification";
-    public static final String ADAPTER_NOT_AVAILABLE = " adapter not available in this activator";
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
     public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
     public static final String HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID = "Deployment defined in both x-kgrid extension and Deployment Specification. Use Deployment Specification Only.";
 
-    public void validateEndpoint(Endpoint endpoint){
+    public void validateEndpoint(Endpoint endpoint) {
         JsonNode serviceSpec = endpoint.getService();
         String pathName = endpoint.getEndpointName();
         JsonNode deploymentSpec = endpoint.getWrapper().getDeployment();
@@ -33,7 +27,8 @@ public class KoValidationService {
             if (xKgridActivationNode.isMissingNode()) {
                 validateDeploymentSpecification(deploymentSpec, pathName);
             } else {
-                if ( deploymentSpec != null && !deploymentSpec.isEmpty() ) throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
+                if (deploymentSpec != null && !deploymentSpec.isEmpty())
+                    throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
             }
         });
     }
@@ -59,12 +54,7 @@ public class KoValidationService {
             JsonNode endpointNode = deploymentSpecification.at("/~1" + pathName.substring(1) + "/post");
             if (endpointNode.has("artifact")) {
                 if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {
-                    if (endpointNode.has("engine")) {
-                        String adapter = endpointNode.get("engine").asText();
-                        if (!adapterLoader.getAdapterResolver().getAdapters().containsKey(adapter.toUpperCase())) {
-                            throwWithMessage(adapter + ADAPTER_NOT_AVAILABLE);
-                        }
-                    } else {
+                    if (!endpointNode.has("engine")) {
                         throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
                     }
                 } else {

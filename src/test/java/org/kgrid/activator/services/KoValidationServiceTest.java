@@ -11,14 +11,12 @@ import org.junit.runner.RunWith;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KoValidationServiceTest {
@@ -26,21 +24,12 @@ public class KoValidationServiceTest {
     @InjectMocks
     KoValidationService koValidationService;
 
-    @Mock
-    AdapterLoader adapterLoader;
-
-    @Mock
-    AdapterResolver adapterResolver;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
         Map adapters = new HashMap();
         adapters.put("JAVASCRIPT", "");
-
-        when(adapterLoader.getAdapterResolver()).thenReturn(adapterResolver);
-        when(adapterResolver.getAdapters()).thenReturn(adapters);
     }
 
     @Test
@@ -106,7 +95,7 @@ public class KoValidationServiceTest {
     }
 
     private Endpoint getEndpoint(JsonNode serviceSpec, JsonNode deploymentSpec) {
-        JsonNode metadata = (JsonNode) objectMapper.createObjectNode().put("@id", "naan/name/version");
+        JsonNode metadata = objectMapper.createObjectNode().put("@id", "naan/name/version");
         KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
         wrapper.addDeployment(deploymentSpec);
         wrapper.addService(serviceSpec);
@@ -116,8 +105,8 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasDeploymentInServiceSpecAndDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec =
-            objectMapper.readTree(
-            "{\"paths\":{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}}");
+                objectMapper.readTree(
+                        "{\"paths\":{\"/endpoint\":{\"post\":{\"x-kgrid-activation\":\"value\"}}}}");
         JsonNode deploymentSpec =
                 objectMapper.readTree(
                         "{\"endpoints\":{\"/endpoint\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
@@ -132,10 +121,10 @@ public class KoValidationServiceTest {
     public void validateActivatability_KoHasDeploymentInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec =
-             objectMapper.readTree(
-            "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
+                objectMapper.readTree(
+                        "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
 
-         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
+        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         koValidationService.validateEndpoint(endpoint);
     }
 
@@ -153,8 +142,8 @@ public class KoValidationServiceTest {
     public void validateActivatability_KoHasNoAdapterInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec =
-            objectMapper.readTree(
-            "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\"}}}");
+                objectMapper.readTree(
+                        "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\"}}}");
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
@@ -164,7 +153,7 @@ public class KoValidationServiceTest {
     @Test
     public void validateActivatability_KoHasNoArtifactsDefinedInDeploymentSpec() throws JsonProcessingException {
         JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec =objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":\"\"}}}");
+        JsonNode deploymentSpec = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":\"\"}}}");
 
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
@@ -188,15 +177,5 @@ public class KoValidationServiceTest {
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
         assertEquals(KoValidationService.HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
-    }
-
-    @Test
-    public void validateActivatability_KoUsesUnloadedAdapterInDeploymentSpec() throws JsonProcessingException {
-        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
-        JsonNode deploymentSpec = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":[\"thingOne.js\",\"thingTwo.js\"],\"engine\":\"cool\"}}}");
-        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
-        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateEndpoint(endpoint));
-        assertEquals("cool" + KoValidationService.ADAPTER_NOT_AVAILABLE, activatorException.getMessage());
     }
 }
