@@ -24,6 +24,8 @@ public class KoCreationTestHelper {
             .put("artifact", ARTIFACT_PATH)
             .put("engine", ENGINE)
             .put("function", FUNCTION_NAME);
+    public static final String API_VERSION = "ApiVersion";
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static JsonNode generateMetadata(
             String serviceYamlPath,
@@ -32,9 +34,9 @@ public class KoCreationTestHelper {
             boolean hasIdentifier,
             boolean hasVersion,
             boolean hasType) {
-        ObjectNode metadata = new ObjectMapper().createObjectNode();
+        ObjectNode metadata = objectMapper.createObjectNode();
         if (hasAtId) {
-            metadata.put("@id", KO_PATH);
+            metadata.put("@id", String.format("%s/%s/%s", NAAN, NAME, VERSION));
         }
         if (hasType) {
             metadata.put("@type", "koio:KnowledgeObject");
@@ -59,6 +61,12 @@ public class KoCreationTestHelper {
     }
 
     public static JsonNode getEndpointDeploymentJson() {
-        return ENDPOINT_POST_DEPLOYMENT_NODE;
+        return mapper.createObjectNode().set(ENDPOINT_NAME, mapper.createObjectNode().set(POST_HTTP_METHOD, ENDPOINT_POST_DEPLOYMENT_NODE));
+    }
+
+    public static JsonNode generateServiceNode() {
+        ObjectNode serviceNode = objectMapper.createObjectNode();
+        serviceNode.put("info", objectMapper.createObjectNode().put("version", API_VERSION));
+        return serviceNode;
     }
 }
