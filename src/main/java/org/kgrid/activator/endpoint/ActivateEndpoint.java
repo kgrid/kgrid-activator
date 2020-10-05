@@ -89,7 +89,7 @@ public class ActivateEndpoint {
      * @return set of activated endpoint paths
      */
     @ReadOperation
-    public String activateKO(@Selector String naan,
+    public String activateKo(@Selector String naan,
                              @Selector String name) {
         ArkId arkId = new ArkId(naan, name);
         log.info("Activate {}", arkId.getSlashArk());
@@ -100,7 +100,6 @@ public class ActivateEndpoint {
         return activatedEndpoints.toString();
     }
 
-
     /**
      * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
      *
@@ -110,7 +109,7 @@ public class ActivateEndpoint {
      * @return
      */
     @ReadOperation
-    public String activateKOVersion(@Selector String naan,
+    public String activateKoVersion(@Selector String naan,
                                     @Selector String name, @Selector String version) {
         ArkId arkId = new ArkId(naan, name, version);
         log.info("Activate {}", arkId.getSlashArkVersion());

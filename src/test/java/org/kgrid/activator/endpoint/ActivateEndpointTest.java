@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -50,6 +51,7 @@ public class ActivateEndpointTest {
         endpointMap.put(URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME)), endpoint1);
         when(endpointLoader.load()).thenReturn(endpointMap);
         when(endpointLoader.load(endpoint1.getArkId())).thenReturn(endpointMap);
+        when(endpointLoader.load(new ArkId(NAAN, NAME))).thenReturn(endpointMap);
         when(globalEndpointMap.values()).thenReturn(endpointMap.values());
     }
 
@@ -98,6 +100,42 @@ public class ActivateEndpointTest {
     @Test
     public void activateForEngine_ReturnsActivationResults() throws JsonProcessingException {
         String results = activateEndpoint.activateForEngine(ENGINE);
+        checkActivationResults(results);
+    }
+
+    @Test
+    public void activateKo_loadsEndpointsWithGivenNaanAndName() {
+        activateEndpoint.activateKo(NAAN, NAME);
+        verify(endpointLoader).load(new ArkId(NAAN, NAME));
+    }
+
+    @Test
+    public void activateKo_activatesEndpointsWithGivenNaanAndName() {
+        activateEndpoint.activateKo(NAAN, NAME);
+        verify(activationService).activate(endpointMap);
+    }
+
+    @Test
+    public void activateKo_ReturnsActivationResults() throws JsonProcessingException {
+        String results = activateEndpoint.activateKo(NAAN, NAME);
+        checkActivationResults(results);
+    }
+
+    @Test
+    public void activateKoVersion_loadsEndpointsWithGivenNaanAndNameAndVersion() {
+        activateEndpoint.activateKoVersion(NAAN, NAME, VERSION);
+        verify(endpointLoader).load(new ArkId(NAAN, NAME, VERSION));
+    }
+
+    @Test
+    public void activateKoVersion_activatesEndpointsWithGivenNaanAndName() {
+        activateEndpoint.activateKoVersion(NAAN, NAME, VERSION);
+        verify(activationService).activate(endpointMap);
+    }
+
+    @Test
+    public void activateKoVersion_ReturnsActivationResults() throws JsonProcessingException {
+        String results = activateEndpoint.activateKoVersion(NAAN, NAME, VERSION);
         checkActivationResults(results);
     }
 
