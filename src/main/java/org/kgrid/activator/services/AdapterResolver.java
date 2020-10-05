@@ -3,23 +3,26 @@ package org.kgrid.activator.services;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 
-import java.util.Map;
+import java.util.List;
 
 public class AdapterResolver {
 
-    private final Map<String, Adapter> adapters;
+    private final List<Adapter> adapters;
 
-    public AdapterResolver(Map<String, Adapter> adapters) {
+    public AdapterResolver(List<Adapter> adapters) {
         this.adapters = adapters;
     }
 
     protected Adapter getAdapter(String adapterType) {
-
-        Adapter adapter = adapters.get(adapterType);
-        if (adapter == null) {
+        Adapter resultAdapter = null;
+        for (Adapter adapter : adapters) {
+            if (adapter.getEngines().contains(adapterType)) {
+                resultAdapter = adapter;
+            }
+        }
+        if (resultAdapter == null) {
             throw new ActivatorException("No Adapter Found " + adapterType);
         }
-
-        return adapter;
+        return resultAdapter;
     }
 }
