@@ -1,13 +1,12 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 
+import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 public class Endpoint {
 
@@ -22,6 +21,10 @@ public class Endpoint {
         this.status = "GOOD";
         this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
+    }
+
+    public String getEngine() {
+        return getDeployment().get("engine").asText();
     }
 
     public KnowledgeObjectWrapper getWrapper() {

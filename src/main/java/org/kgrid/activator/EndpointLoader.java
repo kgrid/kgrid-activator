@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 @Service
 public class EndpointLoader {
@@ -113,7 +111,7 @@ public class EndpointLoader {
      *
      * @return collection of endpoints
      */
-    public TreeMap<URI, Endpoint> load() {
+    public Map<URI, Endpoint> load() {
         Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
         Map<URI, Endpoint> temp = new HashMap<>();
 
@@ -121,8 +119,7 @@ public class EndpointLoader {
             temp.putAll(load(ko.getKey()));
         }
 
-        // Putting everything in a treemap sorts them alphabetically
-        TreeMap<URI, Endpoint> endpoints = new TreeMap<>(Collections.reverseOrder());
+        Map<URI, Endpoint> endpoints = new HashMap<>();
         endpoints.putAll(temp);
 
         return endpoints;
