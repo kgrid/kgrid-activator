@@ -27,7 +27,7 @@ public class AdapterLoaderTest {
   @Test
   public void loadMockAdapters() {
     adapterLoader.loadAndInitializeAdapters(Collections.emptyMap());
-    Adapter adapter = adapterResolver.getAdapter("MOCKADAPTER");
+    Adapter adapter = adapterResolver.getAdapter("mockadapter");
     assertNotNull(adapter);
   }
 

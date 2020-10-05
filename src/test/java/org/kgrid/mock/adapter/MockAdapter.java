@@ -18,7 +18,7 @@ public class MockAdapter implements Adapter {
 
   @Override
   public List<String> getEngines() {
-    return Collections.singletonList("MockAdapter");
+    return Collections.singletonList("mockadapter");
   }
 
   @Override
