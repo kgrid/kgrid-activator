@@ -54,7 +54,7 @@ public class ActivationServiceTest {
         when(adapterResolver.getAdapter(ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
-        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson);
+        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get(ENDPOINT_NAME).get(POST_HTTP_METHOD));
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
         when(mockEndpoint.getId()).thenReturn(uri);
         when(mockEndpoint.getExecutor()).thenReturn(executor);
@@ -86,7 +86,7 @@ public class ActivationServiceTest {
     public void activateCallsActivateOnAdapter() {
         activationService.activate(endpointMap);
         verify(adapter).activate(OBJECT_LOCATION,
-                URI.create(ARK_ID.getNaan() + "/" + ARK_ID.getName() + "/" + ARK_ID.getVersion() + "/" + ENDPOINT_NAME), deploymentJson);
+                URI.create(NAAN + "/" + NAME + "/" + VERSION + "/" + ENDPOINT_NAME), deploymentJson.get(ENDPOINT_NAME).get(POST_HTTP_METHOD));
     }
 
     @Test

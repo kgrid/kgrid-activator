@@ -14,6 +14,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +52,6 @@ public class ActivateEndpoint {
      */
     @ReadOperation
     public String activate() {
-
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
         endpoints.putAll(endpointLoader.load());
@@ -68,19 +69,16 @@ public class ActivateEndpoint {
      */
     @ReadOperation
     public String activateForEngine(@Selector String engine) {
-
-
+        List<org.kgrid.activator.services.Endpoint> endpointsToActivate = new ArrayList<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
-            {
-                if (engine.equals(endpoint.getEngine())) {
-                    activate(endpoint.getArkId());
-                }
+            if (engine.equals(endpoint.getEngine())) {
+                endpointsToActivate.add(endpoint);
             }
         }
-
-        JsonArray activatedEndpoints = getActivationResults();
-
-        return activatedEndpoints.toString();
+        for (org.kgrid.activator.services.Endpoint endpoint : endpointsToActivate) {
+            activate(endpoint.getArkId());
+        }
+        return getActivationResults().toString();
     }
 
     /**
@@ -93,7 +91,6 @@ public class ActivateEndpoint {
     @ReadOperation
     public String activateKO(@Selector String naan,
                              @Selector String name) {
-
         ArkId arkId = new ArkId(naan, name);
         log.info("Activate {}", arkId.getSlashArk());
         activate(arkId);
@@ -115,7 +112,6 @@ public class ActivateEndpoint {
     @ReadOperation
     public String activateKOVersion(@Selector String naan,
                                     @Selector String name, @Selector String version) {
-
         ArkId arkId = new ArkId(naan, name, version);
         log.info("Activate {}", arkId.getSlashArkVersion());
         activate(arkId);
@@ -148,11 +144,6 @@ public class ActivateEndpoint {
         endpoints.putAll(loadedEndpoints);
     }
 
-    /**
-     * Creates json object array of endpoints to display
-     *
-     * @return
-     */
     private JsonArray getActivationResults() {
         JsonArray endpointActivations = new JsonArray();
 

@@ -92,20 +92,6 @@ public class EndpointLoader {
         }
     }
 
-    //TODO: Remove the usage of `x-kgrid-activation`
-    private JsonNode getEndpointDeployment(JsonNode deploymentSpecification, Entry<String, JsonNode> path) {
-        JsonNode spec = path.getValue().get("post").get("x-kgrid-activation");
-
-        if (spec == null && deploymentSpecification != null) {
-            spec = deploymentSpecification.get("endpoints").get(path.getKey());
-
-        } else {
-            log.warn(
-                    "Extension of `x-kgrid-activation` has been deprecated from the service specification. Please use the deployment specification file instead.");
-        }
-        return spec;
-    }
-
     /**
      * Loads all the endpoints
      *
