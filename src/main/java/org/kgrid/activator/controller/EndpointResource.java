@@ -18,6 +18,7 @@ public class EndpointResource extends ResourceSupport {
     private URI servicePath;
     private LocalDateTime activated;
     private String status;
+    private String engine;
 
 
     public EndpointResource(Endpoint endpoint) {
@@ -29,6 +30,7 @@ public class EndpointResource extends ResourceSupport {
             this.servicePath = URI.create(String.format("%s/%s", id, metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()));
             this.activated = endpoint.getActivated();
             this.status = endpoint.getStatus();
+            this.engine = endpoint.getEngine();
         } catch (Exception e) {
             this.status = "Could not create endpoint resource for malformed endpoint: " + id;
         }
@@ -58,5 +60,10 @@ public class EndpointResource extends ResourceSupport {
     @ApiModelProperty(value = "The time and date the endpoint was loaded and activated in the activator")
     public LocalDateTime getActivated() {
         return activated;
+    }
+
+    @ApiModelProperty(value = "The engine that will be used to activate and run this endpoint")
+    public String getEngine() {
+        return engine;
     }
 }
