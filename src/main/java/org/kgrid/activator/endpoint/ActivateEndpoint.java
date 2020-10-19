@@ -150,6 +150,7 @@ public class ActivateEndpoint {
             JsonObject endpointActivationResult = new JsonObject();
             endpointActivationResult.addProperty("path", "/" + endpoint.getPath());
             endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
+            endpointActivationResult.addProperty("status", endpoint.getStatus());
             endpointActivations.add(endpointActivationResult);
         });
         return endpointActivations;

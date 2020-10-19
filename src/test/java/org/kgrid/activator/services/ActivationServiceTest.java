@@ -167,4 +167,16 @@ public class ActivationServiceTest {
         assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
 
+    @Test
+    public void activateSetsEndpointStatusToActivated(){
+        activationService.activate(endpointMap);
+        verify(mockEndpoint).setStatus("Activated");
+    }
+
+    @Test
+    public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage(){
+        when(mockEndpoint.getDeployment()).thenReturn(null);
+        activationService.activate(endpointMap);
+        verify(mockEndpoint).setStatus(String.format("Could not be activated: No deployment specification for %s/%s/%s/%s", NAAN,NAME,VERSION,ENDPOINT_NAME));
+    }
 }
