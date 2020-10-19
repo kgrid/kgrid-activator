@@ -56,6 +56,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Bean
     public static CompoundDigitalObjectStore getCDOStore(
             @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}") String cdoStoreURI) {
+        cdoStoreURI = cdoStoreURI.replace(" ","%20");
         return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
     }
 

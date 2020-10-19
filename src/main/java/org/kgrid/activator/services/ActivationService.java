@@ -37,12 +37,12 @@ public class ActivationService {
                 Executor executor = null;
                 try {
                     executor = getExecutor(key, value);
+                    value.setStatus("Activated");
                 } catch (ActivatorException e) {
                     log.warn("Could not activate " + key + " " + e.getMessage());
                     value.setStatus("Could not be activated: " + e.getMessage());
                 }
                 value.setExecutor(executor);
-                value.setStatus("Activated");
             }
         });
     }

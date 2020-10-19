@@ -21,7 +21,7 @@ public class AdapterResolver {
             }
         }
         if (resultAdapter == null) {
-            throw new ActivatorException("No Adapter Found " + adapterType);
+            throw new ActivatorException("No engine found: " + adapterType);
         }
         return resultAdapter;
     }
