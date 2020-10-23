@@ -14,8 +14,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,14 +23,6 @@ import java.util.Map;
 @Component
 @Endpoint(id = "activate")
 public class ActivateEndpoint {
-
-    /**
-     * Aliases refresh to activate
-     */
-    @Component
-    @Endpoint(id = "refresh")
-    public class RefreshEndpoint extends ActivateEndpoint {
-    }
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -69,15 +60,16 @@ public class ActivateEndpoint {
      */
     @ReadOperation
     public String activateForEngine(@Selector String engine) {
-        List<org.kgrid.activator.services.Endpoint> endpointsToActivate = new ArrayList<>();
+        Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
-                endpointsToActivate.add(endpoint);
+                endpoint.setStatus("GOOD"); // reset status so it can be activated
+                endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
-        for (org.kgrid.activator.services.Endpoint endpoint : endpointsToActivate) {
-            activate(endpoint.getArkId());
-        }
+        activationService.activate(endpointsToActivate);
+
+        endpoints.putAll(endpointsToActivate);
         return getActivationResults().toString();
     }
 

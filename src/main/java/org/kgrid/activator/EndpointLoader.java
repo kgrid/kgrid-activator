@@ -43,7 +43,7 @@ public class EndpointLoader {
 
             // load required activation files for KO with `ark`
             // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
-            loadKOImplentation(ark, endpoints);
+            loadKoImplementation(ark, endpoints);
 
         } else {
             JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
@@ -52,7 +52,7 @@ public class EndpointLoader {
                         ko -> {
                             if (ko.has("version")) {
                                 ArkId id = new ArkId(ark.getNaan(), ark.getName(), (ko.get("version").asText()));
-                                loadKOImplentation(id, endpoints);
+                                loadKoImplementation(id, endpoints);
                             }
                         });
             }
@@ -60,7 +60,7 @@ public class EndpointLoader {
         return endpoints;
     }
 
-    private void loadKOImplentation(ArkId ark, Map<URI, Endpoint> endpoints) {
+    private void loadKoImplementation(ArkId ark, Map<URI, Endpoint> endpoints) {
         log.info("Load KO Implementation {}", ark.getFullArk());
 
         try {

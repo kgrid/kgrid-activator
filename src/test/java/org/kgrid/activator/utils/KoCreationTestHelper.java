@@ -18,7 +18,7 @@ public class KoCreationTestHelper {
     public static final String ARTIFACT_PATH = "dist/main.js";
     public static final String ENGINE = "javascript";
     public static final String FUNCTION_NAME = "welcome";
-    public static final String ENDPOINT_NAME = FUNCTION_NAME;
+    public static final String ENDPOINT_NAME = "/" + FUNCTION_NAME;
     public static final String POST_HTTP_METHOD = "post";
     public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE = mapper.createObjectNode()
             .put("artifact", ARTIFACT_PATH)
