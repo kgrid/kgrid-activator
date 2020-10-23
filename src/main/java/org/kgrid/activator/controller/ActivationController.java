@@ -28,7 +28,7 @@ public class ActivationController {
     @Autowired
     private ActivationService activationService;
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
+    @PostMapping(
             value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -49,7 +49,7 @@ public class ActivationController {
         }
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
+    @PostMapping(
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)

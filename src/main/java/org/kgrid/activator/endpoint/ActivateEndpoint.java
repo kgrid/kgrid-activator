@@ -127,14 +127,6 @@ public class ActivateEndpoint {
      * @param arkId
      */
     public void activate(ArkId arkId) {
-        if (arkId.hasVersion()) {
-            endpoints.entrySet().removeIf(
-                    e -> e.getValue().getArkId().equals(arkId));
-        } else {
-            endpoints.entrySet().removeIf(
-                    e -> e.getValue().getArkId().getFullArk().equals(arkId.getFullArk()));
-        }
-
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
 
