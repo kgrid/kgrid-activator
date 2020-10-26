@@ -78,7 +78,7 @@ public class ActivationService {
 
     }
 
-    public EndPointResult execute(URI id, Object inputs) {
+    public EndPointResult execute(URI id, Object inputs, String contentType) {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint) {
@@ -90,7 +90,7 @@ public class ActivationService {
             throw new ActivatorException("No executor found for " + id);
         }
 
-        final Object output = executor.execute(inputs);
+        final Object output = executor.execute(inputs, contentType);
 
         final EndPointResult endPointResult = new EndPointResult(output);
 

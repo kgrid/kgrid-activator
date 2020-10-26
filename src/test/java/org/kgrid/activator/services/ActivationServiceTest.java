@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 public class ActivationServiceTest {
 
     public static final URI OBJECT_LOCATION = URI.create("ObjectLocation");
+    private static final String CONTENT_TYPE = "application/json";
     @Mock
     private Endpoint mockEndpoint;
     private Map<URI, Endpoint> endpointMap = new HashMap<>();
@@ -119,26 +120,26 @@ public class ActivationServiceTest {
 
     @Test
     public void executeGetsExecutorFromEndpoint() {
-        activationService.execute(mockEndpoint.getId(), "input");
+        activationService.execute(mockEndpoint.getId(), "input", CONTENT_TYPE);
         verify(mockEndpoint).getExecutor();
     }
 
     @Test
     public void executeExecutesExecutor() {
-        activationService.execute(mockEndpoint.getId(), input);
-        verify(executor).execute(input);
+        activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
+        verify(executor).execute(input, CONTENT_TYPE);
     }
 
     @Test
     public void executeSetsInputOnEndpointResult() {
         EndPointResult result;
-        result = activationService.execute(mockEndpoint.getId(), input);
+        result = activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
         assertEquals(input, result.getInfo().get("inputs"));
     }
 
     @Test
     public void executeSetsMetadataOnEndpointResult() {
-        EndPointResult result = activationService.execute(mockEndpoint.getId(), input);
+        EndPointResult result = activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
         assertEquals(metadata, result.getInfo().get("ko"));
     }
 
@@ -150,7 +151,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             missingId,
-                            input);
+                            input, CONTENT_TYPE);
                 });
         assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
     }
@@ -162,7 +163,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             mockEndpoint.getId(),
-                            input);
+                            input, CONTENT_TYPE);
                 });
         assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
     }

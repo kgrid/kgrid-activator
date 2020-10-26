@@ -38,12 +38,14 @@ public class ActivationController {
             @PathVariable String name,
             @PathVariable String endpoint,
             @PathVariable String apiVersion,
-            @RequestBody String inputs) {
+            @RequestBody String inputs,
+            @RequestHeader Map<String, String> headers) {
+
 
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-
+        String contentHeader = headers.get("content-type");
         try {
-            return activationService.execute(endpointId, inputs);
+            return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
             log.error("Exception " + e);
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage());
@@ -60,12 +62,12 @@ public class ActivationController {
             @PathVariable String endpoint,
             @RequestParam(name = "v", required = false) String apiVersion,
             @RequestBody String inputs,
-    @RequestHeader Map<String, String> headers) {
+            @RequestHeader Map<String, String> headers) {
 
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-        String contentHeader = headers.get("Content-Type");
+        String contentHeader = headers.get("content-type");
         try {
-            return activationService.execute(endpointId, inputs);
+            return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
             log.error("Exception " + e);
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
