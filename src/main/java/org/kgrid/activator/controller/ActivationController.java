@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,10 +59,11 @@ public class ActivationController {
             @PathVariable String name,
             @PathVariable String endpoint,
             @RequestParam(name = "v", required = false) String apiVersion,
-            @RequestBody String inputs) {
+            @RequestBody String inputs,
+    @RequestHeader Map<String, String> headers) {
 
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-
+        String contentHeader = headers.get("Content-Type");
         try {
             return activationService.execute(endpointId, inputs);
         } catch (AdapterException e) {
