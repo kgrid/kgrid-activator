@@ -96,7 +96,7 @@ public class ActivationControllerTest {
         JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
         assertEquals(
-                "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error", content.get("Detail").asText());
+                "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error: TypeError: baseFunction is not a function", content.get("Detail").asText());
     }
 
     @Test

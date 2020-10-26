@@ -44,6 +44,9 @@ public class ActivationController {
 
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
         String contentHeader = headers.get("content-type");
+        if(contentHeader == null) { // Check for this because the test mockmvc does it this way
+            contentHeader = headers.get("Content-Type");
+        }
         try {
             return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
@@ -66,6 +69,9 @@ public class ActivationController {
 
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
         String contentHeader = headers.get("content-type");
+        if(contentHeader == null) { // Check for this because the test mockmvc does it this way
+            contentHeader = headers.get("Content-Type");
+        }
         try {
             return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
