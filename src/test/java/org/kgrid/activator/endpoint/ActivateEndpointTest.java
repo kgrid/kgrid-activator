@@ -48,7 +48,7 @@ public class ActivateEndpointTest {
     public void setup() {
         kow1.addService(generateServiceNode());
         kow1.addDeployment(getEndpointDeploymentJson());
-        endpointMap.put(URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME)), endpoint1);
+        endpointMap.put(URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME.substring(1))), endpoint1);
         when(endpointLoader.load()).thenReturn(endpointMap);
         when(endpointLoader.load(endpoint1.getArkId())).thenReturn(endpointMap);
         when(endpointLoader.load(new ArkId(NAAN, NAME))).thenReturn(endpointMap);
@@ -77,12 +77,6 @@ public class ActivateEndpointTest {
     public void activate_ReturnsActivationResults() throws JsonProcessingException {
         String results = activateEndpoint.activate();
         checkActivationResults(results);
-    }
-
-    @Test
-    public void activateForEngine_loadsEndpointsWithGivenEngine() {
-        activateEndpoint.activateForEngine(ENGINE);
-        verify(endpointLoader).load(endpoint1.getArkId());
     }
 
     @Test

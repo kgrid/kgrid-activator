@@ -95,12 +95,12 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>javascript-v8-adapter</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>proxy-adapter</artifactId>
-            <version>0.10.12</version>
+            <version>0.10.14-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -150,3 +150,4 @@
         </plugins>
     </build>
 </project>
+
