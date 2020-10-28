@@ -50,7 +50,7 @@ public class ActivationController {
         try {
             return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
-            log.error("Exception " + e);
+            log.error("Exception " + e.getMessage());
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage());
         }
     }

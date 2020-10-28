@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -89,9 +90,13 @@ public class ActivationService {
         if (null == executor) {
             throw new ActivatorException("No executor found for " + id);
         }
-
-        final Object output = executor.execute(inputs, contentType);
-
+        Object output = null;
+        try {
+            output = executor.execute(inputs, contentType);
+        } catch (Exception e) {
+            throw new ActivatorException(String.format("Could not execute with inputs: %s. Exception: %s",
+                    inputs.toString(), e.getMessage()), e);
+        }
         final EndPointResult endPointResult = new EndPointResult(output);
 
         endPointResult.getInfo().put("inputs", inputs);
