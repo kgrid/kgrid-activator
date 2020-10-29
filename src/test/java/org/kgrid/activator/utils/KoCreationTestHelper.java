@@ -66,7 +66,11 @@ public class KoCreationTestHelper {
 
     public static JsonNode generateServiceNode() {
         ObjectNode serviceNode = objectMapper.createObjectNode();
-        serviceNode.put("info", objectMapper.createObjectNode().put("version", API_VERSION));
+        serviceNode.set("info", objectMapper.createObjectNode().put("version", API_VERSION));
+        serviceNode.set("paths", objectMapper.createObjectNode().set("/welcome", objectMapper.createObjectNode()
+                .set("post", objectMapper.createObjectNode().set("requestBody", objectMapper.createObjectNode()
+                        .set("content", objectMapper.createObjectNode()
+                                .set("application/json", objectMapper.createObjectNode()))))));
         return serviceNode;
     }
 }

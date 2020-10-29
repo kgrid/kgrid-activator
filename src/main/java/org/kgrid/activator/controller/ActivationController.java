@@ -7,11 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 
 import java.net.URI;
@@ -78,6 +78,20 @@ public class ActivationController {
             log.error("Exception " + e);
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
         }
+    }
+
+    @ExceptionHandler(ActivatorException.class)
+    public ResponseEntity<Map<String, String>> handleActivatorExceptions(Exception e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<Map<String, String>> handleUnsupportedMediaType(Exception e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(Exception.class)
