@@ -114,7 +114,7 @@ public class EndpointLoaderTests {
             assertNotNull("Service spec must exist", service);
             assertTrue("Service spec must have endpoint path(service)", service.has("paths"));
             String endpointKey = endpoint.getEndpointName();
-            assertNotNull("Service contains endpoint path", service.get("paths").get(endpointKey));
+            assertNotNull("Service contains endpoint path", service.get("paths").get("/" + endpointKey));
         });
     }
 

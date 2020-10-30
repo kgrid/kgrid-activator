@@ -1,7 +1,7 @@
 package org.kgrid.activator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.kgrid.activator.endpoint.ActivateEndpoint;
+import org.kgrid.activator.controller.ActivationController;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
@@ -33,7 +33,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public class KgridActivatorApplication implements CommandLineRunner {
 
     @Autowired
-    private ActivateEndpoint activateEndpoint;
+    private ActivationController activationController;
 
     @Autowired
     private EndpointLoader endpointLoader;
@@ -73,7 +73,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        activateEndpoint.activate();
+        activationController.activate();
         if (autoReload) {
             this.watchShelf();
         }
@@ -100,11 +100,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
                 arkId = new ArkId(pathParts[0]);
             }
 
-            // With the new activation logic this now handles all modification cases
-            // Throws an error on delete though, maybe could clean it up but problematic because
-            // Delete is always preceded by a modify, could try a using a queue where events are paired
-            // and the first one is held in case the second is a delete but this is simple and works for now
-            activateEndpoint.activate(arkId);
+            activationController.activate(arkId);
 
         });
         new Thread(watcher).start();

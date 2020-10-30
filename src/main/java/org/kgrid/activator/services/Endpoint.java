@@ -48,16 +48,11 @@ public class Endpoint {
     }
 
     public JsonNode getDeployment() {
-        return wrapper.getDeployment().get(endpointName).get("post");
+        return wrapper.getDeployment().get("/" + endpointName).get("post");
     }
 
     public LocalDateTime getActivated() {
         return activated;
-    }
-
-    public String getPath() {
-        String apiVersion = getApiVersion();
-        return wrapper.getMetadata().at("/@id").asText() + endpointName + (apiVersion != null ? "?v=" + apiVersion : "");
     }
 
     public String getStatus() {
@@ -89,7 +84,7 @@ public class Endpoint {
     }
 
     public URI getId() {
-        return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName.substring(1)));
+        return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName));
     }
 
     public String getEndpointName() {
