@@ -141,8 +141,13 @@ public class EndpointController extends ActivatorExceptionHandler{
     private EndPointResult executeEndpointWithContentHeader(String naan, String name, String endpoint, String apiVersion, String inputs, Map<String, String> headers) {
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
 
+        String contentHeader = headers.get("Content-Type");
+        if (contentHeader == null){
+            contentHeader = headers.get("content-type");
+        }
+
         try {
-            return activationService.execute(endpointId, inputs, headers.get("Content-Type"));
+            return activationService.execute(endpointId, inputs, contentHeader);
         } catch (AdapterException e) {
             log.error("Exception " + e);
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);

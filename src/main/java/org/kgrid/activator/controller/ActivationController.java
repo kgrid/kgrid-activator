@@ -30,7 +30,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @CrossOrigin
 @Primary
-public class ActivationController extends ActivatorExceptionHandler{
+public class ActivationController{
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

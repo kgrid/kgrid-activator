@@ -64,7 +64,7 @@ public class ActivationServiceTest {
         when(mockEndpoint.getExecutor()).thenReturn(executor);
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
-        when(mockEndpoint.getEndpointName()).thenReturn("/welcome");
+        when(mockEndpoint.getEndpointName()).thenReturn("welcome");
         endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
