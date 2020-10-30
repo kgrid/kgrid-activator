@@ -108,7 +108,7 @@ public class ActivationService {
         if (null == executor) {
             throw new ActivatorException("No executor found for " + id);
         }
-        Object output = null;
+        Object output;
         try {
             output = executor.execute(inputs, contentType);
         } catch (Exception e) {
