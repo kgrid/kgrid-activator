@@ -9,10 +9,15 @@ import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ActivationService {
@@ -84,14 +89,32 @@ public class ActivationService {
         if (null == endpoint) {
             throw new ActivatorException("No endpoint found for " + id);
         }
+        final JsonNode contentTypes = endpoint.getService().at("/paths").get(endpoint.getEndpointName())
+                .get("post").get("requestBody").get("content");
+        AtomicBoolean matches = new AtomicBoolean(false);
+        contentTypes.fieldNames().forEachRemaining(key -> {
+            if(contentType.equals(key)) {
+                matches.set(true);
+            }
+        });
+        if(!matches.get()){
+            String message = "Unsupported media type " + contentType;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", "application/json");
+            throw HttpClientErrorException.create(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, headers, message.getBytes(), Charset.defaultCharset());
+        }
         Executor executor = endpoint.getExecutor();
 
         if (null == executor) {
             throw new ActivatorException("No executor found for " + id);
         }
-
-        final Object output = executor.execute(inputs, contentType);
-
+        Object output;
+        try {
+            output = executor.execute(inputs, contentType);
+        } catch (Exception e) {
+            throw new ActivatorException(String.format("Could not execute with inputs: %s. Exception: %s",
+                    inputs.toString(), e.getMessage()), e);
+        }
         final EndPointResult endPointResult = new EndPointResult(output);
 
         endPointResult.getInfo().put("inputs", inputs);

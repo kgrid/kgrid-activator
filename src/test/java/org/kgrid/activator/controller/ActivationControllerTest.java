@@ -75,7 +75,7 @@ public class ActivationControllerTest {
     public void endpointBlankServiceError() throws Exception {
         MvcResult result =
                 getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
-                        .andExpect(status().isInternalServerError())
+                        .andExpect(status().isBadRequest())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andReturn();
 
@@ -89,21 +89,21 @@ public class ActivationControllerTest {
     public void serviceSpecFunctionMismatchError() throws Exception {
         MvcResult result =
                 getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
-                        .andExpect(status().isInternalServerError())
+                        .andExpect(status().isBadRequest())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andReturn();
 
         JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
 
         assertEquals(
-                "Exception for endpoint bad/koio/servicespecmismatch/welcome Code execution error: TypeError: baseFunction is not a function", content.get("Detail").asText());
+                "Could not execute with inputs: {\"name\":\"tester\"}. Exception: Code execution error: TypeError: baseFunction is not a function", content.get("Detail").asText());
     }
 
     @Test
     public void endpointNoMetadataError() throws Exception {
         MvcResult result =
                 getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
-                        .andExpect(status().isInternalServerError())
+                        .andExpect(status().isBadRequest())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andReturn();
 
@@ -117,7 +117,7 @@ public class ActivationControllerTest {
     public void endpointNoServiceError() throws Exception {
         MvcResult result =
                 getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
-                        .andExpect(status().isInternalServerError())
+                        .andExpect(status().isBadRequest())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andReturn();
 
@@ -131,7 +131,7 @@ public class ActivationControllerTest {
     public void endpointOnlyMetadataError() throws Exception {
         MvcResult result =
                 getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
-                        .andExpect(status().isInternalServerError())
+                        .andExpect(status().isBadRequest())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andReturn();
 

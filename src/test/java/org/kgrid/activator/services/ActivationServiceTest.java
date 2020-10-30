@@ -43,6 +43,7 @@ public class ActivationServiceTest {
     private Executor executor;
     private ActivationService activationService;
     private JsonNode deploymentJson;
+    private JsonNode deploymentService;
     private JsonNode metadata;
     private String input = "input";
 
@@ -50,17 +51,20 @@ public class ActivationServiceTest {
     @Before
     public void setup() {
         deploymentJson = getEndpointDeploymentJson();
+        deploymentService = generateServiceNode();
         metadata = generateMetadata();
         final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
         when(adapterResolver.getAdapter(ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
+        when(mockEndpoint.getService()).thenReturn(deploymentService);
         when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get(ENDPOINT_NAME).get(POST_HTTP_METHOD));
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
         when(mockEndpoint.getId()).thenReturn(uri);
         when(mockEndpoint.getExecutor()).thenReturn(executor);
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
+        when(mockEndpoint.getEndpointName()).thenReturn("/welcome");
         endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
