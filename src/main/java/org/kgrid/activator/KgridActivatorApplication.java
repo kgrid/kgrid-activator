@@ -35,17 +35,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Autowired
     private ActivationController activationController;
 
-    @Autowired
-    private EndpointLoader endpointLoader;
-
-    private FilesystemCDOWatcher watcher;
-
-    @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}")
-    private String cdoStoreURI;
-
-    @Value("${kgrid.activator.autoreload:false}")
-    private Boolean autoReload;
-
     public static void main(String[] args) {
         new SpringApplicationBuilder(KgridActivatorApplication.class)
                 .build()
@@ -72,38 +61,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... strings) {
         activationController.activate();
-        if (autoReload) {
-            this.watchShelf();
-        }
     }
-
-    // Reloads one object if that object has changed or was added
-    // Removes an object if an entire object or implementation was deleted
-    private void watchShelf() throws IOException {
-        if (watcher != null) {
-            return;
-        }
-        watcher = new FilesystemCDOWatcher();
-        final URI koRepoLocation = endpointLoader.getKORepoLocation();
-        watcher.registerAll(Paths.get(koRepoLocation),
-                ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
-        String cdoStoreFilePath = StringUtils.substringAfterLast(cdoStoreURI, ":");
-
-        watcher.addFileListener((path, eventType) -> {
-            String[] pathParts = StringUtils.split(path.toString().substring(cdoStoreFilePath.length() - 1), "/");
-            ArkId arkId;
-            if (pathParts.length > 1) {
-                arkId = new ArkId(StringUtils.join(pathParts[0], "/", pathParts[1]));
-            } else {
-                arkId = new ArkId(pathParts[0]);
-            }
-
-            activationController.activate(arkId);
-
-        });
-        new Thread(watcher).start();
-    }
-
 }
