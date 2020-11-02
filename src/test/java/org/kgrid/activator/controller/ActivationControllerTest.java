@@ -1,143 +1,191 @@
 package org.kgrid.activator.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kgrid.activator.KgridActivatorApplication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.kgrid.activator.EndpointLoader;
+import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.Endpoint;
+import org.kgrid.shelf.domain.ArkId;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = KgridActivatorApplication.class)
+@RunWith(MockitoJUnitRunner.class)
 public class ActivationControllerTest {
+    public static final String NODE_ENDPOINT_NAME = "/node-endpoint";
+    public static final String NODE_NAAN = "node-naan";
+    public static final String NODE_NAME = "node-name";
+    public static final String NODE_VERSION = "node-version";
+    @Mock
+    private ActivationService activationService;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper mapper;
+    @Mock
+    private EndpointLoader endpointLoader;
+
+    @Mock
+    private Map<URI, Endpoint> globalEndpoints;
+
+    @InjectMocks
+    ActivationController activationController;
+
+    private Map<URI, Endpoint> endpointMapFromLoader = new HashMap<>();
+    private Endpoint nodeEndpoint;
+    private Map<URI, Endpoint> justNodeEndpoints = new HashMap<>();
+    ArrayList endpointList = new ArrayList();
+    JsonArray activationResults = new JsonArray();
+    private KnowledgeObjectWrapper jsKow;
+    private KnowledgeObjectWrapper nodeKow;
+    private Endpoint jsEndpoint;
 
     @Before
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    public void setup() {
+        jsKow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
+        jsKow.addService(generateServiceNode());
+        jsKow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
+        nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
+        nodeKow.addService(generateServiceNode());
+        nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(NODE_ENGINE, NODE_ENDPOINT_NAME));
+        jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
+        nodeEndpoint = new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
+        URI jsEndpointUri = URI.create(ENDPOINT_NAME);
+        URI nodeEndpointUri = URI.create(NODE_ENDPOINT_NAME);
+        endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
+        endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
+
+
+        justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
+        activationResults = getActivationResults(endpointMapFromLoader);
+
+        endpointList.add(jsEndpoint);
+        endpointList.add(nodeEndpoint);
+        when(globalEndpoints.values()).thenReturn(endpointList);
+        when(endpointLoader.load()).thenReturn(endpointMapFromLoader);
+        when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME))).thenReturn(justNodeEndpoints);
+        when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION))).thenReturn(justNodeEndpoints);
     }
 
     @Test
-    public void endpointInvocationReturnsResult() throws Exception {
-        MvcResult result =
-                getResultActions("/c/d/welcome?v=f", "{\"name\" : \"tester\"}")
-                        .andExpect(status().isOk())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertEquals("Welcome to Knowledge Grid, tester", content.get("result").asText());
-    }
-
-    private ResultActions getResultActions(String endpointPath, String content) throws Exception {
-        return mockMvc.perform(
-                post(endpointPath)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON));
+    public void testActivateClearsEndpointList() {
+        activationController.activate();
+        verify(globalEndpoints).clear();
     }
 
     @Test
-    public void endpointNoRequestBodyError() throws Exception {
-        MvcResult result =
-                getResultActions("/c/d/welcome?v=f", "")
-                        .andExpect(status().isInternalServerError())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertTrue(content.get("Detail").asText().startsWith("Required request body is missing"));
+    public void testActivateLoadsEndpoints() {
+        activationController.activate();
+        verify(endpointLoader).load();
     }
 
     @Test
-    public void endpointBlankServiceError() throws Exception {
-        MvcResult result =
-                getResultActions("/bad/koio/welcome?v=blankservice", "{\"name\":\"tester\"}")
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertEquals(
-                "No endpoint found for bad/koio/blankservice/welcome", content.get("Detail").asText());
+    public void testActivateAddsLoadedEndpointsToGlobalMap() {
+        activationController.activate();
+        verify(globalEndpoints).putAll(endpointMapFromLoader);
     }
 
     @Test
-    public void serviceSpecFunctionMismatchError() throws Exception {
-        MvcResult result =
-                getResultActions("/bad/koio/welcome?v=servicespecmismatch", "{\"name\":\"tester\"}")
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertEquals(
-                "Could not execute with inputs: {\"name\":\"tester\"}. Exception: Code execution error: TypeError: baseFunction is not a function", content.get("Detail").asText());
+    public void testActivateActivatesLoadedEndpoints() {
+        activationController.activate();
+        verify(activationService).activate(globalEndpoints);
     }
 
     @Test
-    public void endpointNoMetadataError() throws Exception {
-        MvcResult result =
-                getResultActions("/bad/koio/welcome?v=nometadata", "{\"name\":\"tester\"}")
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertEquals(
-                "No endpoint found for bad/koio/nometadata/welcome", content.get("Detail").asText());
+    public void testActivateReturnsJsonArrayOfActivatedEndpoints() {
+        String results = activationController.activate();
+        assertEquals(activationResults.toString(), results);
     }
 
     @Test
-    public void endpointNoServiceError() throws Exception {
-        MvcResult result =
-                getResultActions("/bad/koio/welcome?v=noservice", "{\"name\":\"tester\"}")
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
-
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
-
-        assertEquals(
-                "No endpoint found for bad/koio/noservice/welcome", content.get("Detail").asText());
+    public void testRefreshClearsEndpointList() {
+        activationController.refresh();
+        verify(globalEndpoints).clear();
     }
 
     @Test
-    public void endpointOnlyMetadataError() throws Exception {
-        MvcResult result =
-                getResultActions("/bad/koio/welcome?v=onlymetadata", "{\"name\":\"tester\"}")
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andReturn();
+    public void testRefreshLoadsEndpoints() {
+        activationController.refresh();
+        verify(endpointLoader).load();
+    }
 
-        JsonNode content = mapper.readTree(result.getResponse().getContentAsByteArray());
+    @Test
+    public void testRefreshAddsLoadedEndpointsToGlobalMap() {
+        activationController.refresh();
+        verify(globalEndpoints).putAll(endpointMapFromLoader);
+    }
 
-        assertEquals(
-                "No endpoint found for bad/koio/onlymetadata/welcome", content.get("Detail").asText());
+    @Test
+    public void testRefreshActivatesLoadedEndpoints() {
+        activationController.refresh();
+        verify(activationService).activate(globalEndpoints);
+    }
+
+    @Test
+    public void testRefreshReturnsJsonArrayOfActivatedEndpoints() {
+        String results = activationController.refresh();
+        assertEquals(activationResults.toString(), results);
+    }
+
+    @Test
+    public void testActivateForEngineActivatesOnlyEngineExndpoints() {
+        activationController.activateForEngine(NODE_ENGINE);
+        verify(activationService).activate(justNodeEndpoints);
+    }
+
+    @Test
+    public void testActivateForEnginePutsOnlyEngineEndpointsInGlobalMap() {
+        activationController.activateForEngine(NODE_ENGINE);
+        verify(globalEndpoints).putAll(justNodeEndpoints);
+    }
+
+    @Test
+    public void testActivateKoLoadsOnlyKoEndpoints(){
+        activationController.activateKo(NAAN, NAME);
+        verify(endpointLoader).load(new ArkId(NAAN, NAME));
+    }
+
+    @Test
+    public void testActivateKoPutsKoEndpointsInGlobalMap(){
+        activationController.activateKo(NODE_NAAN, NODE_NAME);
+        verify(globalEndpoints).putAll(justNodeEndpoints);
+    }
+
+    @Test
+    public void testActivateKoVersionLoadsOnlyKoEndpoints(){
+        activationController.activateKoVersion(NAAN, NAME, API_VERSION);
+        verify(endpointLoader).load(new ArkId(NAAN, NAME, API_VERSION));
+    }
+
+    @Test
+    public void testActivateKoVersionPutsKoEndpointsInGlobalMap(){
+        activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
+        verify(globalEndpoints).putAll(justNodeEndpoints);
+    }
+
+    private JsonArray getActivationResults(Map<URI, Endpoint> endpoints) {
+        JsonArray endpointActivations = new JsonArray();
+
+        endpoints.values().forEach(endpoint -> {
+            JsonObject endpointActivationResult = new JsonObject();
+            endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+            endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
+            endpointActivationResult.addProperty("status", endpoint.getStatus());
+            endpointActivations.add(endpointActivationResult);
+        });
+        return endpointActivations;
     }
 }

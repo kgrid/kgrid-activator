@@ -50,21 +50,21 @@ public class ActivationServiceTest {
 
     @Before
     public void setup() {
-        deploymentJson = getEndpointDeploymentJson();
+        deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME);
         deploymentService = generateServiceNode();
-        metadata = generateMetadata();
+        metadata = generateMetadata(NAAN, NAME, VERSION);
         final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
-        when(adapterResolver.getAdapter(ENGINE)).thenReturn(adapter);
+        when(adapterResolver.getAdapter(JS_ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
         when(mockEndpoint.getService()).thenReturn(deploymentService);
-        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get(ENDPOINT_NAME).get(POST_HTTP_METHOD));
+        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
         when(mockEndpoint.getId()).thenReturn(uri);
         when(mockEndpoint.getExecutor()).thenReturn(executor);
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
-        when(mockEndpoint.getEndpointName()).thenReturn("/welcome");
+        when(mockEndpoint.getEndpointName()).thenReturn("welcome");
         endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
@@ -78,7 +78,7 @@ public class ActivationServiceTest {
     @Test
     public void activateGetsAdapterFromResolver() {
         activationService.activate(endpointMap);
-        verify(adapterResolver).getAdapter(ENGINE);
+        verify(adapterResolver).getAdapter(JS_ENGINE);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ActivationServiceTest {
     public void activateCallsActivateOnAdapter() {
         activationService.activate(endpointMap);
         verify(adapter).activate(OBJECT_LOCATION,
-                URI.create(NAAN + "/" + NAME + "/" + VERSION + "/" + ENDPOINT_NAME), deploymentJson.get(ENDPOINT_NAME).get(POST_HTTP_METHOD));
+                URI.create(NAAN + "/" + NAME + "/" + VERSION + "/" + ENDPOINT_NAME), deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
     }
 
     @Test
@@ -173,15 +173,15 @@ public class ActivationServiceTest {
     }
 
     @Test
-    public void activateSetsEndpointStatusToActivated(){
+    public void activateSetsEndpointStatusToActivated() {
         activationService.activate(endpointMap);
         verify(mockEndpoint).setStatus("Activated");
     }
 
     @Test
-    public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage(){
+    public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage() {
         when(mockEndpoint.getDeployment()).thenReturn(null);
         activationService.activate(endpointMap);
-        verify(mockEndpoint).setStatus(String.format("Could not be activated: No deployment specification for %s/%s/%s/%s", NAAN,NAME,VERSION,ENDPOINT_NAME));
+        verify(mockEndpoint).setStatus(String.format("Could not be activated: No deployment specification for %s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
     }
 }

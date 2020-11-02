@@ -1,18 +1,29 @@
 package org.kgrid.activator.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import java.net.URI;
+
 import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.kgrid.shelf.domain.KoFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.WebRequest;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,7 +31,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @CrossOrigin
-public class EndpointController {
+public class EndpointController extends ActivatorExceptionHandler{
+
+    @Autowired
+    private ActivationService activationService;
 
     @Autowired
     private Map<URI, Endpoint> endpoints;
@@ -45,8 +59,8 @@ public class EndpointController {
     public EndpointResource findEndpointOldVersion(
             @PathVariable String naan,
             @PathVariable String name,
-            @PathVariable String endpointName,
-            @PathVariable String version) {
+            @PathVariable String version,
+            @PathVariable String endpointName) {
 
         log.info("getting ko endpoint " + naan + "/" + name);
 
@@ -91,10 +105,53 @@ public class EndpointController {
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
-
         EndpointResource resource = createEndpointResource(endpoint);
 
         return resource;
+    }
+
+    @PostMapping(
+            value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public Object executeEndpointOldVersion(
+            @PathVariable String naan,
+            @PathVariable String name,
+            @PathVariable String apiVersion,
+            @PathVariable String endpoint,
+            @RequestBody String inputs,
+            @RequestHeader Map<String, String> headers) {
+        return executeEndpointWithContentHeader(naan, name, endpoint, apiVersion, inputs, headers);
+    }
+
+    @PostMapping(
+            value = {"/{naan}/{name}/{endpoint}"},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public Object executeEndpoint(
+            @PathVariable String naan,
+            @PathVariable String name,
+            @RequestParam(name = "v", required = false) String apiVersion,
+            @PathVariable String endpoint,
+            @RequestBody String inputs,
+            @RequestHeader Map<String, String> headers) {
+        return executeEndpointWithContentHeader(naan, name, endpoint, apiVersion, inputs, headers);
+    }
+
+    private EndPointResult executeEndpointWithContentHeader(String naan, String name, String endpoint, String apiVersion, String inputs, Map<String, String> headers) {
+        URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
+
+        String contentHeader = headers.get("Content-Type");
+        if (contentHeader == null){
+            contentHeader = headers.get("content-type");
+        }
+
+        try {
+            return activationService.execute(endpointId, inputs, contentHeader);
+        } catch (AdapterException e) {
+            log.error("Exception " + e);
+            throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
+        }
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
@@ -120,6 +177,5 @@ public class EndpointController {
             resource = new EndpointResource(endpoint);
         }
         return resource;
-
     }
 }

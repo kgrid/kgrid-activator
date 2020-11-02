@@ -74,7 +74,7 @@ public class EndpointLoader {
                     .fields()
                     .forEachRemaining(
                             path -> {
-                                Endpoint endpoint = new Endpoint(wrapper, path.getKey());
+                                Endpoint endpoint = new Endpoint(wrapper, path.getKey().substring(1));
 
                                 try {
                                     koValidationService.validateEndpoint(endpoint);

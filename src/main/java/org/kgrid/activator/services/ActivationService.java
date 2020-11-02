@@ -89,15 +89,15 @@ public class ActivationService {
         if (null == endpoint) {
             throw new ActivatorException("No endpoint found for " + id);
         }
-        final JsonNode contentTypes = endpoint.getService().at("/paths").get(endpoint.getEndpointName())
+        final JsonNode contentTypes = endpoint.getService().at("/paths").get("/" + endpoint.getEndpointName())
                 .get("post").get("requestBody").get("content");
         AtomicBoolean matches = new AtomicBoolean(false);
         contentTypes.fieldNames().forEachRemaining(key -> {
-            if(contentType.equals(key)) {
+            if (contentType.equals(key)) {
                 matches.set(true);
             }
         });
-        if(!matches.get()){
+        if (!matches.get()) {
             String message = "Unsupported media type " + contentType;
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/json");

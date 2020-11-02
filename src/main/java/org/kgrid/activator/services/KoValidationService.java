@@ -19,7 +19,7 @@ public class KoValidationService {
 
     public void validateEndpoint(Endpoint endpoint) {
         JsonNode serviceSpec = endpoint.getService();
-        String pathName = endpoint.getEndpointName();
+        String pathName = "/" + endpoint.getEndpointName();
         JsonNode deploymentSpec = endpoint.getWrapper().getDeployment();
         ObjectNode path = (ObjectNode) serviceSpec.at("/paths").get(pathName);
         path.fields().forEachRemaining(httpMethod -> {

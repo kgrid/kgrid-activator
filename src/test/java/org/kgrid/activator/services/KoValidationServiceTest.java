@@ -99,7 +99,7 @@ public class KoValidationServiceTest {
         KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
         wrapper.addDeployment(deploymentSpec);
         wrapper.addService(serviceSpec);
-        return new Endpoint(wrapper, "/endpoint");
+        return new Endpoint(wrapper, "endpoint");
     }
 
     @Test

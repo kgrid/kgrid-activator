@@ -13,39 +13,47 @@ public class KoCreationTestHelper {
     public static final String NAAN = "naan";
     public static final String NAME = "name";
     public static final String VERSION = "version";
-    public static final String KO_PATH = NAAN + "-" + NAME + "-" + VERSION;
+    public static final String API_VERSION = "ApiVersion";
     public static final ArkId ARK_ID = new ArkId(NAAN, NAME, VERSION);
     public static final String ARTIFACT_PATH = "dist/main.js";
-    public static final String ENGINE = "javascript";
+    public static final String JS_ENGINE = "javascript";
+    public static final String NODE_ENGINE = "node";
     public static final String FUNCTION_NAME = "welcome";
-    public static final String ENDPOINT_NAME = "/" + FUNCTION_NAME;
+    public static final String ENDPOINT_NAME = "endpoint";
     public static final String POST_HTTP_METHOD = "post";
-    public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE = mapper.createObjectNode()
+    public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE_JS = mapper.createObjectNode()
             .put("artifact", ARTIFACT_PATH)
-            .put("engine", ENGINE)
+            .put("engine", JS_ENGINE)
             .put("function", FUNCTION_NAME);
-    public static final String API_VERSION = "ApiVersion";
+    public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE_NODE = mapper.createObjectNode()
+            .put("artifact", ARTIFACT_PATH)
+            .put("engine", NODE_ENGINE)
+            .put("function", FUNCTION_NAME);
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static JsonNode generateMetadata(
             String serviceYamlPath,
             String deploymentYamlPath,
+            String naan,
+            String name,
+            String version,
             boolean hasAtId,
             boolean hasIdentifier,
             boolean hasVersion,
             boolean hasType) {
         ObjectNode metadata = objectMapper.createObjectNode();
+        metadata.put("title", "Test Endpoint Title");
         if (hasAtId) {
-            metadata.put("@id", String.format("%s/%s/%s", NAAN, NAME, VERSION));
+            metadata.put("@id", String.format("%s/%s/%s", naan, name, version));
         }
         if (hasType) {
             metadata.put("@type", "koio:KnowledgeObject");
         }
         if (hasIdentifier) {
-            metadata.put("identifier", ARK_ID.toString());
+            metadata.put("identifier", new ArkId(naan, name, version).toString());
         }
         if (hasVersion) {
-            metadata.put(KoFields.VERSION.asStr(), VERSION);
+            metadata.put(KoFields.VERSION.asStr(), version);
         }
         if (deploymentYamlPath != null) {
             metadata.put(KoFields.DEPLOYMENT_SPEC_TERM.asStr(), deploymentYamlPath);
@@ -56,12 +64,18 @@ public class KoCreationTestHelper {
         return metadata;
     }
 
-    public static JsonNode generateMetadata() {
-        return generateMetadata(SERVICE_YAML_PATH, DEPLOYMENT_YAML_PATH, true, true, true, true);
+    public static JsonNode generateMetadata(String naan, String name, String version) {
+        return generateMetadata(SERVICE_YAML_PATH, DEPLOYMENT_YAML_PATH, naan, name, version, true, true, true, true);
     }
 
-    public static JsonNode getEndpointDeploymentJson() {
-        return mapper.createObjectNode().set(ENDPOINT_NAME, mapper.createObjectNode().set(POST_HTTP_METHOD, ENDPOINT_POST_DEPLOYMENT_NODE));
+    public static JsonNode getEndpointDeploymentJsonForEngine(String engine, String endpointName) {
+        JsonNode deploymentNode;
+        if (engine.equals("javascript")) {
+            deploymentNode = ENDPOINT_POST_DEPLOYMENT_NODE_JS;
+        } else {
+            deploymentNode = ENDPOINT_POST_DEPLOYMENT_NODE_NODE;
+        }
+        return mapper.createObjectNode().set("/" + endpointName, mapper.createObjectNode().set(POST_HTTP_METHOD, deploymentNode));
     }
 
     public static JsonNode generateServiceNode() {

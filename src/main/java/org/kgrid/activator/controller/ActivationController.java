@@ -1,11 +1,17 @@
 package org.kgrid.activator.controller;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.AdapterException;
+import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,99 +25,139 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+
 @RestController
 @CrossOrigin
 @Primary
-public class ActivationController {
+public class ActivationController{
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ActivationService activationService;
 
-    @PostMapping(
-            value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object processWithBareJsonInputOutputOldVersion(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String endpoint,
-            @PathVariable String apiVersion,
-            @RequestBody String inputs,
-            @RequestHeader Map<String, String> headers) {
+    @Autowired
+    private EndpointLoader endpointLoader;
 
+    @Autowired
+    private Map<URI, org.kgrid.activator.services.Endpoint> endpoints;
 
-        URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-        String contentHeader = headers.get("content-type");
-        if(contentHeader == null) { // Check for this because the test mockmvc does it this way
-            contentHeader = headers.get("Content-Type");
+    /**
+     * Remove all endpoints and load and activate
+     *
+     * @return set of activated endpoint paths
+     */
+    @GetMapping(value = "/activate")
+    public String activate() {
+        log.info("Load and Activate all endpoints ");
+        endpoints.clear();
+        endpoints.putAll(endpointLoader.load());
+        activationService.activate(endpoints);
+
+        JsonArray activatedEndpoints = getActivationResults();
+        return activatedEndpoints.toString();
+    }
+
+    /**
+     * Aliased Activate endpoint
+     *
+     * @return set of activated endpoint paths
+     */
+    @GetMapping(value = "/refresh")
+    public String refresh() {
+        return activate();
+    }
+
+    /**
+     * For KOs of a specific engine: remove endpoints, load endpoints, and activate those endpoints
+     *
+     * @param engine the engine for which KOs should be activated.
+     * @return set of activated endpoint paths
+     */
+    @GetMapping(value = "/activate/{engine}")
+    public String activateForEngine(@PathVariable String engine) {
+        Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
+        for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
+            if (engine.equals(endpoint.getEngine())) {
+                endpoint.setStatus("GOOD"); // reset status so it can be activated
+                endpointsToActivate.put(endpoint.getId(), endpoint);
+            }
         }
-        try {
-            return activationService.execute(endpointId, inputs, contentHeader);
-        } catch (AdapterException e) {
-            log.error("Exception " + e.getMessage());
-            throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage());
+        activationService.activate(endpointsToActivate);
+
+        endpoints.putAll(endpointsToActivate);
+        return getActivationResults().toString();
+    }
+
+    /**
+     * For A KO remove endpoints, load endpoints, and activate those endpoints
+     *
+     * @param naan ko naan
+     * @param name ko name
+     * @return set of activated endpoint paths
+     */
+    @GetMapping(value = "/activate/{naan}/{name}")
+    public String activateKo(@PathVariable String naan,
+                             @PathVariable String name) {
+        return activateForArkId(naan, name, null);
+    }
+
+    /**
+     * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
+     *
+     * @param naan
+     * @param name
+     * @param apiVersion
+     * @return
+     */
+    @GetMapping(value = "/activate/{naan}/{name}/{apiVersion}")
+    public String activateKoVersion(@PathVariable String naan,
+                                    @PathVariable String name, @PathVariable String apiVersion) {
+        return activateForArkId(naan, name, apiVersion);
+    }
+
+    private String activateForArkId(String naan, String name, String apiVersion) {
+        ArkId arkId;
+        if (apiVersion == null) {
+            arkId = new ArkId(naan, name);
+        } else {
+            arkId = new ArkId(naan, name, apiVersion);
         }
+        log.info("Activate {}", arkId.getSlashArkVersion());
+        activate(arkId);
+
+        JsonArray activatedEndpoints = getActivationResults();
+
+        return activatedEndpoints.toString();
     }
 
-    @PostMapping(
-            value = {"/{naan}/{name}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object processWithBareJsonInputOutput(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String endpoint,
-            @RequestParam(name = "v", required = false) String apiVersion,
-            @RequestBody String inputs,
-            @RequestHeader Map<String, String> headers) {
+    /**
+     * Removes and loads endpoints based on ark id, than activates and returns those new
+     * activated endpoints the the endpoints context of the activator
+     *
+     * @param arkId
+     */
+    public void activate(ArkId arkId) {
+        Map<URI, org.kgrid.activator.services.Endpoint>
+                loadedEndpoints = endpointLoader.load(arkId);
 
-        URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-        String contentHeader = headers.get("content-type");
-        if(contentHeader == null) { // Check for this because the test mockmvc does it this way
-            contentHeader = headers.get("Content-Type");
-        }
-        try {
-            return activationService.execute(endpointId, inputs, contentHeader);
-        } catch (AdapterException e) {
-            log.error("Exception " + e);
-            throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
-        }
+        activationService.activate(loadedEndpoints);
+
+        endpoints.putAll(loadedEndpoints);
     }
 
-    @ExceptionHandler(ActivatorException.class)
-    public ResponseEntity<Map<String, String>> handleActivatorExceptions(Exception e,
-                                                                       WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.BAD_REQUEST),
-                HttpStatus.BAD_REQUEST);
+    private JsonArray getActivationResults() {
+        JsonArray endpointActivations = new JsonArray();
+
+        endpoints.values().forEach(endpoint -> {
+            JsonObject endpointActivationResult = new JsonObject();
+            endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+            endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
+            endpointActivationResult.addProperty("status", endpoint.getStatus());
+            endpointActivations.add(endpointActivationResult);
+        });
+        return endpointActivations;
     }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<Map<String, String>> handleUnsupportedMediaType(Exception e,
-                                                                       WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
-                HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception e,
-                                                                       WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    private Map<String, String> generateErrorMap(WebRequest request, Exception e, String title,
-                                                 HttpStatus status) {
-        Map<String, String> errorInfo = new HashMap<>();
-        errorInfo.put("Title", title);
-        errorInfo.put("Status", status.value() + " " + status.getReasonPhrase());
-        errorInfo.put("Detail", e.getMessage());
-        errorInfo.put("Instance", request.getDescription(false));
-        errorInfo.put("Time", new Date().toString());
-        return errorInfo;
-
-    }
-
 
 }
