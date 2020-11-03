@@ -112,31 +112,31 @@ public class ActivationControllerTest {
 
     @Test
     public void testRefreshClearsEndpointList() {
-        activationController.refresh();
+        activationController.activate();
         verify(globalEndpoints).clear();
     }
 
     @Test
     public void testRefreshLoadsEndpoints() {
-        activationController.refresh();
+        activationController.activate();
         verify(endpointLoader).load();
     }
 
     @Test
     public void testRefreshAddsLoadedEndpointsToGlobalMap() {
-        activationController.refresh();
+        activationController.activate();
         verify(globalEndpoints).putAll(endpointMapFromLoader);
     }
 
     @Test
     public void testRefreshActivatesLoadedEndpoints() {
-        activationController.refresh();
+        activationController.activate();
         verify(activationService).activate(globalEndpoints);
     }
 
     @Test
     public void testRefreshReturnsJsonArrayOfActivatedEndpoints() {
-        String results = activationController.refresh();
+        String results = activationController.activate();
         assertEquals(activationResults.toString(), results);
     }
 

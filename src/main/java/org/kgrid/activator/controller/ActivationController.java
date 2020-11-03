@@ -2,34 +2,24 @@ package org.kgrid.activator.controller;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.WebRequest;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @CrossOrigin
 @Primary
+@RequestMapping({"/activate", "/refresh"})
 public class ActivationController{
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -48,7 +38,7 @@ public class ActivationController{
      *
      * @return set of activated endpoint paths
      */
-    @GetMapping(value = "/activate")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String activate() {
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
@@ -60,22 +50,12 @@ public class ActivationController{
     }
 
     /**
-     * Aliased Activate endpoint
-     *
-     * @return set of activated endpoint paths
-     */
-    @GetMapping(value = "/refresh")
-    public String refresh() {
-        return activate();
-    }
-
-    /**
      * For KOs of a specific engine: remove endpoints, load endpoints, and activate those endpoints
      *
      * @param engine the engine for which KOs should be activated.
      * @return set of activated endpoint paths
      */
-    @GetMapping(value = "/activate/{engine}")
+    @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String activateForEngine(@PathVariable String engine) {
         Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
@@ -97,7 +77,7 @@ public class ActivationController{
      * @param name ko name
      * @return set of activated endpoint paths
      */
-    @GetMapping(value = "/activate/{naan}/{name}")
+    @GetMapping(value = "/{naan}/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String activateKo(@PathVariable String naan,
                              @PathVariable String name) {
         return activateForArkId(naan, name, null);
@@ -111,7 +91,7 @@ public class ActivationController{
      * @param apiVersion
      * @return
      */
-    @GetMapping(value = "/activate/{naan}/{name}/{apiVersion}")
+    @GetMapping(value = "/{naan}/{name}/{apiVersion}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String activateKoVersion(@PathVariable String naan,
                                     @PathVariable String name, @PathVariable String apiVersion) {
         return activateForArkId(naan, name, apiVersion);
