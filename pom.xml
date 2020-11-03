@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>proxy-adapter</artifactId>
-            <version>0.10.14-SNAPSHOT</version>
+            <version>0.10.15-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
