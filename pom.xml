@@ -11,7 +11,7 @@
 
     <groupId>org.kgrid</groupId>
     <artifactId>kgrid-activator</artifactId>
-    <version>1.3.8-SNAPSHOT</version>
+    <version>1.3.8</version>
     <packaging>jar</packaging>
 
     <!-- More Project Information -->
@@ -22,7 +22,7 @@
         <url>https://github.com/kgrid/kgrid-activator</url>
         <connection>scm:git:https://github.com/kgrid/kgrid-activator.git</connection>
         <developerConnection>scm:git:https://github.com/kgrid/kgrid-activator.git</developerConnection>
-        <tag>kgrid-activator-1.3.5</tag>
+        <tag>kgrid-activator-1.3.8</tag>
     </scm>
 
     <properties>
@@ -95,12 +95,12 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>javascript-v8-adapter</artifactId>
-            <version>0.1.8-SNAPSHOT</version>
+            <version>0.1.8</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>proxy-adapter</artifactId>
-            <version>0.10.15-SNAPSHOT</version>
+            <version>0.10.14</version>
         </dependency>
     </dependencies>
 
