@@ -103,19 +103,20 @@ public class EndpointResource {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EndpointResource that = (EndpointResource) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(swaggerLink, that.swaggerLink) &&
-                Objects.equals(hasServiceSpecification, that.hasServiceSpecification) &&
-                Objects.equals(activated, that.activated) &&
-                Objects.equals(status, that.status) &&
-                Objects.equals(engine, that.engine) &&
-                Objects.equals(context, that.context);
+        EndpointResource resource = (EndpointResource) o;
+        return Objects.equals(id, resource.id) &&
+                Objects.equals(title, resource.title) &&
+                Objects.equals(swaggerLink, resource.swaggerLink) &&
+                Objects.equals(hasServiceSpecification, resource.hasServiceSpecification) &&
+                Objects.equals(activated, resource.activated) &&
+                Objects.equals(status, resource.status) &&
+                Objects.equals(engine, resource.engine) &&
+                Objects.equals(context, resource.context) &&
+                Objects.equals(ko, resource.ko);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, swaggerLink, hasServiceSpecification, activated, status, engine, context);
+        return Objects.hash(id, title, swaggerLink, hasServiceSpecification, activated, status, engine, context, ko);
     }
 }

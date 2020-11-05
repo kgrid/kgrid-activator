@@ -14,6 +14,7 @@ import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class EndpointControllerTest {
 
     @Before
     public void setup() {
+        ReflectionTestUtils.setField(endpointController, "shelfRoot", "kos");
         kow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
         kow.addService(generateServiceNode());
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
