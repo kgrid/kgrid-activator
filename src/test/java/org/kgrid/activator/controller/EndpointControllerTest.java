@@ -159,7 +159,7 @@ public class EndpointControllerTest {
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
-        EndpointResource resource = new EndpointResource(endpoint);
+        EndpointResource resource = new EndpointResource(endpoint, "kos");
 
         return resource;
     }

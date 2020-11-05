@@ -8,6 +8,7 @@ import org.kgrid.adapter.api.AdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +30,16 @@ public class EndpointController extends ActivatorExceptionHandler {
     private Map<URI, Endpoint> endpoints;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Value(("${kgrid.shelf.endpoint:kos}"))
+    String shelfRoot;
+
     @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findAllEndpoints() {
         log.info("find all endpoints");
         List<EndpointResource> resources = new ArrayList<>();
 
         endpoints.forEach((s, endpoint) -> {
-            EndpointResource resource = new EndpointResource(endpoint);
+            EndpointResource resource = new EndpointResource(endpoint, shelfRoot);
 
             resources.add(resource);
         });
@@ -60,7 +64,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
 
-        return new EndpointResource(endpoint);
+        return new EndpointResource(endpoint, shelfRoot);
     }
 
     @GetMapping(value = "/endpoints/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +95,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
-        return new EndpointResource(endpoint);
+        return new EndpointResource(endpoint, shelfRoot);
 
     }
 

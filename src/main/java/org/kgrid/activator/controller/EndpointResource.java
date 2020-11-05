@@ -10,6 +10,8 @@ import org.kgrid.shelf.domain.KoFields;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -20,44 +22,33 @@ public class EndpointResource {
     private String id;
     private String title;
     private String swaggerLink;
-    private URI servicePath;
+    private URI hasServiceSpecification;
     private LocalDateTime activated;
     private String status;
     private String engine;
-    private String context;
-    private String koLink;
+    private List<String> context;
+    private String ko;
 
-    public EndpointResource(Endpoint endpoint) {
+    public EndpointResource(Endpoint endpoint, String shelfRoot) {
         JsonNode metadata = endpoint.getMetadata();
 
         final String resourceId = metadata.get("@id").asText();
+        this.context = new ArrayList<>();
         try {
             this.id = endpoint.getId().toString();
             this.title = metadata.get("title").textValue();
-            this.servicePath = URI.create(String.format("%s/%s", resourceId, metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()));
+            this.hasServiceSpecification = URI.create(String.format("/%s/%s/%s", shelfRoot, resourceId, metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()));
             this.activated = endpoint.getActivated();
             this.status = endpoint.getStatus();
             this.engine = endpoint.getEngine();
-            this.swaggerLink = getSwaggerLink(endpoint);
-            this.context = "http://kgrid.org/koio/contexts/knowledgeobject.jsonld";
-            this.koLink = getKoLink(endpoint);
+            this.swaggerLink = "https://editor.swagger.io?url=" +
+                    linkTo(KnowledgeObjectController.class).slash(hasServiceSpecification);
+            this.context.add("http://kgrid.org/koio/contexts/knowledgeobject.jsonld");
+            this.context.add("http://kgrid.org/koio/contexts/implementation.jsonld");
+            this.ko = String.format("/%s/%s", shelfRoot, endpoint.getMetadata().get("@id").asText());
         } catch (Exception e) {
             this.status = "Could not create endpoint resource for malformed endpoint: " + resourceId;
         }
-
-    }
-
-    private String getSwaggerLink(Endpoint endpoint) {
-
-        return "https://editor.swagger.io?url=" +
-                linkTo(KnowledgeObjectController.class)
-                        .slash("kos").slash(servicePath);
-
-    }
-
-    private String getKoLink(Endpoint endpoint) {
-
-        return "/kos/" + endpoint.getMetadata().get("@id").asText();
 
     }
 
@@ -83,13 +74,13 @@ public class EndpointResource {
     }
 
     @ApiModelProperty(value = "Path to the ko resource")
-    public String getKoLink() {
-        return koLink;
+    public String getKnowledgeObject() {
+        return ko;
     }
 
     @ApiModelProperty(value = "Path to the Knowledge Object Implementation service specification ")
-    public URI getServicePath() {
-        return servicePath;
+    public URI getHasServiceSpecification() {
+        return hasServiceSpecification;
     }
 
     @ApiModelProperty(value = "The time and date the endpoint was loaded and activated in the activator")
@@ -104,7 +95,7 @@ public class EndpointResource {
 
     @ApiModelProperty(value = "The KOIO linked data context")
     @JsonProperty("@context")
-    public String getContext() {
+    public List<String> getContext() {
         return context;
     }
 
@@ -116,7 +107,7 @@ public class EndpointResource {
         return Objects.equals(id, that.id) &&
                 Objects.equals(title, that.title) &&
                 Objects.equals(swaggerLink, that.swaggerLink) &&
-                Objects.equals(servicePath, that.servicePath) &&
+                Objects.equals(hasServiceSpecification, that.hasServiceSpecification) &&
                 Objects.equals(activated, that.activated) &&
                 Objects.equals(status, that.status) &&
                 Objects.equals(engine, that.engine) &&
@@ -125,6 +116,6 @@ public class EndpointResource {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, swaggerLink, servicePath, activated, status, engine, context);
+        return Objects.hash(id, title, swaggerLink, hasServiceSpecification, activated, status, engine, context);
     }
 }
