@@ -1,37 +1,27 @@
 package org.kgrid.activator.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import java.net.URI;
-
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.shelf.controller.KnowledgeObjectController;
-import org.kgrid.shelf.domain.KoFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.WebRequest;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-
 @RestController
 @CrossOrigin
-public class EndpointController extends ActivatorExceptionHandler{
+public class EndpointController extends ActivatorExceptionHandler {
 
     @Autowired
     private ActivationService activationService;
@@ -40,18 +30,20 @@ public class EndpointController extends ActivatorExceptionHandler{
     private Map<URI, Endpoint> endpoints;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @Value(("${kgrid.shelf.endpoint:kos}"))
+    String shelfRoot;
+
     @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EndpointResources findAllEndpoints() {
+    public List<EndpointResource> findAllEndpoints() {
         log.info("find all endpoints");
-        EndpointResources resources = new EndpointResources();
+        List<EndpointResource> resources = new ArrayList<>();
 
         endpoints.forEach((s, endpoint) -> {
-            EndpointResource resource = createEndpointResource(endpoint);
+            EndpointResource resource = new EndpointResource(endpoint, shelfRoot);
 
-            resources.addEndpointResource(resource);
+            resources.add(resource);
         });
 
-        resources.add(linkTo(EndpointController.class).withSelfRel());
         return resources;
     }
 
@@ -72,9 +64,7 @@ public class EndpointController extends ActivatorExceptionHandler{
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
 
-        EndpointResource resource = createEndpointResource(endpoint);
-
-        return resource;
+        return new EndpointResource(endpoint, shelfRoot);
     }
 
     @GetMapping(value = "/endpoints/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -105,9 +95,8 @@ public class EndpointController extends ActivatorExceptionHandler{
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
-        EndpointResource resource = createEndpointResource(endpoint);
+        return new EndpointResource(endpoint, shelfRoot);
 
-        return resource;
     }
 
     @PostMapping(
@@ -142,7 +131,7 @@ public class EndpointController extends ActivatorExceptionHandler{
         URI endpointId = URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
 
         String contentHeader = headers.get("Content-Type");
-        if (contentHeader == null){
+        if (contentHeader == null) {
             contentHeader = headers.get("content-type");
         }
 
@@ -152,30 +141,5 @@ public class EndpointController extends ActivatorExceptionHandler{
             log.error("Exception " + e);
             throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
         }
-    }
-
-    private EndpointResource createEndpointResource(Endpoint endpoint) {
-        EndpointResource resource = new EndpointResource(endpoint);
-        JsonNode metadata = endpoint.getMetadata();
-        try {
-            Link self = linkTo(EndpointController.class).slash("endpoints")
-                    .slash(resource.getEndpointPath()).withSelfRel();
-
-            Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
-                    linkTo(KnowledgeObjectController.class)
-                            .slash("kos")
-                            .slash(endpoint.getNaan())
-                            .slash(endpoint.getName())
-                            .slash(metadata.get("version").asText())
-                            .slash(metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()),
-                    "swagger_editor");
-
-            resource.add(self);
-            resource.add(swaggerEditor);
-        } catch (Exception e) {
-            endpoint.setStatus("Could not create Endpoint Resource from malformed endpoint: " + e.getMessage());
-            resource = new EndpointResource(endpoint);
-        }
-        return resource;
     }
 }

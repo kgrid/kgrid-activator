@@ -1,6 +1,5 @@
 package org.kgrid.activator.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
@@ -11,23 +10,20 @@ import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.shelf.controller.KnowledgeObjectController;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
-import org.kgrid.shelf.domain.KoFields;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.hateoas.Link;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EndpointControllerTest {
@@ -42,6 +38,7 @@ public class EndpointControllerTest {
 
     @Before
     public void setup() {
+        ReflectionTestUtils.setField(endpointController, "shelfRoot", "kos");
         kow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
         kow.addService(generateServiceNode());
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
@@ -164,23 +161,8 @@ public class EndpointControllerTest {
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
-        EndpointResource resource = new EndpointResource(endpoint);
-        JsonNode metadata = endpoint.getMetadata();
+        EndpointResource resource = new EndpointResource(endpoint, "kos");
 
-        Link self = linkTo(EndpointController.class).slash("endpoints")
-                .slash(resource.getEndpointPath()).withSelfRel();
-
-        Link swaggerEditor = new Link("https://editor.swagger.io?url=" +
-                linkTo(KnowledgeObjectController.class)
-                        .slash("kos")
-                        .slash(endpoint.getNaan())
-                        .slash(endpoint.getName())
-                        .slash(metadata.get("version").asText())
-                        .slash(metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()),
-                "swagger_editor");
-
-        resource.add(self);
-        resource.add(swaggerEditor);
         return resource;
     }
 }
