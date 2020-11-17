@@ -20,7 +20,7 @@ import java.util.Map;
 @CrossOrigin
 @Primary
 @RequestMapping({"/activate", "/refresh"})
-public class ActivationController{
+public class ActivationController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -67,7 +67,7 @@ public class ActivationController{
         activationService.activate(endpointsToActivate);
 
         endpoints.putAll(endpointsToActivate);
-        return getActivationResults().toString();
+        return getActivationResults(engine).toString();
     }
 
     /**
@@ -136,6 +136,21 @@ public class ActivationController{
             endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
             endpointActivationResult.addProperty("status", endpoint.getStatus());
             endpointActivations.add(endpointActivationResult);
+        });
+        return endpointActivations;
+    }
+
+    private JsonArray getActivationResults(String engine) {
+        JsonArray endpointActivations = new JsonArray();
+
+        endpoints.values().forEach(endpoint -> {
+            if (engine.equals(endpoint.getEngine())) {
+                JsonObject endpointActivationResult = new JsonObject();
+                endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+                endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
+                endpointActivationResult.addProperty("status", endpoint.getStatus());
+                endpointActivations.add(endpointActivationResult);
+            }
         });
         return endpointActivations;
     }
