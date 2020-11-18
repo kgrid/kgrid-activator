@@ -20,11 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActivationControllerTest {
@@ -153,25 +151,25 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateKoLoadsOnlyKoEndpoints(){
+    public void testActivateKoLoadsOnlyKoEndpoints() {
         activationController.activateKo(NAAN, NAME);
         verify(endpointLoader).load(new ArkId(NAAN, NAME));
     }
 
     @Test
-    public void testActivateKoPutsKoEndpointsInGlobalMap(){
+    public void testActivateKoPutsKoEndpointsInGlobalMap() {
         activationController.activateKo(NODE_NAAN, NODE_NAME);
         verify(globalEndpoints).putAll(justNodeEndpoints);
     }
 
     @Test
-    public void testActivateKoVersionLoadsOnlyKoEndpoints(){
+    public void testActivateKoVersionLoadsOnlyKoEndpoints() {
         activationController.activateKoVersion(NAAN, NAME, API_VERSION);
         verify(endpointLoader).load(new ArkId(NAAN, NAME, API_VERSION));
     }
 
     @Test
-    public void testActivateKoVersionPutsKoEndpointsInGlobalMap(){
+    public void testActivateKoVersionPutsKoEndpointsInGlobalMap() {
         activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
         verify(globalEndpoints).putAll(justNodeEndpoints);
     }
@@ -181,7 +179,7 @@ public class ActivationControllerTest {
 
         endpoints.values().forEach(endpoint -> {
             JsonObject endpointActivationResult = new JsonObject();
-            endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+            endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
             endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
             endpointActivationResult.addProperty("status", endpoint.getStatus());
             endpointActivations.add(endpointActivationResult);
