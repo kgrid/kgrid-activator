@@ -132,7 +132,7 @@ public class ActivationController {
 
         endpoints.values().forEach(endpoint -> {
             JsonObject endpointActivationResult = new JsonObject();
-            endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+            endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
             endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
             endpointActivationResult.addProperty("status", endpoint.getStatus());
             endpointActivations.add(endpointActivationResult);
@@ -146,7 +146,7 @@ public class ActivationController {
         endpoints.values().forEach(endpoint -> {
             if (engine.equals(endpoint.getEngine())) {
                 JsonObject endpointActivationResult = new JsonObject();
-                endpointActivationResult.addProperty("path", "/" + endpoint.getId());
+                endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
                 endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
                 endpointActivationResult.addProperty("status", endpoint.getStatus());
                 endpointActivations.add(endpointActivationResult);
