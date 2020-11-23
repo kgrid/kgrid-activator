@@ -1,19 +1,22 @@
-FROM openjdk:11-jdk-alpine
+# Use the following command to build the image:
+# sudo docker build --build-arg jar_file=<PATH TO JAR> --build-arg manifest=<PATH TO MANIFEST> -t activator .
 
-MAINTAINER KGrid Team "kgrid-developers@umich.edu"
+# Use the following command to run the image:
+# sudo docker run --network host activator
 
-ENV KGRID_CONFIG=""
+FROM openjdk:11
+MAINTAINER kgrid (kgrid-developers@umich.edu)
 
-RUN apk update
+ARG jar_file
+ARG manifest
+ARG shelf_location
+ARG shelf_endpoint
+ARG port
 
-RUN addgroup -S kgrid && adduser -S kgrid -G kgrid
-USER kgrid
+ENV MANIFEST=$manifest
+ENV SHELF_LOCATION=$shelf_location
+ENV SHELF_ENDPOINT=$shelf_endpoint
+ENV PORT=$port
 
-WORKDIR /home/kgrid
-ARG JAR_FILE
-
-COPY target/${JAR_FILE} .
-RUN mkdir shelf
-
-EXPOSE 8080
-CMD  java -jar kgrid-activator*.jar $KGRID_CONFIG
+COPY ${jar_file} app.jar
+ENTRYPOINT java -jar /app.jar --port=$PORT --kgrid.shelf.manifest=$MANIFEST --kgrid.shelf.cdostore.url=filesystem:file://$SHELF_LOCATION --kgrid.shelf.endpoint=$SHELF_ENDPOINT
