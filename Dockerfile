@@ -1,5 +1,5 @@
 # Use the following command to build the image:
-# sudo docker build --build-arg jar_file=<PATH TO JAR> --build-arg manifest=<PATH TO MANIFEST> -t activator .
+# sudo docker build --build-arg jar_file=<PATH TO JAR> --build-arg port=<ACTIVATOR PORT> --build-arg manifest=<PATH TO MANIFEST> --build-arg shelf_location=<PATH TO SHELF> --build-arg shelf_endpoint=<ENDPOINT NAME> -t activator .
 
 # Use the following command to run the image:
 # sudo docker run --network host activator
