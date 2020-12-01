@@ -51,9 +51,10 @@ public class KoValidationService {
 
     public void validateDeploymentSpecification(JsonNode deploymentSpecification, String pathName) {
         if (deploymentSpecification.fields().hasNext()) {
-            JsonNode endpointNode = deploymentSpecification.at("/~1" + pathName.substring(1) + "/post");
+            pathName = pathName.replaceAll("/", "~1");
+            JsonNode endpointNode = deploymentSpecification.at("/" + pathName + "/post");
             if (endpointNode == null || endpointNode.isMissingNode()) {
-                endpointNode = deploymentSpecification.at("/~1" + pathName.substring(1) + "/get");
+                endpointNode = deploymentSpecification.at("/" + pathName + "/get");
             }
             if (endpointNode.has("artifact")) {
                 if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {

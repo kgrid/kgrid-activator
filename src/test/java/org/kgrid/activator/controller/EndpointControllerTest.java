@@ -14,6 +14,7 @@ import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
@@ -114,7 +115,7 @@ public class EndpointControllerTest {
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, headers.get("Content-Type"));
+        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type"));
     }
 
     @Test
@@ -123,7 +124,7 @@ public class EndpointControllerTest {
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, headers.get("Content-Type")))
+        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
@@ -140,7 +141,7 @@ public class EndpointControllerTest {
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, headers.get("Content-Type"));
+        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type"));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class EndpointControllerTest {
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, headers.get("Content-Type")))
+        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,

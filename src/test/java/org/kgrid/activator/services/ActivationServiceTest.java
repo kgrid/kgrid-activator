@@ -14,6 +14,7 @@ import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpMethod;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -124,26 +125,26 @@ public class ActivationServiceTest {
 
     @Test
     public void executeGetsExecutorFromEndpoint() {
-        activationService.execute(mockEndpoint.getId(), "input", CONTENT_TYPE);
+        activationService.execute(mockEndpoint.getId(), "input", HttpMethod.POST, CONTENT_TYPE);
         verify(mockEndpoint).getExecutor();
     }
 
     @Test
     public void executeExecutesExecutor() {
-        activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
+        activationService.execute(mockEndpoint.getId(), input, HttpMethod.POST, CONTENT_TYPE);
         verify(executor).execute(input, CONTENT_TYPE);
     }
 
     @Test
     public void executeSetsInputOnEndpointResult() {
         EndPointResult result;
-        result = activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
+        result = activationService.execute(mockEndpoint.getId(), input, HttpMethod.POST, CONTENT_TYPE);
         assertEquals(input, result.getInfo().get("inputs"));
     }
 
     @Test
     public void executeSetsMetadataOnEndpointResult() {
-        EndPointResult result = activationService.execute(mockEndpoint.getId(), input, CONTENT_TYPE);
+        EndPointResult result = activationService.execute(mockEndpoint.getId(), input, HttpMethod.POST, CONTENT_TYPE);
         assertEquals(metadata, result.getInfo().get("ko"));
     }
 
@@ -155,7 +156,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             missingId,
-                            input, CONTENT_TYPE);
+                            input, HttpMethod.POST, CONTENT_TYPE);
                 });
         assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
     }
@@ -167,7 +168,7 @@ public class ActivationServiceTest {
                 () -> {
                     activationService.execute(
                             mockEndpoint.getId(),
-                            input, CONTENT_TYPE);
+                            input, HttpMethod.POST, CONTENT_TYPE);
                 });
         assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
