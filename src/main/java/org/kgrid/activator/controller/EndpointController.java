@@ -133,21 +133,7 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(
-            value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object retrieveEndpointOldVersion(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String apiVersion,
-            @PathVariable String endpoint,
-            @RequestHeader Map<String, String> headers) {
-        URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointWithContentHeader(endpointId, null, HttpMethod.GET, headers);
-    }
-
-    @GetMapping(
-            value = {"/{naan}/{name}/{endpoint}"},
+            value = {"/resource/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Object retrieveEndpoint(
@@ -161,7 +147,7 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(
-            value = {"/{naan}/{name}/{endpoint}/**"},
+            value = {"/resource/{naan}/{name}/{endpoint}/**"},
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Object retrieveEndpoint(
