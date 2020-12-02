@@ -161,23 +161,6 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(
-            value = {"/{naan}/{name}/{apiVersion}/{endpoint}/**"},
-            produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object retrieveEndpointOldVersion(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String apiVersion,
-            @PathVariable String endpoint,
-            @RequestHeader Map<String, String> headers,
-            HttpServletRequest request) {
-        String endpointWithArtifact = StringUtils.substringAfterLast(request.getRequestURI().substring(1), apiVersion + "/");
-        String artifactName = StringUtils.substringAfterLast(endpointWithArtifact, endpoint + "/");
-        URI endpointId = getEndpointId(naan, name, apiVersion, endpointWithArtifact);
-        return executeEndpointWithContentHeader(endpointId, artifactName, HttpMethod.GET, headers).getResult();
-    }
-
-    @GetMapping(
             value = {"/{naan}/{name}/{endpoint}/**"},
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ResponseStatus(HttpStatus.OK)
@@ -188,9 +171,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestHeader Map<String, String> headers,
             HttpServletRequest request) {
-        String[] artifactVersion = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/").split("\\?");
-        String artifactName = artifactVersion[0];
-        String version = StringUtils.substringAfter(artifactVersion[1], "v=");
+        String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
         endpoint = endpoint + "/" + artifactName;
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpointWithContentHeader(endpointId, artifactName, HttpMethod.GET, headers).getResult();
