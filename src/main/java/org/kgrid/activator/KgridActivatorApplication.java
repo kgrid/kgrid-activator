@@ -85,9 +85,10 @@ public class KgridActivatorApplication implements CommandLineRunner {
                     .antMatchers(HttpMethod.POST, "/kos/manifest").authenticated()
                     .antMatchers(HttpMethod.POST, "/kos/manifest-list").authenticated()
                     .antMatchers(HttpMethod.POST, "/kos").authenticated()
-                    .antMatchers(HttpMethod.GET, "/kos/{naan}/{name}/{version}").authenticated()
+                    .antMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}").authenticated()
                     .antMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}/{version}").authenticated()
-                    .antMatchers(HttpMethod.GET, "/kos/{naan}/{name}/{version}/{binary}").authenticated()
+                    .antMatchers(HttpMethod.PUT, "/kos/{naan}/{name}").authenticated()
+                    .antMatchers(HttpMethod.PUT, "/kos/{naan}/{name}/{version}").authenticated()
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                     .and()
                     .httpBasic();
