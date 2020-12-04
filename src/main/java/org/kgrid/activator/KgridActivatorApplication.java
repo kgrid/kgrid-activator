@@ -1,14 +1,11 @@
 package org.kgrid.activator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.controller.ActivationController;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
-import org.kgrid.shelf.repository.FilesystemCDOWatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -20,19 +17,17 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.nio.file.StandardWatchEventKinds.*;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
 @EnableSwagger2
@@ -72,6 +67,16 @@ public class KgridActivatorApplication implements CommandLineRunner {
         activationController.activate();
     }
 
+    @Profile("dev")
+    @Configuration
+    public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+        @Override
+        public void configure(WebSecurity web)  {
+            web.ignoring().antMatchers("/**");
+        }
+    }
+
+    @Profile("!dev")
     @Configuration
     public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
