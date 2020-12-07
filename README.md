@@ -81,9 +81,23 @@ Once Running access the [Activators Health Endpoint](http://localhost:8080/healt
 	}
 }   
 ```
+## Configuration
+There are a few environment variables that can be set to control different aspects of the activator.
+- `server.port` - Specify a particular port on which the activator should start
+- `spring.profiles.active` - Set the security profile. Security is enabled by default, to disable, set this property to `dev`.
+- `spring.security.user.name` - Specify the admin username. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
+- `spring.security.user.password` - Specify the admin password. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
 
-#### Auto-Reload
-> Coming soon
+#### Admin Endpoints
+
+- `GET activator-url/actuator/health`: Check activator health status
+- `GET activator-url/actuator/info`: Display activator information
+- `GET activator-url/activate`: Activate all Knowledge Objects
+- `POST activator-url/kos/manifest`: Load and activate a single manifest of Knowledge Objects
+- `POST activator-url/kos/manifest-list`: Load and activate a list of manifests of Knowledge Objects
+- `POST activator-url/kos/`: Deposit a single zipped Knowledge Object
+- `DELETE activator-url/kos/{naan}/{name}/{version}`: Delete a Knowledge Object from the shelf
+- `PUT activator-url/kos/{naan}/{name}/{version}`: Replace a Knowledge Object on the shelf.
 
 ## Running the tests
 

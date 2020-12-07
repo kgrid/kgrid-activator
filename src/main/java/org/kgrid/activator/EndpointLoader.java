@@ -81,7 +81,6 @@ public class EndpointLoader {
                                 } catch (ActivatorException e) {
                                     endpoint.setStatus(e.getMessage());
                                 }
-
                                 endpoints.put(endpoint.getId(), endpoint);
                             });
 
@@ -99,19 +98,13 @@ public class EndpointLoader {
      */
     public Map<URI, Endpoint> load() {
         Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-        Map<URI, Endpoint> temp = new HashMap<>();
+        Map<URI, Endpoint> endpoints = new HashMap<>();
 
         for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-            temp.putAll(load(ko.getKey()));
+            endpoints.putAll(load(ko.getKey()));
         }
-
-        Map<URI, Endpoint> endpoints = new HashMap<>();
-        endpoints.putAll(temp);
 
         return endpoints;
     }
 
-    URI getKORepoLocation() {
-        return knowledgeObjectRepository.getKoRepoLocation();
-    }
 }
