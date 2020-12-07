@@ -69,7 +69,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Profile("dev")
     @Configuration
-    public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+    public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(WebSecurity web)  {
             web.ignoring().antMatchers("/**");
