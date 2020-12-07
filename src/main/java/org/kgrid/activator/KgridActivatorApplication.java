@@ -22,6 +22,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -47,7 +50,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Bean
     public static CompoundDigitalObjectStore getCDOStore(
             @Value("${kgrid.shelf.cdostore.url:filesystem:file://shelf}") String cdoStoreURI) {
-        cdoStoreURI = cdoStoreURI.replace(" ","%20");
+        cdoStoreURI = cdoStoreURI.replace(" ", "%20");
         return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
     }
 
@@ -67,18 +70,31 @@ public class KgridActivatorApplication implements CommandLineRunner {
         activationController.activate();
     }
 
+    @Bean
+    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);
+        return firewall;
+    }
+
     @Profile("dev")
     @Configuration
-    public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public class DevWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
-        public void configure(WebSecurity web)  {
+        public void configure(WebSecurity web) {
             web.ignoring().antMatchers("/**");
+            web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
         }
     }
 
     @Profile("!dev")
     @Configuration
     public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Override
+        public void configure(WebSecurity web) {
+            web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
+        }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
