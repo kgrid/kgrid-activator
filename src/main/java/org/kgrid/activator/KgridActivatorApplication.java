@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
-import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -84,7 +83,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .authorizeRequests()
-                    .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).authenticated()
                     .requestMatchers(EndpointRequest.to(InfoEndpoint.class)).authenticated()
                     .mvcMatchers(HttpMethod.GET, "/activate").authenticated()
                     .mvcMatchers(HttpMethod.POST, "/kos/manifest").authenticated()
