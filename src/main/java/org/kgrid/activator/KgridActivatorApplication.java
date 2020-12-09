@@ -22,14 +22,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
-@EnableSwagger2
 @CrossOrigin
 public class KgridActivatorApplication implements CommandLineRunner {
 
@@ -78,7 +76,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Profile("!dev")
     @Configuration
     public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
+        
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
@@ -88,9 +86,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
                     .mvcMatchers(HttpMethod.POST, "/kos/manifest").authenticated()
                     .mvcMatchers(HttpMethod.POST, "/kos/manifest-list").authenticated()
                     .mvcMatchers(HttpMethod.POST, "/kos").authenticated()
-                    .mvcMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}").authenticated()
                     .mvcMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}/{version}").authenticated()
-                    .mvcMatchers(HttpMethod.PUT, "/kos/{naan}/{name}").authenticated()
                     .mvcMatchers(HttpMethod.PUT, "/kos/{naan}/{name}/{version}").authenticated()
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                     .and()
