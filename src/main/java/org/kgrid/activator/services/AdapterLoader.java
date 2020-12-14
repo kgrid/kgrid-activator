@@ -15,6 +15,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +89,8 @@ public class AdapterLoader {
                         }
 
                         @Override
-                        public byte[] getBinary(URI pathToBinary) {
-                            return cdoStore.getBinary(pathToBinary);
+                        public InputStream getBinary(URI pathToBinary) {
+                            return cdoStore.getBinaryStream(pathToBinary);
                         }
 
                         @Override
