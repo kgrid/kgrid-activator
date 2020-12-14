@@ -10,8 +10,6 @@ workflows:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
-      - deploy-to-heroku:
-          context: kgrid
   earlymorning: # build and deploy main at the crack-o-dawn
     triggers:
       - schedule:
@@ -24,15 +22,11 @@ workflows:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
-  #    - heroku/deploy-via-git:
-  #        context: kgrid
-  #        requires:
-  #          - maven/test
       - deploy-to-heroku:
           context: kgrid
- 
+          requires:
+            - maven/test 
 
-# Don't force push unless necessary
 # Use: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git $CIRCLE_BRANCH:master
 # The heroku env tokens are generated using `heroku` CLI; `CIRCLE_BRANCH` is `main`
 jobs:
