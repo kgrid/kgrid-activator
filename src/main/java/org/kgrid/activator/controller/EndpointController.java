@@ -10,12 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,8 @@ public class EndpointController extends ActivatorExceptionHandler {
 
     @Value(("${kgrid.shelf.endpoint:kos}"))
     String shelfRoot;
+
+    MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 
     @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findAllEndpoints() {
@@ -150,7 +153,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             value = {"/resource/{naan}/{name}/{endpoint}/**"},
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public Object retrieveEndpoint(
+    public ResponseEntity<Object> retrieveEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -160,7 +163,30 @@ public class EndpointController extends ActivatorExceptionHandler {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
         endpoint = endpoint + "/" + artifactName;
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointWithContentHeader(endpointId, artifactName, HttpMethod.GET, headers).getResult();
+        HttpHeaders responseHeaders = getContentHeaders(artifactName);
+        return new ResponseEntity<>(new InputStreamResource(
+                (InputStream) executeEndpointWithContentHeader(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
+                responseHeaders, HttpStatus.OK);
+    }
+
+    private HttpHeaders getContentHeaders(String artifactName) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        fileTypeMap.addMimeTypes(
+                "application/yaml yaml YAML\n"
+                        + "application/json json JSON\n"
+                        + "text/javascript js JS\n"
+                        + "application/pdf pdf PDF\n"
+                        + "text/plain csv CSV\n"
+                        + "application/zip zip ZIP");
+        String contentType = fileTypeMap.getContentType(artifactName);
+        responseHeaders.add("Content-Type", contentType);
+
+        String filename =
+                artifactName.contains("/") ? StringUtils.substringAfterLast(artifactName, "/") : artifactName;
+        String contentDisposition = "inline; filename=\"" + filename + "\"";
+
+        responseHeaders.add("Content-Disposition", contentDisposition);
+        return responseHeaders;
     }
 
     private EndPointResult executeEndpointWithContentHeader(URI endpointId, String inputs, HttpMethod method, Map<String, String> headers) {
