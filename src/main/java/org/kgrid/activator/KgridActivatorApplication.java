@@ -76,7 +76,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Profile("!dev")
     @Configuration
     public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-        
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
@@ -89,7 +89,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
                     .mvcMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}/{version}").authenticated()
                     .mvcMatchers(HttpMethod.PUT, "/kos/{naan}/{name}/{version}").authenticated()
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                    .and()
+                    .and().cors().and()
                     .httpBasic();
         }
     }
