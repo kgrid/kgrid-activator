@@ -13,7 +13,7 @@ workflows:
   deploy:
     triggers:
       - schedule:
-          cron: "*/30 * * *"
+          cron: "*/30 * * * *"
           filters:
             branches:
               only:
