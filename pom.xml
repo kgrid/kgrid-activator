@@ -75,17 +75,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path-assert</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- kgrid specific -->
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>shelf-api</artifactId>
-            <version>3.1.5</version>
+            <version>3.1.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
