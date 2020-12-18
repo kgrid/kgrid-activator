@@ -10,6 +10,10 @@ workflows:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
+  deploy:
+    jobs:
+      - deploy-to-heroku:
+          context: kgrid
   earlymorning: # build and deploy main at the crack-o-dawn
     triggers:
       - schedule:
