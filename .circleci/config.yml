@@ -11,6 +11,13 @@ workflows:
           context: kgrid
           settings_file: ".circleci/settings.xml"
   deploy:
+    triggers:
+      - schedule:
+          cron: "*/30 * * *"
+          filters:
+            branches:
+              only:
+                - main
     jobs:
       - deploy-to-heroku:
           context: kgrid
