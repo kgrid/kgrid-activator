@@ -105,26 +105,13 @@ public class ActivationController {
             arkId = new ArkId(naan, name, apiVersion);
         }
         log.info("Activate {}", arkId.getSlashArkVersion());
-        activate(arkId);
 
-        JsonArray activatedEndpoints = getActivationResults();
-
-        return activatedEndpoints.toString();
-    }
-
-    /**
-     * Removes and loads endpoints based on ark id, than activates and returns those new
-     * activated endpoints the the endpoints context of the activator
-     *
-     * @param arkId
-     */
-    public void activate(ArkId arkId) {
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
-
         activationService.activate(loadedEndpoints);
-
         endpoints.putAll(loadedEndpoints);
+        JsonArray activatedEndpoints = getActivationResults();
+        return activatedEndpoints.toString();
     }
 
     private JsonArray getActivationResults() {
