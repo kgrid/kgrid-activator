@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,9 @@ public class ActivationController {
     public String activate() {
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
-        endpoints.putAll(endpointLoader.load());
+        Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
+        checkForDuplicateEndpoints(loadedEndpoints);
+        endpoints.putAll(loadedEndpoints);
         activationService.activate(endpoints);
 
         JsonArray activatedEndpoints = getActivationResults();
@@ -65,7 +68,7 @@ public class ActivationController {
             }
         }
         activationService.activate(endpointsToActivate);
-
+        checkForDuplicateEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
         return getActivationResults(engine).toString();
     }
@@ -88,30 +91,39 @@ public class ActivationController {
      *
      * @param naan
      * @param name
-     * @param apiVersion
+     * @param version
      * @return
      */
-    @GetMapping(value = "/{naan}/{name}/{apiVersion}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{naan}/{name}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String activateKoVersion(@PathVariable String naan,
-                                    @PathVariable String name, @PathVariable String apiVersion) {
-        return activateForArkId(naan, name, apiVersion);
+                                    @PathVariable String name, @PathVariable String version) {
+        return activateForArkId(naan, name, version);
     }
 
-    private String activateForArkId(String naan, String name, String apiVersion) {
+    private String activateForArkId(String naan, String name, String version) {
         ArkId arkId;
-        if (apiVersion == null) {
+        if (version == null) {
             arkId = new ArkId(naan, name);
         } else {
-            arkId = new ArkId(naan, name, apiVersion);
+            arkId = new ArkId(naan, name, version);
         }
         log.info("Activate {}", arkId.getSlashArkVersion());
 
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
         activationService.activate(loadedEndpoints);
+        checkForDuplicateEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         JsonArray activatedEndpoints = getActivationResults();
         return activatedEndpoints.toString();
+    }
+
+    private void checkForDuplicateEndpoints(Map<URI, Endpoint> loadedEndpoints) {
+        for (Map.Entry<URI, Endpoint> entry : loadedEndpoints.entrySet()) {
+            if (endpoints.containsKey(entry.getKey())) {
+                log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));
+            }
+        }
     }
 
     private JsonArray getActivationResults() {
