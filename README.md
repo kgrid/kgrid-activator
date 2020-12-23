@@ -51,35 +51,60 @@ mvn clean spring-boot:run
 Once Running access the [Activators Health Endpoint](http://localhost:8080/health).  All _statuses_ reported should be **UP**
 
 ```json
-"status": "UP",
-    "shelf": {
-        "status": "UP",
-
-    ...
-
+{
+  "status": "UP",
+  "components": {
     "activationService": {
-            "status": "UP",
-
-    ...
-
-   "diskSpace": {
-           "status": "UP",  
-   ...
-   "org.kgrid.adapter.javascript.JavascriptAdapter": {
-           "status": "UP",
-           "details": {
-              "type": "JAVASCRIPT",
-              "created": "2020-05-18T19:41:12.951Z"
-           }
+      "status": "UP",
+      "details": {
+        "kos": 12,
+        "endpoints": 15,
+        "activatedEndpoints": 5
+      }
     },
-	"org.kgrid.adapter.proxy.ProxyAdapter": {
-           "status": "UP",
-           "details": {
-              "type": "PROXY",
-              "created": "2020-05-18T19:41:12.951Z"
-		}
-	}
-}   
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 402672611328,
+        "free": 289865793536,
+        "threshold": 10485760,
+        "exists": true
+      }
+    },
+    "org.kgrid.adapter.proxy.ProxyAdapter": {
+      "status": "up",
+      "details": {
+        "types": [ ]
+      }
+    },
+    "org.kgrid.adapter.resource.ResourceAdapter": {
+      "status": "UP",
+      "details": {
+        "types": [
+          "resource"
+        ]
+      }
+    },
+    "org.kgrid.adapter.v8.JsV8Adapter": {
+      "status": "UP",
+      "details": {
+        "types": [
+          "javascript"
+        ]
+      }
+    },
+    "ping": {
+      "status": "UP"
+    },
+    "shelf": {
+      "status": "UP",
+      "details": {
+        "numberOfKOs": 12,
+        "kgrid.shelf.cdostore.url": "file:///app/shelf/"
+      }
+    }
+  }
+}
 ```
 ## Configuration
 There are a few environment variables that can be set to control different aspects of the activator.
@@ -98,6 +123,10 @@ There are a few environment variables that can be set to control different aspec
 - `POST activator-url/kos/`: Deposit a single zipped Knowledge Object
 - `DELETE activator-url/kos/{naan}/{name}/{version}`: Delete a Knowledge Object from the shelf
 - `PUT activator-url/kos/{naan}/{name}/{version}`: Replace a Knowledge Object on the shelf.
+
+
+#### Cross Origin Requests
+The app uses CorsFilter to configuration of the allowed methods, origins and associated headers. Currently, it allows all methods from all origins. 
 
 ## Running the tests
 
@@ -162,4 +191,4 @@ CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org
 the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
 GitHub repository's GitHub Pages.
 
-test-42 1
+
