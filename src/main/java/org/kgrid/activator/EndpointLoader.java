@@ -3,12 +3,14 @@ package org.kgrid.activator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.KoValidationService;
+import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -84,9 +86,13 @@ public class EndpointLoader {
                                 endpoints.put(endpoint.getId(), endpoint);
                             });
 
-        } catch (Exception e) {
+        } catch (ShelfResourceNotFound e) {
             final ActivatorException activatorException =
-                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
+                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), HttpStatus.NOT_FOUND);
+            log.warn(activatorException.getMessage());
+        } catch (ActivatorException e) {
+            final ActivatorException activatorException =
+                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e.getStatus());
             log.warn(activatorException.getMessage());
         }
     }
