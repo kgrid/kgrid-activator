@@ -59,13 +59,13 @@ public class ActivationService {
         final JsonNode deploymentSpec = endpoint.getDeployment();
 
         if (null == deploymentSpec) {
-            throw new ActivatorException("No deployment specification for " + endpointKey);
+            throw new ActivatorException("No deployment specification for " + endpointKey, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         String engineName;
         if (deploymentSpec.has("engine")) {
             engineName = deploymentSpec.get("engine").asText();
         } else {
-            throw new ActivatorException("No engine specified for " + endpointKey);
+            throw new ActivatorException("No engine specified for " + endpointKey, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         Adapter adapter = adapterResolver
@@ -79,7 +79,7 @@ public class ActivationService {
                     deploymentSpec);
         } catch (RuntimeException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
-            throw new ActivatorException(e.getMessage(), e);
+            throw new ActivatorException(e.getMessage(), e, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -88,7 +88,7 @@ public class ActivationService {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint) {
-            throw new ActivatorException("No endpoint found for " + id);
+            throw new ActivatorException("No endpoint found for " + id, HttpStatus.NOT_FOUND);
         }
         if (method == HttpMethod.POST) {
             final JsonNode contentTypes = endpoint.getService().at("/paths").get("/" + endpoint.getEndpointName())
@@ -109,14 +109,14 @@ public class ActivationService {
         Executor executor = endpoint.getExecutor();
 
         if (null == executor) {
-            throw new ActivatorException("No executor found for " + id);
+            throw new ActivatorException("No executor found for " + id, HttpStatus.NOT_FOUND);
         }
         Object output;
         try {
             output = executor.execute(inputs, contentType);
         } catch (Exception e) {
             throw new ActivatorException(String.format("Could not execute with inputs: %s. Exception: %s",
-                    inputs.toString(), e.getMessage()), e);
+                    inputs.toString(), e.getMessage()), e, HttpStatus.BAD_REQUEST);
         }
         final EndPointResult endPointResult = new EndPointResult(output);
 

@@ -5,7 +5,6 @@ import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.adapter.api.AdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         Endpoint endpoint = endpoints.get(id);
 
         if (endpoint == null) {
-            throw new ActivatorException("Cannot find endpoint with id " + id);
+            throw new ActivatorException("Cannot find endpoint with id " + id, HttpStatus.NOT_FOUND);
         }
 
         return new EndpointResource(endpoint, shelfRoot);
@@ -99,7 +98,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         }
 
         if (endpoint == null) {
-            throw new ActivatorException("Cannot find endpoint with id " + id);
+            throw new ActivatorException("Cannot find endpoint with id " + id, HttpStatus.NOT_FOUND);
         }
         return new EndpointResource(endpoint, shelfRoot);
 
@@ -190,19 +189,11 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     private EndPointResult executeEndpointWithContentHeader(URI endpointId, String inputs, HttpMethod method, Map<String, String> headers) {
-
-
         String contentHeader = headers.get("Content-Type");
         if (contentHeader == null) {
             contentHeader = headers.get("content-type");
         }
-
-        try {
-            return activationService.execute(endpointId, inputs, method, contentHeader);
-        } catch (AdapterException e) {
-            log.error("Exception " + e);
-            throw new ActivatorException("Exception for endpoint " + endpointId + " " + e.getMessage(), e);
-        }
+        return activationService.execute(endpointId, inputs, method, contentHeader);
     }
 
     private URI getEndpointId(String naan, String name, String apiVersion, String endpoint) {

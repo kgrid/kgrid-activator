@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
@@ -123,16 +124,15 @@ public class EndpointControllerTest {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
-        String adapterExceptionMessage = "Blammo";
+        String message = "Blammo";
         when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
-                .thenThrow(new AdapterException(adapterExceptionMessage));
+                .thenThrow(new ActivatorException(message, HttpStatus.NOT_FOUND));
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
                     endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
                 });
-        assertEquals(String.format("Exception for endpoint %s/%s/%s/%s %s",
-                NAAN, NAME, API_VERSION, ENDPOINT_NAME, adapterExceptionMessage), activatorException.getMessage());
+        assertEquals(message, activatorException.getMessage());
     }
 
     @Test
@@ -149,21 +149,19 @@ public class EndpointControllerTest {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String inputs = "inputs";
-        String adapterExceptionMessage = "Blammo";
+        String message = "Blammo";
         when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
-                .thenThrow(new AdapterException(adapterExceptionMessage));
+                .thenThrow(new ActivatorException(message, HttpStatus.NOT_FOUND));
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
                     endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
                 });
-        assertEquals(String.format("Exception for endpoint %s/%s/%s/%s %s",
-                NAAN, NAME, API_VERSION, ENDPOINT_NAME, adapterExceptionMessage), activatorException.getMessage());
+        assertEquals(message, activatorException.getMessage());
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
         EndpointResource resource = new EndpointResource(endpoint, "kos");
-
         return resource;
     }
 }
