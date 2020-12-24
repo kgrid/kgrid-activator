@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
@@ -77,9 +79,13 @@ public class ActivationService {
                     koRepo.getObjectLocation(ark),
                     endpointKey,
                     deploymentSpec);
-        } catch (RuntimeException e) {
+        } catch (AdapterException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
             throw new ActivatorException(e.getMessage(), e, HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (ShelfResourceNotFound e) {
+            endpoints.get(endpointKey).setStatus(String.format(
+                    "Adapter could not find endpoint: %s while creating executor: %s", endpointKey, e.getMessage()));
+            throw new ActivatorException(e.getMessage(), e, HttpStatus.NOT_FOUND);
         }
 
     }
