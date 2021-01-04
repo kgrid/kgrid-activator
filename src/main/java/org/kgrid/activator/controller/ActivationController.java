@@ -44,7 +44,6 @@ public class ActivationController {
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
         Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
-        checkForDuplicateEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         activationService.activate(endpoints);
 

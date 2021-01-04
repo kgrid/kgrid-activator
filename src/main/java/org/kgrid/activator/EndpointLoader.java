@@ -101,10 +101,20 @@ public class EndpointLoader {
         Map<URI, Endpoint> endpoints = new HashMap<>();
 
         for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-            endpoints.putAll(load(ko.getKey()));
+            Map<URI, Endpoint> endpointsToAdd = load(ko.getKey());
+            checkForDuplicates(endpoints, endpointsToAdd);
+            endpoints.putAll(endpointsToAdd);
         }
 
         return endpoints;
+    }
+
+    private void checkForDuplicates(Map<URI, Endpoint> endpoints, Map<URI, Endpoint> endpointsToAdd) {
+            for (Map.Entry<URI, Endpoint> entry : endpointsToAdd.entrySet()) {
+                if (endpoints.containsKey(entry.getKey())) {
+                    log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));
+                }
+            }
     }
 
 }
