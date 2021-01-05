@@ -22,7 +22,7 @@ public class AdapterResolver {
             }
         }
         if (resultAdapter == null) {
-            throw new ActivatorException("No engine found: " + adapterType, HttpStatus.NOT_FOUND);
+            throw new ActivatorException("No engine found: " + adapterType);
         }
         return resultAdapter;
     }

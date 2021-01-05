@@ -88,11 +88,11 @@ public class EndpointLoader {
 
         } catch (ShelfResourceNotFound e) {
             final ActivatorException activatorException =
-                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), HttpStatus.NOT_FOUND);
+                    new ActivatorException("Failed to load " + ark.getSlashArkVersion());
             log.warn(activatorException.getMessage());
         } catch (ActivatorException e) {
             final ActivatorException activatorException =
-                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e.getStatus());
+                    new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
             log.warn(activatorException.getMessage());
         }
     }

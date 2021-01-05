@@ -36,7 +36,7 @@ public class KoValidationServiceTest {
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateMetadata(metadata));
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, activatorException.getStatus());
+        assertEquals("Has missing Service Specification", activatorException.getMessage());
     }
 
     @Test

@@ -69,6 +69,6 @@ public class KoValidationService {
     }
 
     private void throwWithMessage(String message) {
-        throw new ActivatorException(message, HttpStatus.UNPROCESSABLE_ENTITY);
+        throw new ActivatorException(message);
     }
 }

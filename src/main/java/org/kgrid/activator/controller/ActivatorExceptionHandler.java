@@ -29,7 +29,8 @@ public abstract class ActivatorExceptionHandler {
 
     @ExceptionHandler(AdapterException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(Exception e,
-                                                                         WebRequest request) {
+                                                                        WebRequest request) {
+        log.error(request.getDescription(false) + "; " + e.getMessage());
         return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
     }

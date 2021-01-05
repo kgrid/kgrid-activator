@@ -61,13 +61,13 @@ public class ActivationService {
         final JsonNode deploymentSpec = endpoint.getDeployment();
 
         if (null == deploymentSpec) {
-            throw new ActivatorException("No deployment specification for " + endpointKey, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ActivatorException("No deployment specification for " + endpointKey);
         }
         String engineName;
         if (deploymentSpec.has("engine")) {
             engineName = deploymentSpec.get("engine").asText();
         } else {
-            throw new ActivatorException("No engine specified for " + endpointKey, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ActivatorException("No engine specified for " + endpointKey);
         }
 
         Adapter adapter = adapterResolver
@@ -81,11 +81,11 @@ public class ActivationService {
                     deploymentSpec);
         } catch (AdapterException e) {
             endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
-            throw new ActivatorException(e.getMessage(), e, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ActivatorException(e.getMessage(), e);
         } catch (ShelfResourceNotFound e) {
             endpoints.get(endpointKey).setStatus(String.format(
                     "Adapter could not find endpoint: %s while creating executor: %s", endpointKey, e.getMessage()));
-            throw new ActivatorException(e.getMessage(), e, HttpStatus.NOT_FOUND);
+            throw new ActivatorException(e.getMessage(), e);
         }
 
     }
@@ -94,7 +94,7 @@ public class ActivationService {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint) {
-            throw new ActivatorException("No endpoint found for " + id, HttpStatus.NOT_FOUND);
+            throw new ActivatorException("No endpoint found for " + id);
         }
         if (method == HttpMethod.POST) {
             final JsonNode contentTypes = endpoint.getService().at("/paths").get("/" + endpoint.getEndpointName())
@@ -115,14 +115,14 @@ public class ActivationService {
         Executor executor = endpoint.getExecutor();
 
         if (null == executor) {
-            throw new ActivatorException("No executor found for " + id, HttpStatus.NOT_FOUND);
+            throw new ActivatorException("No executor found for " + id);
         }
         Object output;
         try {
             output = executor.execute(inputs, contentType);
         } catch (Exception e) {
             throw new ActivatorException(String.format("Could not execute with inputs: %s. Exception: %s",
-                    inputs.toString(), e.getMessage()), e, HttpStatus.BAD_REQUEST);
+                    inputs.toString(), e.getMessage()), e);
         }
         final EndPointResult endPointResult = new EndPointResult(output);
 
