@@ -1,44 +1,22 @@
 package org.kgrid.activator;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST) // HTTP 400 Error Bad Request
 public class ActivatorException extends RuntimeException {
 
-  public ActivatorException() {
-    super();
+  private HttpStatus status;
 
-  }
-
-  public ActivatorException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
-    super(message, cause, enableSuppression, writableStackTrace);
-
-  }
-
-  public ActivatorException(String message, Throwable cause) {
-    super(message, cause);
-
-  }
-
-  public ActivatorException(String message) {
+  public ActivatorException(String message, HttpStatus status){
     super(message);
-
+    this.status = status;
   }
 
-  public ActivatorException(Throwable cause) {
-    super(cause);
-
+  public ActivatorException(String message, Throwable cause, HttpStatus status) {
+    super(message, cause);
+    this.status = status;
   }
 
-  public ActivatorException(String title, String message, Throwable cause) {
-
+  public HttpStatus getStatus(){
+    return this.status;
   }
-
-  public ActivatorException(String title, String message) {
-
-  }
-
-
 }

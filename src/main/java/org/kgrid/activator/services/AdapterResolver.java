@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import org.kgrid.activator.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class AdapterResolver {
             }
         }
         if (resultAdapter == null) {
-            throw new ActivatorException("No engine found: " + adapterType);
+            throw new ActivatorException("No engine found: " + adapterType, HttpStatus.NOT_FOUND);
         }
         return resultAdapter;
     }
