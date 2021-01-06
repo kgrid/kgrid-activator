@@ -2,8 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.kgrid.activator.ActivatorException;
-import org.springframework.http.HttpStatus;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.springframework.stereotype.Service;
 
 @Service

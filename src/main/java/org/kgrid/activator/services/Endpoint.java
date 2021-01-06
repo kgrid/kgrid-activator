@@ -62,6 +62,10 @@ public class Endpoint {
         return status;
     }
 
+    public Boolean isActive() {
+        return status != null && status.equals("Activated");
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }

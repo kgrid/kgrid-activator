@@ -1,4 +1,4 @@
-package org.kgrid.activator;
+package org.kgrid.activator.exceptions;
 
 import org.springframework.http.HttpStatus;
 

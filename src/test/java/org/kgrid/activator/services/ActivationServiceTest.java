@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -65,6 +65,7 @@ public class ActivationServiceTest {
         when(mockEndpoint.getExecutor()).thenReturn(executor);
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
+        when(mockEndpoint.isActive()).thenReturn(true);
         when(mockEndpoint.getEndpointName()).thenReturn("welcome");
         endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
@@ -158,19 +159,19 @@ public class ActivationServiceTest {
                             missingId,
                             input, HttpMethod.POST, CONTENT_TYPE);
                 });
-        assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
+        assertEquals("No active endpoint found for " + missingId, activatorException.getMessage());
     }
 
     @Test
-    public void executeThrowsActivatorExceptionWhenExecutorNotFound() {
-        when(mockEndpoint.getExecutor()).thenReturn(null);
+    public void executeThrowsActivatorExceptionWhenEndpointIsNotActive() {
+        when(mockEndpoint.isActive()).thenReturn(false);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
                     activationService.execute(
                             mockEndpoint.getId(),
                             input, HttpMethod.POST, CONTENT_TYPE);
                 });
-        assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
+        assertEquals("No active endpoint found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
 
     @Test

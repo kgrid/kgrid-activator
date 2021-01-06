@@ -1,7 +1,7 @@
 package org.kgrid.activator.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
@@ -116,7 +116,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @RequestBody String inputs,
             @RequestHeader Map<String, String> headers) {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointWithContentHeader(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
 
     @PostMapping(
@@ -131,7 +131,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @RequestBody String inputs,
             @RequestHeader Map<String, String> headers) {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointWithContentHeader(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
 
     @GetMapping(
@@ -145,7 +145,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestHeader Map<String, String> headers) {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointWithContentHeader(endpointId, null, HttpMethod.GET, headers);
+        return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
 
     @GetMapping(
@@ -164,7 +164,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = getContentHeaders(artifactName);
         return new ResponseEntity<>(new InputStreamResource(
-                (InputStream) executeEndpointWithContentHeader(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
+                (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
@@ -188,7 +188,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         return responseHeaders;
     }
 
-    private EndPointResult executeEndpointWithContentHeader(URI endpointId, String inputs, HttpMethod method, Map<String, String> headers) {
+    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, Map<String, String> headers) {
         String contentHeader = headers.get("Content-Type");
         if (contentHeader == null) {
             contentHeader = headers.get("content-type");

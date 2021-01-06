@@ -1,6 +1,8 @@
 package org.kgrid.activator.controller;
 
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.activator.exceptions.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.adapter.api.AdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,38 +21,52 @@ public abstract class ActivatorExceptionHandler {
 
     protected Logger log = LoggerFactory.getLogger(getClass().getName());
 
-
     @ExceptionHandler(ActivatorException.class)
-    public ResponseEntity<Map<String, String>> handleActivatorExceptions(Exception e,
+    public ResponseEntity<Map<String, String>> handleActivatorExceptions(ActivatorException e,
                                                                          WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.BAD_REQUEST),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ActivatorEndpointNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleActivatorEndpointNotFoundExceptions(ActivatorEndpointNotFoundException e,
+                                                                                         WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Endpoint not found", HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ActivatorUnsupportedMediaTypeException.class)
+    public ResponseEntity<Map<String, String>> handleActivatorUnsupportedMediaExceptions(ActivatorUnsupportedMediaTypeException e,
+                                                                                         WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Endpoint not found", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(AdapterException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(Exception e,
                                                                         WebRequest request) {
-        log.error(request.getDescription(false) + "; " + e.getMessage());
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.BAD_REQUEST),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<Map<String, String>> handleUnsupportedMediaType(Exception e,
                                                                           WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception e,
                                                                        WebRequest request) {
-        return new ResponseEntity<>(generateErrorMap(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Map<String, String> generateErrorMap(WebRequest request, Exception e, String title,
-                                                 HttpStatus status) {
+    private Map<String, String> generateErrorMapAndLog(WebRequest request, Exception e, String title,
+                                                       HttpStatus status) {
+        log.warn(request.getDescription(false) + "; " + e.getMessage());
+
         Map<String, String> errorInfo = new HashMap<>();
         errorInfo.put("Title", title);
         errorInfo.put("Status", status.value() + " " + status.getReasonPhrase());

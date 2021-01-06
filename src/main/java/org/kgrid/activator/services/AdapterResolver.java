@@ -1,8 +1,7 @@
 package org.kgrid.activator.services;
 
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
