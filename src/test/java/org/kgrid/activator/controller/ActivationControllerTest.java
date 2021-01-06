@@ -99,7 +99,7 @@ public class ActivationControllerTest {
     @Test
     public void testActivateActivatesLoadedEndpoints() {
         activationController.activate();
-        verify(activationService).activate(globalEndpoints);
+        verify(activationService).activateEndpoints(globalEndpoints);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ActivationControllerTest {
     @Test
     public void testRefreshActivatesLoadedEndpoints() {
         activationController.activate();
-        verify(activationService).activate(globalEndpoints);
+        verify(activationService).activateEndpoints(globalEndpoints);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ActivationControllerTest {
     @Test
     public void testActivateForEngineActivatesOnlyEngineExndpoints() {
         activationController.activateForEngine(NODE_ENGINE);
-        verify(activationService).activate(justNodeEndpoints);
+        verify(activationService).activateEndpoints(justNodeEndpoints);
     }
 
     @Test

@@ -45,7 +45,7 @@ public class ActivationController {
         endpoints.clear();
         Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
         endpoints.putAll(loadedEndpoints);
-        activationService.activate(endpoints);
+        activationService.activateEndpoints(endpoints);
 
         JsonArray activatedEndpoints = getActivationResults();
         return activatedEndpoints.toString();
@@ -66,7 +66,7 @@ public class ActivationController {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
-        activationService.activate(endpointsToActivate);
+        activationService.activateEndpoints(endpointsToActivate);
         checkForDuplicateEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
         return getActivationResults(engine).toString();
@@ -110,7 +110,7 @@ public class ActivationController {
 
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
-        activationService.activate(loadedEndpoints);
+        activationService.activateEndpoints(loadedEndpoints);
         checkForDuplicateEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         JsonArray activatedEndpoints = getActivationResults();

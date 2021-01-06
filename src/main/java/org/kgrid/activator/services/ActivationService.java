@@ -13,16 +13,11 @@ import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,55 +38,32 @@ public class ActivationService {
         this.koRepo = koRepo;
     }
 
-    public void activate(Map<URI, Endpoint> eps) {
+    public void activateEndpoints(Map<URI, Endpoint> eps) {
         eps.forEach((key, value) -> {
             if (value.getStatus().equals("GOOD")) {
                 Executor executor = null;
                 try {
-                    executor = getExecutor(key, value);
+                    executor = activateEndpoint(key, value);
                     value.setStatus("Activated");
-                } catch (ActivatorException e) {
-                    log.warn("Could not activate " + key + " " + e.getMessage());
-                    value.setStatus("Could not be activated: " + e.getMessage());
+                } catch (Exception e) {
+                    String message = "Could not activate " + key + ". Cause: " + e.getMessage();
+                    log.warn(message + ". " + e.getClass().getSimpleName());
+                    value.setStatus(message);
                 }
                 value.setExecutor(executor);
             }
         });
     }
 
-    private Executor getExecutor(URI endpointKey, Endpoint endpoint) {
-
-        log.info("Activate endpoint {} ", endpointKey);
+    private Executor activateEndpoint(URI endpointKey, Endpoint endpoint) {
+        log.info("Activating endpoint: {}", endpointKey);
         final JsonNode deploymentSpec = endpoint.getDeployment();
+        Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
 
-        if (null == deploymentSpec) {
-            throw new ActivatorException("No deployment specification for " + endpointKey);
-        }
-        String engineName;
-        if (deploymentSpec.has("engine")) {
-            engineName = deploymentSpec.get("engine").asText();
-        } else {
-            throw new ActivatorException("No engine specified for " + endpointKey);
-        }
-
-        Adapter adapter = adapterResolver
-                .getAdapter(engineName);
-        ArkId ark = endpoint.getArkId();
-
-        try {
-            return adapter.activate(
-                    koRepo.getObjectLocation(ark),
-                    endpointKey,
-                    deploymentSpec);
-        } catch (AdapterException e) {
-            endpoints.get(endpointKey).setStatus("Adapter could not create executor: " + e.getMessage());
-            throw new ActivatorException(e.getMessage(), e);
-        } catch (ShelfResourceNotFound e) {
-            endpoints.get(endpointKey).setStatus(String.format(
-                    "Adapter could not find endpoint: %s while creating executor: %s", endpointKey, e.getMessage()));
-            throw new ActivatorException(e.getMessage(), e);
-        }
-
+        return adapter.activate(
+                koRepo.getObjectLocation(endpoint.getArkId()),
+                endpointKey,
+                deploymentSpec);
     }
 
     public EndPointResult execute(URI id, Object inputs, HttpMethod method, String contentType) {

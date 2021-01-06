@@ -13,15 +13,15 @@ public class AdapterResolver {
         this.adapters = adapters;
     }
 
-    protected Adapter getAdapter(String adapterType) {
+    protected Adapter getAdapter(String engine) {
         Adapter resultAdapter = null;
         for (Adapter adapter : adapters) {
-            if (adapter.getEngines().contains(adapterType)) {
+            if (adapter.getEngines().contains(engine)) {
                 resultAdapter = adapter;
             }
         }
         if (resultAdapter == null) {
-            throw new ActivatorException("No engine found: " + adapterType);
+            throw new ActivatorException("No engine found: " + engine);
         }
         return resultAdapter;
     }
