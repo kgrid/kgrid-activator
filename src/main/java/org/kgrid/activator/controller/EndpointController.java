@@ -176,7 +176,7 @@ public class EndpointController extends ActivatorExceptionHandler {
                         + "application/json json JSON\n"
                         + "text/javascript js JS\n"
                         + "application/pdf pdf PDF\n"
-                        + "text/plain csv CSV\n"
+                        + "text/csv csv CSV\n"
                         + "application/zip zip ZIP");
         String contentType = fileTypeMap.getContentType(artifactName);
         responseHeaders.add("Content-Type", contentType);
