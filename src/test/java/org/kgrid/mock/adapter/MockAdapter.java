@@ -9,12 +9,14 @@ import java.util.List;
 
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 
 public class MockAdapter implements Adapter {
 
   private String status;
+  private ActivationContext activationContext;
 
   @Override
   public List<String> getEngines() {
@@ -23,6 +25,7 @@ public class MockAdapter implements Adapter {
 
   @Override
   public void initialize(ActivationContext activationContext) {
+    this.activationContext = activationContext;
     status = "UP";
   }
 
@@ -34,5 +37,9 @@ public class MockAdapter implements Adapter {
   @Override
   public String status() {
     return status;
+  }
+
+  public ActivationContext getActivationContext(){
+    return this.activationContext;
   }
 }
