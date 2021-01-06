@@ -1,6 +1,5 @@
 package org.kgrid.activator.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,115 +37,108 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdapterLoaderTest {
-    public static final String MOCKADAPTER_ENGINE = "mockadapter";
-    @Mock
-    private AutowireCapableBeanFactory beanFactory;
-    @Mock
-    private Environment environment;
-    @Mock
-    private CompoundDigitalObjectStore cdoStore;
-    @Mock
-    private HealthContributorRegistry registry;
-    @InjectMocks
-    private AdapterLoader adapterLoader;
-    private Map<URI, Endpoint> endpoints = new HashMap<>();
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private URI endpointUri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME));
-    private KnowledgeObjectWrapper kow = new KnowledgeObjectWrapper(generateMetadata(NAAN,NAME,VERSION));
-    private Endpoint endpoint = new Endpoint(
-            kow, ENDPOINT_NAME);
-    private String EXECUTOR_RESULT = "executed";
+  public static final String MOCK_ADAPTER_ENGINE = "mockadapter";
+  @Mock
+  private AutowireCapableBeanFactory beanFactory;
+  @Mock
+  private Environment environment;
+  @Mock
+  private CompoundDigitalObjectStore cdoStore;
+  @Mock
+  private HealthContributorRegistry registry;
+  @InjectMocks
+  private AdapterLoader adapterLoader;
+  private final Map<URI, Endpoint> endpoints = new HashMap<>();
+  private final URI endpointUri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME));
+  private final KnowledgeObjectWrapper kow = new KnowledgeObjectWrapper(generateMetadata(NAAN,NAME,VERSION));
+  private final Endpoint endpoint = new Endpoint(
+          kow, ENDPOINT_NAME);
+  private final String EXECUTOR_RESULT = "executed";
 
+  @Before
+  public void setup() {
 
-    @Before
-    public void setup() {
+    endpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
+    endpoints.put(endpointUri, endpoint);
+    when(cdoStore.getBinaryStream(endpointUri)).thenReturn(null);
+  }
 
-        endpoint.setExecutor(new Executor() {
-            @Override
-            public Object execute(Object o, String s) {
-                return EXECUTOR_RESULT;
-            }
-        });
-        endpoints.put(endpointUri, endpoint);
-        when(cdoStore.getBinaryStream(endpointUri)).thenReturn(null);
-    }
+  @Test
+  public void loadAndInitialize_returnsAdapterResolver() {
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    assertNotNull(adapterResolver);
+  }
 
-    @Test
-    public void loadAndInitialize_returnsAdapterResolver() {
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        assertNotNull(adapterResolver);
-    }
+  @Test
+  public void loadAndInitialize_autowiresAdapterBeans() {
+    adapterLoader.loadAndInitializeAdapters(endpoints);
+    verify(beanFactory, times(4)).autowireBean(any());
+  }
 
-    @Test
-    public void loadAndInitialize_autowiresAdapterBeans() {
-        adapterLoader.loadAndInitializeAdapters(endpoints);
-        verify(beanFactory, times(4)).autowireBean(any());
-    }
+  @Test
+  public void loadAndInitialize_initializesAdapter() {
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    Adapter mockAdapter = adapterResolver.getAdapter(MOCK_ADAPTER_ENGINE);
+    assertEquals(mockAdapter.status(), "UP");
+  }
 
-    @Test
-    public void loadAndInitialize_initializesAdapter() {
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        Adapter mockAdapter = adapterResolver.getAdapter(MOCKADAPTER_ENGINE);
-        assertEquals(mockAdapter.status(), "UP");
-    }
+  @Test
+  public void loadAndInitialize_registersHealthEndpointForAdapter() {
+    adapterLoader.loadAndInitializeAdapters(endpoints);
+    ArgumentCaptor<HealthIndicator> healthIndicatorArgumentCaptor = ArgumentCaptor.forClass(HealthIndicator.class);
+    verify(registry).registerContributor(
+            eq(MockAdapter.class.getName()), healthIndicatorArgumentCaptor.capture());
+    HealthIndicator healthIndicator = healthIndicatorArgumentCaptor.getValue();
+    Health health = healthIndicator.getHealth(true);
+    Collection types = (Collection) health.getDetails().get("types");
+    assertTrue(types.contains(MOCK_ADAPTER_ENGINE));
+  }
 
-    @Test
-    public void loadAndInitialize_registersHealthEndpointForAdapter() {
-        adapterLoader.loadAndInitializeAdapters(endpoints);
-        ArgumentCaptor<HealthIndicator> healthIndicatorArgumentCaptor = ArgumentCaptor.forClass(HealthIndicator.class);
-        verify(registry).registerContributor(
-                eq(MockAdapter.class.getName()), healthIndicatorArgumentCaptor.capture());
-        HealthIndicator healthIndicator = healthIndicatorArgumentCaptor.getValue();
-        Health health = healthIndicator.getHealth(true);
-        Collection types = (Collection) health.getDetails().get("types");
-        assertTrue(types.contains(MOCKADAPTER_ENGINE));
-    }
+  @Test
+  public void loadAndInitialize_DoesNotThrowIfRegisteringHealthFails() {
+    doThrow(new IllegalStateException()).when(registry).registerContributor(any(), any());
+    adapterLoader.loadAndInitializeAdapters(endpoints);
+  }
 
-    @Test
-    public void loadAndInitialize_DoesNotThrowIfRegisteringHealthFails() {
-        doThrow(new IllegalStateException()).when(registry).registerContributor(any(), any());
-        adapterLoader.loadAndInitializeAdapters(endpoints);
-    }
+  @Test
+  public void loadAndInitialize_SetsExecutorOnActivationContext() {
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCK_ADAPTER_ENGINE);
+    ActivationContext activationContext = mockAdapter.getActivationContext();
+    Executor executor = activationContext.getExecutor(endpointUri.toString());
+    assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
+  }
 
-    @Test
-    public void loadAndInitialize_SetsExecutorOnActivationContext() {
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCKADAPTER_ENGINE);
-        ActivationContext activationContext = mockAdapter.getActivationContext();
-        Executor executor = activationContext.getExecutor(endpointUri.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
-    }
+  @Test
+  public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
+    endpoints.clear();
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCK_ADAPTER_ENGINE);
+    ActivationContext activationContext = mockAdapter.getActivationContext();
 
-    @Test
-    public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
-        endpoints.clear();
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCKADAPTER_ENGINE);
-        ActivationContext activationContext = mockAdapter.getActivationContext();
+    AdapterException adapterException = Assert.assertThrows(AdapterException.class,
+            () -> activationContext.getExecutor(endpointUri.toString()));
+    Assertions.assertEquals(
+            "Can't find executor in app context for endpoint naan/name/ApiVersion/endpoint",
+            adapterException.getMessage());
+  }
 
-        AdapterException adapterException = Assert.assertThrows(AdapterException.class,
-                () -> activationContext.getExecutor(endpointUri.toString()));
-        Assertions.assertEquals(
-                "Can't find executor in app context for endpoint naan/name/ApiVersion/endpoint.",
-                adapterException.getMessage());
-    }
+  @Test
+  public void loadAndInitialize_SetsCdoStoreOnActivationContext() {
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCK_ADAPTER_ENGINE);
+    ActivationContext activationContext = mockAdapter.getActivationContext();
+    activationContext.getBinary(endpointUri);
+    verify(cdoStore).getBinaryStream(endpointUri);
+  }
 
-    @Test
-    public void loadAndInitialize_SetsCdoStoreOnActivationContext() {
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCKADAPTER_ENGINE);
-        ActivationContext activationContext = mockAdapter.getActivationContext();
-        activationContext.getBinary(endpointUri);
-        verify(cdoStore).getBinaryStream(endpointUri);
-    }
-
-    @Test
-    public void loadAndInitialize_SetsEnvironmentOnActivationContext() {
-        AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
-        MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCKADAPTER_ENGINE);
-        ActivationContext activationContext = mockAdapter.getActivationContext();
-        String property = "bonkers";
-        activationContext.getProperty(property);
-        verify(environment).getProperty(property);
-    }
+  @Test
+  public void loadAndInitialize_SetsEnvironmentOnActivationContext() {
+    AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
+    MockAdapter mockAdapter = (MockAdapter) adapterResolver.getAdapter(MOCK_ADAPTER_ENGINE);
+    ActivationContext activationContext = mockAdapter.getActivationContext();
+    String property = "bonkers";
+    activationContext.getProperty(property);
+    verify(environment).getProperty(property);
+  }
 }

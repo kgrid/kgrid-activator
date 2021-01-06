@@ -73,7 +73,7 @@ public class AdapterLoader {
                 if (endpoints.containsKey(id)) {
                     return endpoints.get(id).getExecutor();
                 } else {
-                    String message = String.format("Can't find executor in app context for endpoint %s.", key);
+                    String message = String.format("Can't find executor in app context for endpoint %s", key);
                     log.error(message);
                     throw new AdapterException(message);
                 }
