@@ -3,7 +3,9 @@ package org.kgrid.activator.controller;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
+import org.kgrid.adapter.api.AdapterClientErrorException;
 import org.kgrid.adapter.api.AdapterException;
+import org.kgrid.adapter.api.AdapterServerErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,15 +40,29 @@ public abstract class ActivatorExceptionHandler {
     @ExceptionHandler(ActivatorUnsupportedMediaTypeException.class)
     public ResponseEntity<Map<String, String>> handleActivatorUnsupportedMediaExceptions(ActivatorUnsupportedMediaTypeException e,
                                                                                          WebRequest request) {
-        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Endpoint not found", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Unsupported Media Type", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(AdapterException.class)
-    public ResponseEntity<Map<String, String>> handleAdapterExceptions(Exception e,
-                                                                        WebRequest request) {
-        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.BAD_REQUEST),
+    public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterException e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "General Adapter Exception", HttpStatus.INTERNAL_SERVER_ERROR),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AdapterClientErrorException.class)
+    public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterClientErrorException e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Client Error", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AdapterServerErrorException.class)
+    public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterServerErrorException e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Server Error", HttpStatus.BAD_REQUEST),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
