@@ -13,6 +13,7 @@ import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -66,7 +67,6 @@ public class ActivationControllerTest {
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
         endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
 
-
         justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
         activationResults = getActivationResults(endpointMapFromLoader);
 
@@ -92,20 +92,27 @@ public class ActivationControllerTest {
 
     @Test
     public void testActivateAddsLoadedEndpointsToGlobalMap() {
-        activationController.activate();
+        RedirectView redirectView = activationController.activate();
         verify(globalEndpoints).putAll(endpointMapFromLoader);
+        assertEquals("/endpoints", redirectView.getUrl());
+    }
+
+    @Test
+    public void testActivateRedirectsToEndpoints() {
+        RedirectView redirectView = activationController.activate();
+        assertEquals("/endpoints", redirectView.getUrl());
+    }
+
+    @Test
+    public void testActivateForEngineRedirectsToEndpointsForEngine() {
+        RedirectView redirectView = activationController.activateForEngine("javascript");
+        assertEquals("/endpoints/javascript", redirectView.getUrl());
     }
 
     @Test
     public void testActivateActivatesLoadedEndpoints() {
         activationController.activate();
         verify(activationService).activateEndpoints(globalEndpoints);
-    }
-
-    @Test
-    public void testActivateReturnsJsonArrayOfActivatedEndpoints() {
-        String results = activationController.activate();
-        assertEquals(activationResults.toString(), results);
     }
 
     @Test
@@ -130,12 +137,6 @@ public class ActivationControllerTest {
     public void testRefreshActivatesLoadedEndpoints() {
         activationController.activate();
         verify(activationService).activateEndpoints(globalEndpoints);
-    }
-
-    @Test
-    public void testRefreshReturnsJsonArrayOfActivatedEndpoints() {
-        String results = activationController.activate();
-        assertEquals(activationResults.toString(), results);
     }
 
     @Test

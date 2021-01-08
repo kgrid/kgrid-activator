@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -40,15 +41,16 @@ public class ActivationController {
      * @return set of activated endpoint paths
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public String activate() {
+    public RedirectView activate() {
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
         Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
         endpoints.putAll(loadedEndpoints);
         activationService.activateEndpoints(endpoints);
 
-        JsonArray activatedEndpoints = getActivationResults();
-        return activatedEndpoints.toString();
+        RedirectView redirectView = new RedirectView("/endpoints");
+        redirectView.setHttp10Compatible(false);
+        return redirectView;
     }
 
     /**
@@ -58,7 +60,7 @@ public class ActivationController {
      * @return set of activated endpoint paths
      */
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String activateForEngine(@PathVariable String engine) {
+    public RedirectView activateForEngine(@PathVariable String engine) {
         Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
@@ -69,7 +71,9 @@ public class ActivationController {
         activationService.activateEndpoints(endpointsToActivate);
         checkForDuplicateEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
-        return getActivationResults(engine).toString();
+        RedirectView redirectView = new RedirectView("/endpoints/" + engine);
+        redirectView.setHttp10Compatible(false);
+        return redirectView;
     }
 
     /**
@@ -80,8 +84,8 @@ public class ActivationController {
      * @return set of activated endpoint paths
      */
     @GetMapping(value = "/{naan}/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String activateKo(@PathVariable String naan,
-                             @PathVariable String name) {
+    public RedirectView activateKo(@PathVariable String naan,
+                                   @PathVariable String name) {
         return activateForArkId(naan, name, null);
     }
 
@@ -94,12 +98,12 @@ public class ActivationController {
      * @return
      */
     @GetMapping(value = "/{naan}/{name}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String activateKoVersion(@PathVariable String naan,
-                                    @PathVariable String name, @PathVariable String version) {
+    public RedirectView activateKoVersion(@PathVariable String naan,
+                                          @PathVariable String name, @PathVariable String version) {
         return activateForArkId(naan, name, version);
     }
 
-    private String activateForArkId(String naan, String name, String version) {
+    private RedirectView activateForArkId(String naan, String name, String version) {
         ArkId arkId;
         if (version == null) {
             arkId = new ArkId(naan, name);
@@ -113,8 +117,9 @@ public class ActivationController {
         activationService.activateEndpoints(loadedEndpoints);
         checkForDuplicateEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
-        JsonArray activatedEndpoints = getActivationResults();
-        return activatedEndpoints.toString();
+        RedirectView redirectView = new RedirectView("/endpoints");
+        redirectView.setHttp10Compatible(false);
+        return redirectView;
     }
 
     private void checkForDuplicateEndpoints(Map<URI, Endpoint> loadedEndpoints) {
@@ -134,21 +139,6 @@ public class ActivationController {
             endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
             endpointActivationResult.addProperty("status", endpoint.getStatus());
             endpointActivations.add(endpointActivationResult);
-        });
-        return endpointActivations;
-    }
-
-    private JsonArray getActivationResults(String engine) {
-        JsonArray endpointActivations = new JsonArray();
-
-        endpoints.values().forEach(endpoint -> {
-            if (engine.equals(endpoint.getEngine())) {
-                JsonObject endpointActivationResult = new JsonObject();
-                endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
-                endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
-                endpointActivationResult.addProperty("status", endpoint.getStatus());
-                endpointActivations.add(endpointActivationResult);
-            }
         });
         return endpointActivations;
     }

@@ -52,6 +52,22 @@ public class EndpointController extends ActivatorExceptionHandler {
         return resources;
     }
 
+    @GetMapping(value = "/endpoints/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EndpointResource> findEndpointsForEngine(@PathVariable String engine) {
+        log.info("find all endpoints for engine " + engine);
+        List<EndpointResource> resources = new ArrayList<>();
+
+        endpoints.forEach((s, endpoint) -> {
+            EndpointResource resource = new EndpointResource(endpoint, shelfRoot);
+            if (engine.equals(resource.getEngine())) {
+                resources.add(resource);
+            }
+        });
+
+        return resources;
+    }
+
+
     @GetMapping(value = "/endpoints/{naan}/{name}/{version}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EndpointResource findEndpointOldVersion(
             @PathVariable String naan,
@@ -175,7 +191,7 @@ public class EndpointController extends ActivatorExceptionHandler {
                         + "application/json json JSON\n"
                         + "text/javascript js JS\n"
                         + "application/pdf pdf PDF\n"
-                        + "text/plain csv CSV\n"
+                        + "text/csv csv CSV\n"
                         + "application/zip zip ZIP");
         String contentType = fileTypeMap.getContentType(artifactName);
         responseHeaders.add("Content-Type", contentType);
