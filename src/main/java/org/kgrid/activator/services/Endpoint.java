@@ -1,12 +1,17 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
+import org.springframework.http.MediaType;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Endpoint {
 
@@ -96,6 +101,39 @@ public class Endpoint {
 
     public String getEndpointName() {
         return endpointName;
+    }
+
+    public ArrayList<String> getSupportedContentTypes() {
+        ArrayList<String> supportedTypes = new ArrayList<>();
+        this.getService().at("/paths").get("/" + this.getEndpointName())
+                .get("post").get("requestBody").get("content").fieldNames().forEachRemaining(key -> {
+            supportedTypes.add(key);
+        });
+        return supportedTypes;
+    }
+
+    public boolean isSupportedContentType(MediaType contentType) {
+        final JsonNode contentTypes = this.getService()
+                .at(String.format("/paths/~1%s/post/requestBody/content", endpointName));
+        AtomicBoolean matches = new AtomicBoolean(false);
+        contentTypes.fieldNames().forEachRemaining(key -> {
+            if (contentType.toString().equals(key)) {
+                matches.set(true);
+            }
+        });
+        return matches.get();
+    }
+
+    public EndPointResult execute(Object inputs, MediaType contentType) {
+
+        if (null == executor) {
+            throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
+        }
+
+        final EndPointResult endPointResult = new EndPointResult(this.executor.execute(inputs, contentType.toString()));
+        endPointResult.getInfo().put("inputs", inputs);
+        endPointResult.getInfo().put("ko", wrapper.getMetadata());
+        return endPointResult;
     }
 
 }
