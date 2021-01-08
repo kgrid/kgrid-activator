@@ -81,7 +81,7 @@ public abstract class ActivatorExceptionHandler {
 
     private Map<String, String> generateErrorMapAndLog(WebRequest request, Exception e, String title,
                                                        HttpStatus status) {
-        log.warn(request.getDescription(false) + "; " + e.getMessage());
+        log.warn(request.getDescription(false), "; ", e.getMessage(), " Cause: ", e.getClass().getSimpleName());
 
         Map<String, String> errorInfo = new HashMap<>();
         errorInfo.put("Title", title);
