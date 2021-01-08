@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -54,7 +54,7 @@ public class ActivationServiceTest {
         deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME);
         deploymentService = generateServiceNode();
         metadata = generateMetadata(NAAN, NAME, VERSION);
-        final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
+        final URI uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME));
         when(adapterResolver.getAdapter(JS_ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
@@ -65,53 +65,57 @@ public class ActivationServiceTest {
         when(mockEndpoint.getExecutor()).thenReturn(executor);
         when(mockEndpoint.getMetadata()).thenReturn(metadata);
         when(mockEndpoint.getStatus()).thenReturn("GOOD");
+        when(mockEndpoint.isActive()).thenReturn(true);
         when(mockEndpoint.getEndpointName()).thenReturn("welcome");
+        when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
         endpointMap.put(uri, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
 
     @Test
     public void activateGetsDeploymentFromEndpoint() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).getDeployment();
     }
 
     @Test
     public void activateGetsAdapterFromResolver() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(adapterResolver).getAdapter(JS_ENGINE);
     }
 
     @Test
     public void activateGetsKoLocationFromRepo() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(koRepo).getObjectLocation(ARK_ID);
     }
 
     @Test
     public void activateCallsActivateOnAdapter() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(adapter).activate(OBJECT_LOCATION,
-                URI.create(NAAN + "/" + NAME + "/" + VERSION + "/" + ENDPOINT_NAME), deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
+                URI.create(NAAN + "/" + NAME + "/" + API_VERSION + "/" + ENDPOINT_NAME),
+                deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
     }
 
     @Test
     public void activateSetsExecutorInEndpointMap() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setExecutor(executor);
     }
 
     @Test
     public void activateDoesNotSetExecutorIfActivatorExceptionIsThrownAnywhere() {
         when(mockEndpoint.getDeployment()).thenReturn(null);
-        activationService.activate(endpointMap);
+        when(adapter.activate(any(),any(),any())).thenThrow(new AdapterException(""));
+        activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setExecutor(null);
     }
 
     @Test
     public void activateCatchesExceptionsFromShelf() {
         when(koRepo.getObjectLocation(any())).thenThrow(new ShelfResourceNotFound("ope"));
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setExecutor(null);
     }
 
@@ -119,8 +123,9 @@ public class ActivationServiceTest {
     public void activateCatchesExceptionsFromAdapter() {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
-        activationService.activate(endpointMap);
-        verify(mockEndpoint).setStatus("Adapter could not create executor: " + exceptionMessage);
+        activationService.activateEndpoints(endpointMap);
+        verify(mockEndpoint).setStatus(String.format("Could not activate %s/%s/%s/%s. Cause: %s",
+                NAAN,NAME, API_VERSION,ENDPOINT_NAME,exceptionMessage));
     }
 
     @Test
@@ -158,31 +163,35 @@ public class ActivationServiceTest {
                             missingId,
                             input, HttpMethod.POST, CONTENT_TYPE);
                 });
-        assertEquals("No endpoint found for " + missingId, activatorException.getMessage());
+        assertEquals("No active endpoint found for " + missingId, activatorException.getMessage());
     }
 
     @Test
-    public void executeThrowsActivatorExceptionWhenExecutorNotFound() {
-        when(mockEndpoint.getExecutor()).thenReturn(null);
+    public void executeThrowsActivatorExceptionWhenEndpointIsNotActive() {
+        when(mockEndpoint.isActive()).thenReturn(false);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> {
                     activationService.execute(
                             mockEndpoint.getId(),
                             input, HttpMethod.POST, CONTENT_TYPE);
                 });
-        assertEquals("No executor found for " + mockEndpoint.getId(), activatorException.getMessage());
+        assertEquals("No active endpoint found for " + mockEndpoint.getId(), activatorException.getMessage());
     }
 
     @Test
     public void activateSetsEndpointStatusToActivated() {
-        activationService.activate(endpointMap);
+        activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setStatus("Activated");
     }
 
     @Test
     public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage() {
         when(mockEndpoint.getDeployment()).thenReturn(null);
-        activationService.activate(endpointMap);
-        verify(mockEndpoint).setStatus(String.format("Could not be activated: No deployment specification for %s/%s/%s/%s", NAAN, NAME, VERSION, ENDPOINT_NAME));
+        String message = "bang";
+        when(adapter.activate(any(),any(),any())).thenThrow(new AdapterException(message));
+        activationService.activateEndpoints(endpointMap);
+        verify(mockEndpoint).setStatus(String.format(
+                "Could not activate %s/%s/%s/%s. Cause: %s",
+                NAAN, NAME, API_VERSION, ENDPOINT_NAME, message));
     }
 }

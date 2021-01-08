@@ -1,8 +1,10 @@
 package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.KoValidationService;
+import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -84,7 +86,11 @@ public class EndpointLoader {
                                 endpoints.put(endpoint.getId(), endpoint);
                             });
 
-        } catch (Exception e) {
+        } catch (ShelfResourceNotFound e) {
+            final ActivatorException activatorException =
+                    new ActivatorException("Failed to load " + ark.getSlashArkVersion());
+            log.warn(activatorException.getMessage());
+        } catch (ActivatorException e) {
             final ActivatorException activatorException =
                     new ActivatorException("Failed to load " + ark.getSlashArkVersion(), e);
             log.warn(activatorException.getMessage());

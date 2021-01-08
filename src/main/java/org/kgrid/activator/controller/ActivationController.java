@@ -46,7 +46,7 @@ public class ActivationController {
         endpoints.clear();
         Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
         endpoints.putAll(loadedEndpoints);
-        activationService.activate(endpoints);
+        activationService.activateEndpoints(endpoints);
 
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
@@ -68,7 +68,7 @@ public class ActivationController {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
-        activationService.activate(endpointsToActivate);
+        activationService.activateEndpoints(endpointsToActivate);
         checkForDuplicateEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
@@ -114,7 +114,7 @@ public class ActivationController {
 
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
-        activationService.activate(loadedEndpoints);
+        activationService.activateEndpoints(loadedEndpoints);
         checkForDuplicateEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         RedirectView redirectView = new RedirectView("/endpoints");

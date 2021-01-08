@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.adapter.api.AdapterException;
@@ -127,12 +127,11 @@ public class EndpointControllerTest {
         when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
-        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+        AdapterException adapterException = Assert.assertThrows(AdapterException.class,
                 () -> {
                     endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
                 });
-        assertEquals(String.format("Exception for endpoint %s/%s/%s/%s %s",
-                NAAN, NAME, API_VERSION, ENDPOINT_NAME, adapterExceptionMessage), activatorException.getMessage());
+        assertEquals(adapterExceptionMessage, adapterException.getMessage());
     }
 
     @Test
@@ -153,12 +152,11 @@ public class EndpointControllerTest {
         when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
-        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+        AdapterException myException = Assert.assertThrows(AdapterException.class,
                 () -> {
                     endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
                 });
-        assertEquals(String.format("Exception for endpoint %s/%s/%s/%s %s",
-                NAAN, NAME, API_VERSION, ENDPOINT_NAME, adapterExceptionMessage), activatorException.getMessage());
+        assertEquals(adapterExceptionMessage, myException.getMessage());
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {

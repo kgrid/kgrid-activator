@@ -2,7 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,10 +12,9 @@ public class KoValidationService {
     public static final String HAS_MISSING_PATHS = "Has missing paths node in Service Specification";
     public static final String HAS_NO_DEFINED_PATHS = "Has an empty Paths node in Service Specification";
     public static final String HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION = "Has no defined artifact in Deployment Specification";
-    public static final String HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION = "Has no defined adapter in Deployment Specification";
+    public static final String HAS_NO_ENGINE_IN_DEPLOYMENT_SPECIFICATION = "Has no defined engine in Deployment Specification";
     public static final String HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION = "Has no artifacts defined in artifact field of Deployment Specification";
     public static final String HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION = "Has no endpoints defined in endpoints field of Deployment Specification";
-    public static final String HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID = "Deployment defined in both x-kgrid extension and Deployment Specification. Use Deployment Specification Only.";
 
     public void validateEndpoint(Endpoint endpoint) {
         JsonNode serviceSpec = endpoint.getService();
@@ -23,13 +22,7 @@ public class KoValidationService {
         JsonNode deploymentSpec = endpoint.getWrapper().getDeployment();
         ObjectNode path = (ObjectNode) serviceSpec.at("/paths").get(pathName);
         path.fields().forEachRemaining(httpMethod -> {
-            JsonNode xKgridActivationNode = httpMethod.getValue().at("/x-kgrid-activation");
-            if (xKgridActivationNode.isMissingNode()) {
-                validateDeploymentSpecification(deploymentSpec, pathName);
-            } else {
-                if (deploymentSpec != null && !deploymentSpec.isEmpty())
-                    throwWithMessage(HAS_BOTH_DEPLOYMENT_SPECIFICATION_AND_X_KGRID);
-            }
+            validateDeploymentSpecification(deploymentSpec, pathName);
         });
     }
 
@@ -50,27 +43,28 @@ public class KoValidationService {
     }
 
     public void validateDeploymentSpecification(JsonNode deploymentSpecification, String pathName) {
-        if (deploymentSpecification.fields().hasNext()) {
-            pathName = pathName.replaceAll("/", "~1");
-            JsonNode endpointNode = deploymentSpecification.at("/" + pathName + "/post");
-            if (endpointNode == null || endpointNode.isMissingNode()) {
-                endpointNode = deploymentSpecification.at("/" + pathName + "/get");
-            }
-            if (endpointNode.has("artifact")) {
-                if ((!endpointNode.get("artifact").isNull() && !endpointNode.get("artifact").asText().equals("")) || endpointNode.get("artifact").isArray()) {
-                    if (!endpointNode.has("engine")) {
-                        throwWithMessage(HAS_NO_ADAPTER_IN_DEPLOYMENT_SPECIFICATION);
-                    }
-                } else {
-                    throwWithMessage(HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION);
-                }
-            } else {
-                throwWithMessage(HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION);
-            }
-        } else {
+        if (!deploymentSpecification.fields().hasNext()) {
             throwWithMessage(HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION);
         }
 
+        pathName = pathName.replaceAll("/", "~1");
+        JsonNode endpointNode = deploymentSpecification.at("/" + pathName + "/post");
+        if (endpointNode == null || endpointNode.isMissingNode()) {
+            endpointNode = deploymentSpecification.at("/" + pathName + "/get");
+        }
+
+        if (!endpointNode.has("artifact")) {
+            throwWithMessage(HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION);
+        }
+        if (endpointNode.get("artifact").isNull() ||
+                endpointNode.get("artifact").isArray() && endpointNode.get("artifact").size() == 0
+                || !endpointNode.get("artifact").isArray() && endpointNode.get("artifact").asText().equals("")
+                ) {
+            throwWithMessage(HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION);
+        }
+        if (!endpointNode.has("engine")) {
+            throwWithMessage(HAS_NO_ENGINE_IN_DEPLOYMENT_SPECIFICATION);
+        }
     }
 
     private void throwWithMessage(String message) {
