@@ -1,6 +1,6 @@
 package org.kgrid.activator.services;
 
-import org.kgrid.activator.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 
 import java.util.List;
@@ -13,15 +13,15 @@ public class AdapterResolver {
         this.adapters = adapters;
     }
 
-    protected Adapter getAdapter(String adapterType) {
+    protected Adapter getAdapter(String engine) {
         Adapter resultAdapter = null;
         for (Adapter adapter : adapters) {
-            if (adapter.getEngines().contains(adapterType)) {
+            if (adapter.getEngines().contains(engine)) {
                 resultAdapter = adapter;
             }
         }
         if (resultAdapter == null) {
-            throw new ActivatorException("No engine found: " + adapterType);
+            throw new ActivatorException("No engine found: " + engine);
         }
         return resultAdapter;
     }

@@ -24,16 +24,14 @@ import java.util.ServiceLoader;
 
 @Service
 public class AdapterLoader {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private AutowireCapableBeanFactory beanFactory;
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
     @Autowired
-    private Environment env;
-
+    private Environment environment;
     @Autowired
     private CompoundDigitalObjectStore cdoStore;
-
     @Autowired
     private HealthContributorRegistry registry;
 
@@ -54,11 +52,12 @@ public class AdapterLoader {
     }
 
     private void registerHealthEndpoint(Adapter adapter) {
+        HealthIndicator types = () ->
+                Health.status(adapter.status())
+                        .withDetail("types", adapter.getEngines())
+                        .build();
         HealthIndicator indicator =
-                () ->
-                        Health.status(adapter.status())
-                                .withDetail("types", adapter.getEngines())
-                                .build();
+                types;
         try {
             registry.registerContributor(adapter.getClass().getName(), indicator);
         } catch (IllegalStateException e) {
@@ -67,39 +66,29 @@ public class AdapterLoader {
     }
 
     private void initializeAdapter(Adapter adapter, Map<URI, Endpoint> endpoints) {
-        try {
-            adapter.initialize(
-                    new ActivationContext() {
-                        @Override
-                        public Executor getExecutor(String key) {
+        ActivationContext activationContext = new ActivationContext() {
+            @Override
+            public Executor getExecutor(String key) {
+                URI id = URI.create(key);
+                if (endpoints.containsKey(id)) {
+                    return endpoints.get(id).getExecutor();
+                } else {
+                    String message = String.format("Can't find executor in app context for endpoint %s", key);
+                    log.error(message);
+                    throw new AdapterException(message);
+                }
+            }
 
-                            URI id = URI.create(key);
+            @Override
+            public InputStream getBinary(URI pathToBinary) {
+                return cdoStore.getBinaryStream(pathToBinary);
+            }
 
-                            if (endpoints.containsKey(id)) {
-                                return endpoints.get(id).getExecutor();
-                            } else {
-                                log.error(
-                                        "Can't find executor in app context for endpoint ",
-                                        key,
-                                        " endpoints ",
-                                        endpoints);
-                                throw new AdapterException(
-                                        "Can't find executor in app context for endpoint " + key);
-                            }
-                        }
-
-                        @Override
-                        public InputStream getBinary(URI pathToBinary) {
-                            return cdoStore.getBinaryStream(pathToBinary);
-                        }
-
-                        @Override
-                        public String getProperty(String key) {
-                            return env.getProperty(key);
-                        }
-                    });
-        } catch (Exception e) {
-            log.error("Cannot load adapter " + adapter.getClass().getName() + " cause: " + e.getMessage());
-        }
+            @Override
+            public String getProperty(String key) {
+                return environment.getProperty(key);
+            }
+        };
+        adapter.initialize(activationContext);
     }
 }
