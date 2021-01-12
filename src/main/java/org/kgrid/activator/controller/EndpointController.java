@@ -96,28 +96,15 @@ public class EndpointController extends ActivatorExceptionHandler {
             @RequestParam(name = "v", required = false) String version) {
 
         log.info("getting ko endpoint " + naan + "/" + name);
-
-        URI id = getEndpointId(naan, name, version, endpointName);
-
-        Endpoint endpoint = null;
         if (version == null) {
-            for (Entry<URI, Endpoint> entry : endpoints.entrySet()) {
-                if (entry.getValue().getNaan().equals(naan)
-                        && entry.getValue().getName().equals(name)
-                        && entry.getValue().getEndpointName().equals("/" + endpointName)) {
-                    endpoint = entry.getValue();
-                    break;
-                }
-            }
-        } else {
-            endpoint = endpoints.get(id);
+            version = getDefaultVersion(naan,name,endpointName);
         }
-
+        URI id = getEndpointId(naan, name, version, endpointName);
+        Endpoint endpoint = endpoints.get(id);
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
         }
         return new EndpointResource(endpoint, shelfRoot);
-
     }
 
     @PostMapping(
@@ -146,8 +133,26 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestBody String inputs,
             @RequestHeader Map<String, String> headers) {
+
+        if (apiVersion == null) {
+            apiVersion = getDefaultVersion(naan,name,endpoint);
+        }
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+    }
+
+    private String getDefaultVersion(String naan, String name, String endpoint) {
+        String defaultVersion = null;
+        for (Entry<URI, Endpoint> entry : endpoints.entrySet()) {
+            if (entry.getValue().getNaan().equals(naan)
+                    && entry.getValue().getName().equals(name)
+                    && entry.getValue().getEndpointName().equals(endpoint)) {
+
+                defaultVersion =  entry.getValue().getApiVersion();
+                break;
+            }
+        }
+        return defaultVersion;
     }
 
     @GetMapping(
