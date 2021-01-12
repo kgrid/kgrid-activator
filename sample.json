@@ -1,0 +1,54 @@
+{
+  "status": "UP",
+  "components": {
+    "activationService": {
+      "status": "UP",
+      "details": {
+        "kos": 12,
+        "endpoints": 15,
+        "activatedEndpoints": 5
+      }
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 402672611328,
+        "free": 289865793536,
+        "threshold": 10485760,
+        "exists": true
+      }
+    },
+    "org.kgrid.adapter.proxy.ProxyAdapter": {
+      "status": "up",
+      "details": {
+        "types": [ ]
+      }
+    },
+    "org.kgrid.adapter.resource.ResourceAdapter": {
+      "status": "UP",
+      "details": {
+        "types": [
+          "resource"
+        ]
+      }
+    },
+    "org.kgrid.adapter.v8.JsV8Adapter": {
+      "status": "UP",
+      "details": {
+        "types": [
+          "javascript"
+        ]
+      }
+    },
+    "ping": {
+      "status": "UP"
+    },
+    "shelf": {
+      "status": "UP",
+      "details": {
+        "numberOfKOs": 12,
+        "kgrid.shelf.cdostore.url": "file:///app/shelf/"
+      }
+    }
+  }
+}
