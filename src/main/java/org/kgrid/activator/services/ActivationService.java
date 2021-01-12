@@ -74,7 +74,6 @@ public class ActivationService {
     }
 
     private void validateContentType(MediaType contentType, Endpoint endpoint) {
-
         if (!endpoint.isSupportedContentType(contentType)) {
             throw new ActivatorUnsupportedMediaTypeException(
                     String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",

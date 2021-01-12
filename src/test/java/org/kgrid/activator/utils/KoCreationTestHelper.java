@@ -7,6 +7,8 @@ import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
 import org.springframework.http.MediaType;
 
+import java.net.URI;
+
 public class KoCreationTestHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String SERVICE_YAML_PATH = "service.yaml";
@@ -22,7 +24,8 @@ public class KoCreationTestHelper {
     public static final String FUNCTION_NAME = "welcome";
     public static final String ENDPOINT_NAME = "endpoint";
     public static final String POST_HTTP_METHOD = "post";
-    public static final String ENDPOINT_URI = String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME);
+    public static final String ENDPOINT_ID = String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME);
+    public static final URI ENDPOINT_URI = URI.create(ENDPOINT_ID);
     public static MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
     public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE_JS = mapper.createObjectNode()
             .put("artifact", ARTIFACT_PATH)

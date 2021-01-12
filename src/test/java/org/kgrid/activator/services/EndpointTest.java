@@ -14,7 +14,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
@@ -63,7 +62,7 @@ public class EndpointTest {
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
             endpoint.execute(input, CONTENT_TYPE);
         });
-        assertEquals("No executor found for " + ENDPOINT_URI, activatorException.getMessage());
+        assertEquals("No executor found for " + ENDPOINT_ID, activatorException.getMessage());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class EndpointTest {
 
     @Test
     public void getSupportedContentTypesReturnsListOfTypes() {
-        List<String> typeList = new ArrayList();
+        ArrayList typeList = new ArrayList();
         typeList.add(MediaType.APPLICATION_JSON_VALUE);
         assertEquals(typeList, endpoint.getSupportedContentTypes());
     }
