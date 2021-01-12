@@ -71,6 +71,11 @@ public class EndpointTest {
     }
 
     @Test
+    public void verifiesNullContentType() {
+        assertFalse(endpoint.isSupportedContentType(null));
+    }
+
+    @Test
     public void verifiesUnsupportedContentType() {
         assertFalse(endpoint.isSupportedContentType(MediaType.APPLICATION_XML));
     }

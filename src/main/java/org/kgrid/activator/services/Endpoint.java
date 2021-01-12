@@ -113,6 +113,9 @@ public class Endpoint {
     }
 
     public boolean isSupportedContentType(MediaType contentType) {
+        if(null==contentType){
+            return false;
+        }
         final JsonNode contentTypes = this.getService()
                 .at(String.format("/paths/~1%s/post/requestBody/content", endpointName));
         AtomicBoolean matches = new AtomicBoolean(false);
