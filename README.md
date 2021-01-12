@@ -6,6 +6,8 @@
 ## Overview
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
 
+For the information on the activator API and the usage of the activator, see [KGRID Activator API](api.md)
+
 ## Table of Contents
 
 1. [Build and Test Activator](#build-activator)
@@ -130,6 +132,7 @@ The app uses CorsFilter to configuration of the allowed methods, origins and ass
 
 ## Running the tests
 
+
 #### Automated tests
 Unit and Integration tests can be executed via
 ```
@@ -158,6 +161,9 @@ Run the welcome endpoint on the 99999/newko/v0.0.1 knowledge object
 curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome
 ```
 
+#### Sample Knowledge Objects
+
+A collection of sample Knowledge Objects are stored at `/etc/collection`. The KOs, with the same {naan}/{name}/{endpoint}, may have a different api version. They can be used to try out the handling of the api version. 
 
 ## Deploy Activator
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
