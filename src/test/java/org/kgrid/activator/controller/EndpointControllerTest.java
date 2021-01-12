@@ -14,11 +14,12 @@ import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,10 +37,13 @@ public class EndpointControllerTest {
     EndpointController endpointController;
     private KnowledgeObjectWrapper kow;
     private Endpoint endpoint;
+    private HttpHeaders headers;
 
     @Before
     public void setup() {
         ReflectionTestUtils.setField(endpointController, "shelfRoot", "kos");
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         kow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
         kow.addService(generateServiceNode());
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
@@ -111,20 +115,16 @@ public class EndpointControllerTest {
 
     @Test
     public void testExecuteEndpointOldVersionCallsExecuteOnActivationService() {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type"));
+        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType());
     }
 
     @Test
     public void testExecuteEndpointOldVersionThrowsIfActivationServiceThrows() {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
+        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType()))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
         AdapterException adapterException = Assert.assertThrows(AdapterException.class,
@@ -136,20 +136,16 @@ public class EndpointControllerTest {
 
     @Test
     public void testExecuteEndpointCallsExecuteOnActivationService() {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type"));
+        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType());
     }
 
     @Test
     public void testExecuteEndpointThrowsIfActivationServiceThrows() {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
         String inputs = "inputs";
         String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.get("Content-Type")))
+        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType()))
                 .thenThrow(new AdapterException(adapterExceptionMessage));
 
         AdapterException myException = Assert.assertThrows(AdapterException.class,

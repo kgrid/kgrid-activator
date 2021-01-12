@@ -117,7 +117,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String apiVersion,
             @PathVariable String endpoint,
             @RequestBody String inputs,
-            @RequestHeader Map<String, String> headers) {
+            @RequestHeader HttpHeaders headers) {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
@@ -132,7 +132,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
             @RequestBody String inputs,
-            @RequestHeader Map<String, String> headers) {
+            @RequestHeader HttpHeaders headers) {
 
         if (apiVersion == null) {
             apiVersion = getDefaultVersion(naan,name,endpoint);
@@ -164,7 +164,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestHeader Map<String, String> headers) {
+            @RequestHeader HttpHeaders headers) {
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
@@ -178,7 +178,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestHeader Map<String, String> headers,
+            @RequestHeader HttpHeaders headers,
             HttpServletRequest request) {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
         endpoint = endpoint + "/" + artifactName;
@@ -209,12 +209,8 @@ public class EndpointController extends ActivatorExceptionHandler {
         return responseHeaders;
     }
 
-    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, Map<String, String> headers) {
-        String contentHeader = headers.get("Content-Type");
-        if (contentHeader == null) {
-            contentHeader = headers.get("content-type");
-        }
-        return activationService.execute(endpointId, inputs, method, contentHeader);
+    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
+        return activationService.execute(endpointId, inputs, method, headers.getContentType());
     }
 
     private URI getEndpointId(String naan, String name, String apiVersion, String endpoint) {

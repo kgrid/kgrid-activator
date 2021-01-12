@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KoFields;
+import org.springframework.http.MediaType;
+
+import java.net.URI;
 
 public class KoCreationTestHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -21,6 +24,9 @@ public class KoCreationTestHelper {
     public static final String FUNCTION_NAME = "welcome";
     public static final String ENDPOINT_NAME = "endpoint";
     public static final String POST_HTTP_METHOD = "post";
+    public static final String ENDPOINT_ID = String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME);
+    public static final URI ENDPOINT_URI = URI.create(ENDPOINT_ID);
+    public static MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
     public static final JsonNode ENDPOINT_POST_DEPLOYMENT_NODE_JS = mapper.createObjectNode()
             .put("artifact", ARTIFACT_PATH)
             .put("engine", JS_ENGINE)
@@ -81,10 +87,10 @@ public class KoCreationTestHelper {
     public static JsonNode generateServiceNode() {
         ObjectNode serviceNode = objectMapper.createObjectNode();
         serviceNode.set("info", objectMapper.createObjectNode().put("version", API_VERSION));
-        serviceNode.set("paths", objectMapper.createObjectNode().set("/welcome", objectMapper.createObjectNode()
+        serviceNode.set("paths", objectMapper.createObjectNode().set("/" + ENDPOINT_NAME, objectMapper.createObjectNode()
                 .set("post", objectMapper.createObjectNode().set("requestBody", objectMapper.createObjectNode()
                         .set("content", objectMapper.createObjectNode()
-                                .set("application/json", objectMapper.createObjectNode()))))));
+                                .set(CONTENT_TYPE.toString(), objectMapper.createObjectNode()))))));
         return serviceNode;
     }
 }

@@ -1,25 +1,20 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.adapter.api.Adapter;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.ShelfResourceNotFound;
-import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ActivationService {
@@ -66,49 +61,23 @@ public class ActivationService {
                 deploymentSpec);
     }
 
-    public EndPointResult execute(URI id, Object inputs, HttpMethod method, String contentType) {
+    public EndPointResult execute(URI id, Object inputs, HttpMethod method, MediaType contentType) {
         Endpoint endpoint = endpoints.get(id);
 
         if (null == endpoint || !endpoint.isActive()) {
             throw new ActivatorEndpointNotFoundException("No active endpoint found for " + id);
         }
-
-        validateContentType(method, contentType, endpoint);
-
-        Executor executor = endpoint.getExecutor();
-        Object output = executor.execute(inputs, contentType);
-
-        final EndPointResult endPointResult = new EndPointResult(output);
-
-        endPointResult.getInfo().put("inputs", inputs);
-        endPointResult.getInfo().put("ko", endpoint.getMetadata());
-
-        return endPointResult;
+        if (method == HttpMethod.POST) {
+            validateContentType(contentType, endpoint);
+        }
+        return endpoint.execute(inputs, contentType);
     }
 
-    private void validateContentType(HttpMethod method, String contentType, Endpoint endpoint) {
-        if (method == HttpMethod.POST) {
-            final JsonNode contentTypes = endpoint.getService().at("/paths").get("/" + endpoint.getEndpointName())
-                    .get("post").get("requestBody").get("content");
-            AtomicBoolean matches = new AtomicBoolean(false);
-
-            contentTypes.fieldNames().forEachRemaining(key -> {
-                if (contentType.equals(key)) {
-                    matches.set(true);
-                }
-            });
-            if (!matches.get()) {
-                ArrayList<String> supportedTypes = new ArrayList<>();
-                contentTypes.fieldNames().forEachRemaining(key -> {
-                    supportedTypes.add(key);
-                });
-                throw new ActivatorUnsupportedMediaTypeException(
-                        String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
-                                endpoint.getId(), contentType, supportedTypes));
-            }
+    private void validateContentType(MediaType contentType, Endpoint endpoint) {
+        if (!endpoint.isSupportedContentType(contentType)) {
+            throw new ActivatorUnsupportedMediaTypeException(
+                    String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
+                            endpoint.getId(), contentType, endpoint.getSupportedContentTypes()));
         }
     }
-
 }
-
-
