@@ -1,8 +1,8 @@
 package org.kgrid.activator.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.slf4j.Logger;
@@ -36,7 +36,8 @@ public class EndpointController extends ActivatorExceptionHandler {
     @Value(("${kgrid.shelf.endpoint:kos}"))
     String shelfRoot;
 
-    MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
+    @Autowired
+    MimetypesFileTypeMap fileTypeMap;
 
     @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findAllEndpoints() {
@@ -97,7 +98,7 @@ public class EndpointController extends ActivatorExceptionHandler {
 
         log.info("getting ko endpoint " + naan + "/" + name);
         if (version == null) {
-            version = getDefaultVersion(naan,name,endpointName);
+            version = getDefaultVersion(naan, name, endpointName);
         }
         URI id = getEndpointId(naan, name, version, endpointName);
         Endpoint endpoint = endpoints.get(id);
@@ -135,7 +136,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @RequestHeader HttpHeaders headers) {
 
         if (apiVersion == null) {
-            apiVersion = getDefaultVersion(naan,name,endpoint);
+            apiVersion = getDefaultVersion(naan, name, endpoint);
         }
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
@@ -148,7 +149,7 @@ public class EndpointController extends ActivatorExceptionHandler {
                     && entry.getValue().getName().equals(name)
                     && entry.getValue().getEndpointName().equals(endpoint)) {
 
-                defaultVersion =  entry.getValue().getApiVersion();
+                defaultVersion = entry.getValue().getApiVersion();
                 break;
             }
         }
@@ -183,30 +184,22 @@ public class EndpointController extends ActivatorExceptionHandler {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
         endpoint = endpoint + "/" + artifactName;
         URI endpointId = getEndpointId(naan, name, apiVersion, endpoint);
-        HttpHeaders responseHeaders = getContentHeaders(artifactName);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Content-Type", getContentType(artifactName));
+        responseHeaders.add("Content-Disposition", getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
                 (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
-    private HttpHeaders getContentHeaders(String artifactName) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        fileTypeMap.addMimeTypes(
-                "application/yaml yaml YAML\n"
-                        + "application/json json JSON\n"
-                        + "text/javascript js JS\n"
-                        + "application/pdf pdf PDF\n"
-                        + "text/csv csv CSV\n"
-                        + "application/zip zip ZIP");
-        String contentType = fileTypeMap.getContentType(artifactName);
-        responseHeaders.add("Content-Type", contentType);
+    public String getContentType(String artifactName) {
+        return fileTypeMap.getContentType(artifactName);
+    }
 
+    public String getContentDisposition(String artifactName) {
         String filename =
                 artifactName.contains("/") ? StringUtils.substringAfterLast(artifactName, "/") : artifactName;
-        String contentDisposition = "inline; filename=\"" + filename + "\"";
-
-        responseHeaders.add("Content-Disposition", contentDisposition);
-        return responseHeaders;
+        return "inline; filename=\"" + filename + "\"";
     }
 
     private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
