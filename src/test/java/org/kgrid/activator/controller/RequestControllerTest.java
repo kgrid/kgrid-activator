@@ -139,7 +139,7 @@ public class RequestControllerTest {
 
     @Test
     public void testGetAvailableResourceEndpoints_callsExecuteOnEndpoint() {
-        requestController.getAvailableResourceEndpoints(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers);
+        requestController.getResourceEndpoints(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers);
         verify(endpoint).execute(null, CONTENT_TYPE);
     }
 

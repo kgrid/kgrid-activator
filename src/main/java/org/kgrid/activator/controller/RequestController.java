@@ -69,7 +69,7 @@ public class RequestController {
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public EndPointResult getAvailableResourceEndpoints(
+    public EndPointResult getResourceEndpoints(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,

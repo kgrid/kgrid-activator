@@ -76,7 +76,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String endpointName,
-            @RequestParam(name = "apiVersion", required = false) String apiVersion) {
+            @RequestParam(name = "v", required = false) String apiVersion) {
         log.info("getting ko endpoint " + naan + "/" + name);
         if (apiVersion == null) {
             apiVersion = endpointHelper.getDefaultVersion(naan, name, endpointName);
