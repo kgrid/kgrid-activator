@@ -19,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
 import java.util.Map;
 
@@ -33,6 +34,8 @@ public class EndpointControllerTest {
     private ActivationService activationService;
     @Mock
     private Map<URI, Endpoint> endpoints;
+    @Mock
+    private MimetypesFileTypeMap fileTypeMap;
     @InjectMocks
     EndpointController endpointController;
     private KnowledgeObjectWrapper kow;
@@ -49,6 +52,7 @@ public class EndpointControllerTest {
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
         endpoint = new Endpoint(kow, ENDPOINT_NAME);
         when(endpoints.get(endpoint.getId())).thenReturn(endpoint);
+        when(fileTypeMap.getContentType("src/test.json")).thenReturn("application/json");
     }
 
     @Test
@@ -153,6 +157,16 @@ public class EndpointControllerTest {
                     endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
                 });
         assertEquals(adapterExceptionMessage, myException.getMessage());
+    }
+
+    @Test
+    public void getContentTypeReturnsCorrectType() {
+        assertEquals("application/json", endpointController.getContentType("src/test.json"));
+    }
+
+    @Test
+    public void getContentDispositionReturnsDisposition() {
+        assertEquals("inline; filename=\"test.json\"", endpointController.getContentDisposition("src/test.json"));
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
