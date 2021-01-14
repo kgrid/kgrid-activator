@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin
+@RequestMapping("/endpoints")
 public class EndpointController extends ActivatorExceptionHandler {
 
     @Autowired
@@ -30,7 +31,7 @@ public class EndpointController extends ActivatorExceptionHandler {
     @Value(("${kgrid.shelf.endpoint:kos}"))
     String shelfRoot;
 
-    @GetMapping(value = "/endpoints", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findAllEndpoints() {
         log.info("find all endpoints");
         List<EndpointResource> resources = new ArrayList<>();
@@ -42,7 +43,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         return resources;
     }
 
-    @GetMapping(value = "/endpoints/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findEndpointsForEngine(@PathVariable String engine) {
         log.info("find all endpoints for engine " + engine);
         List<EndpointResource> resources = new ArrayList<>();
@@ -55,14 +56,14 @@ public class EndpointController extends ActivatorExceptionHandler {
         return resources;
     }
 
-    @GetMapping(value = "/endpoints/{naan}/{name}/{version}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{naan}/{name}/{apiVersion}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EndpointResource findEndpointOldVersion(
             @PathVariable String naan,
             @PathVariable String name,
-            @PathVariable String version,
+            @PathVariable String apiVersion,
             @PathVariable String endpointName) {
         log.info("getting ko endpoint " + naan + "/" + name);
-        URI id = getEndpointId(naan, name, version, endpointName);
+        URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
         Endpoint endpoint = endpoints.get(id);
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
@@ -70,17 +71,17 @@ public class EndpointController extends ActivatorExceptionHandler {
         return new EndpointResource(endpoint, shelfRoot);
     }
 
-    @GetMapping(value = "/endpoints/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EndpointResource findEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String endpointName,
-            @RequestParam(name = "v", required = false) String version) {
+            @RequestParam(name = "apiVersion", required = false) String apiVersion) {
         log.info("getting ko endpoint " + naan + "/" + name);
-        if (version == null) {
-            version = endpointHelper.getDefaultVersion(naan, name, endpointName);
+        if (apiVersion == null) {
+            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpointName);
         }
-        URI id = getEndpointId(naan, name, version, endpointName);
+        URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
         Endpoint endpoint = endpoints.get(id);
         if (endpoint == null) {
             throw new ActivatorException("Cannot find endpoint with id " + id);
@@ -88,7 +89,4 @@ public class EndpointController extends ActivatorExceptionHandler {
         return new EndpointResource(endpoint, shelfRoot);
     }
 
-    private URI getEndpointId(String naan, String name, String apiVersion, String endpoint) {
-        return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
-    }
 }

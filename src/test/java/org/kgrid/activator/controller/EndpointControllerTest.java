@@ -55,6 +55,7 @@ public class EndpointControllerTest {
         endpoint = new Endpoint(kow, ENDPOINT_NAME);
         when(endpoints.get(endpoint.getId())).thenReturn(endpoint);
         when(endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME)).thenReturn(API_VERSION);
+        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
         HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
         entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
         when(endpoints.entrySet()).thenReturn(entrySet);

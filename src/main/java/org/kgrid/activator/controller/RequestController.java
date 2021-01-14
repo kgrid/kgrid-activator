@@ -66,7 +66,7 @@ public class RequestController {
 
 
     @GetMapping(
-            value = {"/resource/{naan}/{name}/{endpoint}"},
+            value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public EndPointResult getAvailableResourceEndpoints(
@@ -80,7 +80,7 @@ public class RequestController {
     }
 
     @GetMapping(
-            value = {"/resource/{naan}/{name}/{endpoint}/**"},
+            value = {"/{naan}/{name}/{endpoint}/**"},
             produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> executeResourceEndpoint(
