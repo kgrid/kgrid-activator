@@ -1,8 +1,13 @@
 package org.kgrid.activator.Utilities;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -44,5 +49,9 @@ public class EndpointHelper {
 
     public URI createEndpointId(String naan, String name, String apiVersion, String endpoint) {
         return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
+    }
+
+    public Endpoint getEndpoint(URI endpointId){
+        return endpoints.get(endpointId);
     }
 }

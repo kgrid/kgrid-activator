@@ -3,7 +3,9 @@ package org.kgrid.activator.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.Utilities.EndpointHelper;
-import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
+import org.kgrid.activator.services.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,9 +23,6 @@ import java.net.URI;
 public class RequestController {
 
     @Autowired
-    private ActivationService activationService;
-
-    @Autowired
     private EndpointHelper endpointHelper;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -32,29 +30,11 @@ public class RequestController {
     @Value(("${kgrid.shelf.endpoint:kos}"))
     String shelfRoot;
 
-    @Autowired
-    MimetypesFileTypeMap fileTypeMap;
-
-    @PostMapping(
-            value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object executeEndpointOldVersion(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String apiVersion,
-            @PathVariable String endpoint,
-            @RequestBody String inputs,
-            @RequestHeader HttpHeaders headers) {
-        URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
-    }
-
     @PostMapping(
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public Object executeEndpoint(
+    public EndPointResult executeEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -69,11 +49,27 @@ public class RequestController {
         return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
 
+    @PostMapping(
+            value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public EndPointResult executeEndpointOldVersion(
+            @PathVariable String naan,
+            @PathVariable String name,
+            @PathVariable String apiVersion,
+            @PathVariable String endpoint,
+            @RequestBody String inputs,
+            @RequestHeader HttpHeaders headers) {
+        URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
+        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+    }
+
+
     @GetMapping(
             value = {"/resource/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public Object getAvailableResourceEndpoints(
+    public EndPointResult getAvailableResourceEndpoints(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -106,7 +102,22 @@ public class RequestController {
     }
 
     private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
-        return activationService.execute(endpointId, inputs, method, headers.getContentType());
+        Endpoint endpoint = endpointHelper.getEndpoint(endpointId);
+        MediaType contentType = headers.getContentType();
+        if (null == endpoint || !endpoint.isActive()) {
+            throw new ActivatorEndpointNotFoundException("No active endpoint found for " + endpointId);
+        }
+        if (method == HttpMethod.POST) {
+            validateContentType(contentType, endpoint);
+        }
+        return endpoint.execute(inputs, contentType);
     }
 
+    private void validateContentType(MediaType contentType, Endpoint endpoint) {
+        if (!endpoint.isSupportedContentType(contentType)) {
+            throw new ActivatorUnsupportedMediaTypeException(
+                    String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
+                            endpoint.getId(), contentType, endpoint.getSupportedContentTypes()));
+        }
+    }
 }
