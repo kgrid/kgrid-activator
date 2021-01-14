@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.Utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
@@ -21,6 +22,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
+import java.util.AbstractMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,11 +35,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class EndpointControllerTest {
     @Mock
-    private ActivationService activationService;
+    private EndpointHelper endpointHelper;
     @Mock
     private Map<URI, Endpoint> endpoints;
-    @Mock
-    private MimetypesFileTypeMap fileTypeMap;
     @InjectMocks
     EndpointController endpointController;
     private KnowledgeObjectWrapper kow;
@@ -52,7 +54,24 @@ public class EndpointControllerTest {
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
         endpoint = new Endpoint(kow, ENDPOINT_NAME);
         when(endpoints.get(endpoint.getId())).thenReturn(endpoint);
-        when(fileTypeMap.getContentType("src/test.json")).thenReturn("application/json");
+        when(endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME)).thenReturn(API_VERSION);
+        HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
+        entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
+        when(endpoints.entrySet()).thenReturn(entrySet);
+    }
+
+    @Test
+    public void testFindAllEndpoints() {
+        List<EndpointResource> allEndpoints = endpointController.findAllEndpoints();
+        EndpointResource endpointResource = allEndpoints.get(0);
+        assertEquals(ENDPOINT_ID, endpointResource.getId());
+    }
+
+    @Test
+    public void testFindEndpointsForEngine() {
+        List<EndpointResource> allEndpoints = endpointController.findEndpointsForEngine(JS_ENGINE);
+        EndpointResource endpointResource = allEndpoints.get(0);
+        assertEquals(ENDPOINT_ID, endpointResource.getId());
     }
 
     @Test
@@ -76,6 +95,13 @@ public class EndpointControllerTest {
     @Test
     public void testFindEndpointReturnsEndpointResource() {
         EndpointResource endpointResource = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
+        assertEquals(createEndpointResource(endpoint), endpointResource);
+    }
+
+    @Test
+    public void testFindEndpointReturnsEndpointResource_NullVersion() {
+        EndpointResource endpointResource = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, null);
+        verify(endpointHelper).getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
         assertEquals(createEndpointResource(endpoint), endpointResource);
     }
 
@@ -115,58 +141,6 @@ public class EndpointControllerTest {
                 });
         assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME),
                 activatorException.getMessage());
-    }
-
-    @Test
-    public void testExecuteEndpointOldVersionCallsExecuteOnActivationService() {
-        String inputs = "inputs";
-        endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType());
-    }
-
-    @Test
-    public void testExecuteEndpointOldVersionThrowsIfActivationServiceThrows() {
-        String inputs = "inputs";
-        String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType()))
-                .thenThrow(new AdapterException(adapterExceptionMessage));
-
-        AdapterException adapterException = Assert.assertThrows(AdapterException.class,
-                () -> {
-                    endpointController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-                });
-        assertEquals(adapterExceptionMessage, adapterException.getMessage());
-    }
-
-    @Test
-    public void testExecuteEndpointCallsExecuteOnActivationService() {
-        String inputs = "inputs";
-        endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-        verify(activationService).execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType());
-    }
-
-    @Test
-    public void testExecuteEndpointThrowsIfActivationServiceThrows() {
-        String inputs = "inputs";
-        String adapterExceptionMessage = "Blammo";
-        when(activationService.execute(endpoint.getId(), inputs, HttpMethod.POST, headers.getContentType()))
-                .thenThrow(new AdapterException(adapterExceptionMessage));
-
-        AdapterException myException = Assert.assertThrows(AdapterException.class,
-                () -> {
-                    endpointController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, inputs, headers);
-                });
-        assertEquals(adapterExceptionMessage, myException.getMessage());
-    }
-
-    @Test
-    public void getContentTypeReturnsCorrectType() {
-        assertEquals("application/json", endpointController.getContentType("src/test.json"));
-    }
-
-    @Test
-    public void getContentDispositionReturnsDisposition() {
-        assertEquals("inline; filename=\"test.json\"", endpointController.getContentDisposition("src/test.json"));
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
