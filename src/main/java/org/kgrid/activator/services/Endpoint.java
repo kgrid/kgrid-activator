@@ -133,7 +133,9 @@ public class Endpoint {
             throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
         }
 
-        final EndPointResult endPointResult = new EndPointResult(this.executor.execute(inputs, contentType.toString()));
+        String contentTypeString = (null==contentType) ? "" : contentType.toString();
+
+        final EndPointResult endPointResult = new EndPointResult(this.executor.execute(inputs, contentTypeString));
         endPointResult.getInfo().put("inputs", inputs);
         endPointResult.getInfo().put("ko", wrapper.getMetadata());
         return endPointResult;

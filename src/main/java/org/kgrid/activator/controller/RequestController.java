@@ -46,7 +46,7 @@ public class RequestController {
             apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
         }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointQueryVersion(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
 
     @PostMapping(
@@ -61,7 +61,7 @@ public class RequestController {
             @RequestBody String inputs,
             @RequestHeader HttpHeaders headers) {
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointQueryVersion(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
 
     @GetMapping(
@@ -75,7 +75,7 @@ public class RequestController {
             @PathVariable String endpoint,
             @RequestHeader HttpHeaders headers) {
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpointQueryVersion(endpointId, null, HttpMethod.GET, headers);
+        return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
 
     @GetMapping(
@@ -96,11 +96,11 @@ public class RequestController {
         responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
         responseHeaders.add("Content-Disposition", endpointHelper.getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
-                (InputStream) executeEndpointQueryVersion(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
+                (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
-    private EndPointResult executeEndpointQueryVersion(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
+    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
         Endpoint endpoint = endpointHelper.getEndpoint(endpointId);
         MediaType contentType = headers.getContentType();
         if (null == endpoint || !endpoint.isActive()) {
