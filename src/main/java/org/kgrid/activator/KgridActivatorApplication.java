@@ -30,8 +30,8 @@ import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
 @CrossOrigin
@@ -62,7 +62,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Bean
     public static Map<URI, Endpoint> getEndpoints() {
-        return new HashMap<>();
+        return new TreeMap<>();
     }
 
     @Bean

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Endpoint {
+public class Endpoint implements Comparable {
 
     private KnowledgeObjectWrapper wrapper;
     private Executor executor;
@@ -113,7 +113,7 @@ public class Endpoint {
     }
 
     public boolean isSupportedContentType(MediaType contentType) {
-        if(null==contentType){
+        if (null == contentType) {
             return false;
         }
         final JsonNode contentTypes = this.getService()
@@ -133,7 +133,7 @@ public class Endpoint {
             throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
         }
 
-        String contentTypeString = (null==contentType) ? "" : contentType.toString();
+        String contentTypeString = (null == contentType) ? "" : contentType.toString();
 
         final EndPointResult endPointResult = new EndPointResult(this.executor.execute(inputs, contentTypeString));
         endPointResult.getInfo().put("inputs", inputs);
@@ -141,4 +141,8 @@ public class Endpoint {
         return endPointResult;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        return ((Endpoint) o).getId().compareTo(this.getId());
+    }
 }

@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EndpointHelper {
@@ -20,7 +23,7 @@ public class EndpointHelper {
 
     public String getDefaultVersion(String naan, String name, String endpoint) {
         final List<Endpoint> allVersions = getAllVersions(naan, name, endpoint);
-        Collections.sort(allVersions, new SortedEndpoint());
+        Collections.sort(allVersions);
         return allVersions.get(0).getApiVersion();
     }
 
@@ -52,11 +55,5 @@ public class EndpointHelper {
 
     public Endpoint getEndpoint(URI endpointId) {
         return endpoints.get(endpointId);
-    }
-
-    class SortedEndpoint implements Comparator<Endpoint> {
-        public int compare(Endpoint a, Endpoint b) {
-            return b.getApiVersion().compareTo(a.getApiVersion());
-        }
     }
 }
