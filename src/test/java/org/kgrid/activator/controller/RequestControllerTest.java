@@ -37,8 +37,7 @@ public class RequestControllerTest {
     private final String RESOURCE_NAME = "file.csv";
     private final String RESOURCE_SLUG = "/source/" + RESOURCE_NAME;
     private final URI FULL_RESOURCE_URI = URI.create(ENDPOINT_URI.toString() + RESOURCE_SLUG);
-    private final URI ENDPOINT_NAME_WITH_RESOURCE_SLUG = URI.create(ENDPOINT_NAME + RESOURCE_SLUG.toString());
-    private final URI ENDPOINT_RESOURCE_URI = URI.create(NAAN + "/" + NAME + "/" + API_VERSION + "/" + ENDPOINT_NAME_WITH_RESOURCE_SLUG);
+    private final URI ENDPOINT_RESOURCE_URI = URI.create(NAAN + "/" + NAME + "/" + API_VERSION + "/" + ENDPOINT_NAME);
     private final InputStream resourceInputStream = Mockito.mock(InputStream.class);
     private final EndPointResult resourceEndpointResult = new EndPointResult(resourceInputStream);
     private EndPointResult endpointResult = new EndPointResult(OUTPUT);
@@ -54,10 +53,9 @@ public class RequestControllerTest {
         contentTypes.add(MediaType.IMAGE_GIF.toString());
         when(endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME)).thenReturn(API_VERSION);
         when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
-        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME_WITH_RESOURCE_SLUG.toString()))
+        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME))
                 .thenReturn(ENDPOINT_RESOURCE_URI);
         when(endpointHelper.getEndpoint(ENDPOINT_URI)).thenReturn(endpoint);
-        when(endpointHelper.getEndpoint(FULL_RESOURCE_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(endpointResult);
@@ -147,7 +145,7 @@ public class RequestControllerTest {
     public void testExecuteResourceEndpoint_createsNewEndpointIdForResource() {
         headers.remove("Content-Type");
         requestController.executeResourceEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers, servletRequest);
-        verify(endpointHelper).createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME_WITH_RESOURCE_SLUG.toString());
+        verify(endpointHelper).createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
     }
 
     @Test
