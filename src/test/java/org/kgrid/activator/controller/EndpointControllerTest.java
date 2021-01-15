@@ -8,24 +8,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.Utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorException;
-import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
@@ -54,7 +47,7 @@ public class EndpointControllerTest {
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
         endpoint = new Endpoint(kow, ENDPOINT_NAME);
         when(endpoints.get(endpoint.getId())).thenReturn(endpoint);
-        when(endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME)).thenReturn(API_VERSION);
+        when(endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME)).thenReturn(Collections.singletonList(endpoint));
         when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
         HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
         entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
@@ -95,15 +88,15 @@ public class EndpointControllerTest {
 
     @Test
     public void testFindEndpointReturnsEndpointResource() {
-        EndpointResource endpointResource = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
-        assertEquals(createEndpointResource(endpoint), endpointResource);
+        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
+        assertEquals(createEndpointResource(endpoint), endpointResources.get(0));
     }
 
     @Test
     public void testFindEndpointReturnsEndpointResource_NullVersion() {
-        EndpointResource endpointResource = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, null);
-        verify(endpointHelper).getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
-        assertEquals(createEndpointResource(endpoint), endpointResource);
+        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, null);
+        verify(endpointHelper).getAllVersions(NAAN, NAME, ENDPOINT_NAME);
+        assertEquals(createEndpointResource(endpoint), endpointResources.get(0));
     }
 
     @Test
@@ -114,9 +107,9 @@ public class EndpointControllerTest {
         kow.addDeployment(dumbNode);
         endpoint = new Endpoint(kow, ENDPOINT_NAME);
         endpoints.replace(endpoint.getId(), endpoint);
-        EndpointResource endpointResource = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
+        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
         assertEquals(String.format("Could not create endpoint resource for malformed endpoint: %s/%s/%s",
-                NAAN, NAME, VERSION), endpointResource.getStatus());
+                NAAN, NAME, VERSION), endpointResources.get(0).getStatus());
     }
 
     @Test

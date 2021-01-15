@@ -13,9 +13,11 @@ import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
 import java.util.AbstractMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +33,7 @@ public class EndpointHelperTest {
     private MimetypesFileTypeMap fileTypeMap;
     @InjectMocks
     EndpointHelper endpointHelper;
+    Endpoint endpoint2;
 
     private KnowledgeObjectWrapper kow =
             new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
@@ -38,10 +41,13 @@ public class EndpointHelperTest {
 
     @Before
     public void setup() {
+        URI endpoint2Uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, "2.0", ENDPOINT_NAME));
+        endpoint2 = new Endpoint(new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, "2.0")), ENDPOINT_NAME);
         kow.addService(generateServiceNode());
         kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
         HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
         entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
+        entrySet.add(new AbstractMap.SimpleEntry<>(endpoint2Uri, endpoint2));
         when(endpoints.entrySet()).thenReturn(entrySet);
         when(fileTypeMap.getContentType(ARTIFACT_ZIP)).thenReturn(APPLICATION_ZIP);
     }
@@ -51,6 +57,13 @@ public class EndpointHelperTest {
         String defaultVersion = endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
         verify(endpoints).entrySet();
         assertEquals(endpoint.getApiVersion(), defaultVersion);
+    }
+
+    @Test
+    public void testGetAllVersions() {
+        List<Endpoint> endpointVersions = endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME);
+        assertTrue(endpointVersions.contains(endpoint));
+        assertTrue(endpointVersions.contains(endpoint2));
     }
 
     @Test
@@ -73,7 +86,7 @@ public class EndpointHelperTest {
     }
 
     @Test
-    public void testCreateEndpointId(){
+    public void testCreateEndpointId() {
         URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
         assertEquals(ENDPOINT_URI, endpointId);
     }

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -72,21 +72,27 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(value = "/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EndpointResource findEndpoint(
+    public List<EndpointResource> findEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String endpointName,
             @RequestParam(name = "v", required = false) String apiVersion) {
         log.info("getting ko endpoint " + naan + "/" + name);
+        List<EndpointResource> resources = new ArrayList<>();
         if (apiVersion == null) {
-            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpointName);
+            List<Endpoint> endpoints = endpointHelper.getAllVersions(naan, name, endpointName);
+            for (Endpoint endpoint : endpoints) {
+                resources.add(new EndpointResource(endpoint, shelfRoot));
+            }
+        } else {
+            URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
+            Endpoint endpoint = endpoints.get(id);
+            if (endpoint == null) {
+                throw new ActivatorException("Cannot find endpoint with id " + id);
+            }
+            resources.add(new EndpointResource(endpoint, shelfRoot));
         }
-        URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
-        Endpoint endpoint = endpoints.get(id);
-        if (endpoint == null) {
-            throw new ActivatorException("Cannot find endpoint with id " + id);
-        }
-        return new EndpointResource(endpoint, shelfRoot);
+        return resources;
     }
 
 }
