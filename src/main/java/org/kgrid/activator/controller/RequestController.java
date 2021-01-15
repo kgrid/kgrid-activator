@@ -90,7 +90,6 @@ public class RequestController {
             @RequestHeader HttpHeaders headers,
             HttpServletRequest request) {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
-        endpoint = endpoint + "/" + artifactName;
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
