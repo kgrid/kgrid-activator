@@ -145,6 +145,7 @@ public class RequestControllerTest {
 
     @Test
     public void testExecuteResourceEndpoint_createsNewEndpointIdForResource() {
+        headers.remove("Content-Type");
         requestController.executeResourceEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers, servletRequest);
         verify(endpointHelper).createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME_WITH_RESOURCE_SLUG.toString());
     }
