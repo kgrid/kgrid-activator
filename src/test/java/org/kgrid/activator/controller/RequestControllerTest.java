@@ -68,25 +68,25 @@ public class RequestControllerTest {
 
     @Test
     public void testExecuteEndpoint_GetsDefaultVersionIfNoVersionSupplied() {
-        requestController.executeEndpoint(NAAN, NAME, null, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(NAAN, NAME, null, ENDPOINT_NAME, INPUT, headers);
         verify(endpointHelper).getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
     }
 
     @Test
     public void testExecuteEndpoint_GetsEndpointFromEndpointHelper() {
-        requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         verify(endpointHelper).getEndpoint(ENDPOINT_URI);
     }
 
     @Test
     public void testExecuteEndpoint_ChecksEndpointIsActive() {
-        requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).isActive();
     }
 
     @Test
     public void testExecuteEndpoint_ValidatesContentType_WhenHttpMethodIsPost() {
-        requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).isSupportedContentType(CONTENT_TYPE);
     }
 
@@ -94,7 +94,7 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfUnsupportedContentType() {
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(false);
         ActivatorUnsupportedMediaTypeException activatorException = assertThrows(ActivatorUnsupportedMediaTypeException.class, () -> {
-            requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         });
         assertEquals(String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
                 endpoint.getId(), CONTENT_TYPE, endpoint.getSupportedContentTypes()), activatorException.getMessage());
@@ -105,7 +105,7 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfEndpointIsNull() {
         when(endpointHelper.getEndpoint(ENDPOINT_URI)).thenReturn(null);
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         });
         assertEquals(String.format("No active endpoint found for %s", ENDPOINT_ID), activatorException.getMessage());
     }
@@ -114,26 +114,26 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfEndpointIsNotActive() {
         when(endpoint.isActive()).thenReturn(false);
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         });
         assertEquals(String.format("No active endpoint found for %s", ENDPOINT_ID), activatorException.getMessage());
     }
 
     @Test
     public void testExecuteEndpoint_ReturnsEndpointResultFromEndpoint() {
-        EndPointResult actualResult = requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        EndPointResult actualResult = requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         assertSame(endpointResult.getResult(), actualResult.getResult());
     }
 
     @Test
     public void testExecuteEndpoint_callsExecuteOnEndpoint() {
-        requestController.executeEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).execute(INPUT, CONTENT_TYPE);
     }
 
     @Test
     public void testExecuteEndpointOldVersion_callsExecuteOnEndpoint() {
-        requestController.executeEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointPathVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).execute(INPUT, CONTENT_TYPE);
     }
 

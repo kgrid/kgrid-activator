@@ -34,7 +34,7 @@ public class RequestController {
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public EndPointResult executeEndpoint(
+    public EndPointResult executeEndpointQueryVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -46,14 +46,14 @@ public class RequestController {
             apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
         }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpointQueryVersion(endpointId, inputs, HttpMethod.POST, headers);
     }
 
     @PostMapping(
             value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public EndPointResult executeEndpointOldVersion(
+    public EndPointResult executeEndpointPathVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String apiVersion,
@@ -61,9 +61,8 @@ public class RequestController {
             @RequestBody String inputs,
             @RequestHeader HttpHeaders headers) {
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+        return executeEndpointQueryVersion(endpointId, inputs, HttpMethod.POST, headers);
     }
-
 
     @GetMapping(
             value = {"/{naan}/{name}/{endpoint}"},
@@ -76,7 +75,7 @@ public class RequestController {
             @PathVariable String endpoint,
             @RequestHeader HttpHeaders headers) {
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
+        return executeEndpointQueryVersion(endpointId, null, HttpMethod.GET, headers);
     }
 
     @GetMapping(
@@ -97,11 +96,11 @@ public class RequestController {
         responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
         responseHeaders.add("Content-Disposition", endpointHelper.getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
-                (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
+                (InputStream) executeEndpointQueryVersion(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
-    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
+    private EndPointResult executeEndpointQueryVersion(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
         Endpoint endpoint = endpointHelper.getEndpoint(endpointId);
         MediaType contentType = headers.getContentType();
         if (null == endpoint || !endpoint.isActive()) {
