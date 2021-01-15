@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
-public class RequestController {
+public class RequestController extends ActivatorExceptionHandler {
 
     @Autowired
     private EndpointHelper endpointHelper;
@@ -103,6 +105,13 @@ public class RequestController {
         Endpoint endpoint = endpointHelper.getEndpoint(endpointId);
         MediaType contentType = headers.getContentType();
         if (null == endpoint || !endpoint.isActive()) {
+            String[] idParts = endpointId.toString().split("/");
+            List<Endpoint> versions = endpointHelper.getAllVersions(idParts[0], idParts[1], idParts[3]);
+            if (!versions.isEmpty()) {
+                throw new ActivatorEndpointNotFoundException("No active endpoint found for " + endpointId +
+                        " Try one of these available versions: " + versions.stream().map(Endpoint::getApiVersion)
+                        .collect(Collectors.joining(", ")));
+            }
             throw new ActivatorEndpointNotFoundException("No active endpoint found for " + endpointId);
         }
         if (method == HttpMethod.POST) {
