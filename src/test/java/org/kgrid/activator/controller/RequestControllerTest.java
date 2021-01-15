@@ -61,7 +61,7 @@ public class RequestControllerTest {
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(endpointResult);
-        when(endpoint.execute(RESOURCE_SLUG.substring(1), CONTENT_TYPE)).thenReturn(resourceEndpointResult);
+        when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceEndpointResult);
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
         when(servletRequest.getRequestURI()).thenReturn(FULL_RESOURCE_URI.toString());
     }
@@ -151,7 +151,9 @@ public class RequestControllerTest {
 
     @Test
     public void testExecuteResourceEndpoint_ExecutesEndpointWithArtifactNameForInput() {
+        headers.remove("Content-Type");
         requestController.executeResourceEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers, servletRequest);
-        verify(endpoint).execute(RESOURCE_SLUG.substring(1), CONTENT_TYPE);
+        verify(endpoint).execute(RESOURCE_SLUG.substring(1), null);
     }
+
 }
