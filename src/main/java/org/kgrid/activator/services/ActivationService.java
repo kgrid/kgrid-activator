@@ -60,24 +60,4 @@ public class ActivationService {
                 endpointKey,
                 deploymentSpec);
     }
-
-    public EndPointResult execute(URI id, Object inputs, HttpMethod method, MediaType contentType) {
-        Endpoint endpoint = endpoints.get(id);
-
-        if (null == endpoint || !endpoint.isActive()) {
-            throw new ActivatorEndpointNotFoundException("No active endpoint found for " + id);
-        }
-        if (method == HttpMethod.POST) {
-            validateContentType(contentType, endpoint);
-        }
-        return endpoint.execute(inputs, contentType);
-    }
-
-    private void validateContentType(MediaType contentType, Endpoint endpoint) {
-        if (!endpoint.isSupportedContentType(contentType)) {
-            throw new ActivatorUnsupportedMediaTypeException(
-                    String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
-                            endpoint.getId(), contentType, endpoint.getSupportedContentTypes()));
-        }
-    }
 }
