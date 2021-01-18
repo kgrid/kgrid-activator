@@ -76,6 +76,9 @@ public class RequestController extends ActivatorExceptionHandler {
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
             @RequestHeader HttpHeaders headers) {
+        if (apiVersion == null) {
+            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
+        }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
@@ -92,6 +95,9 @@ public class RequestController extends ActivatorExceptionHandler {
             @RequestHeader HttpHeaders headers,
             HttpServletRequest request) {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
+        if (apiVersion == null) {
+            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
+        }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
