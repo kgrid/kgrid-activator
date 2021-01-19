@@ -1,17 +1,12 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;

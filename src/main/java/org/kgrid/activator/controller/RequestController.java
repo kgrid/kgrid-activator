@@ -6,8 +6,6 @@ import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.Endpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -26,8 +24,6 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @Autowired
     private EndpointHelper endpointHelper;
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value(("${kgrid.shelf.endpoint:kos}"))
     String shelfRoot;
@@ -98,8 +94,8 @@ public class RequestController extends ActivatorExceptionHandler {
         }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
-        responseHeaders.add("Content-Disposition", endpointHelper.getContentDisposition(artifactName));
+        responseHeaders.add(HttpHeaders.CONTENT_TYPE, endpointHelper.getContentType(artifactName));
+        responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, endpointHelper.getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
                 (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
