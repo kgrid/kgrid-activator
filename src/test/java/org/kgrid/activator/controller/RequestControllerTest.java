@@ -37,7 +37,6 @@ public class RequestControllerTest {
     private final String RESOURCE_NAME = "file.csv";
     private final String RESOURCE_SLUG = "/source/" + RESOURCE_NAME;
     private final URI FULL_RESOURCE_URI = URI.create(ENDPOINT_URI.toString() + RESOURCE_SLUG);
-    private final URI ENDPOINT_RESOURCE_URI = URI.create(NAAN + "/" + NAME + "/" + API_VERSION + "/" + ENDPOINT_NAME);
     private final InputStream resourceInputStream = Mockito.mock(InputStream.class);
     private final EndPointResult resourceEndpointResult = new EndPointResult(resourceInputStream);
     private EndPointResult endpointResult = new EndPointResult(OUTPUT);
@@ -51,23 +50,18 @@ public class RequestControllerTest {
         ArrayList<String> contentTypes = new ArrayList<>();
         contentTypes.add(CONTENT_TYPE.toString());
         contentTypes.add(MediaType.IMAGE_GIF.toString());
-        when(endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME)).thenReturn(API_VERSION);
+        ArrayList<Endpoint> versions = new ArrayList<>();
+        versions.add(endpoint);
+        when(endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME)).thenReturn(versions);
         when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
-        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME))
-                .thenReturn(ENDPOINT_RESOURCE_URI);
         when(endpointHelper.getEndpoint(ENDPOINT_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
+        when(endpoint.getApiVersion()).thenReturn(API_VERSION);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(endpointResult);
         when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceEndpointResult);
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
         when(servletRequest.getRequestURI()).thenReturn(FULL_RESOURCE_URI.toString());
-    }
-
-    @Test
-    public void testExecuteEndpoint_GetsDefaultVersionIfNoVersionSupplied() {
-        requestController.executeEndpointQueryVersion(NAAN, NAME, null, ENDPOINT_NAME, INPUT, headers);
-        verify(endpointHelper).getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
     }
 
     @Test
@@ -96,16 +90,6 @@ public class RequestControllerTest {
         });
         assertEquals(String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
                 endpoint.getId(), CONTENT_TYPE, endpoint.getSupportedContentTypes()), activatorException.getMessage());
-
-    }
-
-    @Test
-    public void testExecuteEndpoint_ThrowsIfEndpointIsNull() {
-        when(endpointHelper.getEndpoint(ENDPOINT_URI)).thenReturn(null);
-        ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
-        });
-        assertEquals(String.format("No active endpoint found for %s", ENDPOINT_ID), activatorException.getMessage());
     }
 
     @Test
@@ -114,7 +98,8 @@ public class RequestControllerTest {
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
             requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
         });
-        assertEquals(String.format("No active endpoint found for %s", ENDPOINT_ID), activatorException.getMessage());
+        assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
+                ENDPOINT_ID, API_VERSION), activatorException.getMessage());
     }
 
     @Test
