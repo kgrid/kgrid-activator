@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.adapter.api.Adapter;
@@ -35,11 +36,11 @@ public class ActivationService {
 
     public void activateEndpoints(Map<URI, Endpoint> eps) {
         eps.forEach((key, value) -> {
-            if (value.getStatus().equals("GOOD")) {
+            if (value.getStatus().equals(EndpointStatus.LOADED.name())) {
                 Executor executor = null;
                 try {
                     executor = activateEndpoint(key, value);
-                    value.setStatus("Activated");
+                    value.setStatus(EndpointStatus.ACTIVATED.name());
                 } catch (Exception e) {
                     String message = "Could not activate " + key + ". Cause: " + e.getMessage();
                     log.warn(message + ". " + e.getClass().getSimpleName());

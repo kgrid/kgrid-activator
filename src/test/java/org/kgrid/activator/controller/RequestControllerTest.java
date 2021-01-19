@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndPointResult;
-import org.kgrid.activator.Utilities.EndpointHelper;
+import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.Endpoint;
