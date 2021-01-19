@@ -40,13 +40,8 @@ public class EndpointLoader {
         Map<URI, Endpoint> endpoints = new HashMap<>();
 
         if (ark.hasVersion()) {
-
             log.info("ArkId: " + ark.getFullArk());
-
-            // load required activation files for KO with `ark`
-            // and create a new Endpoint and put into `endpoints` map under `/naan/name/version/endpoint`
             loadKoImplementation(ark, endpoints);
-
         } else {
             JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
             if (knowledgeObjectMetadata.isArray()) {

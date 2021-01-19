@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.utils.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
@@ -56,7 +57,7 @@ public class ActivationServiceTest {
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
         when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
-        when(mockEndpoint.getStatus()).thenReturn("GOOD");
+        when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
         when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
         endpointMap.put(ENDPOINT_URI, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
@@ -118,11 +119,10 @@ public class ActivationServiceTest {
                 KoCreationTestHelper.ENDPOINT_ID, exceptionMessage));
     }
 
-
     @Test
     public void activateSetsEndpointStatusToActivated() {
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus("Activated");
+        verify(mockEndpoint).setStatus(EndpointStatus.ACTIVATED.name());
     }
 
     @Test

@@ -52,12 +52,10 @@ public class AdapterLoader {
     }
 
     private void registerHealthEndpoint(Adapter adapter) {
-        HealthIndicator types = () ->
+        HealthIndicator indicator = () ->
                 Health.status(adapter.status())
-                        .withDetail("types", adapter.getEngines())
+                        .withDetail("engines", adapter.getEngines())
                         .build();
-        HealthIndicator indicator =
-                types;
         try {
             registry.registerContributor(adapter.getClass().getName(), indicator);
         } catch (IllegalStateException e) {
