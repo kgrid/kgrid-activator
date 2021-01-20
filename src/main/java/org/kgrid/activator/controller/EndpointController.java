@@ -1,6 +1,6 @@
 package org.kgrid.activator.controller;
 
-import org.kgrid.activator.Utilities.EndpointHelper;
+import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.slf4j.Logger;

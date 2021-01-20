@@ -2,7 +2,7 @@ package org.kgrid.activator.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.EndPointResult;
-import org.kgrid.activator.Utilities.EndpointHelper;
+import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.Endpoint;
@@ -85,8 +85,8 @@ public class RequestController extends ActivatorExceptionHandler {
 
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Content-Type", endpointHelper.getContentType(artifactName));
-        responseHeaders.add("Content-Disposition", endpointHelper.getContentDisposition(artifactName));
+        responseHeaders.add(HttpHeaders.CONTENT_TYPE, endpointHelper.getContentType(artifactName));
+        responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, endpointHelper.getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
                 (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);

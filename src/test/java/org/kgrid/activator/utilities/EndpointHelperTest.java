@@ -1,4 +1,4 @@
-package org.kgrid.activator.Utilities;
+package org.kgrid.activator.utilities;
 
 import org.junit.Before;
 import org.junit.Test;

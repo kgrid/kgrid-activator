@@ -3,6 +3,7 @@ package org.kgrid.activator.controller;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.kgrid.activator.EndpointLoader;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
@@ -64,7 +65,7 @@ public class ActivationController {
         Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
-                endpoint.setStatus("GOOD"); // reset status so it can be activated
+                endpoint.setStatus(EndpointStatus.LOADED.name()); // reset status so it can be activated
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }

@@ -1,4 +1,4 @@
-package org.kgrid.activator.Utilities;
+package org.kgrid.activator.utilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;

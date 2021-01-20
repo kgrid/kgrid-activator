@@ -1,5 +1,6 @@
 package org.kgrid.activator.services;
 
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -26,7 +27,8 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
         int eps = endpoints.size();
         AtomicInteger activatedEps = new AtomicInteger();
         endpoints.forEach((endpointId, endpoint) -> {
-            if (endpoint.getStatus().equals("GOOD") || endpoint.getStatus().equals("Activated")) {
+            if (endpoint.getStatus().equals(EndpointStatus.LOADED.name())
+                    || endpoint.getStatus().equals(EndpointStatus.ACTIVATED.name())) {
                 activatedEps.getAndIncrement();
             }
         });

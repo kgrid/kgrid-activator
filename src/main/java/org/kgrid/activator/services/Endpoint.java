@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.EndPointResult;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
@@ -23,7 +24,7 @@ public class Endpoint implements Comparable<Endpoint> {
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;
-        this.status = "GOOD";
+        this.status = EndpointStatus.LOADED.name();
         this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
     }
@@ -68,7 +69,7 @@ public class Endpoint implements Comparable<Endpoint> {
     }
 
     public Boolean isActive() {
-        return status != null && status.equals("Activated");
+        return status != null && status.equals(EndpointStatus.ACTIVATED.name());
     }
 
     public void setStatus(String status) {

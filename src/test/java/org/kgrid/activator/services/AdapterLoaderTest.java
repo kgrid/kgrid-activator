@@ -90,8 +90,8 @@ public class AdapterLoaderTest {
             eq(MockAdapter.class.getName()), healthIndicatorArgumentCaptor.capture());
     HealthIndicator healthIndicator = healthIndicatorArgumentCaptor.getValue();
     Health health = healthIndicator.getHealth(true);
-    Collection types = (Collection) health.getDetails().get("types");
-    assertTrue(types.contains(MOCK_ADAPTER_ENGINE));
+    Collection engines = (Collection) health.getDetails().get("engines");
+    assertTrue(engines.contains(MOCK_ADAPTER_ENGINE));
   }
 
   @Test
