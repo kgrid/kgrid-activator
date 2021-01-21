@@ -27,7 +27,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,18 +65,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         return new TreeMap<>();
     }
 
-    @Bean
-    public static MimetypesFileTypeMap getFilemap() {
-        MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
-        fileTypeMap.addMimeTypes(
-                "application/yaml yaml YAML\n"
-                        + "application/json json JSON\n"
-                        + "text/javascript js JS\n"
-                        + "application/pdf pdf PDF\n"
-                        + "text/csv csv CSV\n"
-                        + "application/zip zip ZIP");
-        return fileTypeMap;
-    }
 
     @Bean
     public CorsFilter corsFilter() {
