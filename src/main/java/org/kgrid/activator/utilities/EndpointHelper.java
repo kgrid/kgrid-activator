@@ -1,6 +1,7 @@
 package org.kgrid.activator.utilities;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,10 @@ public class EndpointHelper {
                 versions.add(entry.getValue());
             }
         }
+        if (versions.isEmpty()) {
+            throw new ActivatorEndpointNotFoundException(String.format("No active endpoints found for %s/%s/%s",
+                    naan, name, endpoint));
+        }
         return versions;
     }
 
@@ -50,6 +55,9 @@ public class EndpointHelper {
     }
 
     public URI createEndpointId(String naan, String name, String apiVersion, String endpoint) {
+        if (apiVersion == null) {
+            apiVersion = getDefaultVersion(naan, name, endpoint);
+        }
         return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
     }
 

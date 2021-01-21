@@ -3,6 +3,7 @@ package org.kgrid.activator.utilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
@@ -11,13 +12,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,9 +32,9 @@ public class EndpointHelperTest {
     EndpointHelper endpointHelper;
     Endpoint endpoint2;
 
-    private KnowledgeObjectWrapper kow =
+    private final KnowledgeObjectWrapper kow =
             new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
-    private Endpoint endpoint = new Endpoint(kow, ENDPOINT_NAME);
+    private final Endpoint endpoint = new Endpoint(kow, ENDPOINT_NAME);
 
     @Before
     public void setup() {
@@ -67,6 +64,16 @@ public class EndpointHelperTest {
     }
 
     @Test
+    public void testGetAllVersions_throwsIfNoVersionsFound() {
+        when(endpoints.entrySet()).thenReturn(Collections.emptySet());
+        ActivatorEndpointNotFoundException activatorException =
+                assertThrows(ActivatorEndpointNotFoundException.class, () ->
+                        endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME));
+        assertEquals(String.format("No active endpoints found for %s/%s/%s",
+                NAAN, NAME, ENDPOINT_NAME), activatorException.getMessage());
+    }
+
+    @Test
     public void testGetContentType() {
         String contentType = endpointHelper.getContentType(ARTIFACT_ZIP);
         verify(fileTypeMap).getContentType(ARTIFACT_ZIP);
@@ -89,5 +96,17 @@ public class EndpointHelperTest {
     public void testCreateEndpointId() {
         URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
         assertEquals(ENDPOINT_URI, endpointId);
+    }
+
+    @Test
+    public void testCreateEndpointId_getsDefaultVersion() {
+        URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, null, ENDPOINT_NAME);
+        assertEquals(ENDPOINT_URI, endpointId);
+    }
+
+    @Test
+    public void testGetEndpointCallsEndpointMap() {
+        endpointHelper.getEndpoint(ENDPOINT_URI);
+        verify(endpoints).get(ENDPOINT_URI);
     }
 }

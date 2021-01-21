@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Endpoint implements Comparable {
+public class Endpoint implements Comparable<Endpoint> {
 
     private KnowledgeObjectWrapper wrapper;
     private Executor executor;
@@ -143,7 +143,7 @@ public class Endpoint implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return ((Endpoint) o).getId().compareTo(this.getId());
+    public int compareTo(Endpoint endpoint) {
+        return endpoint.getId().compareTo(this.getId());
     }
 }

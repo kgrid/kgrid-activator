@@ -39,10 +39,6 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestBody String inputs,
             @RequestHeader HttpHeaders headers) {
-
-        if (apiVersion == null) {
-            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
-        }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
     }
@@ -72,9 +68,6 @@ public class RequestController extends ActivatorExceptionHandler {
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
             @RequestHeader HttpHeaders headers) {
-        if (apiVersion == null) {
-            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
-        }
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
@@ -89,9 +82,7 @@ public class RequestController extends ActivatorExceptionHandler {
             @RequestHeader HttpHeaders headers,
             HttpServletRequest request) {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
-        if (apiVersion == null) {
-            apiVersion = endpointHelper.getDefaultVersion(naan, name, endpoint);
-        }
+
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add(HttpHeaders.CONTENT_TYPE, endpointHelper.getContentType(artifactName));
@@ -112,7 +103,6 @@ public class RequestController extends ActivatorExceptionHandler {
                         " Try one of these available versions: " + versions.stream().map(Endpoint::getApiVersion)
                         .collect(Collectors.joining(", ")));
             }
-            throw new ActivatorEndpointNotFoundException("No active endpoint found for " + endpointId);
         }
         if (method == HttpMethod.POST) {
             validateContentType(contentType, endpoint);
