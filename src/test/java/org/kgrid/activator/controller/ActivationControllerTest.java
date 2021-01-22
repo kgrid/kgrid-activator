@@ -1,7 +1,5 @@
 package org.kgrid.activator.controller;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,32 +41,26 @@ public class ActivationControllerTest {
     @InjectMocks
     ActivationController activationController;
 
-    private Map<URI, Endpoint> endpointMapFromLoader = new HashMap<>();
-    private Endpoint nodeEndpoint;
-    private Map<URI, Endpoint> justNodeEndpoints = new HashMap<>();
+    private final Map<URI, Endpoint> endpointMapFromLoader = new HashMap<>();
+    private final Map<URI, Endpoint> justNodeEndpoints = new HashMap<>();
     ArrayList endpointList = new ArrayList();
-    JsonArray activationResults = new JsonArray();
-    private KnowledgeObjectWrapper jsKow;
-    private KnowledgeObjectWrapper nodeKow;
-    private Endpoint jsEndpoint;
 
     @Before
     public void setup() {
-        jsKow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
+        KnowledgeObjectWrapper jsKow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
         jsKow.addService(generateServiceNode());
         jsKow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
-        nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
+        KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
         nodeKow.addService(generateServiceNode());
         nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(NODE_ENGINE, NODE_ENDPOINT_NAME));
-        jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
-        nodeEndpoint = new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
+        Endpoint jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
+        Endpoint nodeEndpoint = new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
         URI jsEndpointUri = URI.create(ENDPOINT_NAME);
         URI nodeEndpointUri = URI.create(NODE_ENDPOINT_NAME);
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
         endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
 
         justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
-        activationResults = getActivationResults(endpointMapFromLoader);
 
         endpointList.add(jsEndpoint);
         endpointList.add(nodeEndpoint);
@@ -173,18 +165,5 @@ public class ActivationControllerTest {
     public void testActivateKoVersionPutsKoEndpointsInGlobalMap() {
         activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
         verify(globalEndpoints).putAll(justNodeEndpoints);
-    }
-
-    private JsonArray getActivationResults(Map<URI, Endpoint> endpoints) {
-        JsonArray endpointActivations = new JsonArray();
-
-        endpoints.values().forEach(endpoint -> {
-            JsonObject endpointActivationResult = new JsonObject();
-            endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
-            endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
-            endpointActivationResult.addProperty("status", endpoint.getStatus());
-            endpointActivations.add(endpointActivationResult);
-        });
-        return endpointActivations;
     }
 }
