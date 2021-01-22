@@ -2,10 +2,10 @@ package org.kgrid.activator.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.EndPointResult;
-import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.utilities.EndpointHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin
 public class RequestController extends ActivatorExceptionHandler {
+
 
     @Autowired
     private EndpointHelper endpointHelper;
@@ -61,7 +62,6 @@ public class RequestController extends ActivatorExceptionHandler {
     @GetMapping(
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
     public EndPointResult getResourceEndpoints(
             @PathVariable String naan,
             @PathVariable String name,
@@ -72,8 +72,7 @@ public class RequestController extends ActivatorExceptionHandler {
         return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
     }
 
-    @GetMapping(value = {"/{naan}/{name}/{endpoint}/**"})
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = {"/{naan}/{name}/{endpoint}/**"}, produces = MediaType.ALL_VALUE)
     public ResponseEntity<Object> executeResourceEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
@@ -85,11 +84,27 @@ public class RequestController extends ActivatorExceptionHandler {
 
         URI endpointId = endpointHelper.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add(HttpHeaders.CONTENT_TYPE, endpointHelper.getContentType(artifactName));
+        final String contentType = endpointHelper.getContentType(artifactName);
+        if (!isValidAcceptType(headers, contentType)) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+        responseHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
         responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, endpointHelper.getContentDisposition(artifactName));
         return new ResponseEntity<>(new InputStreamResource(
                 (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
+    }
+
+    private boolean isValidAcceptType(HttpHeaders headers, String contentType) {
+        if (!headers.containsKey("Accept")) {
+            return true;
+        }
+        for (MediaType acceptType : headers.getAccept()) {
+            if (acceptType.isCompatibleWith(MediaType.parseMediaType(contentType))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
