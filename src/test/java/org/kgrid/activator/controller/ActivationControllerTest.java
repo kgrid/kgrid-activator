@@ -1,7 +1,7 @@
 package org.kgrid.activator.controller;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndpointLoader;
@@ -48,22 +48,25 @@ public class ActivationControllerTest {
     private final Map<URI, Endpoint> justNodeEndpoints = new HashMap<>();
     ArrayList endpointList = new ArrayList();
 
-    @Before
+    @BeforeEach
     public void setup() {
         KnowledgeObjectWrapper jsKow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
         jsKow.addService(generateServiceNode());
         jsKow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
+        Endpoint jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
+        URI jsEndpointUri = URI.create(ENDPOINT_NAME);
+
         KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
         nodeKow.addService(generateServiceNode());
         nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(NODE_ENGINE, NODE_ENDPOINT_NAME));
-        Endpoint jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
         Endpoint nodeEndpoint = new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
-        URI jsEndpointUri = URI.create(ENDPOINT_NAME);
         URI nodeEndpointUri = URI.create(NODE_ENDPOINT_NAME);
+
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
         endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
         justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
         endpointList.add(jsEndpoint);
+
         endpointList.add(nodeEndpoint);
         when(globalEndpoints.values()).thenReturn(endpointList);
         when(endpointLoader.load()).thenReturn(endpointMapFromLoader);
