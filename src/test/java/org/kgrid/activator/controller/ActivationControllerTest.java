@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,9 +60,7 @@ public class ActivationControllerTest {
         URI nodeEndpointUri = URI.create(NODE_ENDPOINT_NAME);
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
         endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
-
         justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
-
         endpointList.add(jsEndpoint);
         endpointList.add(nodeEndpoint);
         when(globalEndpoints.values()).thenReturn(endpointList);
@@ -71,99 +70,45 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateClearsEndpointList() {
-        activationController.activate();
-        verify(globalEndpoints).clear();
-    }
-
-    @Test
-    public void testActivateLoadsEndpoints() {
-        activationController.activate();
-        verify(endpointLoader).load();
-    }
-
-    @Test
-    public void testActivateAddsLoadedEndpointsToGlobalMap() {
+    public void testActivateInteractions() {
         RedirectView redirectView = activationController.activate();
-        verify(globalEndpoints).putAll(endpointMapFromLoader);
-        assertEquals("/endpoints", redirectView.getUrl());
+        assertAll(
+                () -> verify(globalEndpoints).clear(),
+                () -> verify(endpointLoader).load(),
+                () -> verify(globalEndpoints).putAll(endpointMapFromLoader),
+                () -> verify(activationService).activateEndpoints(globalEndpoints),
+                () -> assertEquals("/endpoints", redirectView.getUrl())
+        );
     }
 
     @Test
-    public void testActivateRedirectsToEndpoints() {
-        RedirectView redirectView = activationController.activate();
-        assertEquals("/endpoints", redirectView.getUrl());
-    }
-
-    @Test
-    public void testActivateForEngineRedirectsToEndpointsForEngine() {
-        RedirectView redirectView = activationController.activateForEngine("javascript");
-        assertEquals("/endpoints/javascript", redirectView.getUrl());
-    }
-
-    @Test
-    public void testActivateActivatesLoadedEndpoints() {
-        activationController.activate();
-        verify(activationService).activateEndpoints(globalEndpoints);
-    }
-
-    @Test
-    public void testRefreshClearsEndpointList() {
-        activationController.activate();
-        verify(globalEndpoints).clear();
-    }
-
-    @Test
-    public void testRefreshLoadsEndpoints() {
-        activationController.activate();
-        verify(endpointLoader).load();
-    }
-
-    @Test
-    public void testRefreshAddsLoadedEndpointsToGlobalMap() {
-        activationController.activate();
-        verify(globalEndpoints).putAll(endpointMapFromLoader);
-    }
-
-    @Test
-    public void testRefreshActivatesLoadedEndpoints() {
-        activationController.activate();
-        verify(activationService).activateEndpoints(globalEndpoints);
-    }
-
-    @Test
-    public void testActivateForEngineActivatesOnlyEngineExndpoints() {
-        activationController.activateForEngine(NODE_ENGINE);
-        verify(activationService).activateEndpoints(justNodeEndpoints);
-    }
-
-    @Test
-    public void testActivateForEnginePutsOnlyEngineEndpointsInGlobalMap() {
-        activationController.activateForEngine(NODE_ENGINE);
-        verify(globalEndpoints).putAll(justNodeEndpoints);
+    public void testActivateForEngineActivatesEngineEndpointsAndPutsThemInMap() {
+        RedirectView redirectView = activationController.activateForEngine(NODE_ENGINE);
+        assertAll(
+                () -> verify(activationService).activateEndpoints(justNodeEndpoints),
+                () -> verify(globalEndpoints).putAll(justNodeEndpoints),
+                () -> assertEquals("/endpoints/" + NODE_ENGINE, redirectView.getUrl())
+        );
     }
 
     @Test
     public void testActivateKoLoadsOnlyKoEndpoints() {
-        activationController.activateKo(NAAN, NAME);
-        verify(endpointLoader).load(new ArkId(NAAN, NAME));
-    }
-
-    @Test
-    public void testActivateKoPutsKoEndpointsInGlobalMap() {
-        activationController.activateKo(NODE_NAAN, NODE_NAME);
-        verify(globalEndpoints).putAll(justNodeEndpoints);
-    }
-
-    @Test
-    public void testActivateKoVersionLoadsOnlyKoEndpoints() {
-        activationController.activateKoVersion(NAAN, NAME, API_VERSION);
-        verify(endpointLoader).load(new ArkId(NAAN, NAME, API_VERSION));
+        RedirectView redirectView = activationController.activateKo(NODE_NAAN, NODE_NAME);
+        assertAll(
+                () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME)),
+                () -> verify(globalEndpoints).putAll(justNodeEndpoints),
+                () -> assertEquals("/endpoints", redirectView.getUrl())
+        );
     }
 
     @Test
     public void testActivateKoVersionPutsKoEndpointsInGlobalMap() {
-        activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
-        verify(globalEndpoints).putAll(justNodeEndpoints);
+        RedirectView redirectView = activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
+        assertAll(
+                () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION)),
+                () -> verify(activationService).activateEndpoints(justNodeEndpoints),
+                () -> verify(globalEndpoints).putAll(justNodeEndpoints),
+                ()-> assertEquals("/endpoints",redirectView.getUrl())
+        );
     }
 }
