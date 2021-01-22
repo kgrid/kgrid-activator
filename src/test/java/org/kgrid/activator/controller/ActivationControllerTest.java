@@ -72,7 +72,7 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateInteractions() {
+    public void testActivateInteractionsAndResult() {
         RedirectView redirectView = activationController.activate();
         assertAll(
                 () -> verify(globalEndpoints).clear(),
@@ -84,7 +84,7 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateForEngineActivatesEngineEndpointsAndPutsThemInMap() {
+    public void testActivateForEngineInteractionsAndResult() {
         RedirectView redirectView = activationController.activateForEngine(NODE_ENGINE);
         assertAll(
                 () -> verify(activationService).activateEndpoints(justNodeEndpoints),
@@ -94,7 +94,7 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateKoLoadsOnlyKoEndpoints() {
+    public void testActivateKoInteractionsAndResult() {
         RedirectView redirectView = activationController.activateKo(NODE_NAAN, NODE_NAME);
         assertAll(
                 () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME)),
@@ -104,7 +104,7 @@ public class ActivationControllerTest {
     }
 
     @Test
-    public void testActivateKoVersionPutsKoEndpointsInGlobalMap() {
+    public void testActivateKoVersionInteractionsAndResult() {
         RedirectView redirectView = activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
         assertAll(
                 () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION)),
