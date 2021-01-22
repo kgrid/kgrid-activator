@@ -2,6 +2,7 @@ package org.kgrid.activator.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActivationControllerTest {
     public static final String NODE_ENDPOINT_NAME = "/node-endpoint";
     public static final String NODE_NAAN = "node-naan";
