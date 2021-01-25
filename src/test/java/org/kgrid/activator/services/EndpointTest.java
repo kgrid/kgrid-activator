@@ -30,15 +30,15 @@ public class EndpointTest {
 
     private String input = "input";
     private String result = "result";
-    private final JsonNode metadata = generateMetadata(NAAN, NAME, VERSION);
+    private final JsonNode metadata = generateMetadata(JS_NAAN, JS_NAME, JS_VERSION);
 
     @Before
     public void setUp() {
 
         wrapper = new KnowledgeObjectWrapper(metadata);
-        wrapper.addService(KoCreationTestHelper.generateServiceNode());
-        wrapper.addDeployment(KoCreationTestHelper.getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
-        endpoint = new Endpoint(wrapper, ENDPOINT_NAME);
+        wrapper.addService(KoCreationTestHelper.generateServiceNode(JS_ENGINE));
+        wrapper.addDeployment(KoCreationTestHelper.getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME));
+        endpoint = new Endpoint(wrapper, JS_ENDPOINT_NAME);
         endpoint.setExecutor(executor);
         when(executor.execute(input, CONTENT_TYPE.toString())).thenReturn(result);
     }
@@ -62,7 +62,7 @@ public class EndpointTest {
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
             endpoint.execute(input, CONTENT_TYPE);
         });
-        assertEquals("No executor found for " + ENDPOINT_ID, activatorException.getMessage());
+        assertEquals("No executor found for " + JS_ENDPOINT_ID, activatorException.getMessage());
     }
 
     @Test

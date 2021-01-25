@@ -33,17 +33,17 @@ public class EndpointHelperTest {
     Endpoint endpoint2;
 
     private final KnowledgeObjectWrapper kow =
-            new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
-    private final Endpoint endpoint = new Endpoint(kow, ENDPOINT_NAME);
+            new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, JS_VERSION));
+    private final Endpoint endpoint = new Endpoint(kow, JS_ENDPOINT_NAME);
 
     @Before
     public void setup() {
-        URI endpoint2Uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, "2.0", ENDPOINT_NAME));
-        endpoint2 = new Endpoint(new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, "2.0")), ENDPOINT_NAME);
-        kow.addService(generateServiceNode());
-        kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
+        URI endpoint2Uri = URI.create(String.format("%s/%s/%s/%s", JS_NAAN, JS_NAME, "2.0", JS_ENDPOINT_NAME));
+        endpoint2 = new Endpoint(new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, "2.0")), JS_ENDPOINT_NAME);
+        kow.addService(generateServiceNode(JS_ENGINE));
+        kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME));
         HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
-        entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
+        entrySet.add(new AbstractMap.SimpleEntry<>(JS_ENDPOINT_URI, endpoint));
         entrySet.add(new AbstractMap.SimpleEntry<>(endpoint2Uri, endpoint2));
         when(endpoints.entrySet()).thenReturn(entrySet);
         when(fileTypeMap.getContentType(ARTIFACT_ZIP)).thenReturn(APPLICATION_ZIP);
@@ -51,14 +51,14 @@ public class EndpointHelperTest {
 
     @Test
     public void testGetDefaultVersion() {
-        String defaultVersion = endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
+        String defaultVersion = endpointHelper.getDefaultVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME);
         verify(endpoints).entrySet();
         assertEquals(endpoint.getApiVersion(), defaultVersion);
     }
 
     @Test
     public void testGetAllVersions() {
-        List<Endpoint> endpointVersions = endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME);
+        List<Endpoint> endpointVersions = endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME);
         assertTrue(endpointVersions.contains(endpoint));
         assertTrue(endpointVersions.contains(endpoint2));
     }
@@ -68,9 +68,9 @@ public class EndpointHelperTest {
         when(endpoints.entrySet()).thenReturn(Collections.emptySet());
         ActivatorEndpointNotFoundException activatorException =
                 assertThrows(ActivatorEndpointNotFoundException.class, () ->
-                        endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME));
+                        endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME));
         assertEquals(String.format("No active endpoints found for %s/%s/%s",
-                NAAN, NAME, ENDPOINT_NAME), activatorException.getMessage());
+                JS_NAAN, JS_NAME, JS_ENDPOINT_NAME), activatorException.getMessage());
     }
 
     @Test
@@ -94,19 +94,19 @@ public class EndpointHelperTest {
 
     @Test
     public void testCreateEndpointId() {
-        URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
-        assertEquals(ENDPOINT_URI, endpointId);
+        URI endpointId = endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
+        assertEquals(JS_ENDPOINT_URI, endpointId);
     }
 
     @Test
     public void testCreateEndpointId_getsDefaultVersion() {
-        URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, null, ENDPOINT_NAME);
-        assertEquals(ENDPOINT_URI, endpointId);
+        URI endpointId = endpointHelper.createEndpointId(JS_NAAN, JS_NAME, null, JS_ENDPOINT_NAME);
+        assertEquals(JS_ENDPOINT_URI, endpointId);
     }
 
     @Test
     public void testGetEndpointCallsEndpointMap() {
-        endpointHelper.getEndpoint(ENDPOINT_URI);
-        verify(endpoints).get(ENDPOINT_URI);
+        endpointHelper.getEndpoint(JS_ENDPOINT_URI);
+        verify(endpoints).get(JS_ENDPOINT_URI);
     }
 }

@@ -47,19 +47,19 @@ public class ActivationServiceTest {
 
     @Before
     public void setup() {
-        deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME);
-        metadata = generateMetadata(NAAN, NAME, VERSION);
+        deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME);
+        metadata = generateMetadata(JS_NAAN, JS_NAME, JS_VERSION);
         EndPointResult endPointResult = new EndPointResult(null);
         endPointResult.getInfo().put("inputs", input);
         endPointResult.getInfo().put("ko", metadata);
         when(adapterResolver.getAdapter(JS_ENGINE)).thenReturn(adapter);
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
-        when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
-        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
-        when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
+        when(koRepo.getObjectLocation(JS_ARK_ID)).thenReturn(OBJECT_LOCATION);
+        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + JS_ENDPOINT_NAME).get(POST_HTTP_METHOD));
+        when(mockEndpoint.getArkId()).thenReturn(JS_ARK_ID);
         when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
         when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
-        endpointMap.put(ENDPOINT_URI, mockEndpoint);
+        endpointMap.put(JS_ENDPOINT_URI, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
 
@@ -78,15 +78,15 @@ public class ActivationServiceTest {
     @Test
     public void activateGetsKoLocationFromRepo() {
         activationService.activateEndpoints(endpointMap);
-        verify(koRepo).getObjectLocation(ARK_ID);
+        verify(koRepo).getObjectLocation(JS_ARK_ID);
     }
 
     @Test
     public void activateCallsActivateOnAdapter() {
         activationService.activateEndpoints(endpointMap);
         verify(adapter).activate(OBJECT_LOCATION,
-                ENDPOINT_URI,
-                deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
+                JS_ENDPOINT_URI,
+                deploymentJson.get("/" + JS_ENDPOINT_NAME).get(POST_HTTP_METHOD));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ActivationServiceTest {
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setStatus(String.format("Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, exceptionMessage));
+                KoCreationTestHelper.JS_ENDPOINT_ID, exceptionMessage));
     }
 
     @Test
@@ -133,6 +133,6 @@ public class ActivationServiceTest {
         activationService.activateEndpoints(endpointMap);
         verify(mockEndpoint).setStatus(String.format(
                 "Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, message));
+                KoCreationTestHelper.JS_ENDPOINT_ID, message));
     }
 }

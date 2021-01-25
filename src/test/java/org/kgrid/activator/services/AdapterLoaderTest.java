@@ -49,15 +49,14 @@ public class AdapterLoaderTest {
   @InjectMocks
   private AdapterLoader adapterLoader;
   private final Map<URI, Endpoint> endpoints = new HashMap<>();
-  private final URI endpointUri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME));
-  private final KnowledgeObjectWrapper kow = new KnowledgeObjectWrapper(generateMetadata(NAAN,NAME,VERSION));
+  private final URI endpointUri = URI.create(String.format("%s/%s/%s/%s", JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME));
+  private final KnowledgeObjectWrapper kow = new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, JS_VERSION));
   private final Endpoint endpoint = new Endpoint(
-          kow, ENDPOINT_NAME);
+          kow, JS_ENDPOINT_NAME);
   private final String EXECUTOR_RESULT = "executed";
 
   @Before
   public void setup() {
-
     endpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
     endpoints.put(endpointUri, endpoint);
     when(cdoStore.getBinaryStream(endpointUri)).thenReturn(null);
@@ -119,7 +118,7 @@ public class AdapterLoaderTest {
     AdapterException adapterException = Assert.assertThrows(AdapterException.class,
             () -> activationContext.getExecutor(endpointUri.toString()));
     Assertions.assertEquals(
-            "Can't find executor in app context for endpoint naan/name/ApiVersion/endpoint",
+            String.format("Can't find executor in app context for endpoint %s", JS_ENDPOINT_ID),
             adapterException.getMessage());
   }
 

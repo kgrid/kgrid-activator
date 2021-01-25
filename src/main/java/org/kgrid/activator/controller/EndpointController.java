@@ -57,7 +57,7 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(value = "/{naan}/{name}/{apiVersion}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EndpointResource findEndpointOldVersion(
+    public EndpointResource findEndpointPathVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String apiVersion,
@@ -72,7 +72,7 @@ public class EndpointController extends ActivatorExceptionHandler {
     }
 
     @GetMapping(value = "/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EndpointResource> findEndpoint(
+    public List<EndpointResource> findEndpointQueryVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String endpointName,

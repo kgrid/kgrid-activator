@@ -36,7 +36,7 @@ public class RequestControllerTest {
     private final String OUTPUT = "output";
     private final String RESOURCE_NAME = "file.csv";
     private final String RESOURCE_SLUG = "/source/" + RESOURCE_NAME;
-    private final URI FULL_RESOURCE_URI = URI.create(ENDPOINT_URI.toString() + RESOURCE_SLUG);
+    private final URI FULL_RESOURCE_URI = URI.create(JS_ENDPOINT_URI.toString() + RESOURCE_SLUG);
     private final InputStream resourceInputStream = Mockito.mock(InputStream.class);
     private final EndPointResult resourceEndpointResult = new EndPointResult(resourceInputStream);
     private EndPointResult endpointResult = new EndPointResult(OUTPUT);
@@ -52,11 +52,11 @@ public class RequestControllerTest {
         contentTypes.add(MediaType.IMAGE_GIF.toString());
         ArrayList<Endpoint> versions = new ArrayList<>();
         versions.add(endpoint);
-        when(endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME)).thenReturn(versions);
-        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
-        when(endpointHelper.getEndpoint(ENDPOINT_URI)).thenReturn(endpoint);
+        when(endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(versions);
+        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(endpointHelper.getEndpoint(JS_ENDPOINT_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
-        when(endpoint.getApiVersion()).thenReturn(API_VERSION);
+        when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(endpointResult);
         when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceEndpointResult);
@@ -66,19 +66,19 @@ public class RequestControllerTest {
 
     @Test
     public void testExecuteEndpoint_GetsEndpointFromEndpointHelper() {
-        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
-        verify(endpointHelper).getEndpoint(ENDPOINT_URI);
+        requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+        verify(endpointHelper).getEndpoint(JS_ENDPOINT_URI);
     }
 
     @Test
     public void testExecuteEndpoint_ChecksEndpointIsActive() {
-        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).isActive();
     }
 
     @Test
     public void testExecuteEndpoint_ValidatesContentType_WhenHttpMethodIsPost() {
-        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).isSupportedContentType(CONTENT_TYPE);
     }
 
@@ -86,7 +86,7 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfUnsupportedContentType() {
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(false);
         ActivatorUnsupportedMediaTypeException activatorException = assertThrows(ActivatorUnsupportedMediaTypeException.class, () -> {
-            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         });
         assertEquals(String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
                 endpoint.getId(), CONTENT_TYPE, endpoint.getSupportedContentTypes()), activatorException.getMessage());
@@ -96,47 +96,47 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfEndpointIsNotActive() {
         when(endpoint.isActive()).thenReturn(false);
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         });
         assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
-                ENDPOINT_ID, API_VERSION), activatorException.getMessage());
+                JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
     }
 
     @Test
     public void testExecuteEndpoint_ReturnsEndpointResultFromEndpoint() {
-        EndPointResult actualResult = requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        EndPointResult actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         assertSame(endpointResult.getResult(), actualResult.getResult());
     }
 
     @Test
     public void testExecuteEndpoint_callsExecuteOnEndpoint() {
-        requestController.executeEndpointQueryVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).execute(INPUT, CONTENT_TYPE);
     }
 
     @Test
     public void testExecuteEndpointOldVersion_callsExecuteOnEndpoint() {
-        requestController.executeEndpointPathVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         verify(endpoint).execute(INPUT, CONTENT_TYPE);
     }
 
     @Test
     public void testGetAvailableResourceEndpoints_callsExecuteOnEndpoint() {
-        requestController.getResourceEndpoints(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers);
+        requestController.getResourceEndpoints(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers);
         verify(endpoint).execute(null, CONTENT_TYPE);
     }
 
     @Test
     public void testExecuteResourceEndpoint_createsNewEndpointIdForResource() {
         headers.remove("Content-Type");
-        requestController.executeResourceEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers, servletRequest);
-        verify(endpointHelper).createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
+        requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
+        verify(endpointHelper).createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
     @Test
     public void testExecuteResourceEndpoint_ExecutesEndpointWithArtifactNameForInput() {
         headers.remove("Content-Type");
-        requestController.executeResourceEndpoint(NAAN, NAME, API_VERSION, ENDPOINT_NAME, headers, servletRequest);
+        requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
         verify(endpoint).execute(RESOURCE_SLUG.substring(1), null);
     }
 

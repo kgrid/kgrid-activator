@@ -9,7 +9,6 @@ import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
-import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,11 +29,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Activation Controller Tests")
 public class ActivationControllerTest {
-    public static final String NODE_NAAN = "node-naan";
-    public static final String NODE_NAME = "node-name";
-    public static final String NODE_VERSION = "node-version";
-    public static final String NODE_ENDPOINT_NAME = "/node-endpoint";
-
     @Mock
     private ActivationService activationService;
 
@@ -53,16 +47,10 @@ public class ActivationControllerTest {
 
     @BeforeEach
     public void setup() {
-        KnowledgeObjectWrapper jsKow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
-        jsKow.addService(generateServiceNode());
-        jsKow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
-        Endpoint jsEndpoint = new Endpoint(jsKow, ENDPOINT_NAME);
-        URI jsEndpointUri = URI.create(ENDPOINT_NAME);
+        Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
+        URI jsEndpointUri = URI.create(JS_ENDPOINT_NAME);
 
-        KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
-        nodeKow.addService(generateServiceNode());
-        nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(NODE_ENGINE, NODE_ENDPOINT_NAME));
-        Endpoint nodeEndpoint = new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
+        Endpoint nodeEndpoint = getEndpointForEngine(NODE_ENGINE);
         URI nodeEndpointUri = URI.create(NODE_ENDPOINT_NAME);
 
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
@@ -113,10 +101,10 @@ public class ActivationControllerTest {
     @Test
     @DisplayName("Single ko version activation interactions")
     public void testActivateKoVersionInteractionsAndResult() {
-        when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION))).thenReturn(justNodeEndpoints);
-        RedirectView redirectView = activationController.activateKoVersion(NODE_NAAN, NODE_NAME, API_VERSION);
+        when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME, JS_API_VERSION))).thenReturn(justNodeEndpoints);
+        RedirectView redirectView = activationController.activateKoVersion(NODE_NAAN, NODE_NAME, JS_API_VERSION);
         assertAll(
-                () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION)),
+                () -> verify(endpointLoader).load(new ArkId(NODE_NAAN, NODE_NAME, JS_API_VERSION)),
                 () -> verify(activationService).activateEndpoints(justNodeEndpoints),
                 () -> verify(globalEndpoints).putAll(justNodeEndpoints),
                 () -> assertEquals("/endpoints", redirectView.getUrl())
