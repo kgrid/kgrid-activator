@@ -1,62 +1,58 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.utils.KoCreationTestHelper;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kgrid.activator.utils.KoCreationTestHelper.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Endpoint Tests")
 public class EndpointTest {
 
     @Mock
     Executor executor;
 
     Endpoint endpoint;
-    KnowledgeObjectWrapper wrapper;
 
-    private String input = "input";
-    private String result = "result";
+    private final String input = "input";
+    private final String result = "result";
     private final JsonNode metadata = generateMetadata(JS_NAAN, JS_NAME, JS_VERSION);
 
-    @Before
+    @BeforeEach
     public void setUp() {
-
-        wrapper = new KnowledgeObjectWrapper(metadata);
-        wrapper.addService(KoCreationTestHelper.generateServiceNode(JS_ENGINE));
-        wrapper.addDeployment(KoCreationTestHelper.getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME));
-        endpoint = new Endpoint(wrapper, JS_ENDPOINT_NAME);
+        endpoint = getEndpointForEngine(JS_ENGINE);
         endpoint.setExecutor(executor);
-        when(executor.execute(input, CONTENT_TYPE.toString())).thenReturn(result);
     }
 
     @Test
+    @DisplayName("Execute returns Endpoint Result with metadata and output")
     public void executeSetsMetadataOnEndpointResult() {
+        when(executor.execute(input, CONTENT_TYPE.toString())).thenReturn(result);
         EndPointResult executionResult = endpoint.execute(input, CONTENT_TYPE);
-        assertEquals(metadata, executionResult.getInfo().get("ko"));
+        assertAll(
+                () -> assertEquals(metadata, executionResult.getInfo().get("ko")),
+                () -> assertEquals(result, executionResult.getResult())
+        );
     }
 
     @Test
-    public void executeReturnsResult() {
-        EndPointResult executionResult = endpoint.execute(input, CONTENT_TYPE);
-        assertEquals(result, executionResult.getResult());
-    }
-
-
-    @Test
+    @DisplayName("Execute throws if executor is null")
     public void throwsErrorWithNullExecutor() {
         endpoint.setExecutor(null);
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
@@ -66,21 +62,25 @@ public class EndpointTest {
     }
 
     @Test
+    @DisplayName("Is supported Content Type returns true for good content type")
     public void verifiesSupportedContentType() {
         assertTrue(endpoint.isSupportedContentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
+    @DisplayName("Is supported Content Type returns false for null content type")
     public void verifiesNullContentType() {
         assertFalse(endpoint.isSupportedContentType(null));
     }
 
     @Test
+    @DisplayName("Is supported Content Type returns false for bad content type")
     public void verifiesUnsupportedContentType() {
         assertFalse(endpoint.isSupportedContentType(MediaType.APPLICATION_XML));
     }
 
     @Test
+    @DisplayName("get supported Content Types returns list of all supported types")
     public void getSupportedContentTypesReturnsListOfTypes() {
         ArrayList typeList = new ArrayList();
         typeList.add(MediaType.APPLICATION_JSON_VALUE);
