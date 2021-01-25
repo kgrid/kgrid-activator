@@ -28,10 +28,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ActivationControllerTest {
-    public static final String NODE_ENDPOINT_NAME = "/node-endpoint";
     public static final String NODE_NAAN = "node-naan";
     public static final String NODE_NAME = "node-name";
     public static final String NODE_VERSION = "node-version";
+    public static final String NODE_ENDPOINT_NAME = "/node-endpoint";
+
     @Mock
     private ActivationService activationService;
 
@@ -46,7 +47,7 @@ public class ActivationControllerTest {
 
     private final Map<URI, Endpoint> endpointMapFromLoader = new HashMap<>();
     private final Map<URI, Endpoint> justNodeEndpoints = new HashMap<>();
-    ArrayList endpointList = new ArrayList();
+    ArrayList globalEndpointList = new ArrayList();
 
     @BeforeEach
     public void setup() {
@@ -65,10 +66,10 @@ public class ActivationControllerTest {
         endpointMapFromLoader.put(jsEndpointUri, jsEndpoint);
         endpointMapFromLoader.put(nodeEndpointUri, nodeEndpoint);
         justNodeEndpoints.put(nodeEndpoint.getId(), nodeEndpoint);
-        endpointList.add(jsEndpoint);
+        globalEndpointList.add(jsEndpoint);
+        globalEndpointList.add(nodeEndpoint);
 
-        endpointList.add(nodeEndpoint);
-        when(globalEndpoints.values()).thenReturn(endpointList);
+        when(globalEndpoints.values()).thenReturn(globalEndpointList);
         when(endpointLoader.load()).thenReturn(endpointMapFromLoader);
         when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME))).thenReturn(justNodeEndpoints);
         when(endpointLoader.load(new ArkId(NODE_NAAN, NODE_NAME, API_VERSION))).thenReturn(justNodeEndpoints);
