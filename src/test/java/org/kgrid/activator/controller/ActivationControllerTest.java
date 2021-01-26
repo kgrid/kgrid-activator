@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

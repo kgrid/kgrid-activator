@@ -3,7 +3,7 @@ package org.kgrid.activator.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.springframework.mock.web.MockFilterChain;

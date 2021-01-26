@@ -3,7 +3,7 @@ package org.kgrid.activator.controller;
 import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class ActivationController {
     private EndpointLoader endpointLoader;
 
     @Autowired
-    private Map<URI, org.kgrid.activator.services.Endpoint> endpoints;
+    private Map<URI, Endpoint> endpoints;
 
     /**
      * Remove all endpoints and load and activate
@@ -60,8 +60,8 @@ public class ActivationController {
      */
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateForEngine(@PathVariable String engine) {
-        Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
-        for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
+        Map<URI, Endpoint> endpointsToActivate = new HashMap<>();
+        for (Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
                 endpoint.setStatus(EndpointStatus.LOADED.name()); // reset status so it can be activated
                 endpointsToActivate.put(endpoint.getId(), endpoint);
@@ -111,7 +111,7 @@ public class ActivationController {
         }
         log.info("Activate {}", arkId.getSlashArkVersion());
 
-        Map<URI, org.kgrid.activator.services.Endpoint>
+        Map<URI, Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
         activationService.activateEndpoints(loadedEndpoints);
         checkForDuplicateEndpoints(loadedEndpoints);

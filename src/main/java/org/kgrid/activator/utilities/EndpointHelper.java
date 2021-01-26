@@ -2,7 +2,7 @@ package org.kgrid.activator.utilities;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

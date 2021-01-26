@@ -2,8 +2,8 @@ package org.kgrid.activator.services;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.adapter.api.ActivationContext;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.mock.adapter.MockAdapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
@@ -90,22 +90,10 @@ public class AdapterLoaderTest {
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
+        assertAll(
+                () -> assertEquals(EXECUTOR_RESULT, executor.execute(null, null))
+        );
     }
-
-    @Test
-    @DisplayName("Activation Context get executor throws if endpoint is not in endpoint map")
-    public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
-        endpoints.clear();
-        ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
-
-        AdapterException adapterException = assertThrows(AdapterException.class,
-                () -> activationContext.getExecutor(JS_ENDPOINT_URI.toString()));
-        assertEquals(
-                String.format("Can't find executor in app context for endpoint %s", JS_ENDPOINT_ID),
-                adapterException.getMessage());
-    }
-
 
     @Test
     @DisplayName("Load and initialize sets cdo store on activation context")

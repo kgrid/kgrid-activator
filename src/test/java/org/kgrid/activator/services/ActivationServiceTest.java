@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.constants.EndpointStatus;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
