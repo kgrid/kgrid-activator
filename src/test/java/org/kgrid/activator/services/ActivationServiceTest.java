@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.utils.KoCreationTestHelper;
+import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

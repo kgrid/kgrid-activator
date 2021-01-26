@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -55,6 +55,7 @@ public class AdapterLoaderTest {
     }
 
     @Test
+    @DisplayName("Load and initialize returns Adapter Resolver with all Adapters")
     public void loadAndInitialize_returnsAdapterResolver() {
         AdapterResolver adapterResolver = adapterLoader.loadAndInitializeAdapters(endpoints);
         assertAll(
@@ -65,6 +66,7 @@ public class AdapterLoaderTest {
     }
 
     @Test
+    @DisplayName("Load and initialize registers health endpoint for adapters")
     public void loadAndInitialize_registersHealthEndpointForAdapter() {
         adapterLoader.loadAndInitializeAdapters(endpoints);
         ArgumentCaptor<HealthIndicator> healthIndicatorArgumentCaptor = ArgumentCaptor.forClass(HealthIndicator.class);
@@ -77,12 +79,14 @@ public class AdapterLoaderTest {
     }
 
     @Test
+    @DisplayName("Load and initialize does not throw if health endpoint registration fails")
     public void loadAndInitialize_DoesNotThrowIfRegisteringHealthFails() {
         doThrow(new IllegalStateException()).when(registry).registerContributor(any(), any());
         adapterLoader.loadAndInitializeAdapters(endpoints);
     }
 
     @Test
+    @DisplayName("Load and initialize sets executor on activation context")
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
@@ -90,6 +94,7 @@ public class AdapterLoaderTest {
     }
 
     @Test
+    @DisplayName("Activation Context get executor throws if endpoint is not in endpoint map")
     public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
         endpoints.clear();
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
@@ -103,6 +108,7 @@ public class AdapterLoaderTest {
 
 
     @Test
+    @DisplayName("Load and initialize sets cdo store on activation context")
     public void loadAndInitialize_SetsCdoStoreOnActivationContext() {
         when(cdoStore.getBinaryStream(JS_ENDPOINT_URI)).thenReturn(null);
 
@@ -112,6 +118,7 @@ public class AdapterLoaderTest {
     }
 
     @Test
+    @DisplayName("Load and initialize sets environment on activation context")
     public void loadAndInitialize_SetsEnvironmentOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         String property = "bonkers";

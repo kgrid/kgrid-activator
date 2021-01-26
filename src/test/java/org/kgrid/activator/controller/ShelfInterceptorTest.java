@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.utils.KoCreationTestHelper;
+import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;

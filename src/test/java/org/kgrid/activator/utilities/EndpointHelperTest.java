@@ -15,7 +15,7 @@ import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
