@@ -39,7 +39,8 @@ public class ActivationService {
                 } catch (Exception e) {
                     String message = "Could not activate " + key + ". Cause: " + e.getMessage();
                     log.warn(message + ". " + e.getClass().getSimpleName());
-                    value.setStatus(message);
+                    value.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
+                    value.setDetail(message);
                 }
                 value.setExecutor(executor);
             }
@@ -48,12 +49,14 @@ public class ActivationService {
 
     private Executor activateEndpoint(URI endpointKey, Endpoint endpoint) {
         log.info("Activating endpoint: {}", endpointKey);
+
         final JsonNode deploymentSpec = endpoint.getDeployment();
         Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
-
-        return adapter.activate(
+        Executor executor = adapter.activate(
                 koRepo.getObjectLocation(endpoint.getArkId()),
                 endpointKey,
                 deploymentSpec);
+
+        return executor;
     }
 }
