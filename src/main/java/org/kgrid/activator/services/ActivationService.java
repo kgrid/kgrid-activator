@@ -36,6 +36,7 @@ public class ActivationService {
                 try {
                     executor = activateEndpoint(key, value);
                     value.setStatus(EndpointStatus.ACTIVATED.name());
+                    value.setDetail(null);
                 } catch (Exception e) {
                     String message = "Could not activate " + key + ". Cause: " + e.getMessage();
                     log.warn(message + ". " + e.getClass().getSimpleName());
