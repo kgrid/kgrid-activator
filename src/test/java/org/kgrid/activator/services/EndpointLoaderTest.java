@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.EndpointLoader;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.shelf.domain.ArkId;
@@ -86,14 +87,15 @@ public class EndpointLoaderTest {
         final String missingDeploy = "Has missing Deployment Specification";
         doThrow(new ActivatorException(missingDeploy)).when(koValidationService).validateEndpoint(any());
         final Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
-        jsEndpoint.setStatus(missingDeploy);
+        jsEndpoint.setDetail(missingDeploy);
         endpointMap.put(JS_ENDPOINT_URI, jsEndpoint);
         Map<URI, Endpoint> eps = endpointLoader.load(versionlessArk);
         assertAll(
                 () -> verify(koValidationService).validateServiceSpecification(generateServiceNode(JS_ENGINE)),
                 () -> verify(koValidationService).validateEndpoint(any(Endpoint.class)),
                 () -> assertNotNull(eps.get(JS_ENDPOINT_URI).getStatus()),
-                () -> assertEquals(endpointMap.get(JS_ENDPOINT_URI).getStatus(), eps.get(JS_ENDPOINT_URI).getStatus())
+                () -> assertEquals(EndpointStatus.INVALID.name(), eps.get(JS_ENDPOINT_URI).getStatus()),
+                () -> assertEquals(endpointMap.get(JS_ENDPOINT_URI).getDetail(), eps.get(JS_ENDPOINT_URI).getDetail())
         );
     }
 
