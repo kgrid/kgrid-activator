@@ -99,28 +99,12 @@ public class ActivationServiceTest {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activateEndpoints(endpointMap);
-        assertEquals(String.format("Could not activate %s. Cause: %s",
-                KoCreationTestHelper.JS_ENDPOINT_ID, exceptionMessage), endpoint.getStatus());
-        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-        verify(mockEndpoint).setDetail(String.format("Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, exceptionMessage));
-    }
+        assertAll(
+                () -> assertEquals(EndpointStatus.FAILED_TO_ACTIVATE.name(), endpoint.getStatus()),
+                () -> assertEquals(String.format("Could not activate %s. Cause: %s",
+                        KoCreationTestHelper.JS_ENDPOINT_ID, exceptionMessage), endpoint.getDetail())
+        );
 
-    @Test
-    public void activateSetsEndpointStatusToActivated() {
-        activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(EndpointStatus.ACTIVATED.name());
-    }
 
-    @Test
-    public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage() {
-        when(mockEndpoint.getDeployment()).thenReturn(null);
-        String message = "bang";
-        when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(message));
-        activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-        verify(mockEndpoint).setDetail(String.format(
-                "Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, message));
     }
 }
