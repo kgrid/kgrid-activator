@@ -21,6 +21,7 @@ public class Endpoint implements Comparable<Endpoint> {
     private LocalDateTime activated;
     private String status;
     private String endpointName;
+    private String detail;
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;
@@ -68,12 +69,20 @@ public class Endpoint implements Comparable<Endpoint> {
         return status;
     }
 
+    public String getDetail() {
+         return detail;
+    }
+
     public Boolean isActive() {
         return status != null && status.equals(EndpointStatus.ACTIVATED.name());
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 
     public ArkId getArkId() {
