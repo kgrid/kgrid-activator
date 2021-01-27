@@ -57,7 +57,7 @@ public class ActivationServiceTest {
         when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
         when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
         when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
-        when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
+//        when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
         when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
         endpointMap.put(ENDPOINT_URI, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);

@@ -65,7 +65,6 @@ public class ActivationController {
         Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
-                endpoint.setStatus(EndpointStatus.LOADED.name()); // reset status so it can be activated
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
