@@ -25,6 +25,7 @@ public class EndpointResource {
     private URI hasServiceSpecification;
     private LocalDateTime activated;
     private String status;
+    private String detail;
     private String engine;
     private List<String> context;
     private String ko;
@@ -40,6 +41,7 @@ public class EndpointResource {
             this.hasServiceSpecification = URI.create(String.format("/%s/%s/%s", shelfRoot, resourceId, metadata.get(KoFields.SERVICE_SPEC_TERM.asStr()).asText()));
             this.activated = endpoint.getActivated();
             this.status = endpoint.getStatus();
+            this.detail = endpoint.getDetail();
             this.engine = endpoint.getEngine();
             this.swaggerLink = "https://editor.swagger.io?url=" +
                     linkTo(KnowledgeObjectController.class).slash(hasServiceSpecification);
@@ -66,6 +68,11 @@ public class EndpointResource {
     @ApiModelProperty(value = "Unknown endpoints status")
     public String getStatus() {
         return status;
+    }
+
+    @ApiModelProperty(value = "Unknown endpoints detail")
+    public String getDetail() {
+        return detail;
     }
 
     @ApiModelProperty(value = "Path to the swagger ui with the service spec")

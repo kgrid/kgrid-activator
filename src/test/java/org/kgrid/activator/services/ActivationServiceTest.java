@@ -115,7 +115,8 @@ public class ActivationServiceTest {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(String.format("Could not activate %s. Cause: %s",
+        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
+        verify(mockEndpoint).setDetail(String.format("Could not activate %s. Cause: %s",
                 KoCreationTestHelper.ENDPOINT_ID, exceptionMessage));
     }
 
@@ -131,7 +132,8 @@ public class ActivationServiceTest {
         String message = "bang";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(message));
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(String.format(
+        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
+        verify(mockEndpoint).setDetail(String.format(
                 "Could not activate %s. Cause: %s",
                 KoCreationTestHelper.ENDPOINT_ID, message));
     }

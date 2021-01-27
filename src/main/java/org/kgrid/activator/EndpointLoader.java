@@ -1,6 +1,7 @@
 package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.activator.services.KoValidationService;
@@ -76,7 +77,8 @@ public class EndpointLoader {
                                 try {
                                     koValidationService.validateEndpoint(endpoint);
                                 } catch (ActivatorException e) {
-                                    endpoint.setStatus(e.getMessage());
+                                    endpoint.setStatus(EndpointStatus.INVALID.name());
+                                    endpoint.setDetail(e.getMessage());
                                 }
                                 endpoints.put(endpoint.getId(), endpoint);
                             });
