@@ -1,4 +1,4 @@
-package org.kgrid.activator.services;
+package org.kgrid.activator.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
