@@ -3,7 +3,6 @@ package org.kgrid.activator.controller;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.kgrid.activator.EndpointLoader;
-import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
@@ -62,14 +61,17 @@ public class ActivationController {
      */
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateForEngine(@PathVariable String engine) {
+
         Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
         for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
+
         activationService.activateEndpoints(endpointsToActivate);
-        checkForDuplicateEndpoints(endpointsToActivate);
+
+        logOverwriteOfExistingEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
         redirectView.setHttp10Compatible(false);
@@ -115,14 +117,14 @@ public class ActivationController {
         Map<URI, org.kgrid.activator.services.Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
         activationService.activateEndpoints(loadedEndpoints);
-        checkForDuplicateEndpoints(loadedEndpoints);
+        logOverwriteOfExistingEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
         return redirectView;
     }
 
-    private void checkForDuplicateEndpoints(Map<URI, Endpoint> loadedEndpoints) {
+    private void logOverwriteOfExistingEndpoints(Map<URI, Endpoint> loadedEndpoints) {
         for (Map.Entry<URI, Endpoint> entry : loadedEndpoints.entrySet()) {
             if (endpoints.containsKey(entry.getKey())) {
                 log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));

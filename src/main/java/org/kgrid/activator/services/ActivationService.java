@@ -34,20 +34,22 @@ public class ActivationService {
     public void activateEndpoints(Map<URI, Endpoint> eps) {
         eps.forEach((key, value) -> {
 
-            Executor executor = null;
-            try {
-                executor = activateEndpoint(key, value);
-                value.setActivated(LocalDateTime.now());
-                value.setStatus(EndpointStatus.ACTIVATED.name());
-                value.setDetail(null);
-            } catch (Exception e) {
-                String message = "Could not activate " + key + ". Cause: " + e.getMessage();
-                log.warn(message + ". " + e.getClass().getSimpleName());
-                value.setActivated(LocalDateTime.now());
-                value.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-                value.setDetail(message);
+            synchronized (value) {
+                Executor executor = null;
+                try {
+                    executor = activateEndpoint(key, value);
+                    value.setActivated(LocalDateTime.now());
+                    value.setStatus(EndpointStatus.ACTIVATED.name());
+                    value.setDetail(null);
+                } catch (Exception e) {
+                    String message = "Could not activate " + key + ". Cause: " + e.getMessage();
+                    log.warn(message + ". " + e.getClass().getSimpleName());
+                    value.setActivated(LocalDateTime.now());
+                    value.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
+                    value.setDetail(message);
+                }
+                value.setExecutor(executor);
             }
-            value.setExecutor(executor);
 
         });
     }
