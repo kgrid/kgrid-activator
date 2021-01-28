@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -31,20 +33,24 @@ public class ActivationService {
 
     public void activateEndpoints(Map<URI, Endpoint> eps) {
         eps.forEach((key, value) -> {
-            if (value.getStatus().equals(EndpointStatus.LOADED.name())) {
+
+            synchronized (value) {
                 Executor executor = null;
                 try {
                     executor = activateEndpoint(key, value);
+                    value.setActivated(LocalDateTime.now());
                     value.setStatus(EndpointStatus.ACTIVATED.name());
                     value.setDetail(null);
                 } catch (Exception e) {
                     String message = "Could not activate " + key + ". Cause: " + e.getMessage();
                     log.warn(message + ". " + e.getClass().getSimpleName());
+                    value.setActivated(LocalDateTime.now());
                     value.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
                     value.setDetail(message);
                 }
                 value.setExecutor(executor);
             }
+
         });
     }
 
@@ -53,10 +59,11 @@ public class ActivationService {
 
         final JsonNode deploymentSpec = endpoint.getDeployment();
         Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
-        Executor executor = adapter.activate(
-                koRepo.getObjectLocation(endpoint.getArkId()),
-                endpointKey,
-                deploymentSpec);
+
+        Executor executor =  adapter.activate(
+                    koRepo.getObjectLocation(endpoint.getArkId()),
+                    endpointKey,
+                    deploymentSpec);
 
         return executor;
     }
