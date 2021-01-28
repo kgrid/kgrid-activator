@@ -1,8 +1,8 @@
 package org.kgrid.activator.controller;
 
 import org.kgrid.activator.EndpointLoader;
-import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +61,6 @@ public class ActivationController {
     public RedirectView activateForEngine(@PathVariable String engine) {
         Map<URI, Endpoint> endpointsToActivate = new HashMap<>();
         for (Endpoint endpoint : endpoints.values()) {
-
-        Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
-        for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
@@ -94,8 +91,8 @@ public class ActivationController {
     /**
      * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
      *
-     * @param naan naan of the Knowledge object, the first part of the ark
-     * @param name name of the Knowledge object, the second part of the ark
+     * @param naan    naan of the Knowledge object, the first part of the ark
+     * @param name    name of the Knowledge object, the second part of the ark
      * @param version code version of the Knowledge object, the third part of the ark
      * @return returns a redirect to the activated endpoints
      */
