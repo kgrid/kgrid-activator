@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import org.kgrid.activator.constants.EndpointStatus;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;

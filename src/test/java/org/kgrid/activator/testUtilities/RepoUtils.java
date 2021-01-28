@@ -1,4 +1,4 @@
-package org.kgrid.activator.utils;
+package org.kgrid.activator.testUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -3,7 +3,7 @@ package org.kgrid.activator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorException;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.KoValidationService;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;

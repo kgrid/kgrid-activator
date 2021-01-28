@@ -3,7 +3,7 @@ package org.kgrid.activator;
 import org.kgrid.activator.controller.ActivationController;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
 import org.springframework.beans.factory.annotation.Autowired;

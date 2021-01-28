@@ -1,10 +1,8 @@
 package org.kgrid.activator.controller;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.kgrid.activator.EndpointLoader;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.services.Endpoint;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +31,7 @@ public class ActivationController {
     private EndpointLoader endpointLoader;
 
     @Autowired
-    private Map<URI, org.kgrid.activator.services.Endpoint> endpoints;
+    private Map<URI, Endpoint> endpoints;
 
     /**
      * Remove all endpoints and load and activate
@@ -61,9 +59,8 @@ public class ActivationController {
      */
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateForEngine(@PathVariable String engine) {
-
-        Map<URI, org.kgrid.activator.services.Endpoint> endpointsToActivate = new HashMap<>();
-        for (org.kgrid.activator.services.Endpoint endpoint : endpoints.values()) {
+        Map<URI, Endpoint> endpointsToActivate = new HashMap<>();
+        for (Endpoint endpoint : endpoints.values()) {
             if (engine.equals(endpoint.getEngine())) {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
@@ -94,10 +91,10 @@ public class ActivationController {
     /**
      * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
      *
-     * @param naan
-     * @param name
-     * @param version
-     * @return
+     * @param naan    naan of the Knowledge object, the first part of the ark
+     * @param name    name of the Knowledge object, the second part of the ark
+     * @param version code version of the Knowledge object, the third part of the ark
+     * @return returns a redirect to the activated endpoints
      */
     @GetMapping(value = "/{naan}/{name}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateKoVersion(@PathVariable String naan,
@@ -114,7 +111,7 @@ public class ActivationController {
         }
         log.info("Activate {}", arkId.getSlashArkVersion());
 
-        Map<URI, org.kgrid.activator.services.Endpoint>
+        Map<URI, Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
         activationService.activateEndpoints(loadedEndpoints);
         logOverwriteOfExistingEndpoints(loadedEndpoints);
@@ -131,18 +128,4 @@ public class ActivationController {
             }
         }
     }
-
-    private JsonArray getActivationResults() {
-        JsonArray endpointActivations = new JsonArray();
-
-        endpoints.values().forEach(endpoint -> {
-            JsonObject endpointActivationResult = new JsonObject();
-            endpointActivationResult.addProperty("@id", "/" + endpoint.getId());
-            endpointActivationResult.addProperty("activated", endpoint.getActivated().toString());
-            endpointActivationResult.addProperty("status", endpoint.getStatus());
-            endpointActivations.add(endpointActivationResult);
-        });
-        return endpointActivations;
-    }
-
 }

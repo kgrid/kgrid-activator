@@ -1,9 +1,10 @@
 package org.kgrid.activator.controller;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.kgrid.activator.services.Endpoint;
-import org.kgrid.activator.utils.KoCreationTestHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayName("Shelf Interceptor Tests")
 public class ShelfInterceptorTest {
 
     private Map<URI, Endpoint> globalEndpoints = new HashMap<>();
@@ -26,21 +28,20 @@ public class ShelfInterceptorTest {
     MockHttpServletResponse response;
     MockFilterChain filterChain;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         request = new MockHttpServletRequest();
         request.setMethod("DELETE");
         request.setRequestURI("/kos/naan/name/version");
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
-
         shelfInterceptor = new ShelfInterceptor(globalEndpoints);
         org.springframework.test.util.ReflectionTestUtils.setField(shelfInterceptor, "shelfEndpoint", "kos");
     }
 
     @Test
+    @DisplayName("Removes endpoint when deleted")
     public void removesEndpointFromMapWhenDeleted() throws IOException, ServletException {
-
         Endpoint endpoint = new Endpoint(new KnowledgeObjectWrapper(
                 KoCreationTestHelper.generateMetadata("naan", "name", "version")),
                 "endpoint");
@@ -52,8 +53,8 @@ public class ShelfInterceptorTest {
     }
 
     @Test
+    @DisplayName("Does not remove unspecified endpoint")
     public void doesNotRemoveEndpointFromMapWhenOtherDeleted() throws IOException, ServletException {
-
         Endpoint endpoint = new Endpoint(new KnowledgeObjectWrapper(
                 KoCreationTestHelper.generateMetadata("naan", "name", "version2")),
                 "endpoint");
@@ -63,5 +64,4 @@ public class ShelfInterceptorTest {
         assertEquals(1, globalEndpoints.size());
 
     }
-
 }

@@ -1,31 +1,30 @@
 package org.kgrid.activator.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.utilities.EndpointHelper;
 import org.kgrid.activator.exceptions.ActivatorException;
-import org.kgrid.activator.services.Endpoint;
-import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
+import org.kgrid.activator.domain.Endpoint;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Endpoint Controller Tests")
 public class EndpointControllerTest {
     @Mock
     private EndpointHelper endpointHelper;
@@ -33,113 +32,92 @@ public class EndpointControllerTest {
     private Map<URI, Endpoint> endpoints;
     @InjectMocks
     EndpointController endpointController;
-    private KnowledgeObjectWrapper kow;
-    private Endpoint endpoint;
-    private HttpHeaders headers;
+    private Endpoint jsEndpoint;
+    private Endpoint nodeEndpoint;
+    private final HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
 
-    @Before
+    @BeforeEach
     public void setup() {
         ReflectionTestUtils.setField(endpointController, "shelfRoot", "kos");
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        kow = new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
-        kow.addService(generateServiceNode());
-        kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
-        endpoint = new Endpoint(kow, ENDPOINT_NAME);
-        when(endpoints.get(endpoint.getId())).thenReturn(endpoint);
-        when(endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME)).thenReturn(Collections.singletonList(endpoint));
-        when(endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME)).thenReturn(ENDPOINT_URI);
-        HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
-        entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
-        when(endpoints.entrySet()).thenReturn(entrySet);
+        jsEndpoint = getEndpointForEngine(JS_ENGINE);
+        nodeEndpoint = getEndpointForEngine(NODE_ENGINE);
+        entrySet.add(new AbstractMap.SimpleEntry<>(JS_ENDPOINT_URI, jsEndpoint));
+        entrySet.add(new AbstractMap.SimpleEntry<>(NODE_ENDPOINT_URI, nodeEndpoint));
     }
 
     @Test
+    @DisplayName("Find all Endpoints returns everything in the global endpoint map")
     public void testFindAllEndpoints() {
+        when(endpoints.entrySet()).thenReturn(entrySet);
         List<EndpointResource> allEndpoints = endpointController.findAllEndpoints();
-        EndpointResource endpointResource = allEndpoints.get(0);
-        assertEquals(ENDPOINT_ID, endpointResource.getId());
+        assertAll(
+                () -> assertTrue(allEndpoints.contains(createEndpointResource(nodeEndpoint))),
+                () -> assertTrue(allEndpoints.contains(createEndpointResource(jsEndpoint)))
+        );
     }
 
     @Test
+    @DisplayName("Find endpoints for engine returns only that engine's endpoints")
     public void testFindEndpointsForEngine() {
-        List<EndpointResource> allEndpoints = endpointController.findEndpointsForEngine(JS_ENGINE);
-        EndpointResource endpointResource = allEndpoints.get(0);
-        assertEquals(ENDPOINT_ID, endpointResource.getId());
+        when(endpoints.entrySet()).thenReturn(entrySet);
+        List<EndpointResource> jsEndpoints = endpointController.findEndpointsForEngine(JS_ENGINE);
+        EndpointResource endpointResource = jsEndpoints.get(0);
+        assertEquals(JS_ENDPOINT_ID, endpointResource.getId());
     }
 
     @Test
-    public void testFindEndpointOldVersionReturnsEndpointResource() {
+    @DisplayName("Find endpoints Path Version returns appropriate endpoint resource")
+    public void testFindEndpointPathVersionReturnsEndpointResource() {
+        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(endpoints.get(jsEndpoint.getId())).thenReturn(jsEndpoint);
         EndpointResource endpointResource =
-                endpointController.findEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
-        assertEquals(createEndpointResource(endpoint), endpointResource);
+                endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
+        assertEquals(createEndpointResource(jsEndpoint), endpointResource);
     }
 
     @Test
-    public void testFindEndpointOldVersionThrowsActivatorExceptionIfNoEndpointFound() {
-        when(endpoints.get(endpoint.getId())).thenReturn(null);
+    @DisplayName("Find endpoints Path Version throws activator exception if no endpoint found")
+    public void testFindEndpointPathVersionThrowsActivatorExceptionIfNoEndpointFound() {
+        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(endpoints.get(jsEndpoint.getId())).thenReturn(null);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> {
-                    endpointController.findEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
-                });
-        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME),
+                () -> endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME));
+        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
                 activatorException.getMessage());
     }
 
     @Test
-    public void testFindEndpointReturnsEndpointResource() {
-        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
-        assertEquals(createEndpointResource(endpoint), endpointResources.get(0));
+    @DisplayName("Find endpoints Query Version returns appropriate endpoint resource")
+    public void testFindEndpointQueryVersionReturnsEndpointResource() {
+        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(endpoints.get(jsEndpoint.getId())).thenReturn(jsEndpoint);
+        List<EndpointResource> endpointResources = endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION);
+        assertEquals(createEndpointResource(jsEndpoint).getId(), endpointResources.get(0).getId());
     }
 
     @Test
-    public void testFindEndpointReturnsEndpointResource_NullVersion() {
-        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, null);
-        verify(endpointHelper).getAllVersions(NAAN, NAME, ENDPOINT_NAME);
-        assertEquals(createEndpointResource(endpoint), endpointResources.get(0));
+    @DisplayName("Find endpoints Query Version returns endpoint when version is null")
+    public void testFindEndpointQueryVersionReturnsEndpointResource_NullVersion() {
+        when(endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(Collections.singletonList(jsEndpoint));
+        List<EndpointResource> endpointResources = endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, null);
+        assertAll(
+                () -> verify(endpointHelper).getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME),
+                () -> assertEquals(createEndpointResource(jsEndpoint).getId(), endpointResources.get(0).getId())
+        );
     }
 
     @Test
-    public void testFindEndpointReturnsEndpointResourceWithErrorStatusForBadEndpoint() {
-        ObjectNode dumbNode = new ObjectMapper().createObjectNode();
-        dumbNode.put("trash", "also trash");
-        kow.addService(dumbNode);
-        kow.addDeployment(dumbNode);
-        endpoint = new Endpoint(kow, ENDPOINT_NAME);
-        endpoints.replace(endpoint.getId(), endpoint);
-        List<EndpointResource> endpointResources = endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
-        assertEquals(String.format("Could not create endpoint resource for malformed endpoint: %s/%s/%s",
-                NAAN, NAME, VERSION), endpointResources.get(0).getStatus());
-    }
-
-    @Test
-    public void testFindEndpointOldVersionReturnsEndpointResourceWithErrorStatusForBadEndpoint() {
-        ObjectNode dumbNode = new ObjectMapper().createObjectNode();
-        dumbNode.put("trash", "also trash");
-        kow.addService(dumbNode);
-        kow.addDeployment(dumbNode);
-        endpoint = new Endpoint(kow, ENDPOINT_NAME);
-        endpoints.replace(endpoint.getId(), endpoint);
-        EndpointResource endpointResource =
-                endpointController.findEndpointOldVersion(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
-        assertEquals(String.format("Could not create endpoint resource for malformed endpoint: %s/%s/%s",
-                NAAN, NAME, VERSION), endpointResource.getStatus());
-    }
-
-    @Test
-    public void testFindEndpointThrowsActivatorExceptionIfNoEndpointFound() {
-        when(endpoints.get(endpoint.getId())).thenReturn(null);
+    @DisplayName("Find endpoints Query Version throws activator exception if no endpoint found")
+    public void testFindEndpointQueryVersionThrowsActivatorExceptionIfNoEndpointFound() {
+        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(endpoints.get(jsEndpoint.getId())).thenReturn(null);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> {
-                    endpointController.findEndpoint(NAAN, NAME, ENDPOINT_NAME, API_VERSION);
-                });
-        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", NAAN, NAME, API_VERSION, ENDPOINT_NAME),
+                () -> endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION));
+        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
                 activatorException.getMessage());
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {
-        EndpointResource resource = new EndpointResource(endpoint, "kos");
-
-        return resource;
+        return new EndpointResource(endpoint, "kos");
     }
 }

@@ -1,37 +1,40 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.utils.KoCreationTestHelper;
+import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.MediaType;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Activation Service Tests")
 public class ActivationServiceTest {
 
     public static final URI OBJECT_LOCATION = URI.create("ObjectLocation");
-    private static final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
     private final Map<URI, Endpoint> endpointMap = new HashMap<>();
-    @Mock
-    private Endpoint mockEndpoint;
+    private Endpoint endpoint;
     @Mock
     private AdapterResolver adapterResolver;
     @Mock
@@ -42,99 +45,66 @@ public class ActivationServiceTest {
     private Executor executor;
     private ActivationService activationService;
     private JsonNode deploymentJson;
-    private JsonNode metadata;
-    private final String input = "input";
 
-    @Before
+    @BeforeEach
     public void setup() {
-        deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME);
-        metadata = generateMetadata(NAAN, NAME, VERSION);
-        EndPointResult endPointResult = new EndPointResult(null);
+        deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME);
+        JsonNode metadata = generateMetadata(JS_NAAN, JS_NAME, JS_VERSION);
+        EndPointResult<Object> endPointResult = new EndPointResult<>(null);
+        String input = "input";
         endPointResult.getInfo().put("inputs", input);
         endPointResult.getInfo().put("ko", metadata);
         when(adapterResolver.getAdapter(JS_ENGINE)).thenReturn(adapter);
-        when(adapter.activate(any(), any(), any())).thenReturn(executor);
-        when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
-        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
-        when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
-//        when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
-        when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
-        endpointMap.put(ENDPOINT_URI, mockEndpoint);
+        Mockito.lenient().when(koRepo.getObjectLocation(JS_ARK_ID)).thenReturn(OBJECT_LOCATION);
+        endpoint = getEndpointForEngine(JS_ENGINE);
+        endpointMap.put(JS_ENDPOINT_URI, endpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
 
     @Test
-    public void activateGetsDeploymentFromEndpoint() {
+    @DisplayName("Activate Works Successfully")
+    public void activateCreatesEndpointWithExecutor() {
+        when(adapter.activate(any(), any(), any())).thenReturn(executor);
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).getDeployment();
+        assertAll(
+                () -> verify(adapterResolver).getAdapter(JS_ENGINE),
+                () -> verify(koRepo).getObjectLocation(JS_ARK_ID),
+                () -> verify(adapter).activate(OBJECT_LOCATION, JS_ENDPOINT_URI,
+                        deploymentJson.get("/" + JS_ENDPOINT_NAME).get(POST_HTTP_METHOD)),
+                () -> assertEquals(executor, endpoint.getExecutor()),
+                () -> assertEquals(EndpointStatus.ACTIVATED.name(), endpoint.getStatus())
+        );
     }
 
     @Test
-    public void activateGetsAdapterFromResolver() {
-        activationService.activateEndpoints(endpointMap);
-        verify(adapterResolver).getAdapter(JS_ENGINE);
-    }
-
-    @Test
-    public void activateGetsKoLocationFromRepo() {
-        activationService.activateEndpoints(endpointMap);
-        verify(koRepo).getObjectLocation(ARK_ID);
-    }
-
-    @Test
-    public void activateCallsActivateOnAdapter() {
-        activationService.activateEndpoints(endpointMap);
-        verify(adapter).activate(OBJECT_LOCATION,
-                ENDPOINT_URI,
-                deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
-    }
-
-    @Test
-    public void activateSetsExecutorInEndpointMap() {
-        activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setExecutor(executor);
-    }
-
-    @Test
+    @DisplayName("Activate does not create executor after error")
     public void activateDoesNotSetExecutorIfActivatorExceptionIsThrownAnywhere() {
-        when(mockEndpoint.getDeployment()).thenReturn(null);
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(""));
+        endpoint.getWrapper().addDeployment(null);
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setExecutor(null);
+        assertNull(endpoint.getExecutor());
     }
 
     @Test
+    @DisplayName("Activate handles shelf exception")
     public void activateCatchesExceptionsFromShelf() {
         when(koRepo.getObjectLocation(any())).thenThrow(new ShelfResourceNotFound("ope"));
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setExecutor(null);
+        assertNull(endpoint.getExecutor());
     }
 
     @Test
+    @DisplayName("Activate handles adapter exception")
     public void activateCatchesExceptionsFromAdapter() {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
         activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-        verify(mockEndpoint).setDetail(String.format("Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, exceptionMessage));
-    }
+        assertAll(
+                () -> assertEquals(EndpointStatus.FAILED_TO_ACTIVATE.name(), endpoint.getStatus()),
+                () -> assertEquals(String.format("Could not activate %s. Cause: %s",
+                        KoCreationTestHelper.JS_ENDPOINT_ID, exceptionMessage), endpoint.getDetail())
+        );
 
-    @Test
-    public void activateSetsEndpointStatusToActivated() {
-        activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(EndpointStatus.ACTIVATED.name());
-    }
 
-    @Test
-    public void activateSetsEndpointStatusToCouldNotBeActivatedWithMessage() {
-        when(mockEndpoint.getDeployment()).thenReturn(null);
-        String message = "bang";
-        when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(message));
-        activationService.activateEndpoints(endpointMap);
-        verify(mockEndpoint).setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-        verify(mockEndpoint).setDetail(String.format(
-                "Could not activate %s. Cause: %s",
-                KoCreationTestHelper.ENDPOINT_ID, message));
     }
 }

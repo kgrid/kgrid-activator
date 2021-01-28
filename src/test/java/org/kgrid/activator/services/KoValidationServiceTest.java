@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;

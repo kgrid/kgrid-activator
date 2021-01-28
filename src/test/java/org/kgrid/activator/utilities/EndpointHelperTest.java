@@ -1,25 +1,29 @@
 package org.kgrid.activator.utilities;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.services.Endpoint;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.net.URI;
 import java.util.*;
 
-import static org.junit.Assert.*;
-import static org.kgrid.activator.utils.KoCreationTestHelper.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Endpoint Helper Tests")
 public class EndpointHelperTest {
 
     public static final String ARTIFACT_ZIP = "artifact.zip";
@@ -32,81 +36,103 @@ public class EndpointHelperTest {
     EndpointHelper endpointHelper;
     Endpoint endpoint2;
 
-    private final KnowledgeObjectWrapper kow =
-            new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, VERSION));
-    private final Endpoint endpoint = new Endpoint(kow, ENDPOINT_NAME);
+    private final Endpoint endpoint = getEndpointForEngine(JS_ENGINE);
+    private final HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
 
-    @Before
+
+    @BeforeEach
     public void setup() {
-        URI endpoint2Uri = URI.create(String.format("%s/%s/%s/%s", NAAN, NAME, "2.0", ENDPOINT_NAME));
-        endpoint2 = new Endpoint(new KnowledgeObjectWrapper(generateMetadata(NAAN, NAME, "2.0")), ENDPOINT_NAME);
-        kow.addService(generateServiceNode());
-        kow.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, ENDPOINT_NAME));
-        HashSet<Map.Entry<URI, Endpoint>> entrySet = new HashSet<>();
-        entrySet.add(new AbstractMap.SimpleEntry<>(ENDPOINT_URI, endpoint));
+        URI endpoint2Uri = URI.create(String.format("%s/%s/%s/%s", JS_NAAN, JS_NAME, "2.0", JS_ENDPOINT_NAME));
+        endpoint2 = new Endpoint(new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, "2.0")), JS_ENDPOINT_NAME);
+        entrySet.add(new AbstractMap.SimpleEntry<>(JS_ENDPOINT_URI, endpoint));
         entrySet.add(new AbstractMap.SimpleEntry<>(endpoint2Uri, endpoint2));
-        when(endpoints.entrySet()).thenReturn(entrySet);
-        when(fileTypeMap.getContentType(ARTIFACT_ZIP)).thenReturn(APPLICATION_ZIP);
     }
 
     @Test
+    @DisplayName("Get default version gets default version from endpoint map")
     public void testGetDefaultVersion() {
-        String defaultVersion = endpointHelper.getDefaultVersion(NAAN, NAME, ENDPOINT_NAME);
-        verify(endpoints).entrySet();
-        assertEquals(endpoint.getApiVersion(), defaultVersion);
+        when(endpoints.entrySet()).thenReturn(entrySet);
+        String defaultVersion = endpointHelper.getDefaultVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME);
+
+        assertAll(
+                () -> verify(endpoints).entrySet(),
+                () -> assertEquals(endpoint.getApiVersion(), defaultVersion)
+        );
     }
 
     @Test
+    @DisplayName("Get all versions gets all version for an endpoint from the endpoint map")
     public void testGetAllVersions() {
-        List<Endpoint> endpointVersions = endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME);
-        assertTrue(endpointVersions.contains(endpoint));
-        assertTrue(endpointVersions.contains(endpoint2));
+        when(endpoints.entrySet()).thenReturn(entrySet);
+        List<Endpoint> endpointVersions = endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME);
+
+        assertAll(
+                () -> verify(endpoints).entrySet(),
+                () -> assertTrue(endpointVersions.contains(endpoint)),
+                () -> assertTrue(endpointVersions.contains(endpoint2))
+        );
     }
 
     @Test
+    @DisplayName("Get all versions throws if no versions are found")
     public void testGetAllVersions_throwsIfNoVersionsFound() {
-        when(endpoints.entrySet()).thenReturn(Collections.emptySet());
         ActivatorEndpointNotFoundException activatorException =
                 assertThrows(ActivatorEndpointNotFoundException.class, () ->
-                        endpointHelper.getAllVersions(NAAN, NAME, ENDPOINT_NAME));
+                        endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME));
         assertEquals(String.format("No active endpoints found for %s/%s/%s",
-                NAAN, NAME, ENDPOINT_NAME), activatorException.getMessage());
+                JS_NAAN, JS_NAME, JS_ENDPOINT_NAME), activatorException.getMessage());
     }
 
     @Test
+    @DisplayName("Get content type gets content type from file type map")
     public void testGetContentType() {
+        when(fileTypeMap.getContentType(ARTIFACT_ZIP)).thenReturn(APPLICATION_ZIP);
         String contentType = endpointHelper.getContentType(ARTIFACT_ZIP);
-        verify(fileTypeMap).getContentType(ARTIFACT_ZIP);
-        assertEquals(APPLICATION_ZIP, contentType);
+
+        assertAll(
+                () -> verify(fileTypeMap).getContentType(ARTIFACT_ZIP),
+                () -> assertEquals(APPLICATION_ZIP, contentType)
+        );
     }
 
     @Test
+    @DisplayName("Get content disposition gets dispo with no slash in the filename")
     public void testGetContentDisposition_NoSlashInFilename() {
         String contentDisposition = endpointHelper.getContentDisposition(ARTIFACT_ZIP);
+
         assertEquals(String.format("inline; filename=\"%s\"", ARTIFACT_ZIP), contentDisposition);
     }
 
     @Test
+    @DisplayName("Get content disposition gets dispo with a package and slash in the filename")
     public void testGetContentDisposition_SlashInFilename() {
         String contentDisposition = endpointHelper.getContentDisposition("src/" + ARTIFACT_ZIP);
+
         assertEquals(String.format("inline; filename=\"%s\"", ARTIFACT_ZIP), contentDisposition);
     }
 
     @Test
+    @DisplayName("Create endpoint Id returns a proper URI")
     public void testCreateEndpointId() {
-        URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, API_VERSION, ENDPOINT_NAME);
-        assertEquals(ENDPOINT_URI, endpointId);
+        URI endpointId = endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
+
+        assertEquals(JS_ENDPOINT_URI, endpointId);
     }
 
     @Test
+    @DisplayName("Create endpoint Id returns a proper URI with default version if none supplied")
     public void testCreateEndpointId_getsDefaultVersion() {
-        URI endpointId = endpointHelper.createEndpointId(NAAN, NAME, null, ENDPOINT_NAME);
-        assertEquals(ENDPOINT_URI, endpointId);
+        when(endpoints.entrySet()).thenReturn(entrySet);
+        URI endpointId = endpointHelper.createEndpointId(JS_NAAN, JS_NAME, null, JS_ENDPOINT_NAME);
+
+        assertEquals(JS_ENDPOINT_URI, endpointId);
     }
 
     @Test
+    @DisplayName("Get endpoint gets endpoint from endpoint map using the URI supplied to it")
     public void testGetEndpointCallsEndpointMap() {
-        endpointHelper.getEndpoint(ENDPOINT_URI);
-        verify(endpoints).get(ENDPOINT_URI);
+        endpointHelper.getEndpoint(JS_ENDPOINT_URI);
+
+        verify(endpoints).get(JS_ENDPOINT_URI);
     }
 }
