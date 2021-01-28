@@ -85,6 +85,11 @@ public class Endpoint implements Comparable<Endpoint> {
         this.detail = detail;
     }
 
+    public void setActivated(LocalDateTime time){
+        this.activated = time;
+    }
+
+
     public ArkId getArkId() {
         ArkId arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText());
         if (!arkId.hasVersion()) {

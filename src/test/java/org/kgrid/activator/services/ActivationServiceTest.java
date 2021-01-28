@@ -58,6 +58,13 @@ public class ActivationServiceTest {
         Mockito.lenient().when(koRepo.getObjectLocation(JS_ARK_ID)).thenReturn(OBJECT_LOCATION);
         endpoint = getEndpointForEngine(JS_ENGINE);
         endpointMap.put(JS_ENDPOINT_URI, endpoint);
+        when(adapter.activate(any(), any(), any())).thenReturn(executor);
+        when(koRepo.getObjectLocation(ARK_ID)).thenReturn(OBJECT_LOCATION);
+        when(mockEndpoint.getDeployment()).thenReturn(deploymentJson.get("/" + ENDPOINT_NAME).get(POST_HTTP_METHOD));
+        when(mockEndpoint.getArkId()).thenReturn(ARK_ID);
+//        when(mockEndpoint.getStatus()).thenReturn(EndpointStatus.LOADED.name());
+        when(mockEndpoint.getEngine()).thenReturn(JS_ENGINE);
+        endpointMap.put(ENDPOINT_URI, mockEndpoint);
         activationService = new ActivationService(adapterResolver, endpointMap, koRepo);
     }
 
