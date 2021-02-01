@@ -67,8 +67,6 @@ public class ActivationController {
         }
 
         activationService.activateEndpoints(endpointsToActivate);
-
-        logOverwriteOfExistingEndpoints(endpointsToActivate);
         endpoints.putAll(endpointsToActivate);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
         redirectView.setHttp10Compatible(false);
@@ -114,18 +112,10 @@ public class ActivationController {
         Map<URI, Endpoint>
                 loadedEndpoints = endpointLoader.load(arkId);
         activationService.activateEndpoints(loadedEndpoints);
-        logOverwriteOfExistingEndpoints(loadedEndpoints);
         endpoints.putAll(loadedEndpoints);
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
         return redirectView;
     }
 
-    private void logOverwriteOfExistingEndpoints(Map<URI, Endpoint> loadedEndpoints) {
-        for (Map.Entry<URI, Endpoint> entry : loadedEndpoints.entrySet()) {
-            if (endpoints.containsKey(entry.getKey())) {
-                log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));
-            }
-        }
-    }
 }

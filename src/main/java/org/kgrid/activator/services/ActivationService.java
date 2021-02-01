@@ -56,7 +56,11 @@ public class ActivationService {
     }
 
     private Executor activateEndpoint(URI endpointKey, Endpoint endpoint) {
-        log.info("Activating endpoint: {}", endpointKey);
+        if(endpoint.isActive()) {
+            log.info("Reactivating endpoint: {}", endpointKey);
+        } else {
+            log.info("Activating endpoint: {}", endpointKey);
+        }
 
         final JsonNode deploymentSpec = endpoint.getDeployment();
         Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
