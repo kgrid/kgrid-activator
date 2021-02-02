@@ -41,7 +41,6 @@ public class EndpointLoader {
         Map<URI, Endpoint> endpoints = new HashMap<>();
 
         if (ark.hasVersion()) {
-            log.info("ArkId: " + ark.getFullArk());
             loadKoImplementation(ark, endpoints);
         } else {
             JsonNode knowledgeObjectMetadata = knowledgeObjectRepository.findKnowledgeObjectMetadata(ark);
