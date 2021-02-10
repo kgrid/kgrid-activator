@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Endpoint implements Comparable<Endpoint> {
@@ -70,7 +71,7 @@ public class Endpoint implements Comparable<Endpoint> {
     }
 
     public String getDetail() {
-         return detail;
+        return detail;
     }
 
     public Boolean isActive() {
@@ -85,7 +86,7 @@ public class Endpoint implements Comparable<Endpoint> {
         this.detail = detail;
     }
 
-    public void setActivated(LocalDateTime time){
+    public void setActivated(LocalDateTime time) {
         this.activated = time;
     }
 
@@ -159,5 +160,18 @@ public class Endpoint implements Comparable<Endpoint> {
     @Override
     public int compareTo(Endpoint endpoint) {
         return endpoint.getId().compareTo(this.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Endpoint endpoint = (Endpoint) o;
+        return Objects.equals(wrapper, endpoint.wrapper) && Objects.equals(status, endpoint.status) && Objects.equals(endpointName, endpoint.endpointName) && Objects.equals(detail, endpoint.detail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(wrapper, status, endpointName, detail);
     }
 }

@@ -42,7 +42,7 @@ public class ActivationController {
     public RedirectView activate() {
         log.info("Load and Activate all endpoints ");
         endpoints.clear();
-        Map<URI, Endpoint> loadedEndpoints = endpointLoader.load();
+        Map<URI, Endpoint> loadedEndpoints = endpointLoader.loadAllEndpoints();
         endpoints.putAll(loadedEndpoints);
         activationService.activateEndpoints(endpoints);
 

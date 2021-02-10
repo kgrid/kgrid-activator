@@ -2,8 +2,8 @@ package org.kgrid.activator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.KoValidationService;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @Service
 public class EndpointLoader {
@@ -98,25 +97,25 @@ public class EndpointLoader {
      *
      * @return collection of endpoints
      */
-    public Map<URI, Endpoint> load() {
+    public Map<URI, Endpoint> loadAllEndpoints() {
         Map<ArkId, JsonNode> kos = knowledgeObjectRepository.findAll();
-        Map<URI, Endpoint> endpoints = new HashMap<>();
+        final Map<URI, Endpoint> endpoints = new HashMap<>();
 
-        for (Entry<ArkId, JsonNode> ko : kos.entrySet()) {
-            Map<URI, Endpoint> endpointsToAdd = load(ko.getKey());
-            checkForDuplicates(endpoints, endpointsToAdd);
-            endpoints.putAll(endpointsToAdd);
-        }
+        kos.forEach((ark, jsonNode) -> {
+            Map<URI, Endpoint> newEndpoints = load(ark);
+            checkForDuplicates(newEndpoints, endpoints);
+            endpoints.putAll(newEndpoints);
+        });
 
         return endpoints;
     }
 
     private void checkForDuplicates(Map<URI, Endpoint> endpoints, Map<URI, Endpoint> endpointsToAdd) {
-            for (Map.Entry<URI, Endpoint> entry : endpointsToAdd.entrySet()) {
-                if (endpoints.containsKey(entry.getKey())) {
-                    log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));
-                }
+        for (Map.Entry<URI, Endpoint> entry : endpointsToAdd.entrySet()) {
+            if (endpoints.containsKey(entry.getKey())) {
+                log.warn(String.format("Overwriting duplicate endpoint: %s", entry.getKey()));
             }
+        }
     }
 
 }

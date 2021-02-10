@@ -71,7 +71,7 @@ public class KoValidationServiceTest {
 
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateServiceSpecification(serviceSpec));
-        assertEquals(KoValidationService.HAS_MISSING_PATHS, activatorException.getMessage());
+        assertEquals(KoValidationService.HAS_MISSING_PATHS_NODE_IN_SERVICE_SPECIFICATION, activatorException.getMessage());
     }
 
     @Test
@@ -82,14 +82,6 @@ public class KoValidationServiceTest {
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateServiceSpecification(serviceSpec));
         assertEquals(KoValidationService.HAS_NO_DEFINED_PATHS, activatorException.getMessage());
-    }
-
-    private Endpoint getEndpoint(JsonNode serviceSpec, JsonNode deploymentSpec) {
-        JsonNode metadata = objectMapper.createObjectNode().put("@id", "naan/name/version");
-        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
-        wrapper.addDeployment(deploymentSpec);
-        wrapper.addService(serviceSpec);
-        return new Endpoint(wrapper, "endpoint");
     }
 
     @Test
@@ -105,34 +97,27 @@ public class KoValidationServiceTest {
 
     @Test
     public void validateActivatability_KoHasNoArtifactInDeploymentSpec() throws JsonProcessingException {
-        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec = objectMapper.readTree("{\"endpoints\":{\"/endpoint\":{}}}");
-        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateEndpoint(endpoint));
+                () -> koValidationService.validateDeploymentSpecification(deploymentSpec));
         assertEquals(KoValidationService.HAS_NO_ARTIFACT_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
     @Test
     public void validateActivatability_KoHasNoAdapterInDeploymentSpec() throws JsonProcessingException {
-        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec =
                 objectMapper.readTree(
                         "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\"}}}");
-        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateEndpoint(endpoint));
+                () -> koValidationService.validateDeploymentSpecification(deploymentSpec));
         assertEquals(KoValidationService.HAS_NO_ENGINE_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
     @Test
     public void validateActivatability_KoHasNoArtifactsDefinedInDeploymentSpec() throws JsonProcessingException {
-        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
         JsonNode deploymentSpec = objectMapper.readTree("{\"/endpoint\":{\"post\":{\"artifact\":\"\",\"engine\":\"fire\"}}}");
-
-        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
-                () -> koValidationService.validateEndpoint(endpoint));
+                () -> koValidationService.validateDeploymentSpecification(deploymentSpec));
         assertEquals(KoValidationService.HAS_NO_DEFINED_ARTIFACTS_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
 
@@ -151,6 +136,53 @@ public class KoValidationServiceTest {
         Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> koValidationService.validateEndpoint(endpoint));
+        assertEquals(KoValidationService.HAS_MISSING_ENDPOINT_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
+    }
+
+    @Test
+    public void validateDeployment_KoHasNoEndpointsDefinedInDeploymentSpec() throws JsonProcessingException {
+        JsonNode deploymentSpec = objectMapper.readTree("{}");
+        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+                () -> koValidationService.validateDeploymentSpecification(deploymentSpec));
         assertEquals(KoValidationService.HAS_NO_ENDPOINTS_DEFINED_IN_DEPLOYMENT_SPECIFICATION, activatorException.getMessage());
     }
+
+    @Test
+    public void validateWrapper_ValidKo() throws JsonProcessingException {
+        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/endpoint\":{\"post\":{\"stuff\":\"things\"}}}}");
+        JsonNode deploymentSpec =
+                objectMapper.readTree(
+                        "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
+
+        KnowledgeObjectWrapper koWrapper = getWrapper(serviceSpec, deploymentSpec);
+        koValidationService.validateKow(koWrapper);
+    }
+
+    @Test
+    public void validateEndpoint_HasMissingPathInServiceSpec() throws JsonProcessingException {
+        JsonNode serviceSpec = objectMapper.readTree("{\"paths\":{\"/WRONG\":{\"post\":{\"stuff\":\"things\"}}}}");
+        JsonNode deploymentSpec =
+                objectMapper.readTree(
+                        "{\"/endpoint\":{\"post\":{\"artifact\":\"Arty McFacts\",\"engine\":\"javascript\",\"function\":\"doorway\"}}}");
+
+        Endpoint endpoint = getEndpoint(serviceSpec, deploymentSpec);
+        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+                () -> koValidationService.validateEndpoint(endpoint));
+        assertEquals(KoValidationService.HAS_MISSING_PATH_IN_SERVICE_SPECIFICATION, activatorException.getMessage());
+    }
+
+    private Endpoint getEndpoint(JsonNode serviceSpec, JsonNode deploymentSpec) {
+        KnowledgeObjectWrapper wrapper = getWrapper(serviceSpec, deploymentSpec);
+        return new Endpoint(wrapper, "endpoint");
+    }
+
+    private KnowledgeObjectWrapper getWrapper(JsonNode serviceSpec, JsonNode deploymentSpec) {
+        JsonNode metadata = objectMapper.createObjectNode().put("@id", "naan/name/version").put("hasServiceSpecification", "value")
+                .put("hasDeploymentSpecification", "value");
+        KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
+        wrapper.addDeployment(deploymentSpec);
+        wrapper.addService(serviceSpec);
+        return wrapper;
+    }
+
 }

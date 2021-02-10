@@ -105,7 +105,7 @@ public class EndpointLoaderTest {
         Map<ArkId, JsonNode> kos = new HashMap<>();
         kos.put(JS_ARK_ID, koMetadata);
         when(repository.findAll()).thenReturn(kos);
-        Map<URI, Endpoint> endpoints = endpointLoader.load();
+        Map<URI, Endpoint> endpoints = endpointLoader.loadAllEndpoints();
         assertEquals(endpointMap.get(JS_ENDPOINT_URI).getStatus(), endpoints.get(JS_ENDPOINT_URI).getStatus());
     }
 }

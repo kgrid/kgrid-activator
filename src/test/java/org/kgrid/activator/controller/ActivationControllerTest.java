@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.EndpointLoader;
-import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.shelf.domain.ArkId;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -63,11 +63,11 @@ public class ActivationControllerTest {
     @Test
     @DisplayName("Global activation interactions")
     public void testActivateInteractionsAndResult() {
-        when(endpointLoader.load()).thenReturn(endpointMapFromLoader);
+        when(endpointLoader.loadAllEndpoints()).thenReturn(endpointMapFromLoader);
         RedirectView redirectView = activationController.activate();
         assertAll(
                 () -> verify(globalEndpoints).clear(),
-                () -> verify(endpointLoader).load(),
+                () -> verify(endpointLoader).loadAllEndpoints(),
                 () -> verify(globalEndpoints).putAll(endpointMapFromLoader),
                 () -> verify(activationService).activateEndpoints(globalEndpoints),
                 () -> assertEquals("/endpoints", redirectView.getUrl())
