@@ -1,7 +1,6 @@
 package org.kgrid.activator.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.kgrid.activator.EndPointResult;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.adapter.api.Executor;
@@ -23,12 +22,21 @@ public class Endpoint implements Comparable<Endpoint> {
     private String status;
     private String endpointName;
     private String detail;
+    private URI physicalLocation;
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;
         this.status = EndpointStatus.LOADED.name();
         this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
+    }
+
+    public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName, URI physicalLocation) {
+        this.wrapper = wrapper;
+        this.status = EndpointStatus.LOADED.name();
+        this.endpointName = endpointName;
+        this.activated = LocalDateTime.now();
+        this.physicalLocation = physicalLocation;
     }
 
     public String getEngine() {
@@ -90,6 +98,13 @@ public class Endpoint implements Comparable<Endpoint> {
         this.activated = time;
     }
 
+    public URI getPhysicalLocation() {
+        return physicalLocation;
+    }
+
+    public void setPhysicalLocation(URI physicalLocation) {
+        this.physicalLocation = physicalLocation;
+    }
 
     public ArkId getArkId() {
         ArkId arkId = new ArkId(wrapper.getMetadata().at("/identifier").asText());
@@ -122,9 +137,7 @@ public class Endpoint implements Comparable<Endpoint> {
     public ArrayList<String> getSupportedContentTypes() {
         ArrayList<String> supportedTypes = new ArrayList<>();
         this.getService().at("/paths").get("/" + this.getEndpointName())
-                .get("post").get("requestBody").get("content").fieldNames().forEachRemaining(key -> {
-            supportedTypes.add(key);
-        });
+                .get("post").get("requestBody").get("content").fieldNames().forEachRemaining(supportedTypes::add);
         return supportedTypes;
     }
 
@@ -143,7 +156,7 @@ public class Endpoint implements Comparable<Endpoint> {
         return matches.get();
     }
 
-    public EndPointResult execute(Object inputs, MediaType contentType) {
+    public EndPointResult<Object> execute(Object inputs, MediaType contentType) {
 
         if (null == executor) {
             throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
@@ -151,7 +164,7 @@ public class Endpoint implements Comparable<Endpoint> {
 
         String contentTypeString = (null == contentType) ? "" : contentType.toString();
 
-        final EndPointResult endPointResult = new EndPointResult(this.executor.execute(inputs, contentTypeString));
+        final EndPointResult<Object> endPointResult = new EndPointResult<>(this.executor.execute(inputs, contentTypeString));
         endPointResult.getInfo().put("inputs", inputs);
         endPointResult.getInfo().put("ko", wrapper.getMetadata());
         return endPointResult;

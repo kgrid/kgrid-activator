@@ -110,7 +110,6 @@ public class KoLoaderTest {
         assertAll(
                 () -> verify(koValidationService).validateKow(jsWrapper),
                 () -> verify(koValidationService).validateEndpoint(jsEndpoint),
-                () -> verify(endpointMap).putAll(loadedEndpoints),
                 () -> assertEquals(expected, loadedEndpoints)
         );
     }

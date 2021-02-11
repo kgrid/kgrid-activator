@@ -13,14 +13,14 @@ import java.net.URI;
 import java.util.Map;
 
 public class AdapterActivationContext implements ActivationContext {
-    private final Map<URI, Endpoint> endpoints;
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
+    private final Map<URI, Endpoint> endpointMap;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public AdapterActivationContext(Map<URI, Endpoint> endpoints, Environment environment,
+    public AdapterActivationContext(Map<URI, Endpoint> endpointMap, Environment environment,
                                     CompoundDigitalObjectStore cdoStore) {
-        this.endpoints = endpoints;
+        this.endpointMap = endpointMap;
         this.environment = environment;
         this.cdoStore = cdoStore;
     }
@@ -28,8 +28,8 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     public Executor getExecutor(String key) {
         URI id = URI.create(key);
-        if (endpoints.containsKey(id)) {
-            return endpoints.get(id).getExecutor();
+        if (endpointMap.containsKey(id)) {
+            return endpointMap.get(id).getExecutor();
         } else {
             String message = String.format("Can't find executor in app context for endpoint %s", key);
             log.error(message);

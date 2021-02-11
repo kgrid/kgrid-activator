@@ -1,5 +1,4 @@
-package org.kgrid.activator.domain;import org.mockito.Mock;
-
+package org.kgrid.activator.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 class AdapterActivationContextTest {
     private final Environment environment = Mockito.mock(Environment.class);
-    private final CompoundDigitalObjectStore cdoStore= Mockito.mock(CompoundDigitalObjectStore.class);
+    private final CompoundDigitalObjectStore cdoStore = Mockito.mock(CompoundDigitalObjectStore.class);
     private AdapterActivationContext adapterActivationContext;
     private final Map<URI, Endpoint> endpoints = new HashMap<>();
     private final Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);

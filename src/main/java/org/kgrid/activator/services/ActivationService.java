@@ -1,12 +1,9 @@
 package org.kgrid.activator.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,58 +15,53 @@ import java.util.Map;
 @Service
 public class ActivationService {
 
-    final Logger log = LoggerFactory.getLogger(this.getClass());
+    final Logger log = LoggerFactory.getLogger(ActivationService.class);
 
-    private Map<URI, Endpoint> endpoints;
+    private final AdapterResolver adapterResolver;
 
-    private AdapterResolver adapterResolver;
+    private Map<URI, Endpoint> endpointMap;
 
-    private final KnowledgeObjectRepository koRepo;
-
-    public ActivationService(AdapterResolver adapterResolver, Map<URI, Endpoint> endpoints, KnowledgeObjectRepository koRepo) {
+    public ActivationService(AdapterResolver adapterResolver) {
         this.adapterResolver = adapterResolver;
-        this.endpoints = endpoints;
-        this.koRepo = koRepo;
+    }
+
+    public Map<URI, Endpoint> getEndpointMap() {
+        return endpointMap;
+    }
+
+    public void setEndpointMap(Map<URI, Endpoint> endpointMap) {
+        this.endpointMap = endpointMap;
     }
 
     public void activateEndpoints(Map<URI, Endpoint> eps) {
-        eps.forEach((key, value) -> {
-
-            synchronized (value) {
-                Executor executor = null;
-                try {
-                    executor = activateEndpoint(key, value);
-                    value.setActivated(LocalDateTime.now());
-                    value.setStatus(EndpointStatus.ACTIVATED.name());
-                    value.setDetail(null);
-                } catch (Exception e) {
-                    String message = "Could not activate " + key + ". Cause: " + e.getMessage();
-                    log.warn(message + ". " + e.getClass().getSimpleName());
-                    value.setActivated(LocalDateTime.now());
-                    value.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
-                    value.setDetail(message);
-                }
-                value.setExecutor(executor);
-            }
-
-        });
+        eps.values().forEach(this::activateEndpoint);
     }
 
-    private Executor activateEndpoint(URI endpointKey, Endpoint endpoint) {
-        if(endpoint.isActive()) {
+    public synchronized void activateEndpoint(Endpoint endpoint) {
+        URI endpointKey = endpoint.getId();
+        if (endpoint.isActive()) {
             log.info("Reactivating endpoint: {}", endpointKey);
         } else {
             log.info("Activating endpoint: {}", endpointKey);
         }
-
-        final JsonNode deploymentSpec = endpoint.getDeployment();
-        Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
-
-        Executor executor =  adapter.activate(
-                    koRepo.getObjectLocation(endpoint.getArkId()),
+        try {
+            Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
+            Executor executor = adapter.activate(
+                    endpoint.getPhysicalLocation(),
                     endpointKey,
-                    deploymentSpec);
+                    endpoint.getDeployment());
+            setEndpointDetails(endpoint, EndpointStatus.ACTIVATED, null, executor);
+        } catch (Exception e) {
+            String message = "Could not activate " + endpointKey + ". Cause: " + e.getMessage();
+            log.warn(message + ". " + e.getClass().getSimpleName());
+            setEndpointDetails(endpoint, EndpointStatus.FAILED_TO_ACTIVATE, message, null);
+        }
+    }
 
-        return executor;
+    private void setEndpointDetails(Endpoint endpoint, EndpointStatus activated, String detail, Executor executor) {
+        endpoint.setActivated(LocalDateTime.now());
+        endpoint.setStatus(activated.name());
+        endpoint.setDetail(detail);
+        endpoint.setExecutor(executor);
     }
 }

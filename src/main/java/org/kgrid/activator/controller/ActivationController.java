@@ -1,12 +1,11 @@
 package org.kgrid.activator.controller;
 
-import org.kgrid.activator.EndpointLoader;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.activator.services.KoLoader;
 import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +23,17 @@ public class ActivationController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private ActivationService activationService;
+    private final ActivationService activationService;
 
-    @Autowired
-    private EndpointLoader endpointLoader;
+    private final KoLoader koLoader;
 
-    @Autowired
-    private Map<URI, Endpoint> endpoints;
+    private final Map<URI, Endpoint> endpointMap;
+
+    public ActivationController(ActivationService activationService, Map<URI, Endpoint> endpointMap, KoLoader koLoader) {
+        this.activationService = activationService;
+        this.koLoader = koLoader;
+        this.endpointMap = endpointMap;
+    }
 
     /**
      * Remove all endpoints and load and activate
@@ -41,10 +43,11 @@ public class ActivationController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activate() {
         log.info("Load and Activate all endpoints ");
+        Map<URI, Endpoint> endpoints = endpointMap;
         endpoints.clear();
-        Map<URI, Endpoint> loadedEndpoints = endpointLoader.loadAllEndpoints();
+        Map<URI, Endpoint> loadedEndpoints = koLoader.loadAllKos();
         endpoints.putAll(loadedEndpoints);
-        activationService.activateEndpoints(endpoints);
+        activationService.activateEndpoints(loadedEndpoints);
 
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
@@ -60,14 +63,13 @@ public class ActivationController {
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateForEngine(@PathVariable String engine) {
         Map<URI, Endpoint> endpointsToActivate = new HashMap<>();
-        for (Endpoint endpoint : endpoints.values()) {
+        for (Endpoint endpoint : endpointMap.values()) {
             if (engine.equals(endpoint.getEngine())) {
                 endpointsToActivate.put(endpoint.getId(), endpoint);
             }
         }
 
         activationService.activateEndpoints(endpointsToActivate);
-        endpoints.putAll(endpointsToActivate);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
         redirectView.setHttp10Compatible(false);
         return redirectView;
@@ -110,9 +112,8 @@ public class ActivationController {
         log.info("Activate {}", arkId.getSlashArkVersion());
 
         Map<URI, Endpoint>
-                loadedEndpoints = endpointLoader.load(arkId);
-        activationService.activateEndpoints(loadedEndpoints);
-        endpoints.putAll(loadedEndpoints);
+                loadedEndpoints = koLoader.loadOneKo(arkId);
+        activationService.activateEndpoints(endpointMap);
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
         return redirectView;

@@ -1,9 +1,9 @@
 package org.kgrid.activator;
 
 import org.kgrid.activator.controller.ActivationController;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.AdapterResolver;
-import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +17,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -55,9 +49,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
     }
 
     @Bean
-    public static AdapterResolver getAdapterResolver(AdapterLoader loader,
-                                                     Map<URI, Endpoint> endpoints) {
-        return loader.loadAndInitializeAdapters(endpoints);
+    public static AdapterResolver getAdapterResolver(AdapterLoader loader) {
+        return loader.loadAndInitializeAdapters();
     }
 
     @Bean
@@ -68,6 +61,11 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... strings) {
+
+        // Load adapters
+        // Initialize adapters
+        // Load kos -> endpoints
+        // Activate endpoints
         activationController.activate();
     }
 

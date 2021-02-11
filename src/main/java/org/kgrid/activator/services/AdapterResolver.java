@@ -3,26 +3,27 @@ package org.kgrid.activator.services;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdapterResolver {
 
-    private final List<Adapter> adapters;
+    private final Map<String, Adapter> adapterMap;
 
     public AdapterResolver(List<Adapter> adapters) {
-        this.adapters = adapters;
+        adapterMap = new HashMap<>();
+        for (Adapter adapter : adapters) {
+            for (String engine : adapter.getEngines()) {
+                adapterMap.put(engine, adapter);
+            }
+        }
     }
 
     protected Adapter getAdapter(String engine) {
-        Adapter resultAdapter = null;
-        for (Adapter adapter : adapters) {
-            if (adapter.getEngines().contains(engine)) {
-                resultAdapter = adapter;
-            }
-        }
-        if (resultAdapter == null) {
+        if (!adapterMap.containsKey(engine)) {
             throw new ActivatorException("No engine found: " + engine);
         }
-        return resultAdapter;
+        return adapterMap.get(engine);
     }
 }

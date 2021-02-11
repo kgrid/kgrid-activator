@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,20 +38,13 @@ public class KoLoader {
             KnowledgeObjectWrapper wrapper = knowledgeObjectRepository.getKow(arkId);
             validationService.validateKow(wrapper);
             wrapper.getDeployment().fields().forEachRemaining(endpointName -> {
-                Endpoint endpoint = getEndpoint(wrapper, endpointName.getKey());
+                Endpoint endpoint = getEndpoint(wrapper, arkId, endpointName.getKey());
                 endpoints.put(endpoint.getId(), endpoint);
             });
         } catch (ActivatorException | ShelfResourceNotFound e) {
             throw new ActivatorException(String.format("Cannot load ko %s, %s", arkId.getFullArk(), e.getMessage()), e);
         }
-        endpointMap.putAll(endpoints);
         return endpoints;
-    }
-
-    public Map<URI, Endpoint> loadAllKos() {
-        return knowledgeObjectRepository.findAll().keySet().stream()
-                .flatMap(arkId -> loadOneKo(arkId).entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Map<URI, Endpoint> loadSomeKos(List<ArkId> arkIds) {
@@ -59,8 +53,13 @@ public class KoLoader {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Endpoint getEndpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
-        Endpoint endpoint = new Endpoint(wrapper, endpointName.substring(1));
+    public Map<URI, Endpoint> loadAllKos() {
+        List<ArkId> allArkIds = new ArrayList<>(knowledgeObjectRepository.findAll().keySet());
+        return loadSomeKos(allArkIds);
+    }
+
+    private Endpoint getEndpoint(KnowledgeObjectWrapper wrapper, ArkId arkId, String endpointName) {
+        Endpoint endpoint = new Endpoint(wrapper, endpointName.substring(1), knowledgeObjectRepository.getObjectLocation(arkId));
         validationService.validateEndpoint(endpoint);
         if (endpointMap.containsKey(endpoint.getId())) {
             log.warn(String.format("Overwriting duplicate endpoint: %s", endpoint.getId()));

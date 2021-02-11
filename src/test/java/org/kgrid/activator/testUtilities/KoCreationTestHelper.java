@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 
 import java.net.URI;
 
+import static org.kgrid.activator.services.ActivationServiceTest.OBJECT_LOCATION;
+
 public class KoCreationTestHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String SERVICE_YAML_PATH = "service.yaml";
@@ -120,18 +122,18 @@ public class KoCreationTestHelper {
 
         return serviceNode;
     }
-
+    
     public static Endpoint getEndpointForEngine(String engine) {
         if (engine.equals(NODE_ENGINE)) {
             KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
             nodeKow.addService(generateServiceNode(engine));
             nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(engine, NODE_ENDPOINT_NAME));
-            return new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
+            return new Endpoint(nodeKow, NODE_ENDPOINT_NAME, OBJECT_LOCATION);
         } else if (engine.equals(JS_ENGINE)) {
             KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, JS_VERSION));
             nodeKow.addService(generateServiceNode(engine));
             nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(engine, JS_ENDPOINT_NAME));
-            return new Endpoint(nodeKow, JS_ENDPOINT_NAME);
+            return new Endpoint(nodeKow, JS_ENDPOINT_NAME, OBJECT_LOCATION);
         } else {
             return null;
         }
