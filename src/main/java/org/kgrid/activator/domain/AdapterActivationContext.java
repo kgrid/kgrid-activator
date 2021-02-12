@@ -16,13 +16,11 @@ import java.util.Map;
 public class AdapterActivationContext implements ActivationContext {
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
-    private final Map<URI, Endpoint> endpointMap;
     private final ActivationService activationService;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public AdapterActivationContext(Map<URI, Endpoint> endpointMap, Environment environment,
-                                    CompoundDigitalObjectStore cdoStore, ActivationService activationService) {
-        this.endpointMap = endpointMap;
+    public AdapterActivationContext(Environment environment, CompoundDigitalObjectStore cdoStore,
+                                    ActivationService activationService) {
         this.environment = environment;
         this.cdoStore = cdoStore;
         this.activationService = activationService;
@@ -31,6 +29,7 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     public Executor getExecutor(String key) {
         URI id = URI.create(key);
+        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
         if (endpointMap.containsKey(id)) {
             return endpointMap.get(id).getExecutor();
         } else {

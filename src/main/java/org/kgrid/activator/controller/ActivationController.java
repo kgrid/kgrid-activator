@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
@@ -31,7 +28,7 @@ public class ActivationController {
     /**
      * Remove all endpoints and load and activate
      *
-     * @return set of activated endpoint paths
+     * @return redirect to the endpoints list
      */
     @GetMapping(value = "/reload", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activate() {
@@ -45,9 +42,9 @@ public class ActivationController {
     }
 
     /**
-     * Remove all endpoints and load and activate
+     * Reactive all endpoints
      *
-     * @return set of activated endpoint paths
+     * @return redirect to the endpoints list
      */
     @GetMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView refresh() {
@@ -61,10 +58,10 @@ public class ActivationController {
     }
 
     /**
-     * For KOs of a specific engine: remove endpoints, load endpoints, and activate those endpoints
+     * For KOs of a specific engine: reactivate those endpoints
      *
      * @param engine the engine for which KOs should be activated.
-     * @return set of activated endpoint paths
+     * @return redirect to the endpoints list for that engine
      */
     @GetMapping(value = "/refresh/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView refreshForEngine(@PathVariable String engine) {
@@ -76,21 +73,22 @@ public class ActivationController {
     }
 
     /**
-     * For A KO remove endpoints, load endpoints, and activate those endpoints
+     * For A KO load endpoints, and activate those endpoints
      *
-     * @param naan ko naan
-     * @param name ko name
+     * @param naan    ko naan
+     * @param name    ko name
+     * @param version code version of the Knowledge object, the third part of the ark
      * @return set of activated endpoint paths
      */
     @GetMapping(value = "/reload/{naan}/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateKo(@PathVariable String naan,
-                                   @PathVariable String name) {
+                                   @PathVariable String name, @RequestParam(name = "v", required = true) String version) {
 
-        return activateForArkId(naan, name, null);
+        return activateKoVersion(naan, name, version);
     }
 
     /**
-     * For an Implementation Remove endpoints, Load endpoints, and activate those endpoints
+     * For an KO Load endpoints, and activate those endpoints
      *
      * @param naan    naan of the Knowledge object, the first part of the ark
      * @param name    name of the Knowledge object, the second part of the ark
@@ -100,10 +98,6 @@ public class ActivationController {
     @GetMapping(value = "/reload/{naan}/{name}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activateKoVersion(@PathVariable String naan,
                                           @PathVariable String name, @PathVariable String version) {
-        return activateForArkId(naan, name, version);
-    }
-
-    private RedirectView activateForArkId(String naan, String name, String version) {
         ArkId arkId;
         if (version == null) {
             arkId = new ArkId(naan, name);
@@ -111,7 +105,6 @@ public class ActivationController {
             arkId = new ArkId(naan, name, version);
         }
         log.info("Activate {}", arkId.getSlashArkVersion());
-
 
         activationService.activateEndpoints(koLoader.loadOneKo(arkId));
         RedirectView redirectView = new RedirectView("/endpoints");

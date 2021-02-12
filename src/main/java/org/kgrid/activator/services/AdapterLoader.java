@@ -47,7 +47,7 @@ public class AdapterLoader {
     }
 
     public void initializeAdapters(List<Adapter> adapters) {
-        adapters.forEach(adapter -> adapter.initialize(new AdapterActivationContext(activationService.getEndpointMap(), environment, cdoStore, activationService)));
+        adapters.forEach(adapter -> adapter.initialize(new AdapterActivationContext(environment, cdoStore, activationService)));
     }
 
     private void registerHealthEndpoint(Adapter adapter) {

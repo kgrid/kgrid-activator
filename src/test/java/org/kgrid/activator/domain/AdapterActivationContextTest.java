@@ -32,7 +32,8 @@ class AdapterActivationContextTest {
     public void setup() {
         jsEndpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
-        adapterActivationContext = new AdapterActivationContext(endpoints, environment, cdoStore, activationService);
+        when(activationService.getEndpointMap()).thenReturn(endpoints);
+        adapterActivationContext = new AdapterActivationContext(environment, cdoStore, activationService);
     }
 
     @Test

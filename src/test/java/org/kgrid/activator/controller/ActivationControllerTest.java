@@ -69,9 +69,9 @@ public class ActivationControllerTest {
     @Test
     @DisplayName("Single ko activation interactions")
     public void testActivateKoInteractionsAndResult() {
-        ArkId arkId = new ArkId(NODE_NAAN, NODE_NAME, null);
+        ArkId arkId = new ArkId(NODE_NAAN, NODE_NAME, NODE_VERSION);
         when(koLoader.loadOneKo(arkId)).thenReturn(endpointMap);
-        RedirectView redirectView = activationController.activateKo(NODE_NAAN, NODE_NAME);
+        RedirectView redirectView = activationController.activateKo(NODE_NAAN, NODE_NAME, NODE_VERSION);
         assertAll(
                 () -> verify(koLoader).loadOneKo(arkId),
                 () -> verify(activationService).activateEndpoints(endpointMap),
