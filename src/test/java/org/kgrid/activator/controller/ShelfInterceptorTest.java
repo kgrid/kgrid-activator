@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -17,10 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @DisplayName("Shelf Interceptor Tests")
 public class ShelfInterceptorTest {
 
+    private ActivationService activationService = Mockito.mock(ActivationService.class);
     private Map<URI, Endpoint> globalEndpoints = new HashMap<>();
 
     ShelfInterceptor shelfInterceptor;
@@ -35,7 +39,8 @@ public class ShelfInterceptorTest {
         request.setRequestURI("/kos/naan/name/version");
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
-        shelfInterceptor = new ShelfInterceptor(globalEndpoints);
+        when(activationService.getEndpointMap()).thenReturn(globalEndpoints);
+        shelfInterceptor = new ShelfInterceptor(activationService);
         org.springframework.test.util.ReflectionTestUtils.setField(shelfInterceptor, "shelfEndpoint", "kos");
     }
 

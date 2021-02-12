@@ -1,7 +1,6 @@
 package org.kgrid.activator.services;
 
 import org.kgrid.activator.domain.AdapterActivationContext;
-import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
@@ -13,10 +12,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 
 @Service
@@ -24,32 +21,33 @@ public class AdapterLoader {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final AutowireCapableBeanFactory beanFactory;
+    private final HealthContributorRegistry registry;
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
-    private final HealthContributorRegistry registry;
-    private final Map<URI, Endpoint> endpointMap;
+    private final ActivationService activationService;
 
-    public AdapterLoader(AutowireCapableBeanFactory beanFactory, Environment environment,
-                         CompoundDigitalObjectStore cdoStore, HealthContributorRegistry registry,
-                         Map<URI, Endpoint> endpointMap) {
+    public AdapterLoader(AutowireCapableBeanFactory beanFactory, HealthContributorRegistry registry, Environment environment,
+                         CompoundDigitalObjectStore cdoStore, ActivationService activationService) {
         this.beanFactory = beanFactory;
+        this.registry = registry;
         this.environment = environment;
         this.cdoStore = cdoStore;
-        this.registry = registry;
-        this.endpointMap = endpointMap;
+        this.activationService = activationService;
     }
 
-    public AdapterResolver loadAndInitializeAdapters() {
-
+    public List<Adapter> loadAdapters() {
         final List<Adapter> adapters = new ArrayList<>();
         ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
         loader.forEach(adapter -> {
             beanFactory.autowireBean(adapter);
-            adapter.initialize(new AdapterActivationContext(endpointMap, environment, cdoStore));
-            adapters.add(adapter);
             registerHealthEndpoint(adapter);
+            adapters.add(adapter);
         });
-        return new AdapterResolver(adapters);
+        return adapters;
+    }
+
+    public void initializeAdapters(List<Adapter> adapters) {
+        adapters.forEach(adapter -> adapter.initialize(new AdapterActivationContext(activationService.getEndpointMap(), environment, cdoStore, activationService)));
     }
 
     private void registerHealthEndpoint(Adapter adapter) {

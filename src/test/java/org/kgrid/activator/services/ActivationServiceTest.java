@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,8 +35,6 @@ public class ActivationServiceTest {
     private final Map<URI, Endpoint> endpointMap = new HashMap<>();
     private Endpoint endpoint;
     @Mock
-    private AdapterResolver adapterResolver;
-    @Mock
     private Adapter adapter;
     @Mock
     private Executor executor;
@@ -43,25 +43,30 @@ public class ActivationServiceTest {
 
     @BeforeEach
     public void setup() {
+        List<Adapter> adapters = new ArrayList<>();
+        adapters.add(adapter);
+        activationService = new ActivationService();
+        activationService.setAdapters(adapters);
         deploymentJson = getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME);
         JsonNode metadata = generateMetadata(JS_NAAN, JS_NAME, JS_VERSION);
         EndPointResult<Object> endPointResult = new EndPointResult<>(null);
         String input = "input";
         endPointResult.getInfo().put("inputs", input);
         endPointResult.getInfo().put("ko", metadata);
-        when(adapterResolver.getAdapter(JS_ENGINE)).thenReturn(adapter);
         endpoint = getEndpointForEngine(JS_ENGINE);
         endpointMap.put(JS_ENDPOINT_URI, endpoint);
-        activationService = new ActivationService(adapterResolver);
+        List<String> engines = new ArrayList<>();
+        engines.add(JS_ENGINE);
+        when(adapter.getEngines()).thenReturn(engines);
     }
 
     @Test
     @DisplayName("Activate Works Successfully")
     public void activateCreatesEndpointWithExecutor() {
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
+
         activationService.activateEndpoints(endpointMap);
         assertAll(
-                () -> verify(adapterResolver).getAdapter(JS_ENGINE),
                 () -> verify(adapter).activate(OBJECT_LOCATION, JS_ENDPOINT_URI,
                         deploymentJson.get("/" + JS_ENDPOINT_NAME).get(POST_HTTP_METHOD)),
                 () -> assertEquals(executor, endpoint.getExecutor()),
@@ -96,7 +101,17 @@ public class ActivationServiceTest {
                 () -> assertEquals(String.format("Could not activate %s. Cause: %s",
                         KoCreationTestHelper.JS_ENDPOINT_ID, exceptionMessage), endpoint.getDetail())
         );
+    }
 
+    @Test
+    @DisplayName("Activate fails when no engine is found")
+    public void activateFailsNoEngine() {
+        when(adapter.getEngines()).thenReturn(new ArrayList<>());
+        activationService.activateEndpoints(endpointMap);
+        assertAll(
+                () -> assertEquals(EndpointStatus.FAILED_TO_ACTIVATE.name(), endpoint.getStatus()),
+                () -> assertEquals("Could not activate naan/name/jsApiVersion/endpoint. Cause: No adapter loaded for engine javascript", endpoint.getDetail())
+        );
 
     }
 }

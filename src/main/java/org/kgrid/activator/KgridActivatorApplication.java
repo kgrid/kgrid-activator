@@ -1,12 +1,11 @@
 package org.kgrid.activator;
 
-import org.kgrid.activator.controller.ActivationController;
-import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
-import org.kgrid.activator.services.AdapterResolver;
+import org.kgrid.activator.services.KoLoader;
+import org.kgrid.adapter.api.Adapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStoreFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
@@ -23,16 +22,26 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.net.URI;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
 @CrossOrigin
 public class KgridActivatorApplication implements CommandLineRunner {
 
-    @Autowired
-    private ActivationController activationController;
+    final
+    AdapterLoader adapterLoader;
+
+    final
+    ActivationService activationService;
+
+    final
+    KoLoader koLoader;
+
+    public KgridActivatorApplication(AdapterLoader adapterLoader, ActivationService activationService, KoLoader koLoader) {
+        this.adapterLoader = adapterLoader;
+        this.activationService = activationService;
+        this.koLoader = koLoader;
+    }
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(KgridActivatorApplication.class)
@@ -48,17 +57,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
     }
 
-    @Bean
-    public static AdapterResolver getAdapterResolver(AdapterLoader loader) {
-        return loader.loadAndInitializeAdapters();
-    }
-
-    @Bean
-    public static Map<URI, Endpoint> getEndpoints() {
-        return new TreeMap<>();
-    }
-
-
     @Override
     public void run(String... strings) {
 
@@ -66,7 +64,10 @@ public class KgridActivatorApplication implements CommandLineRunner {
         // Initialize adapters
         // Load kos -> endpoints
         // Activate endpoints
-        activationController.activate();
+        List<Adapter> adapters = adapterLoader.loadAdapters();
+        activationService.setAdapters(adapters);
+        adapterLoader.initializeAdapters(adapters);
+        activationService.activateEndpoints(koLoader.loadAllKos());
     }
 
     @Profile("dev")

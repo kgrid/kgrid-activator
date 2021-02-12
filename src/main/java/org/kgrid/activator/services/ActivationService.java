@@ -2,6 +2,7 @@ package org.kgrid.activator.services;
 
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.slf4j.Logger;
@@ -10,31 +11,31 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ActivationService {
 
     final Logger log = LoggerFactory.getLogger(ActivationService.class);
 
-    private final AdapterResolver adapterResolver;
+    private List<Adapter> adapters;
 
-    private Map<URI, Endpoint> endpointMap;
-
-    public ActivationService(AdapterResolver adapterResolver) {
-        this.adapterResolver = adapterResolver;
-    }
+    private final Map<URI, Endpoint> endpointMap = new TreeMap<>();
 
     public Map<URI, Endpoint> getEndpointMap() {
         return endpointMap;
     }
 
-    public void setEndpointMap(Map<URI, Endpoint> endpointMap) {
-        this.endpointMap = endpointMap;
+    public void reactivateAll() {
+        activateEndpoints(endpointMap);
     }
 
     public void activateEndpoints(Map<URI, Endpoint> eps) {
         eps.values().forEach(this::activateEndpoint);
+        endpointMap.putAll(eps);
     }
 
     public synchronized void activateEndpoint(Endpoint endpoint) {
@@ -45,7 +46,15 @@ public class ActivationService {
             log.info("Activating endpoint: {}", endpointKey);
         }
         try {
-            Adapter adapter = adapterResolver.getAdapter(endpoint.getEngine());
+            Adapter adapter;
+            List<Adapter> matchingAdapters = adapters.stream()
+                    .filter(possibleAdapter -> (possibleAdapter.getEngines().contains(endpoint.getEngine())))
+                    .collect(Collectors.toList());
+            if (matchingAdapters.isEmpty()) {
+                throw new ActivatorException("No adapter loaded for engine " + endpoint.getEngine());
+            } else {
+                adapter = matchingAdapters.get(0);
+            }
             Executor executor = adapter.activate(
                     endpoint.getPhysicalLocation(),
                     endpointKey,
@@ -63,5 +72,23 @@ public class ActivationService {
         endpoint.setStatus(activated.name());
         endpoint.setDetail(detail);
         endpoint.setExecutor(executor);
+    }
+
+    public void reactivateEndpoint(URI endpointUri) {
+        Map<URI, Endpoint> singleReactivate = new TreeMap<>();
+        singleReactivate.put(endpointUri, endpointMap.get(endpointUri));
+        activateEndpoints(singleReactivate);
+    }
+
+    public void reactivateEngine(String engineName) {
+        endpointMap.forEach((uri, endpoint) -> {
+            if (endpoint.getEngine().equals(engineName)) {
+                reactivateEndpoint(uri);
+            }
+        });
+    }
+
+    public void setAdapters(List<Adapter> adapters) {
+        this.adapters = adapters;
     }
 }

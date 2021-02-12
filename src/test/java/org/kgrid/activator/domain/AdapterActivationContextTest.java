@@ -3,6 +3,7 @@ package org.kgrid.activator.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
@@ -22,6 +23,7 @@ class AdapterActivationContextTest {
     private final Environment environment = Mockito.mock(Environment.class);
     private final CompoundDigitalObjectStore cdoStore = Mockito.mock(CompoundDigitalObjectStore.class);
     private AdapterActivationContext adapterActivationContext;
+    private ActivationService activationService = Mockito.mock(ActivationService.class);
     private final Map<URI, Endpoint> endpoints = new HashMap<>();
     private final Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
     private final String EXECUTOR_RESULT = "executed";
@@ -30,7 +32,7 @@ class AdapterActivationContextTest {
     public void setup() {
         jsEndpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
-        adapterActivationContext = new AdapterActivationContext(endpoints, environment, cdoStore);
+        adapterActivationContext = new AdapterActivationContext(endpoints, environment, cdoStore, activationService);
     }
 
     @Test

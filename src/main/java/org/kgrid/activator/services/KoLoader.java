@@ -23,12 +23,11 @@ public class KoLoader {
     final Logger log = LoggerFactory.getLogger(KoLoader.class);
 
     private final KnowledgeObjectRepository knowledgeObjectRepository;
-    private final Map<URI, Endpoint> endpointMap;
     private final KoValidationService validationService;
 
-    public KoLoader(KnowledgeObjectRepository knowledgeObjectRepository, Map<URI, Endpoint> endpointMap, KoValidationService validationService) {
+    public KoLoader(KnowledgeObjectRepository knowledgeObjectRepository,
+                    KoValidationService validationService) {
         this.knowledgeObjectRepository = knowledgeObjectRepository;
-        this.endpointMap = endpointMap;
         this.validationService = validationService;
     }
 
@@ -61,9 +60,6 @@ public class KoLoader {
     private Endpoint getEndpoint(KnowledgeObjectWrapper wrapper, ArkId arkId, String endpointName) {
         Endpoint endpoint = new Endpoint(wrapper, endpointName.substring(1), knowledgeObjectRepository.getObjectLocation(arkId));
         validationService.validateEndpoint(endpoint);
-        if (endpointMap.containsKey(endpoint.getId())) {
-            log.warn(String.format("Overwriting duplicate endpoint: %s", endpoint.getId()));
-        }
         return endpoint;
     }
 }

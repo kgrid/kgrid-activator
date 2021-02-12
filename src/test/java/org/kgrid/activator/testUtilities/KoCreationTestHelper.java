@@ -33,7 +33,7 @@ public class KoCreationTestHelper {
     public static final String NODE_ENDPOINT_NAME = "node-endpoint";
     public static final String NODE_API_VERSION = "nodeApiVersion";
     public static final String NODE_ENDPOINT_ID = String.format("%s/%s/%s/%s", NODE_NAAN, NODE_NAME, NODE_API_VERSION, NODE_ENDPOINT_NAME);
-    public static final URI NODE_ENDPOINT_URI = URI.create(JS_ENDPOINT_ID);
+    public static final URI NODE_ENDPOINT_URI = URI.create(NODE_ENDPOINT_ID);
     public static final ArkId NODE_ARK_ID = new ArkId(NODE_NAAN, NODE_NAME, NODE_VERSION);
 
     public static final String NODE_ENGINE = "node";
@@ -122,7 +122,7 @@ public class KoCreationTestHelper {
 
         return serviceNode;
     }
-    
+
     public static Endpoint getEndpointForEngine(String engine) {
         if (engine.equals(NODE_ENGINE)) {
             KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
