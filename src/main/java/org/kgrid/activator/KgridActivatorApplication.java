@@ -60,10 +60,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) {
 
-        // Load adapters
-        // Initialize adapters
-        // Load kos -> endpoints
-        // Activate endpoints
         List<Adapter> adapters = adapterLoader.loadAdapters();
         activationService.setAdapters(adapters);
         adapterLoader.initializeAdapters(adapters);

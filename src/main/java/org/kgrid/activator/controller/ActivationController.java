@@ -33,7 +33,7 @@ public class ActivationController {
     @GetMapping(value = "/reload", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView activate() {
         log.info("Load and Activate all endpoints ");
-
+        activationService.getEndpointMap().clear();
         activationService.activateEndpoints(koLoader.loadAllKos());
 
         RedirectView redirectView = new RedirectView("/endpoints");
@@ -42,7 +42,7 @@ public class ActivationController {
     }
 
     /**
-     * Reactive all endpoints
+     * Active all endpoints
      *
      * @return redirect to the endpoints list
      */
@@ -50,7 +50,7 @@ public class ActivationController {
     public RedirectView refresh() {
         log.info("Activate all endpoints ");
 
-        activationService.reactivateAll();
+        activationService.activateAll();
 
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
@@ -58,7 +58,7 @@ public class ActivationController {
     }
 
     /**
-     * For KOs of a specific engine: reactivate those endpoints
+     * For KOs of a specific engine: activate those endpoints
      *
      * @param engine the engine for which KOs should be activated.
      * @return redirect to the endpoints list for that engine
@@ -66,7 +66,7 @@ public class ActivationController {
     @GetMapping(value = "/refresh/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RedirectView refreshForEngine(@PathVariable String engine) {
 
-        activationService.reactivateEngine(engine);
+        activationService.activateEngine(engine);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
         redirectView.setHttp10Compatible(false);
         return redirectView;

@@ -6,8 +6,6 @@ import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -19,8 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class KoLoader {
-
-    final Logger log = LoggerFactory.getLogger(KoLoader.class);
 
     private final KnowledgeObjectRepository knowledgeObjectRepository;
     private final KoValidationService validationService;

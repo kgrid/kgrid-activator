@@ -29,7 +29,7 @@ public class ActivationService {
         return endpointMap;
     }
 
-    public void reactivateAll() {
+    public void activateAll() {
         activateEndpoints(endpointMap);
     }
 
@@ -74,16 +74,16 @@ public class ActivationService {
         endpoint.setExecutor(executor);
     }
 
-    public void reactivateEndpoint(URI endpointUri) {
-        Map<URI, Endpoint> singleReactivate = new TreeMap<>();
-        singleReactivate.put(endpointUri, endpointMap.get(endpointUri));
-        activateEndpoints(singleReactivate);
+    public void activateEndpoint(URI endpointUri) {
+        Map<URI, Endpoint> singleActivate = new TreeMap<>();
+        singleActivate.put(endpointUri, endpointMap.get(endpointUri));
+        activateEndpoints(singleActivate);
     }
 
-    public void reactivateEngine(String engineName) {
+    public void activateEngine(String engineName) {
         endpointMap.forEach((uri, endpoint) -> {
             if (endpoint.getEngine().equals(engineName)) {
-                reactivateEndpoint(uri);
+                activateEndpoint(uri);
             }
         });
     }

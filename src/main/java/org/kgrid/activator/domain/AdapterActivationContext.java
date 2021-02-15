@@ -8,6 +8,7 @@ import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -50,7 +51,8 @@ public class AdapterActivationContext implements ActivationContext {
     }
 
     @Override
-    public void reactivate(String engineName) {
-        activationService.reactivateEngine(engineName);
+    @Async
+    public void refresh(String engineName) {
+        activationService.activateEngine(engineName);
     }
 }

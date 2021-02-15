@@ -61,7 +61,7 @@ public class ActivationControllerTest {
     public void testActivateForEngineInteractionsAndResult() {
         RedirectView redirectView = activationController.refreshForEngine(NODE_ENGINE);
         assertAll(
-                () -> verify(activationService).reactivateEngine(NODE_ENGINE),
+                () -> verify(activationService).activateEngine(NODE_ENGINE),
                 () -> assertEquals("/endpoints/" + NODE_ENGINE, redirectView.getUrl())
         );
     }
