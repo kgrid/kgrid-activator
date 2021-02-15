@@ -119,7 +119,14 @@ There are a few environment variables that can be set to control different aspec
 
 - `GET activator-url/actuator/health`: Check activator health status
 - `GET activator-url/actuator/info`: Display activator information
-- `GET activator-url/activate`: Activate all Knowledge Objects
+- `GET activator-url/activate`: Load and activate all Knowledge Objects on the shelf
+- `GET activator-url/reload`: reload and reactivate all Knowledge Objects on the shelf
+- `GET activator-url/reload/{naan}/{name}?v={version}`: reload and reactivate a single KO's endpoints
+- `GET activator-url/reload/{naan}/{name}/{version}`: reload and reactivate a single KO's endpoints
+- `GET activator-url/refresh`: reactivate all endpoints that are currently loaded
+- `GET activator-url/refresh/{engine}`: reactivate all endpoints that are currently loaded for a particular runtime
+
+Endpoints added by the shelf:
 - `POST activator-url/kos/manifest`: Load and activate a single manifest of Knowledge Objects
 - `POST activator-url/kos/manifest-list`: Load and activate a list of manifests of Knowledge Objects
 - `POST activator-url/kos/`: Deposit a single zipped Knowledge Object
@@ -156,7 +163,7 @@ View a Knowledge Object Version
 curl http://localhost:8080/hello/world/v0.0.1
 ```
 
-Run the welcome endpoint on the 99999/newko/v0.0.1 knowledge object
+Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
 ```
 curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome
 ```
