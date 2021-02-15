@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,16 +55,16 @@ public abstract class ActivatorExceptionHandler {
 
     @ExceptionHandler(AdapterResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterResourceNotFoundException e,
-        WebRequest request) {
+                                                                       WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Resource Not Found", HttpStatus.NOT_FOUND),
-            HttpStatus.NOT_FOUND);
+                HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AdapterClientErrorException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterClientErrorException e,
-        WebRequest request) {
+                                                                       WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Client Error", HttpStatus.BAD_REQUEST),
-            HttpStatus.BAD_REQUEST);
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AdapterServerErrorException.class)

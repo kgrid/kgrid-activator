@@ -3,7 +3,6 @@ package org.kgrid.activator.services;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -16,13 +15,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class ActivationServiceHealthIndicator implements HealthIndicator {
 
-    @Autowired
-    private Map<URI, Endpoint> endpoints;
-    @Autowired
-    private KnowledgeObjectRepository repository;
+    private final ActivationService activationService;
+    private final KnowledgeObjectRepository repository;
+
+    public ActivationServiceHealthIndicator(ActivationService activationService, KnowledgeObjectRepository repository) {
+        this.activationService = activationService;
+        this.repository = repository;
+    }
 
     @Override
     public Health health() {
+
+        Map<URI, Endpoint> endpoints = activationService.getEndpointMap();
 
         int kos = repository.findAll().size();
         int eps = endpoints.size();

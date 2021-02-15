@@ -1,8 +1,9 @@
 package org.kgrid.activator.utilities;
 
 import org.apache.commons.lang3.StringUtils;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.activator.services.ActivationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class EndpointHelper {
 
     @Autowired
-    private Map<URI, Endpoint> endpoints;
+    private ActivationService activationService;
 
     @Autowired
     private MimetypesFileTypeMap fileTypeMap;
@@ -29,6 +30,7 @@ public class EndpointHelper {
     }
 
     public List<Endpoint> getAllVersions(String naan, String name, String endpoint) {
+        Map<URI, Endpoint> endpoints = activationService.getEndpointMap();
         List<Endpoint> versions = new ArrayList<>();
         for (Map.Entry<URI, Endpoint> entry : endpoints.entrySet()) {
             if (entry.getValue().getNaan().equals(naan)
@@ -62,6 +64,6 @@ public class EndpointHelper {
     }
 
     public Endpoint getEndpoint(URI endpointId) {
-        return endpoints.get(endpointId);
+        return activationService.getEndpointMap().get(endpointId);
     }
 }

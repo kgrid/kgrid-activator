@@ -2,6 +2,7 @@ package org.kgrid.activator.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.services.ActivationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -17,18 +18,19 @@ import java.util.Map;
 @Component
 public class ShelfInterceptor implements Filter {
 
-    final Map<URI, Endpoint> endpointMap;
+    private final ActivationService activationService;
 
     @Value("${kgrid.shelf.endpoint:kos}")
     String shelfEndpoint;
 
-    public ShelfInterceptor(Map<URI, Endpoint> endpointMap) {
-        this.endpointMap = endpointMap;
+    public ShelfInterceptor(ActivationService activationService) {
+        this.activationService = activationService;
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
+        Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         if (request.getMethod().equalsIgnoreCase(HttpMethod.DELETE.name())) {
             String deletedId = StringUtils.substringAfter(request.getRequestURI(), shelfEndpoint + "/") + "/";
@@ -39,9 +41,7 @@ public class ShelfInterceptor implements Filter {
                     removedEndpoints.add(uri);
                 }
             });
-            removedEndpoints.forEach(endpoint -> {
-                endpointMap.remove(endpoint);
-            });
+            removedEndpoints.forEach(endpointMap::remove);
 
         }
         filterChain.doFilter(request, servletResponse);

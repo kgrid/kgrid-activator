@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 
 import java.net.URI;
 
+import static org.kgrid.activator.services.ActivationServiceTest.OBJECT_LOCATION;
+
 public class KoCreationTestHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String SERVICE_YAML_PATH = "service.yaml";
@@ -31,7 +33,7 @@ public class KoCreationTestHelper {
     public static final String NODE_ENDPOINT_NAME = "node-endpoint";
     public static final String NODE_API_VERSION = "nodeApiVersion";
     public static final String NODE_ENDPOINT_ID = String.format("%s/%s/%s/%s", NODE_NAAN, NODE_NAME, NODE_API_VERSION, NODE_ENDPOINT_NAME);
-    public static final URI NODE_ENDPOINT_URI = URI.create(JS_ENDPOINT_ID);
+    public static final URI NODE_ENDPOINT_URI = URI.create(NODE_ENDPOINT_ID);
     public static final ArkId NODE_ARK_ID = new ArkId(NODE_NAAN, NODE_NAME, NODE_VERSION);
 
     public static final String NODE_ENGINE = "node";
@@ -126,12 +128,12 @@ public class KoCreationTestHelper {
             KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(NODE_NAAN, NODE_NAME, NODE_VERSION));
             nodeKow.addService(generateServiceNode(engine));
             nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(engine, NODE_ENDPOINT_NAME));
-            return new Endpoint(nodeKow, NODE_ENDPOINT_NAME);
+            return new Endpoint(nodeKow, NODE_ENDPOINT_NAME, OBJECT_LOCATION);
         } else if (engine.equals(JS_ENGINE)) {
             KnowledgeObjectWrapper nodeKow = new KnowledgeObjectWrapper(generateMetadata(JS_NAAN, JS_NAME, JS_VERSION));
             nodeKow.addService(generateServiceNode(engine));
             nodeKow.addDeployment(getEndpointDeploymentJsonForEngine(engine, JS_ENDPOINT_NAME));
-            return new Endpoint(nodeKow, JS_ENDPOINT_NAME);
+            return new Endpoint(nodeKow, JS_ENDPOINT_NAME, OBJECT_LOCATION);
         } else {
             return null;
         }
