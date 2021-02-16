@@ -38,6 +38,7 @@ public class ActivationService {
         endpointMap.putAll(eps);
     }
 
+
     public synchronized void activateEndpoint(Endpoint endpoint) {
         URI endpointKey = endpoint.getId();
         if (endpoint.isActive()) {

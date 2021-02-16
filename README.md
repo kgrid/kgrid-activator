@@ -6,7 +6,7 @@
 ## Overview
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
 
-For the information on the activator API and the usage of the activator, see [KGRID Activator API](api.md)
+For the information on the activator API and the usage of the activator, see [KGRID Activator API](docs/api.md)
 
 ## Table of Contents
 
@@ -182,9 +182,6 @@ Configuration Variable Currently set for Krid-activator on Heroku:
 ```
 --kgrid.shelf.cdostore.url=filesystem:file://shelf --cors.url=*  --kgrid.adapter.proxy.url=https://node-express-runtime.herokuapp.com  --kgrid.adapter.proxy.self=https://kgrid-activator.herokuapp.com --management.info.git.mode=full --management.endpoints.web.exposure.include=*
 ```
-## Release Activator
-Please see the  [Kgrid Config](https://github.com/kgrid/kgrid-config/tree/master/release-code) repository for details
-
 
 ## Publish Documentation
 
