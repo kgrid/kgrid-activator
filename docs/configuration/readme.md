@@ -54,3 +54,10 @@ To change the port:
 By default the endpoints of the activator at the root of the activator server.  To change the server root path:
 
 ```java -jar kgrid-activator-0.6.2.jar --server.contextPath=/activator```
+
+## Other Configuration
+There are a few environment variables that can be set to control different aspects of the activator.
+- `server.port` - Specify a particular port on which the activator should start
+- `spring.profiles.active` - Set the security profile. Security is enabled by default, to disable, set this property to `dev`.
+- `spring.security.user.name` - Specify the admin username. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
+- `spring.security.user.password` - Specify the admin password. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.

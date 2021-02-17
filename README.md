@@ -12,18 +12,17 @@ For the information on the activator API and the usage of the activator, see [KG
 
 1. [Build and Test Activator](#build-activator)
 2. [Deploy Activator](#deploy-activator)
-2. [Release Activator](#release-activator)
-2. [Docker Activator](docker.md)
+3. [Docker Activator](docker.md)
 
 
 ## Build Activator
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+For development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 For building and running the application you need:
 
-- [Java 8 or higher](https://www.oracle.com/java/)
+- [Java 11 or higher](https://www.oracle.com/java/)
 - [Maven 3](https://maven.apache.org)
 
 ### Clone
@@ -34,143 +33,36 @@ cd kgrid-activator
 ```
 
 ### Quick Start
-This quick start will run the activator and load two example knowledge objects for testing.  This objects are located
-in the _shelf_ directory at the root of the project. By default application will start up and PORT 8080.
+
 ```
 mvn clean package
+export SPRING_PROFILES_ACTIVE=dev 
+# set SPRING_PROFILES_ACTIVE=dev (Windows)
 java -jar target/kgrid-activator*.jar
 ```
-You can load sample KO shelf (_where to look for the KOs_)
-```
-java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.url:filesystem:file://etc/shelf
-```
-Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:
+This  will run the activator and create an empty `./shelf` in the current working directory. By default the application starts on port 8080.
+
+Access the activator `health` endpoint at (http://localhost:8080/actuator/health).  `status` should be `up`
+
+You can load the local shelf with the example collection of KOs by setting the `kgrid.shelf.manifest` property at startup to point to the manifest file for the [`example-collection`](https://github.com/kgrid-objects/example-collection/releases/latest) release on Github. 
 
 ```
-mvn clean spring-boot:run
+java -jar target/kgrid-activator*.jar --kgrid.shelf.manifest=https://github.com/kgrid-objects/example-collection/releases/download/4.1.1/manifest.json 
 ```
 
-Once Running access the [Activators Health Endpoint](http://localhost:8080/health).  All _statuses_ reported should be **UP**
-
-```json
-{
-  "status": "UP",
-  "components": {
-    "activationService": {
-      "status": "UP",
-      "details": {
-        "kos": 12,
-        "endpoints": 15,
-        "activatedEndpoints": 5
-      }
-    },
-    "diskSpace": {
-      "status": "UP",
-      "details": {
-        "total": 402672611328,
-        "free": 289865793536,
-        "threshold": 10485760,
-        "exists": true
-      }
-    },
-    "org.kgrid.adapter.proxy.ProxyAdapter": {
-      "status": "up",
-      "details": {
-        "types": [ ]
-      }
-    },
-    "org.kgrid.adapter.resource.ResourceAdapter": {
-      "status": "UP",
-      "details": {
-        "types": [
-          "resource"
-        ]
-      }
-    },
-    "org.kgrid.adapter.v8.JsV8Adapter": {
-      "status": "UP",
-      "details": {
-        "types": [
-          "javascript"
-        ]
-      }
-    },
-    "ping": {
-      "status": "UP"
-    },
-    "shelf": {
-      "status": "UP",
-      "details": {
-        "numberOfKOs": 12,
-        "kgrid.shelf.cdostore.url": "file:///app/shelf/"
-      }
-    }
-  }
-}
+You can also point the activator to an existing `/shelf` on your local system using the  `kgrid.shelf.cdostore.url` property at startup.
 ```
-## Configuration
-There are a few environment variables that can be set to control different aspects of the activator.
-- `server.port` - Specify a particular port on which the activator should start
-- `spring.profiles.active` - Set the security profile. Security is enabled by default, to disable, set this property to `dev`.
-- `spring.security.user.name` - Specify the admin username. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
-- `spring.security.user.password` - Specify the admin password. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
+java -jar target/kgrid-activator*.jar --kgrid.shelf.cdostore.url=filesystem:file:///path/to/local/shelf
+```
 
-#### Admin Endpoints
-
-- `GET activator-url/actuator/health`: Check activator health status
-- `GET activator-url/actuator/info`: Display activator information
-- `GET activator-url/activate`: Load and activate all Knowledge Objects on the shelf
-- `GET activator-url/reload`: reload and reactivate all Knowledge Objects on the shelf
-- `GET activator-url/reload/{naan}/{name}?v={version}`: reload and reactivate a single KO's endpoints
-- `GET activator-url/reload/{naan}/{name}/{version}`: reload and reactivate a single KO's endpoints
-- `GET activator-url/refresh`: reactivate all endpoints that are currently loaded
-- `GET activator-url/refresh/{engine}`: reactivate all endpoints that are currently loaded for a particular runtime
-
-Endpoints added by the shelf:
-- `POST activator-url/kos/manifest`: Load and activate a single manifest of Knowledge Objects
-- `POST activator-url/kos/manifest-list`: Load and activate a list of manifests of Knowledge Objects
-- `POST activator-url/kos/`: Deposit a single zipped Knowledge Object
-- `DELETE activator-url/kos/{naan}/{name}/{version}`: Delete a Knowledge Object from the shelf
-- `PUT activator-url/kos/{naan}/{name}/{version}`: Replace a Knowledge Object on the shelf.
-
-
-#### Cross Origin Requests
-The app uses CorsFilter to configuration of the allowed methods, origins and associated headers. Currently, it allows all methods from all origins. 
 
 ## Running the tests
 
-
-#### Automated tests
 Unit and Integration tests can be executed via
 ```
-mvn clean test
 mvn clean verify
 ```
 
-#### End to End Testing
-
-Sample shelf in place the following tests can be executed against the running activator
-
-View a Knowledge Object
-
-```
-curl http://localhost:8080/hello/world
-```
-
-View a Knowledge Object Version
-
-```
-curl http://localhost:8080/hello/world/v0.0.1
-```
-
-Run the welcome endpoint on the hello/world/v0.0.1 knowledge object
-```
-curl -X POST -H "Content-Type:application/json"  -d "{\"name\": \"Fred Flintstone\"}" http://localhost:8080/hello/world/v0.0.1/welcome
-```
-
-#### Sample Knowledge Objects
-
-A collection of sample Knowledge Objects are stored at `/etc/collection`. The KOs, with the same {naan}/{name}/{endpoint}, may have a different api version. They can be used to try out the handling of the api version. 
 
 ## Deploy Activator
 Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
@@ -183,22 +75,37 @@ Configuration Variable Currently set for Krid-activator on Heroku:
 --kgrid.shelf.cdostore.url=filesystem:file://shelf --cors.url=*  --kgrid.adapter.proxy.url=https://node-express-runtime.herokuapp.com  --kgrid.adapter.proxy.self=https://kgrid-activator.herokuapp.com --management.info.git.mode=full --management.endpoints.web.exposure.include=*
 ```
 
-## Publish Documentation
 
-Running Local Dev Docs Publish
+----
+
+#Note: We are currently using the basic github site publishing not the vuepress build
+
+## Publish Vuepress Documentation
+
+
+
+### Running the vuepress site locally
 ```
 npm install
-npm run docs:dev
+npm run docs:dev # or vuepress docs dev
 ```
 
-Build dist directory ready for publish
+### Build the site for publishing
 
 ```
-npm run docs:build`
+npm run docs:build
 ```
 
-CircleCi publishes the documentation using [VuePress](https://vuepress.vuejs.org/) and
-the ```.circleci/vuepress_deploy.sh``` script.  The gh-pages branch is used for the publishing process and setup in the
-GitHub repository's GitHub Pages.
+To push the vuepress site to the `gh-pages` branch (if configured in the site settings on GitHub):
 
+```bash
+# navigate into the build output directory
+cd docs/.vuepress/dist
 
+git init
+git add -A
+git commit -m 'deploy'
+
+# if you are deploying to https://<USERNAME>.github.io/<REPO>
+git push -f https://${GITHUB_TOKEN}@github.com/kgrid/guides.git master:gh-pages
+```

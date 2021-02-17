@@ -120,70 +120,9 @@ A custom problem details resource is returned and the KO problem details or exce
 <proposed>(proposed)</proposed> In the future, this functionality will be behind the `actuator` namespace.
 
 
-## Shelf API (read-only)
+## The Shelf, access to Knowledge Objects available to the activator
 
-An Activator <conform>must</conform> implement at least the read-only portion of the [Shelf API](shelf-api.md). This includes listing KOs, returning representations of indivdual KOs (e.g. metadata only, with links to key components).
-
-<proposed>(proposed)</proposed> An activator <conform>must</conform> provide a resource representation for the knowledge object that includes activation status and endpoints.
-
-<proposed>(proposed)</proposed> An Activator <conform>should</conform> make available the service description for a knowledge object.
-
-<proposed>(proposed)</proposed> Access to the internals of the KO (deployment and payload files) <conform>should not</conform> be exposed, except that KOs of "resource" type <conform>may</conform> specify particular payloads for client access under appropriate service paths in the service description.
-
-<proposed>(proposed)</proposed> An activator <conform>may</conform> implement additional operations for the Shelf API to support development or demonstration of KOs. For example, uploading or importing KOs, loading KOs from a manifest file, deleting KOs. See [Shelf API](shelf-api.md) for more info.
-
-<proposed>(proposed)</proposed> It is especially useful for Activators used in protyping and demonstration to allow a manfifest to be posted to the activator in prder to load KOs at runtime. This <conform>should not</conform> be enabled by default except in development environments as it representas an vulnberabiltiy.
-
-### List KO resources
-```
-GET /kos HTTP/1.1
-Accept: application/json
-```
-Returns a list of knowledge object resources in a minimal representation.
-
-<proposed>(proposed)</proposed> Returns a KO manifest
-
-```
-HTTP/1.1 200
-Content-Type: application/json
-[{
-"@id": "ipp-lowercholesterol",
-"@type": "koio:KnowledgeObject",
-...
-},
-{
-"@id": "99999-fk4md04x9z",
-"@type": "koio:KnowledgeObject",
-...
-}]
-```
-### Get an individual KO resource
-
-```
-GET /kos/{naan}/{name} HTTP/1.1
-Accept: application/json
-```
-### Get a versioned individual KO resource
-```
-GET /kos/{naan}/{name}/{version} HTTP/1.1
-Accept: application/json
-```
-Returns a single knowledge object resource in a minimal representation. If a version is supplied that version is returned. If no version is supplied and multiple versions of the object exist in the Activator the current default version for requests is returned (the version will be available in the returned metadata representation). See [#Default KO versions]() for more info.
-
-```
-HTTP/1.1 200
-Content-Type: application/json
-[{
-"@id": "ipp-lowercholesterol",
-"@type": "koio:KnowledgeObject",
-...
-},
-{
-"@id": "99999-fk4md04x9z",
-"@type": "koio:KnowledgeObject",
-...
-}]
-```
+Access, viewing, listing, import KOs available to tha Activator uses teh Shelf API available at `/kos'. For more information see https://kgrid.org/kgrid-shelf/api
 
 ## Application and Health Information
 Activators <conform>should</conform> provide application and health information via `/actuator/health` 
