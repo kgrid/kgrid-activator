@@ -8,14 +8,7 @@ As a key component of Knowledge Grid, an activator allows knowledge objects to b
 
 For the information on the activator API and the usage of the activator, see [KGRID Activator API](docs/api.md)
 
-## Table of Contents
-
-1. [Build and Test Activator](#build-activator)
-2. [Deploy Activator](#deploy-activator)
-3. [Docker Activator](docker.md)
-
-
-## Build Activator
+## Build & run the Activator locally
 
 For development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -64,15 +57,11 @@ mvn clean verify
 ```
 
 
-## Deploy Activator
-Please see the [KGrid Org Activator](http://kgrid.org/kgrid-activator/) site for details
+## Deploying the Activator in cloud environments
 
-__Important:__ When deploying to HEROKU, DO NOT use `Deploy Branch`.
-
-__Note:__
-Configuration Variable Currently set for Krid-activator on Heroku:
-```
---kgrid.shelf.cdostore.url=filesystem:file://shelf --cors.url=*  --kgrid.adapter.proxy.url=https://node-express-runtime.herokuapp.com  --kgrid.adapter.proxy.self=https://kgrid-activator.herokuapp.com --management.info.git.mode=full --management.endpoints.web.exposure.include=*
+Follow your provider's documentation. If you are building the latest version from `main` you may need to add the oss.sonatype.org SNAPSHOT repository. For example, on Heroku by using: 
+```bash
+MAVEN_SETTINGS_PATH=.circleci/settings.xml
 ```
 
 
