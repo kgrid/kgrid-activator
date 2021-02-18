@@ -11,39 +11,38 @@ For running the application you need:
 
 ### Running the Activator
 
-Download the latest activator jar from GitHub [Latest Activator Release](https://github.com/kgrid/kgrid-activator/releases/latest).
 
-1. Create a activator directory
-1. Create a directory named shelf in the new activator directory
-1. Download [kgrid-activator-#.#.#.jar](https://github.com/kgrid/kgrid-activator/releases/latest)
+1. Create a new directory, named whatever you like
+1. Create a directory named shelf in the working directory
+1. Download kgrid-activator-#.#.#.jar from the [latest activator release](https://github.com/kgrid/kgrid-activator/releases/latest)
 1. Place the kgrid-activator-#.#.#.jar into the activator directory
-1. [Download js-simple-v1.0.zip](https://github.com/kgrid-objects/example-collection/releases/download/4.1.1/js-simple-v1.0.zip) from the [latest release of the Example Collection](https://github.com/kgrid-objects/example-collection/releases/latest) 
+1. Download js-simple-v1.0.zip from the [latest release of the Example Collection](https://github.com/kgrid-objects/example-collection/releases/latest) 
 1. Place the js-simple-v1.0.zip into the activator/shelf directory and unzip. This will make the KO ready to load by the activator.
 
 
 Directory structure should look similar to the following
 
 ```text  
- ├── activator   
- │  ├──  kgrid-activator-#.#.#.jar
- │  └──  shelf
- │     └── js  
- │        └── simple  
- │           └── v1.0
- │              ├── src
- │              │  └── index.js
- │              ├── deployment.yaml
- │              ├── metadata.json
- │              └── service.yaml
+ ├──  YourProjectDirectory   
+ │    ├──  kgrid-activator-#.#.#.jar
+ │    └──  shelf
+ │         └── js  
+ │             └── simple  
+ │                 └── v1.0
+ │                     ├── src
+ │                     │  └── index.js
+ │                     ├── deployment.yaml
+ │                     ├── metadata.json
+ │                     └── service.yaml
  └── 
 ```
 
 The activator is an executable jar and can be run from the command line.  Open a terminal window and navigate to the directory where the jar and shelf are located.  
 
-Type in the following: 
+Type in the following to start the activator in dev mode: 
 
 ```bash
- java -jar kgrid-activator-#.#.#.jar 
+ java -jar kgrid-activator-#.#.#.jar --spring.profiles.active=dev
 ```
 
 By default, the activator will run on port 8080. You can validate the activator is up and running using 
@@ -104,23 +103,34 @@ The JS Simple KO will return the following
 
 ```json
 {
- "result" : "Welcome to Knowledge Grid, Fred Flintstone",
- "info" : {
-  "ko" : {
-   "@id" : "js/simple/v1.0",
-   "@type" : "koio:KnowledgeObject",
-   "identifier" : "ark:/js/simple/v1.0",
-   "version" : "v1.0",
-   "title" : "Hello world",
-   "description" : "An example of simple Knowledge Object",
-   "keywords" : [ "Hello", "example" ],
-   "hasServiceSpecification" : "service.yaml",
-   "hasDeploymentSpecification" : "deployment.yaml",
-   "hasPayload" : "src/index.js",
-   "@context" : [ "http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
+ "result": "Welcome to Knowledge Grid, Fred Flintstone",
+ "info": {
+  "ko": {
+   "@id": "js/simple/v1.0",
+   "@type": "koio:KnowledgeObject",
+   "identifier": "ark:/js/simple/v1.0",
+   "version": "v1.0",
+   "title": "Hello world",
+   "description": "An example of simple Knowledge Object",
+   "keywords": [
+    "Hello",
+    "example"
+   ],
+   "hasServiceSpecification": "service.yaml",
+   "hasDeploymentSpecification": "deployment.yaml",
+   "hasPayload": "src/index.js",
+   "@context": [
+    "http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+   ]
   },
-  "inputs" : "{\"name\": \"Fred Flintstone\"}"
+  "inputs": "{\"name\": \"Fred Flintstone\"}"
  }
-
+}
 ```
 
+> Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`). Likewise new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`).
+
+For more advanced topics, check out:
+- [API Documentation](api.md)
+- [Configuration Documentation](configuration.md)
+- [Containerization Documentation](containers.md)

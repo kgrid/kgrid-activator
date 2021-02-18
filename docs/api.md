@@ -54,7 +54,6 @@ A custom problem details resource is returned and the KO problem details or exce
   "Detail": "JSON parse error: Unexpected character ('{' (code 123)): was..."
 }
 ```
-<proposed>(proposed)</proposed> Use [Problem Details for HTTP APIs — rfc7807](https://tools.ietf.org/html/rfc7807) and wrap any underlying KO response problem details.
 ##### Default Version:
 If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.
 
