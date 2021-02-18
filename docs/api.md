@@ -1,7 +1,7 @@
 #Activator APIs
 ## Request API
 
-The Request API exposes the *micro*-API for the services provide by each KO.
+The Request API exposes the *micro*-API for the services provided by each KO.
 
 ##### Service Description
 
@@ -17,7 +17,7 @@ Headers
 Accept: not required, if provided must match the OpenAPI document for the endpoint.
 Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
 
-Request Body: {"name":"Mario"}
+Request Body: {"name":"Mario"} (*This depends on the inputs for the endpoint)
 ```
 
 ##### Response:
@@ -54,10 +54,9 @@ A custom problem details resource is returned and the KO problem details or exce
   "Detail": "JSON parse error: Unexpected character ('{' (code 123)): was..."
 }
 ```
-
+<proposed>(proposed)</proposed> Use [Problem Details for HTTP APIs — rfc7807](https://tools.ietf.org/html/rfc7807) and wrap any underlying KO response problem details.
 ##### Default Version:
 If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.
-<proposed>(proposed)</proposed> Use [Problem Details for HTTP APIs — rfc7807](https://tools.ietf.org/html/rfc7807) and wrap any underlying KO response problem details.
 
 ## Activation API
 
@@ -122,7 +121,7 @@ A custom problem details resource is returned and the KO problem details or exce
 
 ## The Shelf, access to Knowledge Objects available to the activator
 
-Access, viewing, listing, import KOs available to tha Activator uses teh Shelf API available at `/kos'. For more information see https://kgrid.org/kgrid-shelf/api
+Access, viewing, listing, import KOs available to tha Activator uses teh Shelf API available at `/kos`. For more information see the [Kgrid Shelf API Docs](https://kgrid.org/kgrid-shelf/api)
 
 ## Application and Health Information
 Activators <conform>should</conform> provide application and health information via `/actuator/health` 
@@ -173,7 +172,7 @@ Content-type: application/json
 }
 ```
 
-A `DOWN` response returns:
+A `DOWN` response for a component returns:
 
 ```
 HTTP/1.1 503
