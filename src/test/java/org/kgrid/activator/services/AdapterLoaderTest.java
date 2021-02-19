@@ -58,7 +58,7 @@ public class AdapterLoaderTest {
 
     @BeforeEach
     public void setup() {
-        ReflectionTestUtils.setField(adapterLoader, "adapterPath", "adapters");
+        ReflectionTestUtils.setField(adapterLoader, "adapterPath", "src/test/resources/adapters");
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
         requireNonNull(jsEndpoint).setExecutor((o, s) -> EXECUTOR_RESULT);
 
@@ -72,7 +72,7 @@ public class AdapterLoaderTest {
         List<Adapter> adapters = adapterLoader.loadAdapters();
         adapterLoader.initializeAdapters(adapters);
         assertAll(
-                () -> verify(beanFactory, times(3)).autowireBean(any()),
+                () -> verify(beanFactory, times(4)).autowireBean(any()),
                 () -> assertNotNull(adapters),
                 () -> assertEquals("UP", adapters.get(0).status())
         );
