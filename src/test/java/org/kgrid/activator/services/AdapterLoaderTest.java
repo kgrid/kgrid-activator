@@ -72,7 +72,7 @@ public class AdapterLoaderTest {
         List<Adapter> adapters = adapterLoader.loadAdapters();
         adapterLoader.initializeAdapters(adapters);
         assertAll(
-                () -> verify(beanFactory, times(4)).autowireBean(any()),
+                () -> verify(beanFactory, times(7)).autowireBean(any()),
                 () -> assertNotNull(adapters),
                 () -> assertEquals("UP", adapters.get(0).status())
         );
@@ -84,7 +84,7 @@ public class AdapterLoaderTest {
         List<Adapter> adapters = adapterLoader.loadAdapters();
         adapterLoader.initializeAdapters(adapters);
         ArgumentCaptor<HealthIndicator> healthIndicatorArgumentCaptor = ArgumentCaptor.forClass(HealthIndicator.class);
-        verify(registry).registerContributor(
+        verify(registry, times(2)).registerContributor(
                 eq(MockAdapter.class.getName()), healthIndicatorArgumentCaptor.capture());
         HealthIndicator healthIndicator = healthIndicatorArgumentCaptor.getValue();
         Health health = healthIndicator.getHealth(true);

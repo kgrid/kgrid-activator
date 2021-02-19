@@ -46,6 +46,11 @@ public class AdapterLoader {
     public List<Adapter> loadAdapters() {
         File adapterDir = new File(adapterPath);
         final List<Adapter> adapters = new ArrayList<>();
+        ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
+        loader.forEach(adapter -> {
+            registerAdapter(adapters, adapter);
+        });
+
         if (adapterDir.isDirectory() && adapterDir.listFiles() != null) {
             URL[] adapterUrls = Arrays.stream(adapterDir.listFiles((file -> file.getName().endsWith(".jar")))).map(file -> {
                 try {
@@ -59,12 +64,16 @@ public class AdapterLoader {
             ClassLoader classLoader = new URLClassLoader(adapterUrls, AdapterLoader.class.getClassLoader());
             ServiceLoader<Adapter> dropInLoader = ServiceLoader.load(Adapter.class, classLoader);
             dropInLoader.forEach(adapter -> {
-                beanFactory.autowireBean(adapter);
-                registerHealthEndpoint(adapter);
-                adapters.add(adapter);
+                registerAdapter(adapters, adapter);
             });
         }
         return adapters;
+    }
+
+    private void registerAdapter(List<Adapter> adapters, Adapter adapter) {
+        beanFactory.autowireBean(adapter);
+        registerHealthEndpoint(adapter);
+        adapters.add(adapter);
     }
 
     public void initializeAdapters(List<Adapter> adapters) {
