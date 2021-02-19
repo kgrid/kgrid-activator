@@ -1,7 +1,7 @@
 {
-  "name": "Cardiac-Advisor",
+  "name": "Kgrid Activator",
   "version": "1.0.0",
-  "description": "KGrid Cardiac Advisor Demo App",
+  "description": "KGrid Activator App",
   "main": " ",
   "scripts": {
     "docs:dev": "vuepress dev docs",
