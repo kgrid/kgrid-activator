@@ -74,8 +74,13 @@
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
-            <artifactId>adapter-api</artifactId>
+            <artifactId>proxy-adapter</artifactId>
             <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kgrid</groupId>
+            <artifactId>javascript-v8-adapter</artifactId>
+            <version>0.1.12-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
 import java.util.Collection;
@@ -57,6 +58,7 @@ public class AdapterLoaderTest {
 
     @BeforeEach
     public void setup() {
+        ReflectionTestUtils.setField(adapterLoader, "adapterPath", "adapters");
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
         requireNonNull(jsEndpoint).setExecutor((o, s) -> EXECUTOR_RESULT);
 
