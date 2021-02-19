@@ -15,16 +15,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 
 @Service
 @ComponentScan(basePackages = "org.kgrid.adapter")
 public class AdapterLoader {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final AutowireCapableBeanFactory beanFactory;
+    @Value("${kgrid.activator.adapter-dir:adapters}")
+    String adapterPath;
+
+    private final DefaultListableBeanFactory beanFactory;
     private final HealthContributorRegistry registry;
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
@@ -42,6 +47,7 @@ public class AdapterLoader {
     }
 
     public List<Adapter> loadAdapters() {
+        File adapterDir = new File(adapterPath);
         final List<Adapter> adapters = new ArrayList<>();
         ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
         loader.forEach(adapter -> {
@@ -49,6 +55,25 @@ public class AdapterLoader {
             registerHealthEndpoint(adapter);
             adapters.add(adapter);
         });
+
+        if (adapterDir.isDirectory() && adapterDir.listFiles() != null) {
+            URL[] adapterUrls = Arrays.stream(adapterDir.listFiles((file -> file.getName().endsWith(".jar")))).map(file -> {
+                try {
+                    return new URL("jar:file:" + file + "!/");
+                } catch (MalformedURLException e) {
+                    log.warn("Cannot load adapter for file {}, cause: {}", file.getName(), e.getMessage());
+                    return null;
+                }
+            }).filter(Objects::nonNull).toArray(URL[]::new);
+
+            ClassLoader classLoader = new URLClassLoader(adapterUrls, AdapterLoader.class.getClassLoader());
+            ServiceLoader<Adapter> dropInLoader = ServiceLoader.load(Adapter.class, classLoader);
+            dropInLoader.forEach(adapter -> {
+                beanFactory.autowireBean(adapter);
+                registerHealthEndpoint(adapter);
+                adapters.add(adapter);
+            });
+        }
         return adapters;
     }
 
