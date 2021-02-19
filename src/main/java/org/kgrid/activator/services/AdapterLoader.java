@@ -5,18 +5,22 @@ import org.kgrid.adapter.api.Adapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
 @Service
+@ComponentScan(basePackages = "org.kgrid.adapter")
 public class AdapterLoader {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -25,14 +29,16 @@ public class AdapterLoader {
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
     private final ActivationService activationService;
+    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    public AdapterLoader(AutowireCapableBeanFactory beanFactory, HealthContributorRegistry registry, Environment environment,
-                         CompoundDigitalObjectStore cdoStore, ActivationService activationService) {
+    public AdapterLoader(DefaultListableBeanFactory beanFactory, HealthContributorRegistry registry, Environment environment,
+                         CompoundDigitalObjectStore cdoStore, ActivationService activationService, RequestMappingHandlerMapping requestMappingHandlerMapping) {
         this.beanFactory = beanFactory;
         this.registry = registry;
         this.environment = environment;
         this.cdoStore = cdoStore;
         this.activationService = activationService;
+        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
     public List<Adapter> loadAdapters() {
