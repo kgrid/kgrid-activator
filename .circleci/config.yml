@@ -13,7 +13,7 @@ workflows:
           context: kgrid
           filters:
             branches:
-              only: update-docs
+              only: main
 
 jobs:
   docs-deploy:
@@ -34,7 +34,6 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: Install KGrid Activator Docs
           command: npm install
 
       - run:
