@@ -10,63 +10,72 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @ComponentScan(basePackages = "org.kgrid.adapter")
 public class AdapterLoader {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Value("${kgrid.activator.adapter-dir:adapters}")
-    String adapterPath;
+    @Value("${kgrid.activator.adapter-locations:file:adapters}")
+    String[] adapterLocations;
 
     private final AutowireCapableBeanFactory beanFactory;
     private final HealthContributorRegistry registry;
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
     private final ActivationService activationService;
+    private final ApplicationContext applicationContext;
 
     public AdapterLoader(AutowireCapableBeanFactory beanFactory, HealthContributorRegistry registry, Environment environment,
-                         CompoundDigitalObjectStore cdoStore, ActivationService activationService) {
+                         CompoundDigitalObjectStore cdoStore, ActivationService activationService, ApplicationContext applicationContext) {
         this.beanFactory = beanFactory;
         this.registry = registry;
         this.environment = environment;
         this.cdoStore = cdoStore;
         this.activationService = activationService;
+        this.applicationContext = applicationContext;
     }
 
     public List<Adapter> loadAdapters() {
-        File adapterDir = new File(adapterPath);
-        final List<Adapter> adapters = new ArrayList<>();
-        ServiceLoader<Adapter> loader = ServiceLoader.load(Adapter.class);
-        loader.forEach(adapter -> {
-            registerAdapter(adapters, adapter);
-        });
-
-        if (adapterDir.isDirectory() && adapterDir.listFiles() != null) {
-            URL[] adapterUrls = Arrays.stream(adapterDir.listFiles((file -> file.getName().endsWith(".jar")))).map(file -> {
-                try {
-                    return new URL("jar:file:" + file + "!/");
-                } catch (MalformedURLException e) {
-                    log.warn("Cannot load adapter for file {}, cause: {}", file.getName(), e.getMessage());
-                    return null;
+        ArrayList<URL> adapterUrls = new ArrayList<>();
+        for (String location : adapterLocations) {
+            Resource adapterSource = applicationContext.getResource(location);
+            try {
+                if (!adapterSource.isFile() || !adapterSource.getFile().isDirectory()) {
+                    adapterUrls.add(new URL("jar:" + adapterSource.getURL() + "!/"));
+                } else {
+                    File adapterFile = adapterSource.getFile();
+                    adapterUrls.addAll(Arrays.stream(adapterFile.listFiles((file -> file.getName().endsWith(".jar")))).map(file -> {
+                        try {
+                            return new URL("jar:file:" + file + "!/");
+                        } catch (MalformedURLException e) {
+                            log.warn("Cannot load adapter for file {}, cause: {}", file.getName(), e.getMessage());
+                            return null;
+                        }
+                    }).filter(Objects::nonNull).collect(Collectors.toList()));
                 }
-            }).filter(Objects::nonNull).toArray(URL[]::new);
-
-            ClassLoader classLoader = new URLClassLoader(adapterUrls, AdapterLoader.class.getClassLoader());
-            ServiceLoader<Adapter> dropInLoader = ServiceLoader.load(Adapter.class, classLoader);
-            dropInLoader.forEach(adapter -> {
-                registerAdapter(adapters, adapter);
-            });
+            } catch (IOException e) {
+                log.warn("Cannot load adapter for file {}, cause: {}", adapterSource.getFilename(), e.getMessage());
+            }
         }
+        final List<Adapter> adapters = new ArrayList<>();
+        ClassLoader classLoader = new URLClassLoader(adapterUrls.toArray(new URL[0]), Adapter.class.getClassLoader());
+        ServiceLoader<Adapter> dropInLoader = ServiceLoader.load(Adapter.class, classLoader);
+        dropInLoader.forEach(adapter -> registerAdapter(adapters, adapter));
+
         return adapters;
     }
 
