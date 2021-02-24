@@ -50,7 +50,7 @@ public class KoLoader {
                 .flatMap(arkId -> {
                     try {
                         return loadOneKo(arkId).entrySet().stream();
-                    } catch (Exception e) {
+                    } catch (ActivatorException e) {
                         log.warn(e.getMessage());
                         return null;
                     }
