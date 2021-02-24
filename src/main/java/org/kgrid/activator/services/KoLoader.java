@@ -55,7 +55,11 @@ public class KoLoader {
                         return null;
                     }
                 }).filter(Objects::nonNull)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, newEntry) -> {
+                    log.info("Overwriting existing ko ({}) with new ko ({}) that has the same endpoint id {}",
+                            existing.getWrapper().getId(), newEntry.getWrapper().getId(), newEntry.getId());
+                    return newEntry;
+                }));
     }
 
     public Map<URI, Endpoint> loadAllKos() {

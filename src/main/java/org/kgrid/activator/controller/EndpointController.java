@@ -3,7 +3,6 @@ package org.kgrid.activator.controller;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.utilities.EndpointHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ public class EndpointController extends ActivatorExceptionHandler {
 
     @Autowired
     private ActivationService activationService;
-
-    @Autowired
-    private EndpointHelper endpointHelper;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -64,7 +60,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String apiVersion,
             @PathVariable String endpointName) {
         log.info("getting ko endpoint " + naan + "/" + name);
-        URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
+        URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
         Endpoint endpoint = activationService.getEndpointMap().get(id);
         if (endpoint == null) {
             throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
@@ -81,12 +77,12 @@ public class EndpointController extends ActivatorExceptionHandler {
         log.info("getting ko endpoint " + naan + "/" + name);
         List<EndpointResource> resources = new ArrayList<>();
         if (apiVersion == null) {
-            List<Endpoint> endpoints = endpointHelper.getAllVersions(naan, name, endpointName);
+            List<Endpoint> endpoints = activationService.getAllVersions(naan, name, endpointName);
             for (Endpoint endpoint : endpoints) {
                 resources.add(new EndpointResource(endpoint, shelfRoot));
             }
         } else {
-            URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
+            URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
             Endpoint endpoint = activationService.getEndpointMap().get(id);
             if (endpoint == null) {
                 throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
