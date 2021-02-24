@@ -20,4 +20,4 @@ git add -A
 git commit -m 'deploy'
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f https://${GITHUB_TOKEN}@github.com/kgrid/kgrid-activator.git update-docs:gh-pages
+git push -f https://${GITHUB_TOKEN}@github.com/kgrid/kgrid-activator.git master:gh-pages
