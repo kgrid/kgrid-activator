@@ -53,6 +53,11 @@ public class AdapterLoader {
         ArrayList<URL> adapterUrls = new ArrayList<>();
         for (String location : adapterLocations) {
             Resource adapterSource = applicationContext.getResource(location);
+            if (!adapterSource.exists()) {
+                log.warn("Cannot load external adapter from location {}, it does not exist", adapterSource.getDescription());
+            } else {
+                log.info("Loading external adapter {}", adapterSource.getDescription());
+            }
             try {
                 if (!adapterSource.isFile() || !adapterSource.getFile().isDirectory()) {
                     adapterUrls.add(new URL("jar:" + adapterSource.getURL() + "!/"));
