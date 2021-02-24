@@ -4,8 +4,8 @@
   "description": "KGrid Activator App",
   "main": " ",
   "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
   },
   "author": "KGrid Team",
   "license": "MIT",
