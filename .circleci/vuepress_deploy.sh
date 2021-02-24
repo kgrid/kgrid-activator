@@ -13,7 +13,7 @@ npm run build
 #cp -a XXX/. docs/.vuepress/dist/XXX/.
 
 # navigate into the build output directory
-cd blog/.vuepress/dist
+cd docs/.vuepress/dist
 
 git init
 git add -A
