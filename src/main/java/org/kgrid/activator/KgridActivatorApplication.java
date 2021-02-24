@@ -1,5 +1,6 @@
 package org.kgrid.activator;
 
+import java.util.List;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.KoLoader;
@@ -21,8 +22,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
-
-import java.util.List;
 
 @SpringBootApplication(scanBasePackages = {"org.kgrid.shelf", "org.kgrid.activator", "org.kgrid.adapter"})
 @CrossOrigin
@@ -90,6 +89,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
                     .mvcMatchers(HttpMethod.POST, "/kos").authenticated()
                     .mvcMatchers(HttpMethod.DELETE, "/kos/{naan}/{name}/{version}").authenticated()
                     .mvcMatchers(HttpMethod.PUT, "/kos/{naan}/{name}/{version}").authenticated()
+                    .requestMatchers(EndpointRequest.to("activation")).authenticated()
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                     .and().cors().and()
                     .httpBasic();
