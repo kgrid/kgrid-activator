@@ -1,67 +1,353 @@
-#Activator APIs
+#Activator API
 ## Request API
+The Request API exposes the *micro*-API for the services provided by each KO in the service description.
 
-The Request API exposes the *micro*-API for the services provided by each KO.
-
-##### Service Description
-
-The OpenAPI 3 service description returned describes all the endpoints implemented by this KO.
-
-##### Request (for each endpoint)
-```
-POST /{naan}/{name}/{apiVersion}/{endpoint} HTTP/1.1
-POST /{naan}/{name}/{endpoint}?v={apiVersion} HTTP/1.1
-POST /{naan}/{name}/{endpoint} HTTP/1.1 [Will use the default version (see below)]
-
-Headers
-Accept: not required, if provided must match the OpenAPI document for the endpoint.
-Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
-
-Request Body: {"name":"Mario"} (*This depends on the inputs for the endpoint)
-```
-
-##### Response:
-The response is wrapped in a JSON object. The actual KO result is available under the `result:` key.
-
-```
-{
-  "result" : "Welcome to Knowledge Grid, Mario",
-  "info" : {
-    "ko" : {
-      "@id" : "js/simple/v1.0",
-      "@type" : "koio:KnowledgeObject",
-      "identifier" : "ark:/js/simple/v1.0",
-      "version" : "v1.0",
-      "title" : "Hello world",
-    ...
+### `POST /{naan}/{name}/{apiVersion}/{endpoint}`
+- Execute the payload of a particular version of an endpoint
+- Headers
+  ```
+  Accept: not required, if provided must match the OpenAPI document for the endpoint.
+  Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+  ```
+- Request Body
+  ```text
+  {"name":"Mario"} (*This depends on the inputs for the endpoint payload)
+  ```
+- Curl Command
+  ```bash
+  curl --location --request POST 'http://localhost:8080/js/simple/1.0/welcome' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "name": "Mario"
+  }'
+  ```
+- Responses
+  200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO
+  ```json
+  {
+	  "result": "Welcome to Knowledge Grid, Mario",
+	  "info": {
+		  "ko": {
+			  "@id": "js/simple/v1.0",
+			  "@type": "koio:KnowledgeObject",
+			  "identifier": "ark:/js/simple/v1.0",
+			  "version": "v1.0",
+			  "title": "Hello world",
+			  "description": "An example of simple Knowledge Object",
+			  "keywords": [
+			  	"Hello",
+			  	"example"
+			  ],
+			  "hasServiceSpecification": "service.yaml",
+			  "hasDeploymentSpecification": "deployment.yaml",
+			  "hasPayload": "src/index.js",
+			  "@context": [
+			  	"http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+			  ]
+		  },
+		  "inputs": "{\n\t\"name\": \"Mario\"\n}"
     }
   }
-}
-```
+  ```
+- Errors
+    - 404:
+      ```json
+      {
+          "Status": "404 Not Found",
+          "Instance": "uri=/js/simple/1.0/missing",
+          "Title": "Endpoint not found",
+          "Time": "Wed Feb 24 16:18:26 EST 2021",
+          "Detail": "No active endpoints found for js/simple/missing"
+      }
+      ```
+    - 415: If the Content-Type header does not match what the KO has described in the service description
+      ```json
+      {
+          "Status": "415 Unsupported Media Type",
+          "Instance": "uri=/js/simple/1.0/welcome",
+          "Title": "Unsupported Media Type",
+          "Time": "Wed Feb 24 16:20:18 EST 2021",
+          "Detail": "Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]"
+      }
+      ```
+    - 500: (Could depend on the adapter used for execution)
+      ```json
+      {
+          "Status": "500 Internal Server Error",
+          "Instance": "uri=/js/simple/1.0/welcome",
+          "Title": "General Adapter Exception",
+          "Time": "Wed Feb 24 16:23:16 EST 2021",
+          "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
+      }
+      ```
+### `POST /{naan}/{name}/{endpoint}?v={apiVersion}`
+- Execute the payload of a particular version of an endpoint using a query parameter
 
-<proposed>(proposed)</proposed> Return KO output and link to provenance, tracing, etc.
-Response code: HTTP/1.1 200
+- Headers
+  ```
+  Accept: not required, if provided must match the OpenAPI document for the endpoint.
+  Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+  ```
+- Request Body
+  ```text
+  {"name":"Mario"} (*This depends on the inputs for the endpoint payload)
+  ```
+- Curl Command
+  ```bash
+  curl --location --request POST 'http://localhost:8080/js/simple/welcome?v=1.0' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "name": "Mario"
+  }'
+  ```
+- Responses
+  200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO.
+  ```json
+  {
+	  "result": "Welcome to Knowledge Grid, Mario",
+	  "info": {
+		  "ko": {
+			  "@id": "js/simple/v1.0",
+			  "@type": "koio:KnowledgeObject",
+			  "identifier": "ark:/js/simple/v1.0",
+			  "version": "v1.0",
+			  "title": "Hello world",
+			  "description": "An example of simple Knowledge Object",
+			  "keywords": [
+			  	"Hello",
+			  	"example"
+			  ],
+			  "hasServiceSpecification": "service.yaml",
+			  "hasDeploymentSpecification": "deployment.yaml",
+			  "hasPayload": "src/index.js",
+			  "@context": [
+			  	"http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+			  ]
+		  },
+		  "inputs": "{\n\t\"name\": \"Mario\"\n}"
+    }
+  }
+  ```
+- Errors
+  - 404:
+    ```json
+    {
+        "Status": "404 Not Found",
+        "Instance": "uri=/js/simple/1.0/missing",
+        "Title": "Endpoint not found",
+        "Time": "Wed Feb 24 16:18:26 EST 2021",
+        "Detail": "No active endpoints found for js/simple/missing"
+    }
+    ```
+  - 415: If the Content-Type header does not match what the KO has described in the service description
+    ```json
+    {
+        "Status": "415 Unsupported Media Type",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "Unsupported Media Type",
+        "Time": "Wed Feb 24 16:20:18 EST 2021",
+        "Detail": "Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]"
+    }
+    ```
+  - 500: (Could depend on the adapter used for execution)
+    ```json
+    {
+        "Status": "500 Internal Server Error",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "General Adapter Exception",
+        "Time": "Wed Feb 24 16:23:16 EST 2021",
+        "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
+    }
+    ```
+### `POST /{naan}/{name}/{endpoint}`
+- Execute the payload of the default version of an endpoint
+  - Default Version: If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.
 
-##### Errors:
-A custom problem details resource is returned and the KO problem details or exception message will be included in the `Detail:` property.
-
-```
-{
-  "Status": "500 Internal Server Error",
-  "Instance": "uri=/score/calc/v0.3.0/score",
-  "Title": "General Adapter Exception",
-  "Time": "Fri Jun 19 16:21:23 UTC 2020",
-  "Detail": "JSON parse error: Unexpected character ('{' (code 123)): was..."
-}
-```
-##### Default Version:
-If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.
-
+- Headers
+  ```
+  Accept: not required, if provided must match the OpenAPI document for the endpoint.
+  Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+  ```
+- Request Body
+  ```text
+  {"name":"Mario"} (*This depends on the inputs for the endpoint payload)
+  ```
+- Curl Command
+  ```bash
+  curl --location --request POST 'http://localhost:8080/js/simple/welcome' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "name": "Mario"
+  }'
+  ```
+- Responses
+  200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO
+  ```json
+  {
+	  "result": "Welcome to Knowledge Grid, Mario",
+	  "info": {
+		  "ko": {
+			  "@id": "js/simple/v1.0",
+			  "@type": "koio:KnowledgeObject",
+			  "identifier": "ark:/js/simple/v1.0",
+			  "version": "v1.0",
+			  "title": "Hello world",
+			  "description": "An example of simple Knowledge Object",
+			  "keywords": [
+			  	"Hello",
+			  	"example"
+			  ],
+			  "hasServiceSpecification": "service.yaml",
+			  "hasDeploymentSpecification": "deployment.yaml",
+			  "hasPayload": "src/index.js",
+			  "@context": [
+			  	"http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+			  ]
+		  },
+		  "inputs": "{\n\t\"name\": \"Mario\"\n}"
+    }
+  }
+  ```
+- Errors
+  - 404:
+    ```json
+    {
+        "Status": "404 Not Found",
+        "Instance": "uri=/js/simple/1.0/missing",
+        "Title": "Endpoint not found",
+        "Time": "Wed Feb 24 16:18:26 EST 2021",
+        "Detail": "No active endpoints found for js/simple/missing"
+    }
+    ```
+  - 415: If the Content-Type header does not match what the KO has described in the service description
+    ```json
+    {
+        "Status": "415 Unsupported Media Type",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "Unsupported Media Type",
+        "Time": "Wed Feb 24 16:20:18 EST 2021",
+        "Detail": "Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]"
+    }
+    ```
+  - 500: (Could depend on the adapter used for execution)
+    ```json
+    {
+        "Status": "500 Internal Server Error",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "General Adapter Exception",
+        "Time": "Wed Feb 24 16:23:16 EST 2021",
+        "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
+    }
+    ```
 ## Activation API
+- The Activator's tools for loading, activating, and refreshing KOs hosted on the shelf.
+
+### `GET /actuator/activation/refresh`
+- Reactivates all the endpoints that are already loaded from the shelf
+- Headers
+  ```
+  Accept: not required, if provided must match the OpenAPI document for the endpoint.
+  Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+  ```
+- Request Body
+  ```text
+  {"name":"Mario"} (*This depends on the inputs for the endpoint payload)
+  ```
+- Curl Command
+  ```bash
+  curl --location --request POST 'http://localhost:8080/js/simple/1.0/welcome' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "name": "Mario"
+  }'
+  ```
+- Responses
+  200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO
+  ```json
+  {
+	  "result": "Welcome to Knowledge Grid, Mario",
+	  "info": {
+		  "ko": {
+			  "@id": "js/simple/v1.0",
+			  "@type": "koio:KnowledgeObject",
+			  "identifier": "ark:/js/simple/v1.0",
+			  "version": "v1.0",
+			  "title": "Hello world",
+			  "description": "An example of simple Knowledge Object",
+			  "keywords": [
+			  	"Hello",
+			  	"example"
+			  ],
+			  "hasServiceSpecification": "service.yaml",
+			  "hasDeploymentSpecification": "deployment.yaml",
+			  "hasPayload": "src/index.js",
+			  "@context": [
+			  	"http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+			  ]
+		  },
+		  "inputs": "{\n\t\"name\": \"Mario\"\n}"
+    }
+  }
+  ```
+- Errors
+  - 404:
+    ```json
+    {
+        "Status": "404 Not Found",
+        "Instance": "uri=/js/simple/1.0/missing",
+        "Title": "Endpoint not found",
+        "Time": "Wed Feb 24 16:18:26 EST 2021",
+        "Detail": "No active endpoints found for js/simple/missing"
+    }
+    ```
+  - 415: If the Content-Type header does not match what the KO has described in the service description
+    ```json
+    {
+        "Status": "415 Unsupported Media Type",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "Unsupported Media Type",
+        "Time": "Wed Feb 24 16:20:18 EST 2021",
+        "Detail": "Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]"
+    }
+    ```
+  - 500: (Could depend on the adapter used for execution)
+    ```json
+    {
+        "Status": "500 Internal Server Error",
+        "Instance": "uri=/js/simple/1.0/welcome",
+        "Title": "General Adapter Exception",
+        "Time": "Wed Feb 24 16:23:16 EST 2021",
+        "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
+    }
+    ```
+
+
+
+
+
+
+
+
+
+
+
+##### Loading Knowledge Objects and Activating Endpoints
+`GET /refresh` — all endpoints (activated or not) are discarded, and the activator reactivates everything on the shelf. If two endpoints have identical coordinates (`/{naan}/{name}/{apiVersion}/{endpoint}`) the first endpoint will be overwritten, and a warning will be logged.
+
+`GET /refresh/{engine}` — all endpoints for a particular runtime (activated or not) are discarded, and the activator reactivates everything on the shelf.
+
+`GET /reload/{naan}/{name}/?v={version}` — This will discard the endpoints for the specified KO and reload it from the shelf
+
+`GET /reload/{naan}/{name}/{version}` — This will discard the endpoints for the specified KO and reload it from the shelf
+
+
+
+
+
 
 ##### Endpoint resources
 ```
-GET /endpoints
+`GET /endpoints`
 GET /endpoints/{engine}
 GET /endpoints/{naan}/{name} (proposed)
 GET /endpoints/{naan}/{name}/{endpoint}
@@ -106,16 +392,6 @@ A custom problem details resource is returned and the KO problem details or exce
 
 > Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`). Likewise new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`).
 
-##### Loading Knowledge Objects and Activating Endpoints
-`GET /refresh` — all endpoints (activated or not) are discarded, and the activator reactivates everything on the shelf. If two endpoints have identical coordinates (`/{naan}/{name}/{apiVersion}/{endpoint}`) the first endpoint will be overwritten, and a warning will be logged.
-
-`GET /refresh/{engine}` — all endpoints for a particular runtime (activated or not) are discarded, and the activator reactivates everything on the shelf.
-
-`GET /reload/{naan}/{name}/?v={version}` — This will discard the endpoints for the specified KO and reload it from the shelf
-
-`GET /reload/{naan}/{name}/{version}` — This will discard the endpoints for the specified KO and reload it from the shelf
-
-<proposed>(proposed)</proposed> In the future, this functionality will be behind the `actuator` namespace.
 
 
 ## The Shelf, access to Knowledge Objects available to the activator
@@ -207,3 +483,5 @@ Be careful not to expose sensitive information. The `/actuator/health` and `/act
 (e.g. with OAuth 2.0 Bearer Tokens).
 
 The `/actuator/info` endpoint <conform>should</conform> return a map of information sets in JSON or YAML.
+## Proposed API Changes
+- Endpoint execution will return KO output and link to provenance, tracing, etc.
