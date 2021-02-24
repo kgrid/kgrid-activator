@@ -1,7 +1,7 @@
 package org.kgrid.activator.controller;
 
 import org.kgrid.activator.domain.Endpoint;
-import org.kgrid.activator.exceptions.ActivatorException;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.utilities.EndpointHelper;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class EndpointController extends ActivatorExceptionHandler {
         URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
         Endpoint endpoint = activationService.getEndpointMap().get(id);
         if (endpoint == null) {
-            throw new ActivatorException("Cannot find endpoint with id " + id);
+            throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
         }
         return new EndpointResource(endpoint, shelfRoot);
     }
@@ -89,7 +89,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             URI id = endpointHelper.createEndpointId(naan, name, apiVersion, endpointName);
             Endpoint endpoint = activationService.getEndpointMap().get(id);
             if (endpoint == null) {
-                throw new ActivatorException("Cannot find endpoint with id " + id);
+                throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
             }
             resources.add(new EndpointResource(endpoint, shelfRoot));
         }

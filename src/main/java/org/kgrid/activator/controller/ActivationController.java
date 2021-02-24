@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @CrossOrigin
 @Primary
-public class ActivationController {
+public class ActivationController extends ActivatorExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

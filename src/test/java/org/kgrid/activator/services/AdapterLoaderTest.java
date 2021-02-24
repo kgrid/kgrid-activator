@@ -10,16 +10,16 @@ import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.mock.adapter.MockAdapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URI;
 import java.util.Collection;
@@ -48,6 +48,8 @@ public class AdapterLoaderTest {
     private HealthContributorRegistry registry;
     @Mock
     ActivationService activationService;
+    @Spy
+    private final ApplicationContext applicationContext = new ClassPathXmlApplicationContext();
     @InjectMocks
     private AdapterLoader adapterLoader;
 
@@ -57,6 +59,7 @@ public class AdapterLoaderTest {
 
     @BeforeEach
     public void setup() {
+        ReflectionTestUtils.setField(adapterLoader, "adapterLocations", new String[]{"file:src/test/resources/adapters"});
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
         requireNonNull(jsEndpoint).setExecutor((o, s) -> EXECUTOR_RESULT);
 
@@ -70,7 +73,7 @@ public class AdapterLoaderTest {
         List<Adapter> adapters = adapterLoader.loadAdapters();
         adapterLoader.initializeAdapters(adapters);
         assertAll(
-                () -> verify(beanFactory, times(4)).autowireBean(any()),
+                () -> verify(beanFactory, times(5)).autowireBean(any()),
                 () -> assertNotNull(adapters),
                 () -> assertEquals("UP", adapters.get(0).status())
         );

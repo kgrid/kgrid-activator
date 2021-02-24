@@ -118,10 +118,12 @@ public class KoLoaderTest {
     public void endpointFailsWrapperValidationThrowsError() {
         KnowledgeObjectWrapper badWrapper = new KnowledgeObjectWrapper(jsMetadata);
         when(knowledgeObjectRepository.getKow(JS_ARK_ID)).thenReturn(badWrapper);
-
         Exception ex = assertThrows(ActivatorException.class, () -> koLoader.loadOneKo(JS_ARK_ID));
-        assertEquals(String.format("Cannot load ko %s, Has missing paths node in Service Specification", JS_ARK_ID.getFullArk()), ex.getMessage());
-        assertEquals(ActivatorException.class, ex.getCause().getClass());
+        assertAll(
+                () -> verify(koValidationService).validateKow(badWrapper),
+                () -> assertEquals("Cannot load ko ark:/naan/name/version, cause: Has missing paths node in Service Specification", ex.getMessage()),
+                () -> assertEquals(ActivatorException.class, ex.getCause().getClass())
+        );
     }
 
     @Test
@@ -135,18 +137,21 @@ public class KoLoaderTest {
         dubiousWrapper.addDeployment(deploymentSpec);
         dubiousWrapper.addService(mismatchServiceSpec);
         when(knowledgeObjectRepository.getKow(JS_ARK_ID)).thenReturn(dubiousWrapper);
-
         Exception ex = assertThrows(ActivatorException.class, () -> koLoader.loadOneKo(JS_ARK_ID));
-        verify(koValidationService).validateEndpoint(new Endpoint(dubiousWrapper, JS_ENDPOINT_NAME));
-        assertEquals(String.format("Cannot load ko %s, Has missing endpoint path in Service Specification that is listed in Deployment Specification", JS_ARK_ID.getFullArk()), ex.getMessage());
-        assertEquals(ActivatorException.class, ex.getCause().getClass());
+        assertAll(
+                () -> verify(koValidationService).validateEndpoint(new Endpoint(dubiousWrapper, JS_ENDPOINT_NAME)),
+                () -> assertEquals("Cannot load ko ark:/naan/name/version, cause: Has missing endpoint path in Service Specification that is listed in Deployment Specification", ex.getMessage()),
+                () -> assertEquals(ActivatorException.class, ex.getCause().getClass())
+        );
     }
 
     @Test
     public void endpointShelfFetchThrowsError() {
         when(knowledgeObjectRepository.getKow(JS_ARK_ID)).thenThrow(new ShelfResourceNotFound("Object location not found for ark id " + JS_ARK_ID.getFullArk()));
         Exception ex = assertThrows(ActivatorException.class, () -> koLoader.loadOneKo(JS_ARK_ID));
-        assertEquals(String.format("Cannot load ko %s, Object location not found for ark id %s", JS_ARK_ID.getFullArk(), JS_ARK_ID.getFullArk()), ex.getMessage());
-        assertEquals(ShelfResourceNotFound.class, ex.getCause().getClass());
+        assertAll(
+                () -> assertEquals("Cannot load ko ark:/naan/name/version, cause: Object location not found for ark id ark:/naan/name/version", ex.getMessage()),
+                () -> assertEquals(ShelfResourceNotFound.class, ex.getCause().getClass())
+        );
     }
 }

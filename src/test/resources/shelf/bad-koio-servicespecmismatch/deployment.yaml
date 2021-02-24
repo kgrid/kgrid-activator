@@ -1,5 +1,0 @@
-/welcome:
-  post:
-    artifact: welcome.js
-    engine: javascript
-    function: hello
