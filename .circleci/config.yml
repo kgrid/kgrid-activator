@@ -9,3 +9,36 @@ workflows:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
+      - docs-deploy:
+          filters:
+            branches:
+              only: update-docs
+
+jobs:
+  docs-deploy:
+    docker:
+      # specify the version you desire here
+      - image: cimg/node
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: Install KGrid Blog
+          command: npm install
+
+      - run:
+          name: Deploy VuePress GitHub Pages
+          command: |
+            chmod 775 .circleci/vuepress_deploy.sh && .circleci/vuepress_deploy.sh
+
+
