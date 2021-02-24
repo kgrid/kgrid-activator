@@ -18,7 +18,7 @@ jobs:
   docs-deploy:
     docker:
       # specify the version you desire here
-      - image: cimg/node
+      - image: cimg/node:lts
 
     working_directory: ~/repo
 
