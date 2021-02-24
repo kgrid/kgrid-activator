@@ -4,12 +4,13 @@ orbs:
   maven: circleci/maven@1.0.1
 
 workflows:
-  build: # build, test, resolve dependencies, and deploy if branch is main
+  build: # build, test, resolve dependencies, and deploy docs if branch is main
     jobs:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
       - docs-deploy:
+          context: kgrid
           filters:
             branches:
               only: update-docs
@@ -33,7 +34,7 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: Install KGrid Blog
+          name: Install KGrid Activator Docs
           command: npm install
 
       - run:
