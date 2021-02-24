@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.shelf.ShelfResourceNotFound;
 import org.kgrid.shelf.domain.ArkId;
@@ -11,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,15 +37,24 @@ public class KoLoader {
                 Endpoint endpoint = getEndpoint(wrapper, arkId, endpointName.getKey());
                 endpoints.put(endpoint.getId(), endpoint);
             });
-        } catch (ActivatorException | ShelfResourceNotFound e) {
-            log.warn("Cannot load ko {}, cause: {}", arkId.getFullArk(), e.getMessage());
+        } catch (ActivatorException e) {
+            throw new ActivatorException(String.format("Cannot load ko %s, cause: %s", arkId.getFullArk(), e.getMessage()), e);
+        } catch (ShelfResourceNotFound e) {
+            throw new ActivatorEndpointNotFoundException(String.format("Cannot load ko %s, cause: %s", arkId.getFullArk(), e.getMessage()), e);
         }
         return endpoints;
     }
 
     public Map<URI, Endpoint> loadSomeKos(List<ArkId> arkIds) {
         return arkIds.stream()
-                .flatMap(arkId -> loadOneKo(arkId).entrySet().stream())
+                .flatMap(arkId -> {
+                    try {
+                        return loadOneKo(arkId).entrySet().stream();
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                        return null;
+                    }
+                }).filter(Objects::nonNull)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
