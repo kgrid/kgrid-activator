@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Component
 @RestControllerEndpoint(id="activation")
 @CrossOrigin
-public class ActivationController {
+public class ActivationController extends ActivatorExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
