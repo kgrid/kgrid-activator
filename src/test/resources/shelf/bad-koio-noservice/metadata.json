@@ -1,9 +1,0 @@
-{  "@id": "bad-koio",
-  "title": "the best bad-koio ever",
-  "identifier" : "ark:/bad/koio",
-  "version":"noservice",
-  "contributors" : "Kgrid Team",
-  "hasDeploymentSpecification": "$.paths.*.x-kgrid-activation",
-  "hasPayload": "$.paths.*.x-kgrid-activation.artifact",
-  "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
-}
