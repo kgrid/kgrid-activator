@@ -243,84 +243,22 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 - The Activator's tools for loading, activating, and refreshing KOs hosted on the shelf.
 
 ### `GET /actuator/activation/refresh`
-- Reactivates all the endpoints that are already loaded from the shelf
-- Headers
-  ```
-  Accept: not required, if provided must match the OpenAPI document for the endpoint.
-  Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
-  ```
-- Request Body
-  ```text
-  {"name":"Mario"} (*This depends on the inputs for the endpoint payload)
-  ```
+- All currently loaded endpoints (activated or not) are reactivated and replaced. 
 - Curl Command
   ```bash
-  curl --location --request POST 'http://localhost:8080/js/simple/1.0/welcome' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "name": "Mario"
-  }'
+  curl --location --request GET 'http://localhost:8080/actuator/activation/refresh'
   ```
 - Responses
-  200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO
-  ```json
-  {
-	  "result": "Welcome to Knowledge Grid, Mario",
-	  "info": {
-		  "ko": {
-			  "@id": "js/simple/v1.0",
-			  "@type": "koio:KnowledgeObject",
-			  "identifier": "ark:/js/simple/v1.0",
-			  "version": "v1.0",
-			  "title": "Hello world",
-			  "description": "An example of simple Knowledge Object",
-			  "keywords": [
-			  	"Hello",
-			  	"example"
-			  ],
-			  "hasServiceSpecification": "service.yaml",
-			  "hasDeploymentSpecification": "deployment.yaml",
-			  "hasPayload": "src/index.js",
-			  "@context": [
-			  	"http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
-			  ]
-		  },
-		  "inputs": "{\n\t\"name\": \"Mario\"\n}"
-    }
-  }
-  ```
-- Errors
-  - 404:
-    ```json
-    {
-        "Status": "404 Not Found",
-        "Instance": "uri=/js/simple/1.0/missing",
-        "Title": "Endpoint not found",
-        "Time": "Wed Feb 24 16:18:26 EST 2021",
-        "Detail": "No active endpoints found for js/simple/missing"
-    }
-    ```
-  - 415: If the Content-Type header does not match what the KO has described in the service description
-    ```json
-    {
-        "Status": "415 Unsupported Media Type",
-        "Instance": "uri=/js/simple/1.0/welcome",
-        "Title": "Unsupported Media Type",
-        "Time": "Wed Feb 24 16:20:18 EST 2021",
-        "Detail": "Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]"
-    }
-    ```
-  - 500: (Could depend on the adapter used for execution)
-    ```json
-    {
-        "Status": "500 Internal Server Error",
-        "Instance": "uri=/js/simple/1.0/welcome",
-        "Title": "General Adapter Exception",
-        "Time": "Wed Feb 24 16:23:16 EST 2021",
-        "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
-    }
-    ```
+  303: Redirects to `/endpoints`
 
+### `GET /actuator/activation/refresh/{engine}`
+- All currently loaded endpoints for a particular runtime (activated or not) are reactivated and replaced.
+- Curl Command
+  ```bash
+  curl --location --request GET 'http://localhost:8080/actuator/activation/refresh/python'
+  ```
+- Responses
+  303: Redirects to `/endpoints`
 
 
 
@@ -332,9 +270,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 
 
 ##### Loading Knowledge Objects and Activating Endpoints
-`GET /refresh` — all endpoints (activated or not) are discarded, and the activator reactivates everything on the shelf. If two endpoints have identical coordinates (`/{naan}/{name}/{apiVersion}/{endpoint}`) the first endpoint will be overwritten, and a warning will be logged.
-
-`GET /refresh/{engine}` — all endpoints for a particular runtime (activated or not) are discarded, and the activator reactivates everything on the shelf.
+`GET /refresh/{engine}` — 
 
 `GET /reload/{naan}/{name}/?v={version}` — This will discard the endpoints for the specified KO and reload it from the shelf
 
