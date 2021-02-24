@@ -6,6 +6,7 @@ import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.adapter.api.AdapterClientErrorException;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.AdapterServerErrorException;
+import org.kgrid.adapter.resource.AdapterResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -52,12 +53,12 @@ public abstract class ActivatorExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-//    @ExceptionHandler(AdapterResourceNotFoundException.class)
-//    public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterResourceNotFoundException e,
-//                                                                       WebRequest request) {
-//        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Resource Not Found", HttpStatus.NOT_FOUND),
-//                HttpStatus.NOT_FOUND);
-//    }
+    @ExceptionHandler(AdapterResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterResourceNotFoundException e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Resource Not Found", HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(AdapterClientErrorException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterClientErrorException e,
