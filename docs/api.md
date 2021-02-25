@@ -270,7 +270,6 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 
 
 ##### Loading Knowledge Objects and Activating Endpoints
-`GET /refresh/{engine}` — 
 
 `GET /reload/{naan}/{name}/?v={version}` — This will discard the endpoints for the specified KO and reload it from the shelf
 
@@ -419,5 +418,13 @@ Be careful not to expose sensitive information. The `/actuator/health` and `/act
 (e.g. with OAuth 2.0 Bearer Tokens).
 
 The `/actuator/info` endpoint <conform>should</conform> return a map of information sets in JSON or YAML.
+
+
+
+
+
+
+
+
 ## Proposed API Changes
 - Endpoint execution will return KO output and link to provenance, tracing, etc.
