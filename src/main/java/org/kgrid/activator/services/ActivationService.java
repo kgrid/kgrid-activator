@@ -96,7 +96,7 @@ public class ActivationService {
 
     public List<Endpoint> getAllVersions(String naan, String name, String endpointName) {
         List<Endpoint> versions = endpointMap.values().stream()
-                .map((endpoint) -> {
+                .map(endpoint -> {
                     if (endpoint.getNaan().equals(naan)
                             && endpoint.getName().equals(name)
                             && endpoint.getEndpointName().equals(endpointName)) {
@@ -114,7 +114,7 @@ public class ActivationService {
         return versions;
     }
 
-    public String getDefaultVersion(String naan, String name, String endpoint) {
+    private String getDefaultVersion(String naan, String name, String endpoint) {
         return getAllVersions(naan, name, endpoint).get(0).getApiVersion();
     }
 

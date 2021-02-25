@@ -141,7 +141,7 @@ public class RequestController extends ActivatorExceptionHandler {
         return fileTypeMap.getContentType(artifactName);
     }
 
-    public String getContentDisposition(String artifactName) {
+    private String getContentDisposition(String artifactName) {
         String filename =
                 artifactName.contains("/") ? StringUtils.substringAfterLast(artifactName, "/") : artifactName;
         return "inline; filename=\"" + filename + "\"";
