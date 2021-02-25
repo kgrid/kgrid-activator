@@ -420,11 +420,5 @@ Be careful not to expose sensitive information. The `/actuator/health` and `/act
 The `/actuator/info` endpoint <conform>should</conform> return a map of information sets in JSON or YAML.
 
 
-
-
-
-
-
-
 ## Proposed API Changes
 - Endpoint execution will return KO output and link to provenance, tracing, etc.
