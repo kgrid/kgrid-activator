@@ -34,7 +34,7 @@ public class ActivationController extends ActivatorExceptionHandler {
      *
      * @return redirect to the endpoints list
      */
-    @GetMapping(value = "/reload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/reload")
     public RedirectView activate() {
         log.info("Load and Activate all endpoints ");
         activationService.getEndpointMap().clear();
@@ -50,7 +50,7 @@ public class ActivationController extends ActivatorExceptionHandler {
      *
      * @return redirect to the endpoints list
      */
-    @GetMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/refresh")
     public RedirectView refresh() {
         log.info("Activate all endpoints ");
 
@@ -67,7 +67,7 @@ public class ActivationController extends ActivatorExceptionHandler {
      * @param engine the engine for which KOs should be activated.
      * @return redirect to the endpoints list for that engine
      */
-    @GetMapping(value = "/refresh/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/refresh/{engine}")
     public RedirectView refreshForEngine(@PathVariable String engine) {
 
         activationService.activateEngine(engine);
@@ -84,7 +84,7 @@ public class ActivationController extends ActivatorExceptionHandler {
      * @param version code version of the Knowledge object, the third part of the ark
      * @return set of activated endpoint paths
      */
-    @GetMapping(value = "/reload/{naan}/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/reload/{naan}/{name}")
     public RedirectView activateKo(@PathVariable String naan,
                                    @PathVariable String name, @RequestParam(name = "v", required = true) String version) {
 
@@ -99,7 +99,7 @@ public class ActivationController extends ActivatorExceptionHandler {
      * @param version code version of the Knowledge object, the third part of the ark
      * @return returns a redirect to the activated endpoints
      */
-    @GetMapping(value = "/reload/{naan}/{name}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/reload/{naan}/{name}/{version}")
     public RedirectView activateKoVersion(@PathVariable String naan,
                                           @PathVariable String name, @PathVariable String version) {
         ArkId arkId;
