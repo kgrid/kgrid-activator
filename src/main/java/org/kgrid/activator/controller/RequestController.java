@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class RequestController extends ActivatorExceptionHandler {
 
 
-    @Value(("${kgrid.shelf.endpoint:kos}"))
+    @Value(("/kos"))
     String shelfRoot;
 
     @Autowired
