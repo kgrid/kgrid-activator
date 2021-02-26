@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.activator.utilities.EndpointHelper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,8 +32,7 @@ public class EndpointControllerTest {
 
     @Mock
     private ActivationService activationService;
-    @Mock
-    private EndpointHelper endpointHelper;
+
 
     @InjectMocks
     EndpointController endpointController;
@@ -74,7 +72,7 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Path Version returns appropriate endpoint resource")
     public void testFindEndpointPathVersionReturnsEndpointResource() {
-        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
         when(activationService.getEndpointMap()).thenReturn(endpointMap);
         EndpointResource endpointResource =
                 endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
@@ -84,7 +82,7 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Path Version throws activator exception if no endpoint found")
     public void testFindEndpointPathVersionThrowsActivatorExceptionIfNoEndpointFound() {
-        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
         when(activationService.getEndpointMap()).thenReturn(new TreeMap<>());
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME));
@@ -95,7 +93,7 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Query Version returns appropriate endpoint resource")
     public void testFindEndpointQueryVersionReturnsEndpointResource() {
-        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
         when(activationService.getEndpointMap()).thenReturn(endpointMap);
         List<EndpointResource> endpointResources = endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION);
         assertEquals(createEndpointResource(jsEndpoint).getId(), endpointResources.get(0).getId());
@@ -104,10 +102,10 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Query Version returns endpoint when version is null")
     public void testFindEndpointQueryVersionReturnsEndpointResource_NullVersion() {
-        when(endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(Collections.singletonList(jsEndpoint));
+        when(activationService.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(Collections.singletonList(jsEndpoint));
         List<EndpointResource> endpointResources = endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, null);
         assertAll(
-                () -> verify(endpointHelper).getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME),
+                () -> verify(activationService).getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME),
                 () -> assertEquals(createEndpointResource(jsEndpoint).getId(), endpointResources.get(0).getId())
         );
     }
@@ -115,7 +113,7 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Query Version throws activator exception if no endpoint found")
     public void testFindEndpointQueryVersionThrowsActivatorExceptionIfNoEndpointFound() {
-        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
         when(activationService.getEndpointMap()).thenReturn(new TreeMap<>());
         ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
                 () -> endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION));
