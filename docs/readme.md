@@ -128,7 +128,13 @@ The JS Simple KO will return the following
 }
 ```
 
-> Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`). Likewise new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`).
+### Activation on startup
+- On startup, the Activator attempts to activate every KO on the shelf
+  - Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`). 
+  - Likewise, new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`).
+ 
+### The Shelf, access to Knowledge Objects available to the activator
+- Access, viewing, listing, import KOs available to tha Activator uses the Shelf API available at `/kos`. For more information see the [Kgrid Shelf API Docs](https://kgrid.org/kgrid-shelf/api)
 
 For more advanced topics, check out:
 - [API Documentation](api.md)

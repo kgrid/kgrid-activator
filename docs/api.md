@@ -490,36 +490,18 @@ Activators <conform>should</conform> provide application and health information 
     }
     ```
 
-### `/actuator/info` (Optional)
-Extended information <conform>may</conform> be made available under an
-`/actuator/info` endpoint. See `/actuator/info` below.
-Additional or extended information about the opertating characteristics of the Activator can be made
-available under an `/actuator/info` endpoint.
-See [Spring Boot application health information guidelines](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-application-info)
+### `GET /actuator/info` (Optional)
+- An optional endpoint where extended information <conform>may</conform> be made available.
+  - See [Spring Boot application health information guidelines](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-application-info)
 for examples of suitable patterns which can be implemented in many frameworks and languages.
-
-We suggest that implementations provide things like a list of adapters and runtimes currently deployed,
+  - We suggest that implementations provide things like a list of adapters and runtimes currently deployed,
 as well as counts or lists of KOs available to the Activator, endpoints activated, perhaps total
 requests, uptime, build information, key environment variables, etc.
-
-Be careful not to expose sensitive information. The `/actuator/health` and `/actuator/info` endpoints
+  - Be careful not to expose sensitive information. The `/actuator/health` and `/actuator/info` endpoints
 <conform>should</conform> be secured
 (e.g. with OAuth 2.0 Bearer Tokens).
-
-The `/actuator/info` endpoint <conform>should</conform> return a map of information sets in JSON or YAML.
-
-### Activation on startup
-- On startup, the Activator attempts to activate every KO on the shelf
-
-> Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`). Likewise, new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/refresh` or `/refresh/{naan}/{name}`).
-
-
-
-## The Shelf, access to Knowledge Objects available to the activator
-
-Access, viewing, listing, import KOs available to tha Activator uses teh Shelf API available at `/kos`. For more information see the [Kgrid Shelf API Docs](https://kgrid.org/kgrid-shelf/api)
-
+  - The `/actuator/info` endpoint <conform>should</conform> return a map of information sets in JSON or YAML.
 
 ## Proposed API Changes
 - Endpoint execution will return KO output and link to provenance, tracing, etc.
-  `GET /endpoints/{naan}/{name} (proposed)
+  `GET /endpoints/{naan}/{name}
