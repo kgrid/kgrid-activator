@@ -3,6 +3,11 @@
 
 These instructions will get the Kgrid Activator running with sample set of Knowledge Objects.
 
+## Overview
+As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
+
+For the information on the activator API and the usage of the activator, see [KGRID Activator API](docs/api.md)
+
 ### Prerequisites
 
 For running the application you need:
@@ -79,6 +84,15 @@ the [activator's health endpoint](http://localhost:8080/actuator/health).  The h
 }
 ```
 
+### Activation on startup
+- On startup, the Activator loads Knowledge Objects onto a local "shelf", using a manifest of packaged KOs, or loads directly from the local "shelf".
+
+- The Activator also initializes any embedded runtimes and connects to remote runtimes.
+
+- Then, the Activator attempts to activate every KO on the shelf. It logs a warning if an endpoint cannot be activated.
+
+You can see the KOs and endpoint services available in the Activator at [`/kos`](https://kgrid.org/kgrid-shelf/api.html#ko-resource-api) and [`/endpoints`](api.md#endpoint-resource-api) respectively. See [Activation API](api.md#activation-api) for more info.
+
 ## Using the js-simple-v1.0 KO on the Activator 
 
 The js-simple KO is a very simple KO with a Javascript based service that takes in a name and displays 
@@ -127,15 +141,7 @@ The JS Simple KO will return the following
  }
 }
 ```
-
-### Activation on startup
-- On startup, the Activator attempts to activate every KO on the shelf
-  - Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted, unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`). 
-  - Likewise, new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`).
  
-### The Shelf, access to Knowledge Objects available to the activator
-- Access, viewing, listing, import KOs available to tha Activator uses the Shelf API available at `/kos`. For more information see the [Kgrid Shelf API Docs](https://kgrid.org/kgrid-shelf/api)
-
 For more advanced topics, check out:
 - [API Documentation](api.md)
 - [Configuration Documentation](configuration.md)

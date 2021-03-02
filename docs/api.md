@@ -1,4 +1,6 @@
 # Activator API
+
+Various APIs implemented by the Activator for managing and using endpoint services packed as Knowledge Objects. The Activator also uses the [Shelf API](https://kgrid.org/kgrid-shelf/api.html) to manage loading and providing access to KOs themselves.
 ## Request API
 The Request API exposes the *micro*-API for the services provided by each KO in the service description.
 
@@ -6,7 +8,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 - Execute the payload of a particular version of an endpoint
 - Headers
   ```
-  Accept: not required, if provided must match the OpenAPI document for the endpoint.
+  Accept: not required, if provided must match the media-type for the path in the OpenAPI document for the endpoint.
   Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
   ```
 - Request Body
@@ -241,9 +243,16 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
     ```
 ## Activation API
 - The Activator's tools for loading, activating, and refreshing KOs hosted on the shelf.
+  
+  - Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted from the shelf, unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`).
+  - Likewise, new KOs added to the shelf will *NOT* be activated unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`).
+  - On reload (using `/actuator/reload` or `/actuator/reload/{naan}/{name}/{version}`) all endpoints for the reloaded KOs are also activated.
 
 ### `GET /actuator/activation/refresh`
 - All currently loaded endpoints (activated or not) are reactivated and replaced. 
+  - KOs are not reloaded from the shelf.
+  
+
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/activation/refresh'
