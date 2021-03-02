@@ -1,4 +1,4 @@
-#Activator API
+# Activator API
 ## Request API
 The Request API exposes the *micro*-API for the services provided by each KO in the service description.
 
