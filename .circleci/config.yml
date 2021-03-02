@@ -4,8 +4,41 @@ orbs:
   maven: circleci/maven@1.0.1
 
 workflows:
-  build: # build, test, resolve dependencies, and deploy if branch is main
+  build: # build, test, resolve dependencies, and deploy docs if branch is main
     jobs:
       - maven/test:
           context: kgrid
           settings_file: ".circleci/settings.xml"
+      - docs-deploy:
+          context: kgrid
+          filters:
+            branches:
+              only: main
+
+jobs:
+  docs-deploy:
+    docker:
+      # specify the version you desire here
+      - image: cimg/node:lts
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          command: npm install
+
+      - run:
+          name: Deploy VuePress GitHub Pages
+          command: |
+            chmod 775 .circleci/vuepress_deploy.sh && .circleci/vuepress_deploy.sh
+
+

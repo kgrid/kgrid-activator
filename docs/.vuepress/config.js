@@ -6,10 +6,9 @@ module.exports = {
     lastUpdated: 'Last Updated',
     nav: [
       { text: 'Guide', link: '/' },
-      { text: 'Configuration', link: '/configuration/'},
-      { text: 'Adding KOs', link: '/kos/' },
-      { text: 'Service Descriptions', link: '/service/' },
-      { text: 'Docker', link: '/docker/' }
+      { text: 'Configuration', link: '/configuration'},
+      { text: 'API', link: '/api'},
+      { text: 'Containers', link: '/containers' }
 
     ],
     search: true,

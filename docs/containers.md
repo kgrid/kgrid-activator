@@ -1,6 +1,7 @@
 
-## KGrid Docker Container
+## KGrid Docker Containers
 
+## -> Notice: This doc is out of date. We are switching to `spring-boot` maven plugin or other tooling (like buildpacks.io) for containerization. see https://www.pivotaltracker.com/story/show/176986552
 
 ### Build Image
 
