@@ -8,7 +8,7 @@ import org.kgrid.activator.domain.EndPointResult;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
-import org.kgrid.activator.utilities.EndpointHelper;
+import org.kgrid.activator.services.ActivationService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,11 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
@@ -34,7 +37,9 @@ import static org.mockito.Mockito.when;
 public class RequestControllerTest {
 
     @Mock
-    private EndpointHelper endpointHelper;
+    private ActivationService activationService;
+    @Mock
+    private MimetypesFileTypeMap fileTypeMap;
     @InjectMocks
     private RequestController requestController;
     private final String INPUT = "input";
@@ -51,12 +56,14 @@ public class RequestControllerTest {
 
     @BeforeEach
     public void setup() {
+        Map<URI, Endpoint> endpointMap = new TreeMap<>();
+        endpointMap.put(JS_ENDPOINT_URI, endpoint);
         headers.setContentType(CONTENT_TYPE);
         ArrayList<String> contentTypes = new ArrayList<>();
         contentTypes.add(CONTENT_TYPE.toString());
         contentTypes.add(MediaType.IMAGE_GIF.toString());
-        when(endpointHelper.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-        Mockito.lenient().when(endpointHelper.getEndpoint(JS_ENDPOINT_URI)).thenReturn(endpoint);
+        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
+        Mockito.lenient().when(activationService.getEndpointMap()).thenReturn(endpointMap);
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
@@ -71,7 +78,7 @@ public class RequestControllerTest {
     public void testExecuteEndpointInteractionsAndResult() {
         EndPointResult actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         assertAll(
-                () -> verify(endpointHelper).getEndpoint(JS_ENDPOINT_URI),
+                () -> verify(activationService).getEndpointMap(),
                 () -> verify(endpoint).isActive(),
                 () -> verify(endpoint).isSupportedContentType(CONTENT_TYPE),
                 () -> verify(endpoint).execute(INPUT, CONTENT_TYPE),
@@ -85,7 +92,7 @@ public class RequestControllerTest {
         headers.remove("Content-Type");
         requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
         assertAll(
-                () -> verify(endpointHelper).createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
+                () -> verify(activationService).createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
                 () -> verify(endpoint).execute(RESOURCE_SLUG.substring(1), null)
         );
     }
@@ -93,12 +100,12 @@ public class RequestControllerTest {
     @Test
     @DisplayName("Resource endpoint invalid accept type")
     public void testExecuteResourceEndpoint_InvalidAcceptType() {
-        when(endpointHelper.getContentType(RESOURCE_SLUG.substring(1))).thenReturn("text/csv");
+        when(fileTypeMap.getContentType(RESOURCE_SLUG.substring(1))).thenReturn("text/csv");
         headers.remove("Content-Type");
         headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
         ResponseEntity<Object> response = requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
         assertAll(
-                () -> verify(endpointHelper).createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
+                () -> verify(activationService).createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
                 () -> assertEquals(new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE), response)
         );
     }
@@ -119,7 +126,7 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfEndpointIsNotActive() {
         ArrayList<Endpoint> versions = new ArrayList<>();
         versions.add(endpoint);
-        when(endpointHelper.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(versions);
+        when(activationService.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(versions);
         when(endpoint.isActive()).thenReturn(false);
 
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {

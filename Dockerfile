@@ -15,8 +15,7 @@ ARG port
 
 ENV MANIFEST=$manifest
 ENV SHELF_LOCATION=$shelf_location
-ENV SHELF_ENDPOINT=$shelf_endpoint
 ENV PORT=$port
 
 COPY ${jar_file} app.jar
-ENTRYPOINT java -jar /app.jar --port=$PORT --kgrid.shelf.manifest=$MANIFEST --kgrid.shelf.cdostore.url=filesystem:file://$SHELF_LOCATION --kgrid.shelf.endpoint=$SHELF_ENDPOINT
+ENTRYPOINT java -jar /app.jar --port=$PORT --kgrid.shelf.manifest=$MANIFEST --kgrid.shelf.cdostore.url=filesystem:file://$SHELF_LOCATION

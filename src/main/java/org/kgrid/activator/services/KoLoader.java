@@ -1,5 +1,12 @@
 package org.kgrid.activator.services;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
@@ -10,10 +17,6 @@ import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class KoLoader {
@@ -37,10 +40,14 @@ public class KoLoader {
                 Endpoint endpoint = getEndpoint(wrapper, arkId, endpointName.getKey());
                 endpoints.put(endpoint.getId(), endpoint);
             });
-        } catch (ActivatorException e) {
-            throw new ActivatorException(String.format("Cannot load ko %s, cause: %s", arkId.getFullArk(), e.getMessage()), e);
         } catch (ShelfResourceNotFound e) {
-            throw new ActivatorEndpointNotFoundException(String.format("Cannot load ko %s, cause: %s", arkId.getFullArk(), e.getMessage()), e);
+            throw new ActivatorEndpointNotFoundException(
+                String.format("Cannot load ko %s, cause: %s",
+                    arkId.getFullArk(), e.getMessage()), e);
+        } catch (Exception e) {
+            throw new ActivatorException(
+                String.format("Cannot load ko %s, cause: %s",
+                    arkId.getFullArk(), e.getMessage()), e);
         }
         return endpoints;
     }
@@ -55,7 +62,11 @@ public class KoLoader {
                         return null;
                     }
                 }).filter(Objects::nonNull)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, newEntry) -> {
+                    log.info("Overwriting existing ko ({}) with new ko ({}) that has the same endpoint id {}",
+                            existing.getWrapper().getId(), newEntry.getWrapper().getId(), newEntry.getId());
+                    return newEntry;
+                }));
     }
 
     public Map<URI, Endpoint> loadAllKos() {

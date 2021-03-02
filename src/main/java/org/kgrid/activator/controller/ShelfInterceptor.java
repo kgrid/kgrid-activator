@@ -20,7 +20,7 @@ public class ShelfInterceptor implements Filter {
 
     private final ActivationService activationService;
 
-    @Value("${kgrid.shelf.endpoint:kos}")
+    @Value("/kos")
     String shelfEndpoint;
 
     public ShelfInterceptor(ActivationService activationService) {

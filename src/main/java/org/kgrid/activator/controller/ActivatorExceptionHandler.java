@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
 public abstract class ActivatorExceptionHandler {
 
     protected Logger log = LoggerFactory.getLogger(getClass().getName());

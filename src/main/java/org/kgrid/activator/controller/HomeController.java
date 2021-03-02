@@ -15,7 +15,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class HomeController {
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ActivatorResource home(@Value("${kgrid.shelf.endpoint:kos}") String shelfLoc) {
+    public ActivatorResource home(@Value("/kos") String shelfLoc) {
 
         ActivatorResource activatorResource = new ActivatorResource();
 
