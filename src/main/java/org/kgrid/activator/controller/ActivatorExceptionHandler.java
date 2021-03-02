@@ -69,7 +69,7 @@ public abstract class ActivatorExceptionHandler {
     @ExceptionHandler(AdapterServerErrorException.class)
     public ResponseEntity<Map<String, String>> handleAdapterExceptions(AdapterServerErrorException e,
                                                                        WebRequest request) {
-        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Server Error", HttpStatus.BAD_REQUEST),
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Adapter Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
