@@ -102,9 +102,9 @@ First, lets look at [JS Simple's metadata](http://localhost:8080/kos/js/simple/v
 
 The JS Simple KO has one service called _welcome_.  The welcome service expects you to pass it a json object containing the _name_ key.
 
-For example: `{"name":"Fred Flintstone"}`.  
+For example: `{"name":"Fred Flintstone"}`.
 
-The following is a curl POST to the JS Simple welcome endpoint.
+### Using `curl` to try out a KO
 
 ```bash
 curl -X POST -H "Content-Type:application/json"  \
@@ -141,7 +141,16 @@ The JS Simple KO will return the following
  }
 }
 ```
- 
+### Using the Swagger Editor to try out a KO
+
+Navigate to [`http://localhost:8080/endpoints/js/simple/1.0/welcome`](http://localhost:8080/endpoints/js/simple/1.0/welcome) and click the swagger editor link:
+
+"swaggerLink": [https://editor.swagger.io?url=...](https://editor.swagger.io?url=https://kgrid-activator-staging.herokuapp.com/js/simple/v1.0/service.yaml)
+
+The online Swagger Editor should load the OpenAPI service description and generate a generic client for the JS Simple KO. Click the `POST` button for the `/welcome` endpoint and then the `Try it out` button to populate a sample request. The blue `Execute` bar will send the request to your local Activator. The results will be similar to the response above.
+
+The Swagger Editor is a great tool for getting familiar with the "service" perspective for knowledge objects!
+
 For more advanced topics, check out:
 - [API Documentation](api.md)
 - [Configuration Documentation](configuration.md)
