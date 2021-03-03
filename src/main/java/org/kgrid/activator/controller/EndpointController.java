@@ -25,7 +25,7 @@ public class EndpointController extends ActivatorExceptionHandler {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value(("/kos"))
+    @Value("kos")
     String shelfRoot;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
