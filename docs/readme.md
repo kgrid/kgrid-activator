@@ -145,7 +145,7 @@ The JS Simple KO will return the following
 
 Navigate to [`http://localhost:8080/endpoints/js/simple/1.0/welcome`](http://localhost:8080/endpoints/js/simple/1.0/welcome) and click the swagger editor link:
 
-"swaggerLink": [https://editor.swagger.io?url=...](https://editor.swagger.io?url=https://kgrid-activator-staging.herokuapp.com/js/simple/v1.0/service.yaml)
+"swaggerLink": [https://editor.swagger.io?url=...](https://editor.swagger.io?url=https://kgrid-activator-staging.herokuapp.com/kos/js/simple/v1.0/service.yaml)
 
 The online Swagger Editor should load the OpenAPI service description and generate a generic client for the JS Simple KO. Click the `POST` button for the `/welcome` endpoint and then the `Try it out` button to populate a sample request. The blue `Execute` bar will send the request to your local Activator. The results will be similar to the response above.
 
