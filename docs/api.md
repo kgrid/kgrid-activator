@@ -1,11 +1,14 @@
 # Activator API
 
 Various APIs implemented by the Activator for managing and using endpoint services packed as Knowledge Objects. The Activator also uses the [Shelf API](https://kgrid.org/kgrid-shelf/api.html) to manage loading and providing access to KOs themselves.
+It should be noted that some endpoints are secured by default, unless running in dev mode, which can be set using [`spring.profiles.active=dev`](configuration.md#springprofilesactive) when starting the activator.
+
 ## Request API
 The Request API exposes the *micro*-API for the services provided by each KO in the service description.
 
 ### `POST /{naan}/{name}/{apiVersion}/{endpoint}`
 - Execute the payload of a particular version of an endpoint
+- Secured by default: No
 - Headers
   ```
   Accept: not required, if provided must match the media-type for the path in the OpenAPI document for the endpoint.
@@ -84,7 +87,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
       ```
 ### `POST /{naan}/{name}/{endpoint}?v={apiVersion}`
 - Execute the payload of a particular version of an endpoint using a query parameter
-
+- Secured by default: No
 - Headers
   ```
   Accept: not required, if provided must match the OpenAPI document for the endpoint.
@@ -164,7 +167,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 ### `POST /{naan}/{name}/{endpoint}`
 - Execute the payload of the default version of an endpoint
   - Default Version: If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.
-
+- Secured by default: No
 - Headers
   ```
   Accept: not required, if provided must match the OpenAPI document for the endpoint.
@@ -251,8 +254,8 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 ### `GET /actuator/activation/refresh`
 - All currently loaded endpoints (activated or not) are reactivated and replaced. 
   - KOs are not reloaded from the shelf.
-  
-
+  - Newly added KOs may have to be reloaded using the `reload` endpoint below.
+- Secured by default: Yes
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/activation/refresh'
@@ -262,6 +265,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 
 ### `GET /actuator/activation/refresh/{engine}`
 - All currently loaded endpoints for a particular runtime (activated or not) are reactivated and replaced.
+- Secured by default: Yes
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/activation/refresh/python'
@@ -269,8 +273,19 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 - Responses
   - 303: Redirects to `/endpoints`
 
+### `GET /actuator/activation/reload`
+- This will discard the endpoints for every KO, reload every KO from the shelf, and then activate all endpoints.
+- Secured by default: Yes
+- Curl Command
+  ```bash
+  curl --location --request GET 'http://localhost:8080/actuator/activation/reload'
+  ```
+- Responses
+  - 303: Redirects to `/endpoints`
+  
 ### `GET /actuator/activation/reload/{naan}/{name}/?v={version}`
 - This will discard the endpoints for the specified KO, reload it from the shelf, and then activate its endpoints.
+- Secured by default: Yes
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/activation/reload/js/simple/?v=v1.0'
@@ -280,6 +295,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 
 ### `GET /actuator/activation/reload/{naan}/{name}/{version}`
 - This will discard the endpoints for the specified KO, reload it from the shelf, and then activate its endpoints.
+- Secured by default: Yes
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/activation/reload/js/simple/v1.0'
@@ -292,6 +308,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
 - The Activator's method of retrieving representations of endpoints as resources
 ### `GET /endpoints`
 - Returns an array of all currently loaded endpoints, whether they are activated or not.
+- Secured by default: No
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/endpoints'
@@ -319,6 +336,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
   
 ### `GET /endpoints/{engine}`
 - Returns an array of all currently loaded endpoints for a particular runtime, whether they are activated or not.
+- Secured by default: No
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/endpoints/node'
@@ -345,6 +363,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
     ```
 ### `GET /endpoints/{naan}/{name}/{endpoint}`
 - Returns an array of json representations of every api version of a particular endpoint.
+- Secured by default: No
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/endpoints/js/simple/welcome'
@@ -385,6 +404,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
     ```
 ### `GET /endpoints/{naan}/{name}/{endpoint}?v={apiVersion}`
 - Returns an array of json representations of a particular api version of a particular endpoint.
+- Secured by default: No
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/endpoints/js/simple/welcome?v=v1.0'
@@ -411,6 +431,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
     ```
 ### `GET /endpoints/{naan}/{name}/{apiVersion}/{endpointName}`
 - Returns a json representation of a particular api version of a particular endpoint.
+- Secured by default: No
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/endpoints/js/simple/v1.0/welcome'
@@ -445,6 +466,7 @@ Activators <conform>should</conform> provide application and health information 
   - An Activator implementation <conform>may</conform> use additional statuses as needed which can be documented for deployers, etc.
   - Health information <conform>should</conform> focus on details that help understand why the Activator or a component is `up` or `down`.
   - By default, the actuator health indicator only exposes the top level status: `status: UP` unless the user is logged in, or the `dev` spring profile environment variable is active. `SPRING_PROFILES_ACTIVE=DEV`
+- Secured by default: Yes (More info is returned on login)
 - Curl Command
   ```bash
   curl --location --request GET 'http://localhost:8080/actuator/health'
@@ -500,6 +522,7 @@ Activators <conform>should</conform> provide application and health information 
     ```
 
 ### `GET /actuator/info` (Optional)
+- Secured by default: Yes
 - An optional endpoint where extended information <conform>may</conform> be made available.
   - See [Spring Boot application health information guidelines](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-application-info)
 for examples of suitable patterns which can be implemented in many frameworks and languages.

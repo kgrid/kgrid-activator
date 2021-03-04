@@ -26,10 +26,10 @@ There are a few environment variables that can be set to control different aspec
     ```
   - environment variable:
     ```bash
-    export KGRID_SHELF_MANIFEST=filesystem:file:///data/myshelf
+    export KGRID_SHELF_CDOSTORE_URL=filesystem:file:///data/myshelf
     ```
 ### `kgrid.shelf.manifest` 
-- Specify the path to a json file that contains a list of references to KOs that will be loaded on startup. Existing KOs in the shelf directory will be overwritten if they are contained in the manifest. This can be set to a file path, or a URL.
+- Specify the path to a json file that contains a list of references to KOs that will be loaded on startup. Existing KOs in the shelf directory will be overwritten if they are contained in the manifest. This can be set to a file path, or a URL. Check out a properly formatted manifest in the [latest release of the Example Collection](https://github.com/kgrid-objects/example-collection/releases/latest).
   - Default Value: none
   - Command line (file path):
     ```bash
@@ -56,6 +56,7 @@ There are a few environment variables that can be set to control different aspec
     ```
 ### `spring.profiles.active` 
 - Sets the security profile, which requires a username and password to access certain endpoints. Setting to `dev` will put the activator in dev mode, with no security. 
+  - See the [Spring-Boot documentation](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html#spring.profiles.active) for more details.
 
   __Note: if not in dev mode, the username and password must be set.
   See the entries for `spring.security.user.name` and `spring.security.user.password`.__
@@ -99,17 +100,9 @@ There are a few environment variables that can be set to control different aspec
     ```bash
     export SPRING_SECURITY_PASSWORD=hunter2
     ```
-### `server.contextPath`
-- By default, the endpoints of the activator at the root of the activator server.  To change the server root path:
-  - Default value: `/`
-  - Command line:
-    ```bash
-    java -jar kgrid-activator-#.#.#.jar --server.contextPath=/activator  
-    ```
-  - Environment Variable:
-    ```bash
-    export SERVER_CONTEXTPATH=/activator
-    ```
+## Spring Configuration Settings
+- The Activator is built on Spring, and can use many of [Spring's application properties](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html) for configuration.
+
 ## Proposed Configuration
 ### `kgrid.activator.allowRuntimeImport`
 - While running the Activator packaged KO (zip file) can be uploaded to the `/kos` endpoint to add a KO to the shelf

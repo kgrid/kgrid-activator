@@ -20,7 +20,7 @@ For running the application you need:
 1. Create a new directory, named whatever you like
 1. Create a directory named shelf in the working directory
 1. Download kgrid-activator-#.#.#.jar from the [latest activator release](https://github.com/kgrid/kgrid-activator/releases/latest)
-1. Place the kgrid-activator-#.#.#.jar into the activator directory
+1. Place the kgrid-activator-#.#.#.jar into your working directory
 1. Download js-simple-v1.0.zip from the [latest release of the Example Collection](https://github.com/kgrid-objects/example-collection/releases/latest) 
 1. Place the js-simple-v1.0.zip into the activator/shelf directory and unzip. This will make the KO ready to load by the activator.
 
@@ -51,7 +51,7 @@ Type in the following to start the activator in dev mode:
 ```
 
 By default, the activator will run on port 8080. You can validate the activator is up and running using 
-the [activator's health endpoint](http://localhost:8080/actuator/health).  The health of the Activator should display a status of **UP**.  
+the [activator's health endpoint](http://localhost:8080/actuator/health) at [`http://localhost:8080/actuator/health`](http://localhost:8080/actuator/health).  The health of the Activator should display a status of **UP**.  
 
 ```yaml
 {
@@ -91,14 +91,17 @@ the [activator's health endpoint](http://localhost:8080/actuator/health).  The h
 
 - Then, the Activator attempts to activate every KO on the shelf. It logs a warning if an endpoint cannot be activated.
 
-You can see the KOs and endpoint services available in the Activator at [`/kos`](https://kgrid.org/kgrid-shelf/api.html#ko-resource-api) and [`/endpoints`](api.md#endpoint-resource-api) respectively. See [Activation API](api.md#activation-api) for more info.
+- You can see the KOs that were loaded onto the shelf at the shelf's [Get All KOs](http://localhost:8080/kos) endpoint (located at [`http://localhost:8080/kos`](http://localhost:8080/kos)). 
+- You can also see the status of each endpoint the activator found at the activator's [Get All Endpoints](http://localhost:8080/endpoints) endpoint (located at [`http://localhost:8080/endpoints`](http://localhost:8080/endpoints)).
+
+- See [Activation API](api.md#activation-api) for more info.
 
 ## Using the js-simple-v1.0 KO on the Activator 
 
 The js-simple KO is a very simple KO with a Javascript based service that takes in a name and displays 
  a _Welcome to the Knowledge Grid_ message. 
  
-First, lets look at [JS Simple's metadata](http://localhost:8080/kos/js/simple/v1.0).
+First, lets look at [JS Simple's metadata](http://localhost:8080/kos/js/simple/v1.0) using the shelf endpoint [`http://localhost:8080/kos/js/simple/v1.0`](http://localhost:8080/kos/js/simple/v1.0).
 
 The JS Simple KO has one service called _welcome_.  The welcome service expects you to pass it a json object containing the _name_ key.
 
