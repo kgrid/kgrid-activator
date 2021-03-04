@@ -1,6 +1,6 @@
 # Configuration
 There are a few environment variables that can be set to control different aspects of the activator. They can be set as environment variables, or passed into the terminal command while running the activator.
-## Current Configuration
+## Security Configuration
 ### `cors.url`
 - The Activator by default allows all origins access to the api.
   - Default value: none
@@ -12,7 +12,54 @@ There are a few environment variables that can be set to control different aspec
     ```bash
     export CORS_URL=https://myservice.com
     ```
+### `spring.profiles.active`
+- Sets the security profile, which requires a username and password to access certain endpoints. Setting to `dev` will put the activator in dev mode, with no security.
+  - See the [Spring-Boot documentation](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html#spring.profiles.active) for more details.
 
+  __Note: if not in dev mode, the username and password must be set.
+  See the entries for `spring.security.user.name` and `spring.security.user.password`.__
+  - Default value: Secured
+  - Command line:
+    ```bash
+    java -jar kgrid-activator-#.#.#.jar --spring.profiles.active=dev
+    ```
+  - Environment Variable:
+    ```bash
+    export SPRING_PROFILES_ACTIVE=dev
+    ```
+- Endpoints secured:
+  - `GET /actuator/health` (Secure endpoint shows only `UP` or `DOWN`)
+  - `GET /actuator/info`
+  - `GET /activate`
+  - `POST /kos`
+  - `POST /kos/manifest`
+  - `POST /kos/manifest-list`
+  - `PUT /kos/{naan}/{name}/{version}`
+  - `DELETE /kos/{naan}/{name}/{version}`
+### `spring.security.user.name`
+- Specify the admin username. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
+  - Default value: none
+  - Command line:
+    ```bash
+    java -jar kgrid-activator-#.#.#.jar --spring.security.user.name=AzureDiamond
+    ```
+  - Environment Variable:
+    ```bash
+    export SPRING_SECURITY_USER_NAME=AzureDiamond
+    ```
+### `spring.security.user.password`
+- Specify the admin password. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
+  - Default value: none
+  - Command line:
+    ```bash
+    java -jar kgrid-activator-#.#.#.jar --spring.security.password=hunter2
+    ```
+  - Environment Variable:
+    ```bash
+    export SPRING_SECURITY_PASSWORD=hunter2
+    ```
+    
+## Startup Configuration
 ### `kgrid.shelf.cdostore.url`
 - Specify the path to a custom shelf directory, which can be preloaded with KOs. Can be an absolute or relative path.
   - Default value: `shelf` (in current working directory)
@@ -54,52 +101,7 @@ There are a few environment variables that can be set to control different aspec
     ```bash
     export SERVER_PORT=9090
     ```
-### `spring.profiles.active` 
-- Sets the security profile, which requires a username and password to access certain endpoints. Setting to `dev` will put the activator in dev mode, with no security. 
-  - See the [Spring-Boot documentation](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html#spring.profiles.active) for more details.
 
-  __Note: if not in dev mode, the username and password must be set.
-  See the entries for `spring.security.user.name` and `spring.security.user.password`.__
-  - Default value: Secured
-  - Command line:
-    ```bash
-    java -jar kgrid-activator-#.#.#.jar --spring.profiles.active=dev
-    ```
-  - Environment Variable:
-    ```bash
-    export SPRING_PROFILES_ACTIVE=dev
-    ```
-- Endpoints secured:
-  - `GET /actuator/health` (Secure endpoint shows only `UP` or `DOWN`)
-  - `GET /actuator/info`
-  - `GET /activate`
-  - `POST /kos`
-  - `POST /kos/manifest`
-  - `POST /kos/manifest-list`
-  - `PUT /kos/{naan}/{name}/{version}`
-  - `DELETE /kos/{naan}/{name}/{version}`
-### `spring.security.user.name` 
-- Specify the admin username. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
-  - Default value: none
-  - Command line:
-    ```bash
-    java -jar kgrid-activator-#.#.#.jar --spring.security.user.name=AzureDiamond
-    ```
-  - Environment Variable:
-    ```bash
-    export SPRING_SECURITY_USER_NAME=AzureDiamond
-    ```
-### `spring.security.user.password` 
-- Specify the admin password. Security is enabled by default, so if this property is not set, the admin features will be inaccessible.
-  - Default value: none
-  - Command line:
-    ```bash
-    java -jar kgrid-activator-#.#.#.jar --spring.security.password=hunter2
-    ```
-  - Environment Variable:
-    ```bash
-    export SPRING_SECURITY_PASSWORD=hunter2
-    ```
 ## Spring Configuration Settings
 - The Activator is built on Spring, and can use many of [Spring's application properties](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html) for configuration.
 
