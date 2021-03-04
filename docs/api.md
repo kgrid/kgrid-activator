@@ -3,7 +3,7 @@
 Various APIs implemented by the Activator for managing and using endpoint services packed as Knowledge Objects. The Activator also uses the [Shelf API](https://kgrid.org/kgrid-shelf/api.html) to manage loading and providing access to KOs themselves.
 It should be noted that some endpoints are secured by default, unless running in dev mode, which can be set using [`spring.profiles.active=dev`](configuration.md#springprofilesactive) when starting the activator.
 
-## Request API
+## Executing KO Endpoints (Request API)
 The Request API exposes the *micro*-API for the services provided by each KO in the service description.
 
 ### `POST /{naan}/{name}/{apiVersion}/{endpoint}`
@@ -244,7 +244,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
         "Detail": "Code execution error: SyntaxError: Unexpected token b in JSON at position 11"
     }
     ```
-## Activation API
+## Loading and Activating KOs (Activation API)
 - The Activator's tools for loading, activating, and refreshing KOs hosted on the shelf.
   
   - Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted from the shelf, unless or until the activation state is refreshed (using `/actuator/refresh` or `/actuator/refresh/{naan}/{name}`).
@@ -304,7 +304,7 @@ The Request API exposes the *micro*-API for the services provided by each KO in 
   - 303: Redirects to `/endpoints`
 
   
-## Endpoint Resource API
+## Finding Info About Endpoints (Endpoint Resource API)
 - The Activator's method of retrieving representations of endpoints as resources
 ### `GET /endpoints`
 - Returns an array of all currently loaded endpoints, whether they are activated or not.
