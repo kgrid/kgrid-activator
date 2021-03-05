@@ -23,12 +23,14 @@ public class Endpoint implements Comparable<Endpoint> {
     private String endpointName;
     private String detail;
     private URI physicalLocation;
+    private ArkId arkId;
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;
         this.status = EndpointStatus.LOADED.name();
         this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
+        this.arkId = getArkId();
     }
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName, URI physicalLocation) {
@@ -37,6 +39,7 @@ public class Endpoint implements Comparable<Endpoint> {
         this.endpointName = endpointName;
         this.activated = LocalDateTime.now();
         this.physicalLocation = physicalLocation;
+        this.arkId = getArkId();
     }
 
     public String getEngine() {
@@ -115,18 +118,17 @@ public class Endpoint implements Comparable<Endpoint> {
     }
 
     public String getNaan() {
-        return wrapper.getMetadata().at("/@id").asText().split("/")[0];
+        return this.arkId.getNaan();
     }
 
-    public String getName() {
-        return wrapper.getMetadata().at("/@id").asText().split("/")[1];
-    }
+    public String getName() { return this.arkId.getName(); }
 
     public String getApiVersion() {
         return wrapper.getService().at("/info/version").asText();
     }
 
     public URI getId() {
+
         return URI.create(String.format("%s/%s/%s/%s", getNaan(), getName(), getApiVersion(), endpointName));
     }
 
