@@ -177,7 +177,10 @@ public class KoValidationServiceTest {
     }
 
     private KnowledgeObjectWrapper getWrapper(JsonNode serviceSpec, JsonNode deploymentSpec) {
-        JsonNode metadata = objectMapper.createObjectNode().put("@id", "naan/name/version").put("hasServiceSpecification", "value")
+        JsonNode metadata = objectMapper.createObjectNode()
+                .put("identifier", "ark:/naan/name/version")
+                .put("@id","naan/name/version")
+                .put("hasServiceSpecification", "value")
                 .put("hasDeploymentSpecification", "value");
         KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(metadata);
         wrapper.addDeployment(deploymentSpec);

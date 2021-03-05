@@ -27,10 +27,10 @@ public class KoCreationTestHelper {
     public static final ArkId JS_ARK_ID = new ArkId(JS_NAAN, JS_NAME, JS_VERSION);
     public static final String JS_ENGINE = "javascript";
 
-    public static final String NODE_NAAN = "node-naan";
-    public static final String NODE_NAME = "node-name";
-    public static final String NODE_VERSION = "node-version";
-    public static final String NODE_ENDPOINT_NAME = "node-endpoint";
+    public static final String NODE_NAAN = "node_naan";
+    public static final String NODE_NAME = "node_name";
+    public static final String NODE_VERSION = "node_version";
+    public static final String NODE_ENDPOINT_NAME = "node_endpoint";
     public static final String NODE_API_VERSION = "nodeApiVersion";
     public static final String NODE_ENDPOINT_ID = String.format("%s/%s/%s/%s", NODE_NAAN, NODE_NAME, NODE_API_VERSION, NODE_ENDPOINT_NAME);
     public static final URI NODE_ENDPOINT_URI = URI.create(NODE_ENDPOINT_ID);
