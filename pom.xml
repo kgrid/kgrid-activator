@@ -101,6 +101,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
                     <image>
                         <env>
                             <BP_JVM_VERSION>11.*</BP_JVM_VERSION>
