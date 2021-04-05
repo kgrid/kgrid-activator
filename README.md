@@ -86,8 +86,6 @@ This method uses the dockerfile to build and deploy an image on heroku.
 
 ----
 
-# Note: We are currently using the vuepress build
-
 ## Publish Vuepress Documentation
 
 ### Running the vuepress site locally
