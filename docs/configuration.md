@@ -141,6 +141,29 @@ environment variables, or passed into the terminal command while running the act
     export KGRID_ACTIVATOR_ADAPTER-LOCATIONS=file:adapters,file:more-adapters/my-adapter.jar,https://repo1.maven.org/maven2/org/kgrid/resource-adapter/0.1.3/resource-adapter-0.1.3.jar
     ```
 
+## Debug Configuration
+
+### `logging.level`
+
+- Specify the logging level for a particular package
+    - Highest level is `logging.level.root` which will affect all classes
+    - A particular package can be specified by adding the package location to the end like so:
+        ```bash
+        logging.level.org.kgrid.adapter.proxy
+        ```
+    - Default value: `INFO`
+    - Possible Values: `INFO, DEBUG, WARN, ERROR`
+    - Command line:
+    ```bash
+    java -jar kgrid-activator-#.#.#.jar --logging.level.org.kgrid.classToLog=DEBUG
+    ```
+    - Environment Variable:
+    ```bash
+    export logging.level.org.kgrid.classToLog=DEBUG
+    ```
+    - Note: This also works with Spring classes, like RestTemplate, which will allow you to see more info about particular rest calls.
+        - Example: `logging.level.org.springframework.web.client.RestTemplate=DEBUG`
+  
 ## Spring Configuration Settings
 
 - The Activator is built on Spring, and can use many
