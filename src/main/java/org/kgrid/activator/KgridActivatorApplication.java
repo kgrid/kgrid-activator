@@ -1,6 +1,9 @@
 package org.kgrid.activator;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
 import org.kgrid.activator.services.KoLoader;
@@ -59,10 +62,19 @@ public class KgridActivatorApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) {
 
+        // Load KOs and create endpoints (don't activate yet)
+        final Map<URI, Endpoint> eps = koLoader.loadAllKos();
+        activationService.getEndpointMap().putAll(eps);
+
         List<Adapter> adapters = adapterLoader.loadAdapters();
         activationService.setAdapters(adapters);
+// TODO: require adapaters to initiate refresh as part of initialization
         adapterLoader.initializeAdapters(adapters);
-        activationService.activateEndpoints(koLoader.loadAllKos());
+
+// TODO: Remove startup activation for built-n adapters
+        activationService.activateEngine("javascript");
+        activationService.activateEngine("resource");
+
     }
 
     @Profile("dev")
