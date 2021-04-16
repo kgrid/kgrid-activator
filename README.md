@@ -8,7 +8,11 @@
 
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
 
-For the information on the activator API and the usage of the activator, see [KGRID Activator API](docs/api.md)
+For the information on the activator API and the usage of the activator, see [KGRID Activator API](https://kgrid.org/kgrid-activator/api.html)
+
+For the information on the activator configuration, see [KGRID ACTIVATOR CONFIGURATION](https://kgrid.org/kgrid-activator/configuration.html)
+
+For the information on the activator deployment, see [Integrator's Guide](https://kgrid.org/guides/integrator/) 
 
 ## Build & run the Activator locally
 
