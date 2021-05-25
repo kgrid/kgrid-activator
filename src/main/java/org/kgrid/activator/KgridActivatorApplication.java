@@ -68,13 +68,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
         List<Adapter> adapters = adapterLoader.loadAdapters();
         activationService.setAdapters(adapters);
-// TODO: require adapaters to initiate refresh as part of initialization
-        adapterLoader.initializeAdapters(adapters);
 
-// TODO: Remove startup activation for built-n adapters
-        activationService.activateEngine("javascript");
-        activationService.activateEngine("resource");
-
+        adapterLoader.initializeAdapters(adapters); // initialize and refresh
     }
 
     @Profile("dev")
