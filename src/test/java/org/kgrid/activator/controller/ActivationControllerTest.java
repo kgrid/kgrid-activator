@@ -48,10 +48,10 @@ public class ActivationControllerTest {
     public void testActivateInteractionsAndResult() {
 
         when(koLoader.loadAllKos()).thenReturn(endpointMap);
-        RedirectView redirectView = activationController.activate();
+        RedirectView redirectView = activationController.reloadAll();
         assertAll(
                 () -> verify(koLoader).loadAllKos(),
-                () -> verify(activationService).activateEndpoints(endpointMap),
+                () -> verify(activationService).activateEndpointsAndUpdate(endpointMap),
                 () -> assertEquals("/endpoints", redirectView.getUrl())
         );
     }
@@ -61,7 +61,7 @@ public class ActivationControllerTest {
     public void testActivateForEngineInteractionsAndResult() {
         RedirectView redirectView = activationController.refreshForEngine(NODE_ENGINE);
         assertAll(
-                () -> verify(activationService).activateEngine(NODE_ENGINE),
+                () -> verify(activationService).activateForEngine(NODE_ENGINE),
                 () -> assertEquals("/endpoints/" + NODE_ENGINE, redirectView.getUrl())
         );
     }
@@ -71,10 +71,10 @@ public class ActivationControllerTest {
     public void testActivateKoInteractionsAndResult() {
         ArkId arkId = new ArkId(NODE_NAAN, NODE_NAME, NODE_VERSION);
         when(koLoader.loadOneKo(arkId)).thenReturn(endpointMap);
-        RedirectView redirectView = activationController.activateKo(NODE_NAAN, NODE_NAME, NODE_VERSION);
+        RedirectView redirectView = activationController.reloadKoWithVersionParam(NODE_NAAN, NODE_NAME, NODE_VERSION);
         assertAll(
                 () -> verify(koLoader).loadOneKo(arkId),
-                () -> verify(activationService).activateEndpoints(endpointMap),
+                () -> verify(activationService).activateEndpointsAndUpdate(endpointMap),
                 () -> assertEquals("/endpoints", redirectView.getUrl())
         );
     }
@@ -84,10 +84,10 @@ public class ActivationControllerTest {
     public void testActivateKoVersionInteractionsAndResult() {
         ArkId arkId = new ArkId(NODE_NAAN, NODE_NAME, NODE_VERSION);
         when(koLoader.loadOneKo(arkId)).thenReturn(endpointMap);
-        RedirectView redirectView = activationController.activateKoVersion(NODE_NAAN, NODE_NAME, NODE_VERSION);
+        RedirectView redirectView = activationController.reloadKo(NODE_NAAN, NODE_NAME, NODE_VERSION);
         assertAll(
                 () -> verify(koLoader).loadOneKo(arkId),
-                () -> verify(activationService).activateEndpoints(endpointMap),
+                () -> verify(activationService).activateEndpointsAndUpdate(endpointMap),
                 () -> assertEquals("/endpoints", redirectView.getUrl())
         );
     }

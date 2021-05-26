@@ -3,6 +3,7 @@ package org.kgrid.activator;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
@@ -64,7 +65,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
         // Load KOs and create endpoints (don't activate yet)
         final Map<URI, Endpoint> eps = koLoader.loadAllKos();
-        activationService.getEndpointMap().putAll(eps);
+//        activationService.getEndpointMap().putAll(eps);
+        activationService.putAll(eps);
 
         List<Adapter> adapters = adapterLoader.loadAdapters();
         activationService.setAdapters(adapters);

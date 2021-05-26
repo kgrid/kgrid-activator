@@ -1,5 +1,6 @@
 package org.kgrid.activator.services;
 
+import java.util.Collection;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -26,12 +27,12 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
 
-        Map<URI, Endpoint> endpoints = activationService.getEndpointMap();
+        Collection<Endpoint> endpoints = activationService.getEndpoints();
 
         int kos = repository.findAll().size();
         int eps = endpoints.size();
         AtomicInteger activatedEps = new AtomicInteger();
-        endpoints.forEach((endpointId, endpoint) -> {
+        endpoints.forEach((endpoint) -> {
             if (endpoint.getStatus().equals(EndpointStatus.LOADED.name())
                     || endpoint.getStatus().equals(EndpointStatus.ACTIVATED.name())) {
                 activatedEps.getAndIncrement();

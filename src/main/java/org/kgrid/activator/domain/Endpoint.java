@@ -82,7 +82,7 @@ public class Endpoint implements Comparable<Endpoint> {
     }
 
     public String getDetail() {
-        return detail;
+        return status.equals(EndpointStatus.FAILED_TO_ACTIVATE.name()) ? detail : status;
     }
 
     public Boolean isActive() {

@@ -64,7 +64,7 @@ public class AdapterLoaderTest {
         requireNonNull(jsEndpoint).setExecutor((o, s) -> EXECUTOR_RESULT);
 
         endpointMap.put(JS_ENDPOINT_URI, jsEndpoint);
-        Mockito.lenient().when(activationService.getEndpointMap()).thenReturn(endpointMap);
+        Mockito.lenient().when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
     }
 
     @Test

@@ -30,9 +30,10 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     public Executor getExecutor(String key) {
         URI id = URI.create(key);
-        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
-        if (endpointMap.containsKey(id)) {
-            return endpointMap.get(id).getExecutor();
+//        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
+        Endpoint ep = activationService.getEndpoint(id);
+        if (ep != null) {
+            return ep.getExecutor();
         } else {
             String message = String.format("Can't find executor in app context for endpoint %s", key);
             log.error(message);
@@ -53,6 +54,6 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     @Async
     public void refresh(String engineName) {
-        activationService.activateEngine(engineName);
+        activationService.activateForEngine(engineName);
     }
 }

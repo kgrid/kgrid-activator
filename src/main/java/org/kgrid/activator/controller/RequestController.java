@@ -112,7 +112,7 @@ public class RequestController extends ActivatorExceptionHandler {
     }
 
     private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
-        Endpoint endpoint = activationService.getEndpointMap().get(endpointId);
+        Endpoint endpoint = activationService.getEndpoint(endpointId);
         MediaType contentType = headers.getContentType();
         if (null == endpoint || !endpoint.isActive()) {
             String[] idParts = endpointId.toString().split("/");
