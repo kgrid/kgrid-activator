@@ -1,6 +1,7 @@
 package org.kgrid.activator.services;
 
 import java.util.Collection;
+import java.util.HashMap;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
@@ -29,19 +30,19 @@ public class ActivationServiceHealthIndicator implements HealthIndicator {
 
         Collection<Endpoint> endpoints = activationService.getEndpoints();
 
+        Map<String, Integer> eps = new HashMap<>();
         int kos = repository.findAll().size();
-        int eps = endpoints.size();
-        AtomicInteger activatedEps = new AtomicInteger();
         endpoints.forEach((endpoint) -> {
-            if (endpoint.getStatus().equals(EndpointStatus.LOADED.name())
-                    || endpoint.getStatus().equals(EndpointStatus.ACTIVATED.name())) {
-                activatedEps.getAndIncrement();
-            }
+            eps.merge(endpoint.getStatus(), 1, Integer::sum);
+            eps.merge("total", 1, Integer::sum);
         });
-        boolean hasNoObjectsOrAtLeastOneEndpoint = (kos == 0 || eps > 0);
+        boolean hasNoObjectsOrAtLeastOneEndpoint = (kos == 0 || eps.size() > 0);
 
         Builder status = hasNoObjectsOrAtLeastOneEndpoint ? Health.up() : Health.down();
 
-        return status.withDetail("kos", kos).withDetail("endpoints", eps).withDetail("activatedEndpoints", activatedEps).build();
+        return status
+            .withDetail("kos", kos)
+            .withDetail("endpoints", eps)
+            .build();
     }
 }
