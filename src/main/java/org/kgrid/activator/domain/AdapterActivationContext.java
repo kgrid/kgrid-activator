@@ -9,10 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
-
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Map;
 
 public class AdapterActivationContext implements ActivationContext {
     private final Environment environment;
