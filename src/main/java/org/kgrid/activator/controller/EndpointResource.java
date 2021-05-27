@@ -45,8 +45,8 @@ public class EndpointResource {
             this.engine = endpoint.getEngine();
             this.swaggerLink = "https://editor.swagger.io?url=" +
                     linkTo(KnowledgeObjectController.class).slash(hasServiceSpecification);
-            this.context.add("http://kgrid.org/koio/contexts/knowledgeobject.jsonld");
-            this.context.add("http://kgrid.org/koio/contexts/implementation.jsonld");
+            this.context.add("https://kgrid.org/koio/contexts/knowledgeobject.jsonld");
+            this.context.add("https://kgrid.org/koio/contexts/implementation.jsonld");
             this.ko = String.format("/%s/%s", shelfRoot, endpoint.getMetadata().get("@id").asText());
         } catch (Exception e) {
             this.status = "Could not create endpoint resource for malformed endpoint: " + resourceId;

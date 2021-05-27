@@ -137,7 +137,7 @@ The JS Simple KO will return the following
    "hasDeploymentSpecification": "deployment.yaml",
    "hasPayload": "src/index.js",
    "@context": [
-    "http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+    "https://kgrid.org/koio/contexts/knowledgeobject.jsonld"
    ]
   },
   "inputs": "{\"name\": \"Fred Flintstone\"}"
