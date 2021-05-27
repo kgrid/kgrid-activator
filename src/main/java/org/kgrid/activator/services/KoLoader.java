@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KoLoader {
-    Logger log = LoggerFactory.getLogger(KoLoader.class);
+    final Logger log = LoggerFactory.getLogger(KoLoader.class);
 
     private final KnowledgeObjectRepository knowledgeObjectRepository;
     private final KoValidationService validationService;

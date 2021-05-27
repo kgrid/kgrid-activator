@@ -37,10 +37,8 @@ public class HomeController {
 
     private class ActivatorResource extends ResourceSupport {
 
-        private String description = "KGrid Activator API Starting Point!!";
-
         public String getDescription() {
-            return description;
+            return "KGrid Activator API Starting Point!!";
         }
     }
 

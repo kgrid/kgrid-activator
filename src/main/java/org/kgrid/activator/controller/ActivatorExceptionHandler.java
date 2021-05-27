@@ -22,7 +22,7 @@ import java.util.Map;
 
 public abstract class ActivatorExceptionHandler {
 
-    protected Logger log = LoggerFactory.getLogger(getClass().getName());
+    protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
     @ExceptionHandler(ActivatorException.class)
     public ResponseEntity<Map<String, String>> handleActivatorExceptions(ActivatorException e,

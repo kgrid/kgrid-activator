@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -124,9 +125,9 @@ public class RequestController extends ActivatorExceptionHandler {
             }
         }
         if (method == HttpMethod.POST) {
-            validateContentType(contentType, endpoint);
+            validateContentType(contentType, Objects.requireNonNull(endpoint));
         }
-        return endpoint.execute(inputs, contentType);
+        return Objects.requireNonNull(endpoint).execute(inputs, contentType);
     }
 
     private void validateContentType(MediaType contentType, Endpoint endpoint) {

@@ -3,7 +3,6 @@ package org.kgrid.activator;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.AdapterLoader;
@@ -76,7 +75,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Profile("dev")
     @Configuration
-    public class DevWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public static class DevWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(WebSecurity web) {
             web.ignoring().antMatchers("/**");
@@ -85,7 +84,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Profile("!dev")
     @Configuration
-    public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {

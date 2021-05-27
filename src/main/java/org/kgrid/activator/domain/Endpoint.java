@@ -16,14 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Endpoint implements Comparable<Endpoint> {
 
-    private KnowledgeObjectWrapper wrapper;
+    private final KnowledgeObjectWrapper wrapper;
     private Executor executor;
     private LocalDateTime activated;
     private String status;
-    private String endpointName;
+    private final String endpointName;
     private String detail;
     private URI physicalLocation;
-    private ArkId arkId;
+    private final ArkId arkId;
 
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
         this.wrapper = wrapper;

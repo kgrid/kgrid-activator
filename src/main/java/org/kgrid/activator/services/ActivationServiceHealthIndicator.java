@@ -2,7 +2,6 @@ package org.kgrid.activator.services;
 
 import java.util.Collection;
 import java.util.HashMap;
-import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.shelf.repository.KnowledgeObjectRepository;
 import org.springframework.boot.actuate.health.Health;
@@ -10,9 +9,7 @@ import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ActivationServiceHealthIndicator implements HealthIndicator {

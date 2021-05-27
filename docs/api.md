@@ -464,7 +464,7 @@ Activators <conform>should</conform> provide application and health information 
   - The `/actuator/health` endpoint <conform>should</conform>  indicate the status of individual components (adapters, shelf cdo store, runtimes, KOs and their activation status) to aid monitoring in troubleshooting Activator deployments.
   - The health endpoint <conform>must</conform> provide a `{ "status": "<UP|DOWN>" } response at a minimum.
   - An Activator implementation <conform>may</conform> use additional statuses as needed which can be documented for deployers, etc.
-  - Health information <conform>should</conform> focus on details that help understand why the Activator or a component is `up` or `down`.
+  - Health information <conform>should</conform> focus on details that help understand why the Activator, or a component is `up` or `down`.
   - By default, the actuator health indicator only exposes the top level status: `status: UP` unless the user is logged in, or the `dev` spring profile environment variable is active. `SPRING_PROFILES_ACTIVE=DEV`
 - Secured by default: Yes (More info is returned on login)
 - Curl Command

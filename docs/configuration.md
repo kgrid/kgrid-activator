@@ -146,7 +146,7 @@ environment variables, or passed into the terminal command while running the act
 ### `logging.level`
 
 - Specify the logging level for a particular package
-    - Highest level is `logging.level.root` which will affect all classes
+    - The Highest level is `logging.level.root` which will affect all classes
     - A particular package can be specified by adding the package location to the end like so:
         ```bash
         logging.level.org.kgrid.adapter.proxy
@@ -181,6 +181,6 @@ environment variables, or passed into the terminal command while running the act
 
 ### `kgrid.activator.autoActivateOnStartup`
 
-- Toggle whether or not the activator tries to activate KOs on startup
+- Toggle whether the activator tries to activate KOs on startup
 - Currently, the activator will try to activate everything in the shelf directory, as well as everything in the manifest
   set to `kgrid.shelf.manifest`.
