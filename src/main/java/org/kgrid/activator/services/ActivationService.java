@@ -14,6 +14,7 @@ import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -125,6 +126,14 @@ public class ActivationService {
 
     public Collection<Endpoint> getEndpoints() {
         return endpointMap.values();
+    }
+
+    public Collection<Endpoint> getEndpointsForArkId(ArkId arkId) {
+
+        return endpointMap.values()
+                .stream()
+                .filter(endpoint -> arkId.equals(endpoint.getArkId()))
+                .collect(Collectors.toList());
     }
 
     public void remove(Endpoint endpoint) {

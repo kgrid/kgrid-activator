@@ -1,6 +1,7 @@
 package org.kgrid.activator.controller;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
@@ -63,6 +64,8 @@ public class ActivationController extends ActivatorExceptionHandler {
         ArkId arkId = new ArkId(naan, name, version);
         log.info("Activate {}", arkId);
 
+        Collection<Endpoint> endpointsForArkId = activationService.getEndpointsForArkId(arkId);
+        endpointsForArkId.forEach(activationService::remove);
         final Map<URI, Endpoint> eps = koLoader.loadOneKo(arkId);
         activationService.activateEndpointsAndUpdate(eps);
 
