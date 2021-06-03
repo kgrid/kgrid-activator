@@ -12,6 +12,7 @@ import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -114,4 +115,23 @@ public class ActivationServiceTest {
         );
 
     }
+
+    @Test
+    void getEndpoint() {
+        activationService.activateEndpointsAndUpdate(endpointMap);
+
+        Endpoint ep = activationService.getEndpoint(JS_ENDPOINT_URI);
+
+        assertEquals(endpoint, ep);
+
+        final KnowledgeObjectWrapper wrapper = endpoint.getWrapper();
+        wrapper.getService().get("");
+        wrapper.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, "1"));
+
+        Endpoint ep1 = new Endpoint(wrapper,"1");
+        activationService.activateEndpointsAndUpdate(Map.of(ep1.getId(), ep1));
+
+        assertEquals(2, activationService.getEndpoints().size());
+    }
+
 }
