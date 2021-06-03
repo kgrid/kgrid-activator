@@ -32,7 +32,7 @@ class AdapterActivationContextTest {
     public void setup() {
         jsEndpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
-        when(activationService.getEndpointMap()).thenReturn(endpoints);
+        when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
         adapterActivationContext = new AdapterActivationContext(environment, cdoStore, activationService);
     }
 
@@ -67,7 +67,7 @@ class AdapterActivationContextTest {
     @Test
     @DisplayName("Activation Context get executor throws if endpoint is not in endpoint map")
     public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
-        endpoints.clear();
+        when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(null);
 
         AdapterException adapterException = assertThrows(AdapterException.class,
                 () -> adapterActivationContext.getExecutor(JS_ENDPOINT_URI.toString()));

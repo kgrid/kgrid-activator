@@ -1,5 +1,9 @@
 package org.kgrid.activator.controller;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.Map;
+import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.activator.services.KoLoader;
 import org.kgrid.shelf.domain.ArkId;
@@ -34,14 +38,55 @@ public class ActivationController extends ActivatorExceptionHandler {
      * @return redirect to the endpoints list
      */
     @GetMapping(value = "/reload")
-    public RedirectView activate() {
+    public RedirectView reloadAll() {
         log.info("Load and Activate all endpoints ");
-        activationService.getEndpointMap().clear();
-        activationService.activateEndpoints(koLoader.loadAllKos());
+
+        activationService.clear();
+        final Map<URI, Endpoint> eps = koLoader.loadAllKos();
+        activationService.activateEndpointsAndUpdate(eps);
 
         RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
         return redirectView;
+    }
+
+    /**
+     * For an KO Load endpoints, and activate those endpoints
+     *
+     * @param naan    naan of the Knowledge object, the first part of the ark
+     * @param name    name of the Knowledge object, the second part of the ark
+     * @param version code version of the Knowledge object, the third part of the ark
+     * @return returns a redirect to the activated endpoints
+     */
+    @GetMapping(value = "/reload/{naan}/{name}/{version}")
+    public RedirectView reloadKo(@PathVariable String naan,
+        @PathVariable String name, @PathVariable String version) {
+        ArkId arkId = new ArkId(naan, name, version);
+        log.info("Activate {}", arkId);
+
+        Collection<Endpoint> endpointsForArkId = activationService.getEndpointsForArkId(arkId);
+        endpointsForArkId.forEach(activationService::remove);
+        final Map<URI, Endpoint> eps = koLoader.loadOneKo(arkId);
+        activationService.activateEndpointsAndUpdate(eps);
+
+        RedirectView redirectView = new RedirectView("/endpoints");
+        redirectView.setHttp10Compatible(false);
+        return redirectView;
+    }
+
+    /**
+     * For A KO load endpoints, and activate those endpoints
+     *
+     * @param naan    ko naan
+     * @param name    ko name
+     * @param version code version of the Knowledge object, the third part of the ark
+     * @return set of activated endpoint paths
+     */
+    @GetMapping(value = "/reload/{naan}/{name}")
+    public RedirectView reloadKoWithVersionParam(@PathVariable String naan,
+        @PathVariable String name, @RequestParam(name = "v", required = true) String version) {
+
+        return reloadKo(naan, name, version);
     }
 
     /**
@@ -69,48 +114,8 @@ public class ActivationController extends ActivatorExceptionHandler {
     @GetMapping(value = "/refresh/{engine}")
     public RedirectView refreshForEngine(@PathVariable String engine) {
 
-        activationService.activateEngine(engine);
+        activationService.activateForEngine(engine);
         RedirectView redirectView = new RedirectView("/endpoints/" + engine);
-        redirectView.setHttp10Compatible(false);
-        return redirectView;
-    }
-
-    /**
-     * For A KO load endpoints, and activate those endpoints
-     *
-     * @param naan    ko naan
-     * @param name    ko name
-     * @param version code version of the Knowledge object, the third part of the ark
-     * @return set of activated endpoint paths
-     */
-    @GetMapping(value = "/reload/{naan}/{name}")
-    public RedirectView activateKo(@PathVariable String naan,
-                                   @PathVariable String name, @RequestParam(name = "v", required = true) String version) {
-
-        return activateKoVersion(naan, name, version);
-    }
-
-    /**
-     * For an KO Load endpoints, and activate those endpoints
-     *
-     * @param naan    naan of the Knowledge object, the first part of the ark
-     * @param name    name of the Knowledge object, the second part of the ark
-     * @param version code version of the Knowledge object, the third part of the ark
-     * @return returns a redirect to the activated endpoints
-     */
-    @GetMapping(value = "/reload/{naan}/{name}/{version}")
-    public RedirectView activateKoVersion(@PathVariable String naan,
-                                          @PathVariable String name, @PathVariable String version) {
-        ArkId arkId;
-        if (version == null) {
-            arkId = new ArkId(naan, name);
-        } else {
-            arkId = new ArkId(naan, name, version);
-        }
-        log.info("Activate {}", arkId.getSlashArkVersion());
-
-        activationService.activateEndpoints(koLoader.loadOneKo(arkId));
-        RedirectView redirectView = new RedirectView("/endpoints");
         redirectView.setHttp10Compatible(false);
         return redirectView;
     }

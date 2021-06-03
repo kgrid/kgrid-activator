@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -33,8 +31,8 @@ public class EndpointController extends ActivatorExceptionHandler {
         log.info("find all endpoints");
         List<EndpointResource> resources = new ArrayList<>();
 
-        for (Map.Entry<URI, Endpoint> entry : activationService.getEndpointMap().entrySet()) {
-            EndpointResource resource = new EndpointResource(entry.getValue(), shelfRoot);
+        for (Endpoint endpoint : activationService.getEndpoints()) {
+            EndpointResource resource = new EndpointResource(endpoint, shelfRoot);
             resources.add(resource);
         }
         return resources;
@@ -44,10 +42,9 @@ public class EndpointController extends ActivatorExceptionHandler {
     public List<EndpointResource> findEndpointsForEngine(@PathVariable String engine) {
         log.info("find all endpoints for engine " + engine);
         List<EndpointResource> resources = new ArrayList<>();
-        for (Map.Entry<URI, Endpoint> entry : activationService.getEndpointMap().entrySet()) {
-            EndpointResource resource = new EndpointResource(entry.getValue(), shelfRoot);
-            if (engine.equals(resource.getEngine())) {
-                resources.add(resource);
+        for (Endpoint endpoint : activationService.getEndpoints()) {
+            if (engine.equals(endpoint.getEngine())) {
+                resources.add(new EndpointResource(endpoint, shelfRoot));
             }
         }
         return resources;
@@ -61,7 +58,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String endpointName) {
         log.info("getting ko endpoint " + naan + "/" + name);
         URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
-        Endpoint endpoint = activationService.getEndpointMap().get(id);
+        Endpoint endpoint = activationService.getEndpoint(id);
         if (endpoint == null) {
             throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
         }
@@ -83,7 +80,7 @@ public class EndpointController extends ActivatorExceptionHandler {
             }
         } else {
             URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
-            Endpoint endpoint = activationService.getEndpointMap().get(id);
+            Endpoint endpoint = activationService.getEndpoint(id);
             if (endpoint == null) {
                 throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
             }

@@ -64,7 +64,8 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
         // Load KOs and create endpoints (don't activate yet)
         final Map<URI, Endpoint> eps = koLoader.loadAllKos();
-        activationService.getEndpointMap().putAll(eps);
+//        activationService.getEndpointMap().putAll(eps);
+        activationService.putAll(eps);
 
         List<Adapter> adapters = adapterLoader.loadAdapters();
         activationService.setAdapters(adapters);
@@ -74,7 +75,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Profile("dev")
     @Configuration
-    public class DevWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public static class DevWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(WebSecurity web) {
             web.ignoring().antMatchers("/**");
@@ -83,7 +84,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
     @Profile("!dev")
     @Configuration
-    public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {

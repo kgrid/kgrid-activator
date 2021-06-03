@@ -94,7 +94,7 @@ the [activator's health endpoint](http://localhost:8080/actuator/health) at [`ht
 - You can see the KOs that were loaded onto the shelf at the shelf's [Get All KOs](http://localhost:8080/kos) endpoint (located at [`http://localhost:8080/kos`](http://localhost:8080/kos)). 
 - You can also see the status of each endpoint the activator found at the activator's [Get All Endpoints](http://localhost:8080/endpoints) endpoint (located at [`http://localhost:8080/endpoints`](http://localhost:8080/endpoints)).
 
-- See [Activation API](api.md#activation-api) for more info.
+- See [Activation API](api.md) for more info.
 
 ## Using the js-simple-v1.0 KO on the Activator 
 
@@ -137,7 +137,7 @@ The JS Simple KO will return the following
    "hasDeploymentSpecification": "deployment.yaml",
    "hasPayload": "src/index.js",
    "@context": [
-    "http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+    "https://kgrid.org/koio/contexts/knowledgeobject.jsonld"
    ]
   },
   "inputs": "{\"name\": \"Fred Flintstone\"}"

@@ -63,7 +63,7 @@ public class AdapterLoader {
                     adapterUrls.add(new URL("jar:" + adapterSource.getURL() + "!/"));
                 } else {
                     File adapterFile = adapterSource.getFile();
-                    adapterUrls.addAll(Arrays.stream(adapterFile.listFiles((file -> file.getName().endsWith(".jar")))).map(file -> {
+                    adapterUrls.addAll(Arrays.stream(Objects.requireNonNull(adapterFile.listFiles((file -> file.getName().endsWith(".jar"))))).map(file -> {
                         try {
                             return new URL("jar:file:" + file + "!/");
                         } catch (MalformedURLException e) {

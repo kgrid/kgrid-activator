@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Shelf Interceptor Tests")
@@ -39,7 +42,7 @@ public class ShelfInterceptorTest {
         request.setRequestURI("/kos/naan/name/version");
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
-        when(activationService.getEndpointMap()).thenReturn(globalEndpoints);
+        when(activationService.getEndpoints()).thenReturn(globalEndpoints.values());
         shelfInterceptor = new ShelfInterceptor(activationService);
         org.springframework.test.util.ReflectionTestUtils.setField(shelfInterceptor, "shelfEndpoint", "kos");
     }
@@ -47,14 +50,21 @@ public class ShelfInterceptorTest {
     @Test
     @DisplayName("Removes endpoint when deleted")
     public void removesEndpointFromMapWhenDeleted() throws IOException, ServletException {
-        Endpoint endpoint = new Endpoint(new KnowledgeObjectWrapper(
-                KoCreationTestHelper.generateMetadata("naan", "name", "version")),
-                "endpoint");
-        globalEndpoints.put(URI.create("naan/name/version/endpoint/"), endpoint);
-        assertEquals(1, globalEndpoints.size());
-        shelfInterceptor.doFilter(request, response, filterChain);
-        assertEquals(0, globalEndpoints.size());
+        final KnowledgeObjectWrapper wrapper = new KnowledgeObjectWrapper(
+            KoCreationTestHelper.generateMetadata("naan", "name", "version"));
+        final KnowledgeObjectWrapper wrapper1 = new KnowledgeObjectWrapper(
+            KoCreationTestHelper.generateMetadata("naan", "name", "version1"));
 
+        Endpoint endpoint = new Endpoint(wrapper, "endpoint");
+        Endpoint endpoint1 = new Endpoint(wrapper1, "endpoint1");
+
+        globalEndpoints.put(URI.create("naan/name/jsApiVersion/endpoint/"), endpoint);
+        globalEndpoints.put(URI.create("naan/name/jsApiVersion/endpoint1/"), endpoint1);
+
+        shelfInterceptor.doFilter(request, response, filterChain);
+
+        verify(activationService).remove(endpoint);
+        verify(activationService, times(1)).remove(any(Endpoint.class));
     }
 
     @Test
