@@ -1,6 +1,9 @@
 package org.kgrid.activator.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +15,7 @@ import org.kgrid.activator.testUtilities.KoCreationTestHelper;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
+import org.mockito.BDDMockito.Then;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,8 +28,11 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Activation Service Tests")
@@ -117,21 +123,38 @@ public class ActivationServiceTest {
     }
 
     @Test
-    void getEndpoint() {
-        activationService.activateEndpointsAndUpdate(endpointMap);
+    void getAllVersionReturnsCorrectSubset() {
+        // Given
+        Map<URI, Endpoint> eps = List.of(
+            createMockEndpoint(URI.create("naan/name/1.0/test1"), true),
+            createMockEndpoint(URI.create("naan/name/1.3/test1"), true),
+            createMockEndpoint(URI.create("naan/name/1.0/test2"), true),
+            createMockEndpoint(URI.create("naan/name/1.1/test1"), true)
+        ).stream()
+            .collect(Collectors.toMap(e -> e.getId(), e -> e));
 
-        Endpoint ep = activationService.getEndpoint(JS_ENDPOINT_URI);
+        activationService.activateEndpointsAndUpdate(eps);
+        assertEquals(eps.size(), activationService.getEndpoints().size());
 
-        assertEquals(endpoint, ep);
+        // when
+        final List<Endpoint> allVersions = activationService
+            .getAllVersions("naan", "name", "test1");
 
-        final KnowledgeObjectWrapper wrapper = endpoint.getWrapper();
-        wrapper.getService().get("");
-        wrapper.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, "1"));
+        // then
+        assertEquals(3, allVersions.size());
+    }
 
-        Endpoint ep1 = new Endpoint(wrapper,"1");
-        activationService.activateEndpointsAndUpdate(Map.of(ep1.getId(), ep1));
-
-        assertEquals(2, activationService.getEndpoints().size());
+    // just creating stubs with a variety of combinations; not testing Endpoints
+    private static Endpoint createMockEndpoint(URI id, boolean isActive) {
+        Endpoint ep = mock(Endpoint.class, withSettings().lenient());
+        final String[] split = id.getPath().split("/");
+        when(ep.getNaan()).thenReturn(split[0]);
+        when(ep.getName()).thenReturn(split[1]);
+        when(ep.getApiVersion()).thenReturn(split[2]);
+        when(ep.getEndpointName()).thenReturn(split[3]);
+        when(ep.getId()).thenReturn(id);
+        when(ep.isActive()).thenReturn(isActive);
+        return ep;
     }
 
 }
