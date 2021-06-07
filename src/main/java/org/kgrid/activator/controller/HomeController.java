@@ -23,7 +23,7 @@ public class HomeController {
         activatorResource.add(health);
         Link info = linkTo(HomeController.class).slash("actuator").slash("info").withRel("activator_info");
         activatorResource.add(info);
-        Link apiDocs = new Link("https://kgrid.org/api").withRel("activator_api_docs");
+        Link apiDocs = new Link("https://github.com/kgrid/kgrid-activator/blob/main/docs/api.md").withRel("activator_api_docs");
         activatorResource.add(apiDocs);
 
         Link koList = linkTo(KnowledgeObjectController.class).slash(shelfLoc).withRel("activator_ko_list");
