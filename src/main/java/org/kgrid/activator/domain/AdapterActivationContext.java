@@ -9,10 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
-
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Map;
 
 public class AdapterActivationContext implements ActivationContext {
     private final Environment environment;
@@ -30,9 +28,10 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     public Executor getExecutor(String key) {
         URI id = URI.create(key);
-        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
-        if (endpointMap.containsKey(id)) {
-            return endpointMap.get(id).getExecutor();
+//        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
+        Endpoint ep = activationService.getEndpoint(id);
+        if (ep != null) {
+            return ep.getExecutor();
         } else {
             String message = String.format("Can't find executor in app context for endpoint %s", key);
             log.error(message);
@@ -53,6 +52,6 @@ public class AdapterActivationContext implements ActivationContext {
     @Override
     @Async
     public void refresh(String engineName) {
-        activationService.activateEngine(engineName);
+        activationService.activateForEngine(engineName);
     }
 }

@@ -1,7 +1,5 @@
 package org.kgrid.activator.exceptions;
 
-import org.springframework.http.HttpStatus;
-
 public class ActivatorException extends RuntimeException {
 
   public ActivatorException(String message){

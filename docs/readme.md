@@ -87,14 +87,14 @@ the [activator's health endpoint](http://localhost:8080/actuator/health) at [`ht
 ### Activation on startup
 - On startup, the Activator loads Knowledge Objects onto a local "shelf", using a manifest of packaged KOs, or loads directly from the local "shelf".
 
-- The Activator also initializes any embedded runtimes and connects to remote runtimes.
+- The Activator loads adapters and initializes any embedded runtimes. The proxy adapter is initialized and ready to register remote runtimes. Any additional adapters/runtimes are also loaded and initialized.
 
-- Then, the Activator attempts to activate every KO on the shelf. It logs a warning if an endpoint cannot be activated.
+- When runtimes are initialized, or registered (for remote runtimes), the Activator attempts to activate KOs for each runtime. It logs a warning if an endpoint cannot be activated.
 
 - You can see the KOs that were loaded onto the shelf at the shelf's [Get All KOs](http://localhost:8080/kos) endpoint (located at [`http://localhost:8080/kos`](http://localhost:8080/kos)). 
 - You can also see the status of each endpoint the activator found at the activator's [Get All Endpoints](http://localhost:8080/endpoints) endpoint (located at [`http://localhost:8080/endpoints`](http://localhost:8080/endpoints)).
 
-- See [Activation API](api.md#activation-api) for more info.
+- See [Activation API](api.md) for more info.
 
 ## Using the js-simple-v1.0 KO on the Activator 
 
@@ -137,7 +137,7 @@ The JS Simple KO will return the following
    "hasDeploymentSpecification": "deployment.yaml",
    "hasPayload": "src/index.js",
    "@context": [
-    "http://kgrid.org/koio/contexts/knowledgeobject.jsonld"
+    "https://kgrid.org/koio/contexts/knowledgeobject.jsonld"
    ]
   },
   "inputs": "{\"name\": \"Fred Flintstone\"}"

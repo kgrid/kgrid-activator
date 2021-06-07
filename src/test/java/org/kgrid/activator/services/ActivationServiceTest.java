@@ -65,7 +65,7 @@ public class ActivationServiceTest {
     public void activateCreatesEndpointWithExecutor() {
         when(adapter.activate(any(), any(), any())).thenReturn(executor);
 
-        activationService.activateEndpoints(endpointMap);
+        activationService.activateEndpointsAndUpdate(endpointMap);
         assertAll(
                 () -> verify(adapter).activate(OBJECT_LOCATION, JS_ENDPOINT_URI,
                         deploymentJson.get("/" + JS_ENDPOINT_NAME).get(POST_HTTP_METHOD)),
@@ -79,14 +79,14 @@ public class ActivationServiceTest {
     public void activateDoesNotSetExecutorIfActivatorExceptionIsThrownAnywhere() {
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(""));
         endpoint.getWrapper().addDeployment(null);
-        activationService.activateEndpoints(endpointMap);
+        activationService.activateEndpointsAndUpdate(endpointMap);
         assertNull(endpoint.getExecutor());
     }
 
     @Test
     @DisplayName("Activate handles shelf exception")
     public void activateCatchesExceptionsFromShelf() {
-        activationService.activateEndpoints(endpointMap);
+        activationService.activateEndpointsAndUpdate(endpointMap);
         assertNull(endpoint.getExecutor());
     }
 
@@ -95,7 +95,7 @@ public class ActivationServiceTest {
     public void activateCatchesExceptionsFromAdapter() {
         String exceptionMessage = "ope";
         when(adapter.activate(any(), any(), any())).thenThrow(new AdapterException(exceptionMessage));
-        activationService.activateEndpoints(endpointMap);
+        activationService.activateEndpointsAndUpdate(endpointMap);
         assertAll(
                 () -> assertEquals(EndpointStatus.FAILED_TO_ACTIVATE.name(), endpoint.getStatus()),
                 () -> assertEquals(String.format("Could not activate %s. Cause: %s",
@@ -107,7 +107,7 @@ public class ActivationServiceTest {
     @DisplayName("Activate fails when no engine is found")
     public void activateFailsNoEngine() {
         when(adapter.getEngines()).thenReturn(new ArrayList<>());
-        activationService.activateEndpoints(endpointMap);
+        activationService.activateEndpointsAndUpdate(endpointMap);
         assertAll(
                 () -> assertEquals(EndpointStatus.FAILED_TO_ACTIVATE.name(), endpoint.getStatus()),
                 () -> assertEquals("Could not activate naan/name/jsApiVersion/endpoint. Cause: No adapter loaded for engine javascript", endpoint.getDetail())

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 
@@ -22,7 +21,7 @@ import java.util.Map;
 
 public abstract class ActivatorExceptionHandler {
 
-    protected Logger log = LoggerFactory.getLogger(getClass().getName());
+    protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
     @ExceptionHandler(ActivatorException.class)
     public ResponseEntity<Map<String, String>> handleActivatorExceptions(ActivatorException e,

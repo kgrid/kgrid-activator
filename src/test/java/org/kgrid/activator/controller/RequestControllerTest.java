@@ -63,7 +63,7 @@ public class RequestControllerTest {
         contentTypes.add(CONTENT_TYPE.toString());
         contentTypes.add(MediaType.IMAGE_GIF.toString());
         when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-        Mockito.lenient().when(activationService.getEndpointMap()).thenReturn(endpointMap);
+        Mockito.lenient().when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
@@ -78,7 +78,7 @@ public class RequestControllerTest {
     public void testExecuteEndpointInteractionsAndResult() {
         EndPointResult actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         assertAll(
-                () -> verify(activationService).getEndpointMap(),
+                () -> verify(activationService).getEndpoint(JS_ENDPOINT_URI),
                 () -> verify(endpoint).isActive(),
                 () -> verify(endpoint).isSupportedContentType(CONTENT_TYPE),
                 () -> verify(endpoint).execute(INPUT, CONTENT_TYPE),

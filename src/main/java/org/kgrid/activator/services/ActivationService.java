@@ -1,22 +1,23 @@
 package org.kgrid.activator.services;
 
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.domain.ArkId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 @Service
 public class ActivationService {
@@ -27,68 +28,55 @@ public class ActivationService {
 
     private final Map<URI, Endpoint> endpointMap = new TreeMap<>();
 
-    public Map<URI, Endpoint> getEndpointMap() {
-        return endpointMap;
-    }
-
     public void activateAll() {
-        activateEndpoints(endpointMap);
+        endpointMap.values().forEach(this::activateEndpoint);
     }
 
-    public void activateEndpoints(Map<URI, Endpoint> eps) {
+    public void activateForEngine(String engineName) {
+        endpointMap.values().stream()
+            .filter(endpoint -> endpoint.getEngine().equals(engineName))
+            .forEach(this::activateEndpoint);
+    }
+
+    public void activateEndpointsAndUpdate(Map<URI, Endpoint> eps) {
         eps.values().forEach(this::activateEndpoint);
         endpointMap.putAll(eps);
     }
 
-
     public synchronized void activateEndpoint(Endpoint endpoint) {
-        URI endpointKey = endpoint.getId();
-        if (endpoint.isActive()) {
-            log.info("Reactivating endpoint: {}", endpointKey);
-        } else {
-            log.info("Activating endpoint: {}", endpointKey);
-        }
+        log.info("{} endpoint: {}", endpoint.isActive() ? "Reactivating" : "Activating",
+            endpoint.getId());
+        Executor executor = null;
         try {
-            Adapter adapter;
-            List<Adapter> matchingAdapters = adapters.stream()
-                    .filter(possibleAdapter -> (possibleAdapter.getEngines().contains(endpoint.getEngine())))
-                    .collect(Collectors.toList());
-            if (matchingAdapters.isEmpty()) {
-                throw new ActivatorException("No adapter loaded for engine " + endpoint.getEngine());
-            } else {
-                adapter = matchingAdapters.get(0);
-            }
-            Executor executor = adapter.activate(
-                    endpoint.getPhysicalLocation(),
-                    endpointKey,
-                    endpoint.getDeployment());
-            setEndpointDetails(endpoint, EndpointStatus.ACTIVATED, null, executor);
+            Adapter adapter = getAdapter(endpoint);
+            executor = adapter.activate(
+                endpoint.getPhysicalLocation(),
+                endpoint.getId(),
+                endpoint.getDeployment());
+            endpoint.setStatus(EndpointStatus.ACTIVATED.name());
         } catch (Exception e) {
-            String message = "Could not activate " + endpointKey + ". Cause: " + e.getMessage();
+            endpoint.setStatus(EndpointStatus.FAILED_TO_ACTIVATE.name());
+            String message =
+                "Could not activate " + endpoint.getId() + ". Cause: " + e.getMessage();
             log.warn(message + ". " + e.getClass().getSimpleName());
-            setEndpointDetails(endpoint, EndpointStatus.FAILED_TO_ACTIVATE, message, null);
+            endpoint.setDetail(message);
+        } finally {
+            endpoint.setActivated(LocalDateTime.now());
+            endpoint.setExecutor(executor);
         }
     }
 
-    private void setEndpointDetails(Endpoint endpoint, EndpointStatus activated, String detail, Executor executor) {
-        endpoint.setActivated(LocalDateTime.now());
-        endpoint.setStatus(activated.name());
-        endpoint.setDetail(detail);
-        endpoint.setExecutor(executor);
-    }
-
-    public void activateEndpoint(URI endpointUri) {
-        Map<URI, Endpoint> singleActivate = new TreeMap<>();
-        singleActivate.put(endpointUri, endpointMap.get(endpointUri));
-        activateEndpoints(singleActivate);
-    }
-
-    public void activateEngine(String engineName) {
-        endpointMap.forEach((uri, endpoint) -> {
-            if (endpoint.getEngine().equals(engineName)) {
-                activateEndpoint(uri);
-            }
-        });
+    private Adapter getAdapter(Endpoint endpoint) {
+        Adapter adapter;
+        List<Adapter> matchingAdapters = adapters.stream()
+            .filter(possibleAdapter -> (possibleAdapter.getEngines().contains(endpoint.getEngine())))
+            .collect(Collectors.toList());
+        if (matchingAdapters.isEmpty()) {
+            throw new ActivatorException("No adapter loaded for engine " + endpoint.getEngine());
+        } else {
+            adapter = matchingAdapters.get(0);
+        }
+        return adapter;
     }
 
     public void setAdapters(List<Adapter> adapters) {
@@ -105,9 +93,7 @@ public class ActivationService {
                     } else {
                         return null;
                     }
-                }).filter(Objects::nonNull)
-                .sorted()
-                .collect(Collectors.toList());
+                }).filter(Objects::nonNull).sorted().collect(Collectors.toList());
         if (versions.isEmpty()) {
             throw new ActivatorEndpointNotFoundException(String.format("No active endpoints found for %s/%s/%s",
                     naan, name, endpointName));
@@ -124,5 +110,33 @@ public class ActivationService {
             apiVersion = getDefaultVersion(naan, name, endpoint);
         }
         return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
+    }
+
+    public void putAll(Map<URI, Endpoint> eps) {
+        endpointMap.putAll(eps);
+    }
+
+    public void clear() {
+        endpointMap.clear();
+    }
+
+    public Endpoint getEndpoint(URI id) {
+        return endpointMap.get(id);
+    }
+
+    public Collection<Endpoint> getEndpoints() {
+        return endpointMap.values();
+    }
+
+    public Collection<Endpoint> getEndpointsForArkId(ArkId arkId) {
+
+        return endpointMap.values()
+                .stream()
+                .filter(endpoint -> arkId.equals(endpoint.getArkId()))
+                .collect(Collectors.toList());
+    }
+
+    public void remove(Endpoint endpoint) {
+        endpointMap.remove(endpoint.getId());
     }
 }
