@@ -64,7 +64,7 @@ public class KgridActivatorApplication implements CommandLineRunner {
 
         // Load KOs and create endpoints (don't activate yet)
         final Map<URI, Endpoint> eps = koLoader.loadAllKos();
-//        activationService.getEndpointMap().putAll(eps);
+
         activationService.putAll(eps);
 
         List<Adapter> adapters = adapterLoader.loadAdapters();

@@ -16,7 +16,6 @@ public class AdapterActivationContext implements ActivationContext {
     private final Environment environment;
     private final CompoundDigitalObjectStore cdoStore;
     private final ActivationService activationService;
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public AdapterActivationContext(Environment environment, CompoundDigitalObjectStore cdoStore,
                                     ActivationService activationService) {
@@ -27,16 +26,8 @@ public class AdapterActivationContext implements ActivationContext {
 
     @Override
     public Executor getExecutor(String key) {
-        URI id = URI.create(key);
-//        final Map<URI, Endpoint> endpointMap = activationService.getEndpointMap();
-        Endpoint ep = activationService.getEndpoint(id);
-        if (ep != null) {
-            return ep.getExecutor();
-        } else {
-            String message = String.format("Can't find executor in app context for endpoint %s", key);
-            log.error(message);
-            throw new AdapterException(message);
-        }
+        final Endpoint endpoint = activationService.getEndpoint(URI.create(key));
+        return endpoint.getExecutor();
     }
 
     @Override

@@ -45,8 +45,8 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestBody String inputs,
             @RequestHeader HttpHeaders headers) {
-        URI endpointId = activationService.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+        Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
+        return executeEndpoint(ep, inputs, HttpMethod.POST, headers);
     }
 
     @PostMapping(
@@ -60,8 +60,8 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String endpoint,
             @RequestBody String inputs,
             @RequestHeader HttpHeaders headers) {
-        URI endpointId = activationService.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, inputs, HttpMethod.POST, headers);
+        Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
+        return executeEndpoint(ep, inputs, HttpMethod.POST, headers);
     }
 
     @GetMapping(
@@ -73,8 +73,8 @@ public class RequestController extends ActivatorExceptionHandler {
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
             @RequestHeader HttpHeaders headers) {
-        URI endpointId = activationService.createEndpointId(naan, name, apiVersion, endpoint);
-        return executeEndpoint(endpointId, null, HttpMethod.GET, headers);
+        Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
+        return executeEndpoint(ep, null, HttpMethod.GET, headers);
     }
 
     @GetMapping(value = {"/{naan}/{name}/{endpoint}/**"}, produces = MediaType.ALL_VALUE)
@@ -87,7 +87,6 @@ public class RequestController extends ActivatorExceptionHandler {
             HttpServletRequest request) {
         String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
 
-        URI endpointId = activationService.createEndpointId(naan, name, apiVersion, endpoint);
         HttpHeaders responseHeaders = new HttpHeaders();
         final String contentType = getContentType(artifactName);
         if (!isValidAcceptType(headers, contentType)) {
@@ -95,8 +94,10 @@ public class RequestController extends ActivatorExceptionHandler {
         }
         responseHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
         responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(artifactName));
+
+        Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return new ResponseEntity<>(new InputStreamResource(
-                (InputStream) executeEndpoint(endpointId, artifactName, HttpMethod.GET, headers).getResult()),
+                (InputStream) executeEndpoint(ep, artifactName, HttpMethod.GET, headers).getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
@@ -112,18 +113,16 @@ public class RequestController extends ActivatorExceptionHandler {
         return false;
     }
 
-    private EndPointResult executeEndpoint(URI endpointId, String inputs, HttpMethod method, HttpHeaders headers) {
-        Endpoint endpoint = activationService.getEndpoint(endpointId);
-        MediaType contentType = headers.getContentType();
-        if (null == endpoint || !endpoint.isActive()) {
-            String[] idParts = endpointId.toString().split("/");
+    private EndPointResult executeEndpoint(Endpoint endpoint, String inputs, HttpMethod method, HttpHeaders headers) {
+        if (!endpoint.isActive()) {
+            String[] idParts = endpoint.getId().toString().split("/");
             List<Endpoint> versions = activationService.getAllVersions(idParts[0], idParts[1], idParts[3]);
             if (!versions.isEmpty()) {
-                throw new ActivatorEndpointNotFoundException("No active endpoint found for " + endpointId +
-                        " Try one of these available versions: " + versions.stream().map(Endpoint::getApiVersion)
-                        .collect(Collectors.joining(", ")));
+                throw new ActivatorEndpointNotFoundException(endpoint.getId(),
+                    versions.stream().map(Endpoint::getApiVersion).collect(Collectors.joining(",")));
             }
         }
+        MediaType contentType = headers.getContentType();
         if (method == HttpMethod.POST) {
             validateContentType(contentType, Objects.requireNonNull(endpoint));
         }

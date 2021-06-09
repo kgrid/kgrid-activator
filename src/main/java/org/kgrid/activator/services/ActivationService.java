@@ -85,15 +85,10 @@ public class ActivationService {
 
     public List<Endpoint> getAllVersions(String naan, String name, String endpointName) {
         List<Endpoint> versions = endpointMap.values().stream()
-                .map(endpoint -> {
-                    if (endpoint.getNaan().equals(naan)
-                            && endpoint.getName().equals(name)
-                            && endpoint.getEndpointName().equals(endpointName)) {
-                        return endpoint;
-                    } else {
-                        return null;
-                    }
-                }).filter(Objects::nonNull).sorted().collect(Collectors.toList());
+            .filter(endpoint -> endpoint.getNaan().equals(naan)
+                && endpoint.getName().equals(name)
+                && endpoint.getEndpointName().equals(endpointName))
+            .collect(Collectors.toList());
         if (versions.isEmpty()) {
             throw new ActivatorEndpointNotFoundException(String.format("No active endpoints found for %s/%s/%s",
                     naan, name, endpointName));
@@ -101,15 +96,11 @@ public class ActivationService {
         return versions;
     }
 
-    private String getDefaultVersion(String naan, String name, String endpoint) {
-        return getAllVersions(naan, name, endpoint).get(0).getApiVersion();
-    }
-
-    public URI createEndpointId(String naan, String name, String apiVersion, String endpoint) {
+    public Endpoint getDefaultEndpoint(String naan, String name, String apiVersion, String endpoint) {
         if (apiVersion == null) {
-            apiVersion = getDefaultVersion(naan, name, endpoint);
+            return getAllVersions(naan, name, endpoint).get(0);
         }
-        return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
+        return getEndpoint(URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint)));
     }
 
     public void putAll(Map<URI, Endpoint> eps) {
@@ -121,7 +112,11 @@ public class ActivationService {
     }
 
     public Endpoint getEndpoint(URI id) {
-        return endpointMap.get(id);
+        final Endpoint endpoint = endpointMap.get(id);
+        if (endpoint == null) {
+            throw new ActivatorEndpointNotFoundException(id);
+        }
+        return endpoint;
     }
 
     public Collection<Endpoint> getEndpoints() {
