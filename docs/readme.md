@@ -6,7 +6,7 @@ These instructions will get the Kgrid Activator running with sample set of Knowl
 ## Overview
 As a key component of Knowledge Grid, an activator allows knowledge objects to be executable against collected data.
 
-For the information on the activator API and the usage of the activator, see [KGRID Activator API](docs/api.md)
+For the information on the activator API and the usage of the activator, see [KGRID Activator API](api.md)
 
 ### Prerequisites
 
