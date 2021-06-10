@@ -148,8 +148,7 @@ public class ActivationServiceTest {
     private static Endpoint createMockEndpoint(URI id, boolean isActive) {
         Endpoint ep = mock(Endpoint.class, withSettings().lenient());
         final String[] split = id.getPath().split("/");
-        when(ep.getNaan()).thenReturn(split[0]);
-        when(ep.getName()).thenReturn(split[1]);
+        when(ep.equalsIgnoreVersion(split[0], split[1],split[3])).thenReturn(true);
         when(ep.getApiVersion()).thenReturn(split[2]);
         when(ep.getEndpointName()).thenReturn(split[3]);
         when(ep.getId()).thenReturn(id);

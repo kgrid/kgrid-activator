@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.kgrid.activator.constants.EndpointStatus;
@@ -85,9 +84,7 @@ public class ActivationService {
 
     public List<Endpoint> getAllVersions(String naan, String name, String endpointName) {
         List<Endpoint> versions = endpointMap.values().stream()
-            .filter(endpoint -> endpoint.getNaan().equals(naan)
-                && endpoint.getName().equals(name)
-                && endpoint.getEndpointName().equals(endpointName))
+            .filter(e -> e.equalsIgnoreVersion(naan, name, endpointName))
             .collect(Collectors.toList());
         if (versions.isEmpty()) {
             throw new ActivatorEndpointNotFoundException(String.format("No active endpoints found for %s/%s/%s",

@@ -117,11 +117,11 @@ public class Endpoint implements Comparable<Endpoint> {
         return arkId;
     }
 
-    public String getNaan() {
+    private String getNaan() {
         return this.arkId.getNaan();
     }
 
-    public String getName() { return this.arkId.getName(); }
+    private String getName() { return this.arkId.getName(); }
 
     public String getApiVersion() {
         return wrapper.getService().at("/info/version").asText();
@@ -188,5 +188,11 @@ public class Endpoint implements Comparable<Endpoint> {
     @Override
     public int hashCode() {
         return Objects.hash(wrapper, status, endpointName, detail);
+    }
+
+    public boolean equalsIgnoreVersion(String naan, String name, String endpointName) {
+        return getNaan().equals(naan)
+            && getName().equals(name)
+            && getEndpointName().equals(endpointName);
     }
 }
