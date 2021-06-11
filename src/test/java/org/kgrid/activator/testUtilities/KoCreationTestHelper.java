@@ -115,11 +115,9 @@ public class KoCreationTestHelper {
                     .set("post", objectMapper.createObjectNode().set("requestBody", objectMapper.createObjectNode()
                             .set("content", objectMapper.createObjectNode()
                                     .set(CONTENT_TYPE.toString(), objectMapper.createObjectNode()))))));
-
         } else {
             return null;
         }
-
         return serviceNode;
     }
 

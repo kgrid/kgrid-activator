@@ -1,17 +1,21 @@
 package org.kgrid.activator.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.kgrid.activator.domain.Endpoint;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin
@@ -41,12 +45,9 @@ public class EndpointController extends ActivatorExceptionHandler {
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findEndpointsForEngine(@PathVariable String engine) {
         log.info("find all endpoints for engine " + engine);
-        List<EndpointResource> resources = new ArrayList<>();
-        for (Endpoint endpoint : activationService.getEndpoints()) {
-            if (engine.equals(endpoint.getEngine())) {
-                resources.add(new EndpointResource(endpoint, shelfRoot));
-            }
-        }
+        List<EndpointResource> resources = activationService.getEndpointsForEngine(engine).stream()
+            .map(e -> new EndpointResource(e, shelfRoot))
+            .collect(Collectors.toList());
         return resources;
     }
 
@@ -57,36 +58,29 @@ public class EndpointController extends ActivatorExceptionHandler {
             @PathVariable String apiVersion,
             @PathVariable String endpointName) {
         log.info("getting ko endpoint " + naan + "/" + name);
-        URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
-        Endpoint endpoint = activationService.getEndpoint(id);
-        if (endpoint == null) {
-            throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
-        }
+        Endpoint endpoint = activationService.getDefaultEndpoint(naan, name, apiVersion, endpointName);
         return new EndpointResource(endpoint, shelfRoot);
     }
 
     @GetMapping(value = "/{naan}/{name}/{endpointName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findEndpointQueryVersion(
-            @PathVariable String naan,
-            @PathVariable String name,
-            @PathVariable String endpointName,
-            @RequestParam(name = "v", required = false) String apiVersion) {
+        @PathVariable String naan,
+        @PathVariable String name,
+        @PathVariable String endpointName,
+        @RequestParam(name = "v", required = false) String apiVersion) {
         log.info("getting ko endpoint " + naan + "/" + name);
-        List<EndpointResource> resources = new ArrayList<>();
-        if (apiVersion == null) {
-            List<Endpoint> endpoints = activationService.getAllVersions(naan, name, endpointName);
-            for (Endpoint endpoint : endpoints) {
-                resources.add(new EndpointResource(endpoint, shelfRoot));
-            }
+
+        if (apiVersion != null) {
+            return List.of(new EndpointResource(
+                activationService.getDefaultEndpoint(naan, name, apiVersion, endpointName),
+                shelfRoot));
         } else {
-            URI id = activationService.createEndpointId(naan, name, apiVersion, endpointName);
-            Endpoint endpoint = activationService.getEndpoint(id);
-            if (endpoint == null) {
-                throw new ActivatorEndpointNotFoundException("Cannot find endpoint with id " + id);
-            }
-            resources.add(new EndpointResource(endpoint, shelfRoot));
+            List<EndpointResource> resources = activationService.getAllVersions(naan, name, endpointName)
+                .stream()
+                .map(endpoint -> new EndpointResource(endpoint, shelfRoot))
+                .collect(Collectors.toList());
+            return resources;
         }
-        return resources;
     }
 
 }

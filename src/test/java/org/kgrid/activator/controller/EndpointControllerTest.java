@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.domain.Endpoint;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorException;
 import org.kgrid.activator.services.ActivationService;
 import org.mockito.InjectMocks;
@@ -63,7 +64,8 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints for engine returns only that engine's endpoints")
     public void testFindEndpointsForEngine() {
-        when(activationService.getEndpoints()).thenReturn(endpointMap.values());
+        when(activationService.getEndpointsForEngine(JS_ENGINE))
+            .thenReturn(List.of(jsEndpoint));
         List<EndpointResource> jsEndpoints = endpointController.findEndpointsForEngine(JS_ENGINE);
         EndpointResource endpointResource = jsEndpoints.get(0);
         assertEquals(JS_ENDPOINT_ID, endpointResource.getId());
@@ -72,8 +74,7 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Path Version returns appropriate endpoint resource")
     public void testFindEndpointPathVersionReturnsEndpointResource() {
-        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-        when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
+        when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(jsEndpoint);
         EndpointResource endpointResource =
                 endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
         assertEquals(createEndpointResource(jsEndpoint), endpointResource);
@@ -81,20 +82,17 @@ public class EndpointControllerTest {
 
     @Test
     @DisplayName("Find endpoints Path Version throws activator exception if no endpoint found")
-    public void testFindEndpointPathVersionThrowsActivatorExceptionIfNoEndpointFound() {
-        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-//        when(activationService.getEndpoints()).thenReturn((new TreeMap<URI, Endpoint>()).values());
-        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+    public void testFindEndpointPathVersionThrowsActivatorNotFoundExceptionIfNoEndpointFound() {
+        when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME))
+            .thenThrow(ActivatorEndpointNotFoundException.class);
+        assertThrows(ActivatorEndpointNotFoundException.class,
                 () -> endpointController.findEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME));
-        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
-                activatorException.getMessage());
     }
 
     @Test
     @DisplayName("Find endpoints Query Version returns appropriate endpoint resource")
     public void testFindEndpointQueryVersionReturnsEndpointResource() {
-        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-        when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
+        when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(jsEndpoint);
         List<EndpointResource> endpointResources = endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION);
         assertEquals(createEndpointResource(jsEndpoint).getId(), endpointResources.get(0).getId());
     }
@@ -113,11 +111,10 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints Query Version throws activator exception if no endpoint found")
     public void testFindEndpointQueryVersionThrowsActivatorExceptionIfNoEndpointFound() {
-        when(activationService.createEndpointId(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(JS_ENDPOINT_URI);
-        ActivatorException activatorException = Assert.assertThrows(ActivatorException.class,
+        when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME))
+            .thenThrow(ActivatorEndpointNotFoundException.class);
+        assertThrows(ActivatorEndpointNotFoundException.class,
                 () -> endpointController.findEndpointQueryVersion(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME, JS_API_VERSION));
-        assertEquals(String.format("Cannot find endpoint with id %s/%s/%s/%s", JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
-                activatorException.getMessage());
     }
 
     private EndpointResource createEndpointResource(Endpoint endpoint) {

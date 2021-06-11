@@ -55,8 +55,8 @@ public class ShelfInterceptorTest {
         final KnowledgeObjectWrapper wrapper1 = new KnowledgeObjectWrapper(
             KoCreationTestHelper.generateMetadata("naan", "name", "version1"));
 
-        Endpoint endpoint = new Endpoint(wrapper, "endpoint");
-        Endpoint endpoint1 = new Endpoint(wrapper1, "endpoint1");
+        Endpoint endpoint = new Endpoint(wrapper, "endpoint", null);
+        Endpoint endpoint1 = new Endpoint(wrapper1, "endpoint1", null);
 
         globalEndpoints.put(URI.create("naan/name/jsApiVersion/endpoint/"), endpoint);
         globalEndpoints.put(URI.create("naan/name/jsApiVersion/endpoint1/"), endpoint1);
@@ -72,7 +72,7 @@ public class ShelfInterceptorTest {
     public void doesNotRemoveEndpointFromMapWhenOtherDeleted() throws IOException, ServletException {
         Endpoint endpoint = new Endpoint(new KnowledgeObjectWrapper(
                 KoCreationTestHelper.generateMetadata("naan", "name", "version2")),
-                "endpoint");
+                "endpoint", null);
         globalEndpoints.put(URI.create("naan/name/version/endpoint/"), endpoint);
         assertEquals(1, globalEndpoints.size());
         shelfInterceptor.doFilter(request, response, filterChain);

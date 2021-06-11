@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.kgrid.activator.constants.EndpointStatus;
@@ -85,15 +84,8 @@ public class ActivationService {
 
     public List<Endpoint> getAllVersions(String naan, String name, String endpointName) {
         List<Endpoint> versions = endpointMap.values().stream()
-                .map(endpoint -> {
-                    if (endpoint.getNaan().equals(naan)
-                            && endpoint.getName().equals(name)
-                            && endpoint.getEndpointName().equals(endpointName)) {
-                        return endpoint;
-                    } else {
-                        return null;
-                    }
-                }).filter(Objects::nonNull).sorted().collect(Collectors.toList());
+            .filter(e -> e.equalsIgnoreVersion(naan, name, endpointName))
+            .collect(Collectors.toList());
         if (versions.isEmpty()) {
             throw new ActivatorEndpointNotFoundException(String.format("No active endpoints found for %s/%s/%s",
                     naan, name, endpointName));
@@ -101,15 +93,11 @@ public class ActivationService {
         return versions;
     }
 
-    private String getDefaultVersion(String naan, String name, String endpoint) {
-        return getAllVersions(naan, name, endpoint).get(0).getApiVersion();
-    }
-
-    public URI createEndpointId(String naan, String name, String apiVersion, String endpoint) {
+    public Endpoint getDefaultEndpoint(String naan, String name, String apiVersion, String endpoint) {
         if (apiVersion == null) {
-            apiVersion = getDefaultVersion(naan, name, endpoint);
+            return getAllVersions(naan, name, endpoint).get(0);
         }
-        return URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint));
+        return getEndpoint(URI.create(String.format("%s/%s/%s/%s", naan, name, apiVersion, endpoint)));
     }
 
     public void putAll(Map<URI, Endpoint> eps) {
@@ -121,7 +109,11 @@ public class ActivationService {
     }
 
     public Endpoint getEndpoint(URI id) {
-        return endpointMap.get(id);
+        final Endpoint endpoint = endpointMap.get(id);
+        if (endpoint == null) {
+            throw new ActivatorEndpointNotFoundException(id);
+        }
+        return endpoint;
     }
 
     public Collection<Endpoint> getEndpoints() {
@@ -138,5 +130,11 @@ public class ActivationService {
 
     public void remove(Endpoint endpoint) {
         endpointMap.remove(endpoint.getId());
+    }
+
+    public List<Endpoint> getEndpointsForEngine(String engine) {
+        return endpointMap.values().stream()
+            .filter(e -> engine.equalsIgnoreCase(e.getEngine()))
+            .collect(Collectors.toList());
     }
 }

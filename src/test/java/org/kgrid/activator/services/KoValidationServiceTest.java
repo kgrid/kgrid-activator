@@ -173,7 +173,7 @@ public class KoValidationServiceTest {
 
     private Endpoint getEndpoint(JsonNode serviceSpec, JsonNode deploymentSpec) {
         KnowledgeObjectWrapper wrapper = getWrapper(serviceSpec, deploymentSpec);
-        return new Endpoint(wrapper, "endpoint");
+        return new Endpoint(wrapper, "endpoint", null);
     }
 
     private KnowledgeObjectWrapper getWrapper(JsonNode serviceSpec, JsonNode deploymentSpec) {

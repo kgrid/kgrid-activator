@@ -1,29 +1,36 @@
 package org.kgrid.activator.domain;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.kgrid.activator.services.ActivationService;
-import org.kgrid.adapter.api.AdapterException;
-import org.kgrid.adapter.api.Executor;
-import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.JS_ENDPOINT_ID;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.JS_ENDPOINT_URI;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.JS_ENGINE;
+import static org.kgrid.activator.testUtilities.KoCreationTestHelper.getEndpointForEngine;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.activator.services.ActivationService;
+import org.kgrid.adapter.api.AdapterException;
+import org.kgrid.adapter.api.Executor;
+import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
+import org.springframework.core.env.Environment;
 
 class AdapterActivationContextTest {
-    private final Environment environment = Mockito.mock(Environment.class);
-    private final CompoundDigitalObjectStore cdoStore = Mockito.mock(CompoundDigitalObjectStore.class);
+    private final Environment environment = mock(Environment.class);
+    private final CompoundDigitalObjectStore cdoStore = mock(CompoundDigitalObjectStore.class);
     private AdapterActivationContext adapterActivationContext;
-    private ActivationService activationService = Mockito.mock(ActivationService.class);
+    private ActivationService activationService = mock(ActivationService.class);
     private final Map<URI, Endpoint> endpoints = new HashMap<>();
     private final Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
     private final String EXECUTOR_RESULT = "executed";
@@ -40,7 +47,27 @@ class AdapterActivationContextTest {
     @DisplayName("Get Executor gets proper executor from endpoint map")
     public void getExecutorReturnsExecutor() {
         Executor executor = adapterActivationContext.getExecutor(JS_ENDPOINT_ID);
+        assertEquals(jsEndpoint.getExecutor(), executor);
         assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
+    }
+
+    @Test
+    @DisplayName("Get executor throws AdapterException for missing endpoint")
+    public void getExecutorThrowsAdapterExceptionForMissingEndpoint() {
+        when(activationService.getEndpoint(URI.create("a/b/c")))
+            .thenThrow(new ActivatorEndpointNotFoundException(("seriously?")));
+        ActivatorEndpointNotFoundException e =
+            assertThrows(ActivatorEndpointNotFoundException.class,
+            () -> adapterActivationContext.getExecutor("a/b/c")
+        );
+        assertTrue(e.getMessage().startsWith("seriously?"));
+    }
+    @Test
+    @DisplayName("Get executor returns for missing executor")
+    public void getExecutorReturnsNullForMissingExecutor() {
+        jsEndpoint.setExecutor(null);
+        Executor executor = adapterActivationContext.getExecutor(JS_ENDPOINT_ID);
+        assertNull(executor);
     }
 
     @Test
@@ -62,17 +89,5 @@ class AdapterActivationContextTest {
         when(cdoStore.getBinaryStream(JS_ENDPOINT_URI)).thenReturn(null);
         adapterActivationContext.getBinary(JS_ENDPOINT_URI);
         verify(cdoStore).getBinaryStream(JS_ENDPOINT_URI);
-    }
-
-    @Test
-    @DisplayName("Activation Context get executor throws if endpoint is not in endpoint map")
-    public void loadAndInitialize_ActivationContextGetExecutorThrowsIfEndpointIsNotInEndpointMap() {
-        when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(null);
-
-        AdapterException adapterException = assertThrows(AdapterException.class,
-                () -> adapterActivationContext.getExecutor(JS_ENDPOINT_URI.toString()));
-        assertEquals(
-                String.format("Can't find executor in app context for endpoint %s", JS_ENDPOINT_ID),
-                adapterException.getMessage());
     }
 }
