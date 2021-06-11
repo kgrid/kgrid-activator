@@ -64,7 +64,8 @@ public class EndpointControllerTest {
     @Test
     @DisplayName("Find endpoints for engine returns only that engine's endpoints")
     public void testFindEndpointsForEngine() {
-        when(activationService.getEndpoints()).thenReturn(endpointMap.values());
+        when(activationService.getEndpointsForEngine(JS_ENGINE))
+            .thenReturn(List.of(jsEndpoint));
         List<EndpointResource> jsEndpoints = endpointController.findEndpointsForEngine(JS_ENGINE);
         EndpointResource endpointResource = jsEndpoints.get(0);
         assertEquals(JS_ENDPOINT_ID, endpointResource.getId());

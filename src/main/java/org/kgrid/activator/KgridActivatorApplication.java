@@ -51,6 +51,20 @@ public class KgridActivatorApplication implements CommandLineRunner {
                 .run(args);
     }
 
+    @Override
+    public void run(String... strings) {
+        // Load KOs and create endpoints (don't activate yet)
+        final Map<URI, Endpoint> eps = koLoader.loadAllKos();
+
+        activationService.putAll(eps);
+
+        List<Adapter> adapters = adapterLoader.loadAdapters();
+
+        activationService.setAdapters(adapters);
+
+        adapterLoader.initializeAdapters(adapters); // initialize and refresh
+    }
+
     @Primary
     @Bean
     public static CompoundDigitalObjectStore getCDOStore(
@@ -59,19 +73,6 @@ public class KgridActivatorApplication implements CommandLineRunner {
         return CompoundDigitalObjectStoreFactory.create(cdoStoreURI);
     }
 
-    @Override
-    public void run(String... strings) {
-
-        // Load KOs and create endpoints (don't activate yet)
-        final Map<URI, Endpoint> eps = koLoader.loadAllKos();
-
-        activationService.putAll(eps);
-
-        List<Adapter> adapters = adapterLoader.loadAdapters();
-        activationService.setAdapters(adapters);
-
-        adapterLoader.initializeAdapters(adapters); // initialize and refresh
-    }
 
     @Profile("dev")
     @Configuration

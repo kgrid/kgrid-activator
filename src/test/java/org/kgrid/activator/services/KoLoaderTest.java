@@ -57,10 +57,10 @@ public class KoLoaderTest {
     public void setUp() {
         jsWrapper.addDeployment(getEndpointDeploymentJsonForEngine(JS_ENGINE, JS_ENDPOINT_NAME));
         jsWrapper.addService(generateServiceNode(JS_ENGINE));
-        jsEndpoint = new Endpoint(jsWrapper, JS_ENDPOINT_NAME);
+        jsEndpoint = new Endpoint(jsWrapper, JS_ENDPOINT_NAME, null);
         nodeWrapper.addDeployment(getEndpointDeploymentJsonForEngine(NODE_ENGINE, NODE_ENDPOINT_NAME));
         nodeWrapper.addService(generateServiceNode(NODE_ENGINE));
-        nodeEndpoint = new Endpoint(nodeWrapper, NODE_ENDPOINT_NAME);
+        nodeEndpoint = new Endpoint(nodeWrapper, NODE_ENDPOINT_NAME, null);
         kos.put(JS_ARK_ID, jsMetadata);
         kos.put(NODE_ARK_ID, nodeMetadata);
         when(knowledgeObjectRepository.getKow(JS_ARK_ID)).thenReturn(jsWrapper);
@@ -139,7 +139,7 @@ public class KoLoaderTest {
         when(knowledgeObjectRepository.getKow(JS_ARK_ID)).thenReturn(dubiousWrapper);
         Exception ex = assertThrows(ActivatorException.class, () -> koLoader.loadOneKo(JS_ARK_ID));
         assertAll(
-                () -> verify(koValidationService).validateEndpoint(new Endpoint(dubiousWrapper, JS_ENDPOINT_NAME)),
+                () -> verify(koValidationService).validateEndpoint(new Endpoint(dubiousWrapper, JS_ENDPOINT_NAME, null)),
                 () -> assertEquals("Cannot load ko ark:/naan/name/version, cause: Has missing endpoint path in Service Specification that is listed in Deployment Specification", ex.getMessage()),
                 () -> assertEquals(ActivatorException.class, ex.getCause().getClass())
         );

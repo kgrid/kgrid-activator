@@ -131,4 +131,10 @@ public class ActivationService {
     public void remove(Endpoint endpoint) {
         endpointMap.remove(endpoint.getId());
     }
+
+    public List<Endpoint> getEndpointsForEngine(String engine) {
+        return endpointMap.values().stream()
+            .filter(e -> engine.equalsIgnoreCase(e.getEngine()))
+            .collect(Collectors.toList());
+    }
 }

@@ -25,14 +25,6 @@ public class Endpoint implements Comparable<Endpoint> {
     private URI physicalLocation;
     private final ArkId arkId;
 
-    public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName) {
-        this.wrapper = wrapper;
-        this.status = EndpointStatus.LOADED.name();
-        this.endpointName = endpointName;
-        this.activated = LocalDateTime.now();
-        this.arkId = getArkId();
-    }
-
     public Endpoint(KnowledgeObjectWrapper wrapper, String endpointName, URI physicalLocation) {
         this.wrapper = wrapper;
         this.status = EndpointStatus.LOADED.name();

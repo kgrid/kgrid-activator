@@ -45,12 +45,9 @@ public class EndpointController extends ActivatorExceptionHandler {
     @GetMapping(value = "/{engine}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EndpointResource> findEndpointsForEngine(@PathVariable String engine) {
         log.info("find all endpoints for engine " + engine);
-        List<EndpointResource> resources = new ArrayList<>();
-        for (Endpoint endpoint : activationService.getEndpoints()) {
-            if (engine.equals(endpoint.getEngine())) {
-                resources.add(new EndpointResource(endpoint, shelfRoot));
-            }
-        }
+        List<EndpointResource> resources = activationService.getEndpointsForEngine(engine).stream()
+            .map(e -> new EndpointResource(e, shelfRoot))
+            .collect(Collectors.toList());
         return resources;
     }
 
