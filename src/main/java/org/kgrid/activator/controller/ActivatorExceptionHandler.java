@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
@@ -84,6 +85,13 @@ public abstract class ActivatorExceptionHandler {
                                                                        WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableExceptions(Exception e,
+                                                                       WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http Message Not Readable", HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
     }
 
     private Map<String, String> generateErrorMapAndLog(WebRequest request, Exception e, String title,
