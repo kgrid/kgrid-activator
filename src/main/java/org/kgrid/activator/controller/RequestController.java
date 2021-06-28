@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestBody String inputs,
+            @RequestBody Object inputs,
             @RequestHeader HttpHeaders headers) {
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return executeEndpoint(ep, inputs, HttpMethod.POST, headers);
@@ -58,7 +57,7 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @PathVariable String apiVersion,
             @PathVariable String endpoint,
-            @RequestBody String inputs,
+            @RequestBody Object inputs,
             @RequestHeader HttpHeaders headers) {
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return executeEndpoint(ep, inputs, HttpMethod.POST, headers);
@@ -113,7 +112,7 @@ public class RequestController extends ActivatorExceptionHandler {
         return false;
     }
 
-    private EndPointResult executeEndpoint(Endpoint endpoint, String inputs, HttpMethod method, HttpHeaders headers) {
+    private EndPointResult executeEndpoint(Endpoint endpoint, Object inputs, HttpMethod method, HttpHeaders headers) {
         if (!endpoint.isActive()) {
             String[] idParts = endpoint.getId().toString().split("/");
             List<Endpoint> versions = activationService.getAllVersions(idParts[0], idParts[1], idParts[3]);
