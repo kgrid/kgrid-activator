@@ -125,6 +125,19 @@
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <to>
+                        <image>kgrid/${artifactId}:${version}</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                </configuration>
+                <groupId>com.google.cloud.tools</groupId>
+                <version>3.1.1</version>
+            </plugin>
         </plugins>
     </build>
 </project>
