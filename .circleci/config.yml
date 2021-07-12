@@ -1,0 +1,16 @@
+# Do Nothing Circle Ci config.. only must have properties
+
+version: 2
+jobs:
+
+  build:
+
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
