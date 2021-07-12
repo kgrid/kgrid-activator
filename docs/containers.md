@@ -1,50 +1,33 @@
 # KGrid Docker Containers
-
-
-KGrid Activator can be deployed using docker container architecture.
-
-## Get the docker image ready
-The container image for the activator can be either built from the source code or pulled from DockerHub.
-
-### Build from source code
-
-Clone the [kgrid-activator repo](https://github.com/kgrid/kgrid-activator). 
-
-In kgrid activator folder run:
-
-   ```bash
-   mvn spring-boot:build-image 
-   ```
-
-This will use the default builder from Spring-boot to build the image.
-
-After this run you will have a local docker image...
-```
-~/kgrid-activator $ docker images
-REPOSITORY                  TAG                   IMAGE ID            CREATED             SIZE
-kgrid/activator             latest                fbe2de94cfa9        3 minutes ago       149MB
-```
-
-:::tip
-You can also specify other builders by adding the option to the maven command; for example `-Dspring-boot.build-image.builder=heroku/spring-boot-buildpacks`.  
-:::
-
-### Pull from DockerHub
+## [Pull from DockerHub](https://docs.docker.com/engine/reference/commandline/pull/)
   ```bash
-  docker pull kgrid/activator:#.#.#
+  docker pull kgrid/kgrid-activator
   ```
+## [Running the Image](https://docs.docker.com/engine/reference/commandline/run)
 
-## Using the Image
-
-Now using the activator image you can create a container name ***activator*** from the `kgrid/activator` image and run it on port 8080...
+- Running in a container mapped to port 8080 (default port for the activator)
  
-```docker run -p 8080:8080 --name activator kgrid/activator```
+```bash
+  docker run -p 8080:8080 --name activator kgrid/activator
+```
 
-or mapped to local shelf and running in the background...
+- [Mapped to a local shelf](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)
 
-```docker run -p 8080:8080 -v ${PWD}/shelf:/home/kgrid/shelf --name activator -d kgrid/activator ```
+```bash
+  docker run -p 8080:8080 -v ${PWD}/shelf:/applications/shelf --name activator -d kgrid/activator 
+```
 
-Once created, you can stop and start the container using `docker stop activator` and `docker start acivator`.
+- Example:
+
+```bash
+  docker run -it --rm --network host -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v ${PWD}/shelf:/application/shelf --name activator kgrid/activator:latest
+```
+- This example has a few things going on:
+    - `--network host` [Running with a network bridge](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network) (if your containerized activator needs to talk to the network, i.e. you're running an external runtime in another container)
+    - `-it --rm` Running interactive and Removing the Container when stopped. can be found in the [options](https://docs.docker.com/engine/reference/commandline/run/#options)
+    - `-e` [Pass Environment Variables](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
+
+- Once created, you can stop and start the container using `docker stop activator` and `docker start acivator`.
 
 ## Quick start with `docker-compose`
 
@@ -73,17 +56,6 @@ Then:
 
 ```docker-compose up```
 
-
-
 #### Good to Know
-
 1. View Container Logs  ```docker logs activator```
 1. Start a shell in the container ```docker exec -it activator sh```
-
-
-### Push New Image
-
-Activator images are stored on [DockerHub](https://cloud.docker.com/u/kgrid/repository/docker/kgrid/activator) 
-
-```docker push kgrid/activator:#.#.# ```
-
