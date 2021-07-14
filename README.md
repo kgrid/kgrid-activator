@@ -89,35 +89,3 @@ This method uses the dockerfile to build and deploy an image on heroku.
 1. Then run `heroku container:release web -a <APPLICATION NAME>` to have heroku deploy and start the application.
 
 We publish a spring-boot container image of the activator on [dockerhub.io](https://hub.docker.com/r/kgrid/activator/tags?page=1&ordering=last_updated). If you’d like to deploy your dockerized Spring Boot app to a resource constrained environment you may need to explicitly set `JAVA_OPTS` to indicate the memory constraints. (Or, on Heroku, you’ll need to [use Heroku Buildpacks](https://developer.okta.com/blog/2020/12/28/spring-boot-docker#deploy-spring-boot--docker-to-heroku). This is because the Paketo buildpacks refuse to allocate heap on containers smaller than 1 GB of RAM. A free Heroku dyno has 512 MB.)
-
-----
-## Publish Vuepress Documentation
-
-Note: We are currently using the vuepress build triggered by a Circle job to render docs.
-
-### Running the vuepress site locally
-
-```
-npm install
-npm run docs:dev # or vuepress docs dev
-```
-
-### Build the site for publishing
-
-```
-npm run docs:build
-```
-
-To push the vuepress site to the `gh-pages` branch (if configured in the site settings on GitHub):
-
-```bash
-# navigate into the build output directory
-cd docs/.vuepress/dist
-
-git init
-git add -A
-git commit -m 'deploy'
-
-# if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f https://${GITHUB_TOKEN}@github.com/kgrid/guides.git master:gh-pages
-```
