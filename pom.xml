@@ -132,6 +132,7 @@
                         <image>kgrid/${artifactId}:${version}</image>
                         <tags>
                             <tag>latest</tag>
+                            <tag>${version}</tag>
                         </tags>
                     </to>
                 </configuration>
