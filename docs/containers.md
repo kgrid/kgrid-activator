@@ -8,19 +8,19 @@
 - Running in a container mapped to port 8080 (default port for the activator)
  
 ```bash
-  docker run -p 8080:8080 --name activator kgrid/activator
+  docker run -p 8080:8080 --name activator kgrid/kgrid-activator
 ```
 
 - [Mapped to a local shelf](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)
 
 ```bash
-  docker run -p 8080:8080 -v ${PWD}/shelf:/applications/shelf --name activator -d kgrid/activator 
+  docker run -p 8080:8080 -v ${PWD}/shelf:/applications/shelf --name activator -d kgrid/kgrid-activator 
 ```
 
 - Example:
 
 ```bash
-  docker run -it --rm --network host -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v ${PWD}/shelf:/application/shelf --name activator kgrid/activator:latest
+  docker run -it --rm --network host -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev -v ${PWD}/shelf:/application/shelf --name activator kgrid/kgrid-activator:latest
 ```
 - This example has a few things going on:
     - `--network host` [Running with a network bridge](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network) (if your containerized activator needs to talk to the network, i.e. you're running an external runtime in another container)
