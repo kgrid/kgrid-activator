@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.kgrid.activator.constants.CustomHeaders.ACCEPT_JSON_MINIMAL;
+
 @RestController
 @CrossOrigin
 public class RequestController extends ActivatorExceptionHandler {
@@ -35,9 +37,9 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @PostMapping(
             value = {"/{naan}/{name}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json-minimal"})
     @ResponseStatus(HttpStatus.OK)
-    public EndPointResult executeEndpointQueryVersion(
+    public Object executeEndpointQueryVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -50,9 +52,9 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @PostMapping(
             value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json-minimal"})
     @ResponseStatus(HttpStatus.OK)
-    public EndPointResult executeEndpointPathVersion(
+    public Object executeEndpointPathVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String apiVersion,
@@ -66,7 +68,7 @@ public class RequestController extends ActivatorExceptionHandler {
     @GetMapping(
             value = {"/{naan}/{name}/{endpoint}"},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public EndPointResult getResourceEndpoints(
+    public Object getResourceEndpoint(
             @PathVariable String naan,
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
@@ -95,8 +97,9 @@ public class RequestController extends ActivatorExceptionHandler {
         responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(artifactName));
 
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
+        EndPointResult executionResult = (EndPointResult) getExecutionResult(ep, artifactName, headers);
         return new ResponseEntity<>(new InputStreamResource(
-                (InputStream) executeEndpoint(ep, artifactName, HttpMethod.GET, headers).getResult()),
+                (InputStream) executionResult.getResult()),
                 responseHeaders, HttpStatus.OK);
     }
 
@@ -112,7 +115,7 @@ public class RequestController extends ActivatorExceptionHandler {
         return false;
     }
 
-    private EndPointResult executeEndpoint(Endpoint endpoint, Object inputs, HttpMethod method, HttpHeaders headers) {
+    private Object executeEndpoint(Endpoint endpoint, Object inputs, HttpMethod method, HttpHeaders headers) {
         if (!endpoint.isActive()) {
             String[] idParts = endpoint.getId().toString().split("/");
             List<Endpoint> versions = activationService.getAllVersions(idParts[0], idParts[1], idParts[3]);
@@ -125,7 +128,18 @@ public class RequestController extends ActivatorExceptionHandler {
         if (method == HttpMethod.POST) {
             validateContentType(contentType, Objects.requireNonNull(endpoint));
         }
-        return Objects.requireNonNull(endpoint).execute(inputs, contentType);
+        return getExecutionResult(endpoint, inputs, headers);
+    }
+
+    private Object getExecutionResult(Endpoint endpoint, Object inputs, HttpHeaders headers) {
+        MediaType contentType = headers.getContentType();
+        if (headers.getAccept().contains(ACCEPT_JSON_MINIMAL.getValue())){
+            return Objects.requireNonNull(endpoint).execute(inputs, contentType);
+        }
+        final EndPointResult<Object> endPointResult = new EndPointResult<>(Objects.requireNonNull(endpoint).execute(inputs, contentType));
+        endPointResult.getInfo().put("inputs", inputs);
+        endPointResult.getInfo().put("ko", endpoint.getMetadata());
+        return endPointResult;
     }
 
     private void validateContentType(MediaType contentType, Endpoint endpoint) {

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kgrid.activator.domain.EndPointResult;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
@@ -22,16 +21,12 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.kgrid.activator.constants.CustomHeaders.ACCEPT_JSON_MINIMAL;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,18 +44,14 @@ public class RequestControllerTest {
     private final String OUTPUT = "output";
     private final String RESOURCE_NAME = "file.csv";
     private final String RESOURCE_SLUG = "/source/" + RESOURCE_NAME;
-    private final URI FULL_RESOURCE_URI = URI.create(JS_ENDPOINT_URI.toString() + RESOURCE_SLUG);
+    private final URI FULL_RESOURCE_URI = URI.create(JS_ENDPOINT_URI + RESOURCE_SLUG);
     private final InputStream resourceInputStream = Mockito.mock(InputStream.class);
-    private final EndPointResult resourceEndpointResult = new EndPointResult(resourceInputStream);
-    private EndPointResult endpointResult = new EndPointResult(OUTPUT);
-    private HttpHeaders headers = new HttpHeaders();
-    private Endpoint endpoint = Mockito.mock(Endpoint.class);
-    private HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
+    private final HttpHeaders headers = new HttpHeaders();
+    private final Endpoint endpoint = Mockito.mock(Endpoint.class);
+    private final HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
 
     @BeforeEach
     public void setup() {
-        Map<URI, Endpoint> endpointMap = new TreeMap<>();
-        endpointMap.put(JS_ENDPOINT_URI, endpoint);
         headers.setContentType(CONTENT_TYPE);
         ArrayList<String> contentTypes = new ArrayList<>();
         contentTypes.add(CONTENT_TYPE.toString());
@@ -70,8 +61,8 @@ public class RequestControllerTest {
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
-        when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(endpointResult);
-        when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceEndpointResult);
+        when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(OUTPUT);
+        when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceInputStream);
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
         when(servletRequest.getRequestURI()).thenReturn(FULL_RESOURCE_URI.toString());
     }
@@ -79,13 +70,14 @@ public class RequestControllerTest {
     @Test
     @DisplayName("Execute endpoint interactions")
     public void testExecuteEndpointInteractionsAndResult() {
-        EndPointResult actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+        headers.setAccept(List.of(ACCEPT_JSON_MINIMAL.getValue()));
+        Object actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
         assertAll(
                 () -> verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
                 () -> verify(endpoint).isActive(),
                 () -> verify(endpoint).isSupportedContentType(CONTENT_TYPE),
                 () -> verify(endpoint).execute(INPUT, CONTENT_TYPE),
-                () -> assertSame(endpointResult.getResult(), actualResult.getResult())
+                () -> assertSame(OUTPUT, actualResult)
         );
     }
 
@@ -113,7 +105,7 @@ public class RequestControllerTest {
     }
 
     @Test
-    @DisplayName("Execute endpoint unsupposed content type throws")
+    @DisplayName("Execute endpoint unsupported content type throws")
     public void testExecuteEndpoint_ThrowsIfUnsupportedContentType() {
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(false);
         ActivatorUnsupportedMediaTypeException activatorException = assertThrows(ActivatorUnsupportedMediaTypeException.class, () -> {
@@ -149,7 +141,7 @@ public class RequestControllerTest {
     @Test
     @DisplayName("Get available resources")
     public void testGetAvailableResourceEndpoints_callsExecuteOnEndpoint() {
-        requestController.getResourceEndpoints(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers);
+        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers);
         verify(endpoint).execute(null, CONTENT_TYPE);
     }
 }

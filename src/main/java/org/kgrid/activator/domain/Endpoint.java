@@ -113,7 +113,9 @@ public class Endpoint implements Comparable<Endpoint> {
         return this.arkId.getNaan();
     }
 
-    private String getName() { return this.arkId.getName(); }
+    private String getName() {
+        return this.arkId.getName();
+    }
 
     public String getApiVersion() {
         return wrapper.getService().at("/info/version").asText();
@@ -150,18 +152,14 @@ public class Endpoint implements Comparable<Endpoint> {
         return matches.get();
     }
 
-    public EndPointResult<Object> execute(Object inputs, MediaType contentType) {
+    public Object execute(Object inputs, MediaType contentType) {
 
         if (null == executor) {
             throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
         }
 
         String contentTypeString = (null == contentType) ? "" : contentType.toString();
-
-        final EndPointResult<Object> endPointResult = new EndPointResult<>(this.executor.execute(inputs, contentTypeString));
-        endPointResult.getInfo().put("inputs", inputs);
-        endPointResult.getInfo().put("ko", wrapper.getMetadata());
-        return endPointResult;
+        return this.executor.execute(inputs, contentTypeString);
     }
 
     @Override
@@ -184,7 +182,7 @@ public class Endpoint implements Comparable<Endpoint> {
 
     public boolean equalsIgnoreVersion(String naan, String name, String endpointName) {
         return getNaan().equals(naan)
-            && getName().equals(name)
-            && getEndpointName().equals(endpointName);
+                && getName().equals(name)
+                && getEndpointName().equals(endpointName);
     }
 }

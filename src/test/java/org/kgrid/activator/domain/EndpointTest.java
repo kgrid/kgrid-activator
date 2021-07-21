@@ -43,10 +43,9 @@ public class EndpointTest {
     @DisplayName("Execute returns Endpoint Result with metadata and output")
     public void executeSetsMetadataOnEndpointResult() {
         when(executor.execute(input, CONTENT_TYPE.toString())).thenReturn(result);
-        EndPointResult executionResult = endpoint.execute(input, CONTENT_TYPE);
+        Object executionResult = endpoint.execute(input, CONTENT_TYPE);
         assertAll(
-                () -> assertEquals(metadata, executionResult.getInfo().get("ko")),
-                () -> assertEquals(result, executionResult.getResult())
+                () -> assertEquals(result, executionResult)
         );
     }
 
