@@ -129,10 +129,10 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <to>
-                        <image>kgrid/${artifactId}:${version}</image>
+                        <image>kgrid/${project.artifactId}:${project.version}</image>
                         <tags>
                             <tag>latest</tag>
-                            <tag>${version}</tag>
+                            <tag>${project.version}</tag>
                         </tags>
                     </to>
                 </configuration>
