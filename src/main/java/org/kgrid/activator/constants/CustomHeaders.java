@@ -3,7 +3,7 @@ package org.kgrid.activator.constants;
 import org.springframework.http.MediaType;
 
 public enum CustomHeaders {
-    ACCEPT_JSON_MINIMAL(MediaType.valueOf("application/json-minimal"));
+    ACCEPT_JSON_MINIMAL(MediaType.valueOf("application/json;profile=\"minimal\""));
     private MediaType value;
 
     CustomHeaders(MediaType value) {
