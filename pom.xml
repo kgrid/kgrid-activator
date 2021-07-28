@@ -11,7 +11,7 @@
 
     <groupId>org.kgrid</groupId>
     <artifactId>kgrid-activator</artifactId>
-    <version>1.5.5-SNAPSHOT</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <!-- More Project Information -->
