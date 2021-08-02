@@ -2,11 +2,8 @@ package org.kgrid.activator.domain;
 
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ActivationContext;
-import org.kgrid.adapter.api.AdapterException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import java.io.InputStream;

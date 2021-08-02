@@ -6,6 +6,9 @@ import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.adapter.api.AdapterResponse;
+import org.kgrid.adapter.api.ClientRequest;
+import org.kgrid.adapter.api.Executor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -121,7 +124,7 @@ public class RequestController extends ActivatorExceptionHandler {
             List<Endpoint> versions = activationService.getAllVersions(idParts[0], idParts[1], idParts[3]);
             if (!versions.isEmpty()) {
                 throw new ActivatorEndpointNotFoundException(endpoint.getId(),
-                    versions.stream().map(Endpoint::getApiVersion).collect(Collectors.joining(",")));
+                        versions.stream().map(Endpoint::getApiVersion).collect(Collectors.joining(",")));
             }
         }
         MediaType contentType = headers.getContentType();
@@ -133,13 +136,19 @@ public class RequestController extends ActivatorExceptionHandler {
 
     private Object getExecutionResult(Endpoint endpoint, Object inputs, HttpHeaders headers) {
         MediaType contentType = headers.getContentType();
-        if (headers.getAccept().contains(ACCEPT_JSON_MINIMAL.getValue())){
-            return Objects.requireNonNull(endpoint).execute(inputs, contentType);
+        Executor executor = endpoint.getExecutor();
+        if (null == executor) {
+            throw new ActivatorEndpointNotFoundException("No executor found for " + endpoint.getId());
         }
-        final EndPointResult<Object> endPointResult = new EndPointResult<>(Objects.requireNonNull(endpoint).execute(inputs, contentType));
-        endPointResult.getInfo().put("inputs", inputs);
-        endPointResult.getInfo().put("ko", endpoint.getMetadata());
-        return endPointResult;
+
+        String contentTypeString = (null == contentType) ? "" : contentType.toString();
+        ClientRequest req = new ClientRequest(inputs, contentTypeString, null);
+        Object result = executor.execute(req);
+        if (headers.getAccept().contains(ACCEPT_JSON_MINIMAL.getValue())) {
+            return result;
+        }
+        AdapterResponse<Object> response = new AdapterResponse<>(result, null, endpoint.getMetadata());
+        return new EndPointResult<>(req, response);
     }
 
     private void validateContentType(MediaType contentType, Endpoint endpoint) {

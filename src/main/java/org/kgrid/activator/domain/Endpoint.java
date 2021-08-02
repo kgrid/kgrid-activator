@@ -153,6 +153,7 @@ public class Endpoint implements Comparable<Endpoint> {
         return matches.get();
     }
 
+    @Deprecated
     public Object execute(Object inputs, MediaType contentType) {
 
         if (null == executor) {
@@ -160,7 +161,7 @@ public class Endpoint implements Comparable<Endpoint> {
         }
 
         String contentTypeString = (null == contentType) ? "" : contentType.toString();
-        ClientRequest req = new ClientRequest(inputs, contentTypeString);
+        ClientRequest req = new ClientRequest(inputs, contentTypeString, null);
         return this.executor.execute(req);
     }
 

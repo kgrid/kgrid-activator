@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
+import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.mock.adapter.MockAdapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
@@ -61,7 +62,12 @@ public class AdapterLoaderTest {
     public void setup() {
         ReflectionTestUtils.setField(adapterLoader, "adapterLocations", new String[]{"file:src/test/resources/adapters"});
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
-        requireNonNull(jsEndpoint).setExecutor((o, s) -> EXECUTOR_RESULT);
+        requireNonNull(jsEndpoint).setExecutor(new Executor() {
+            @Override
+            public Object execute(ClientRequest r) {
+                return EXECUTOR_RESULT;
+            }
+        });
 
         endpointMap.put(JS_ENDPOINT_URI, jsEndpoint);
         Mockito.lenient().when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
@@ -105,7 +111,7 @@ public class AdapterLoaderTest {
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequest(null, null, null)));
     }
 
     @Test

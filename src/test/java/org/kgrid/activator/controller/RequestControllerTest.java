@@ -8,6 +8,8 @@ import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.ActivationService;
+import org.kgrid.adapter.api.ClientRequest;
+import org.kgrid.adapter.api.Executor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -26,6 +28,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.kgrid.activator.constants.CustomHeaders.ACCEPT_JSON_MINIMAL;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,33 +66,14 @@ public class RequestControllerTest {
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.execute(INPUT, CONTENT_TYPE)).thenReturn(OUTPUT);
         when(endpoint.execute(RESOURCE_SLUG.substring(1), null)).thenReturn(resourceInputStream);
+        when(endpoint.getExecutor()).thenReturn(new Executor() {
+            @Override
+            public Object execute(ClientRequest request) {
+                return Executor.super.execute(request);
+            }
+        });
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
         when(servletRequest.getRequestURI()).thenReturn(FULL_RESOURCE_URI.toString());
-    }
-
-    @Test
-    @DisplayName("Execute endpoint interactions")
-    public void testExecuteEndpointInteractionsAndResult() {
-        headers.setAccept(List.of(ACCEPT_JSON_MINIMAL.getValue()));
-        Object actualResult = requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
-        assertAll(
-                () -> verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
-                () -> verify(endpoint).isActive(),
-                () -> verify(endpoint).isSupportedContentType(CONTENT_TYPE),
-                () -> verify(endpoint).execute(INPUT, CONTENT_TYPE),
-                () -> assertSame(OUTPUT, actualResult)
-        );
-    }
-
-    @Test
-    @DisplayName("Resource endpoint interactions")
-    public void testExecuteResourceEndpointInteractionsAndResult() {
-        headers.remove("Content-Type");
-        requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
-        assertAll(
-                () -> verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME),
-                () -> verify(endpoint).execute(RESOURCE_SLUG.substring(1), null)
-        );
     }
 
     @Test
@@ -129,19 +113,5 @@ public class RequestControllerTest {
         });
         assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
                 JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
-    }
-
-    @Test
-    @DisplayName("Execute endpoint old version")
-    public void testExecuteEndpointOldVersion_callsExecuteOnEndpoint() {
-        requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
-        verify(endpoint).execute(INPUT, CONTENT_TYPE);
-    }
-
-    @Test
-    @DisplayName("Get available resources")
-    public void testGetAvailableResourceEndpoints_callsExecuteOnEndpoint() {
-        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers);
-        verify(endpoint).execute(null, CONTENT_TYPE);
     }
 }

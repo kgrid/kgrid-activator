@@ -21,7 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.adapter.api.AdapterException;
+import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.springframework.core.env.Environment;
@@ -37,7 +37,12 @@ class AdapterActivationContextTest {
 
     @BeforeEach
     public void setup() {
-        jsEndpoint.setExecutor((o, s) -> EXECUTOR_RESULT);
+        jsEndpoint.setExecutor(new Executor() {
+            @Override
+            public Object execute(ClientRequest r) {
+                return EXECUTOR_RESULT;
+            }
+        });
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
         when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(jsEndpoint);
         adapterActivationContext = new AdapterActivationContext(environment, cdoStore, activationService);
@@ -48,7 +53,7 @@ class AdapterActivationContextTest {
     public void getExecutorReturnsExecutor() {
         Executor executor = adapterActivationContext.getExecutor(JS_ENDPOINT_ID);
         assertEquals(jsEndpoint.getExecutor(), executor);
-        assertEquals(EXECUTOR_RESULT, executor.execute(null, null));
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequest(null, null, null)));
     }
 
     @Test
