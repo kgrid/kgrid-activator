@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +44,7 @@ public class EndpointTest {
     @Test
     @DisplayName("Execute returns Endpoint Result with metadata and output")
     public void executeSetsMetadataOnEndpointResult() {
-        when(executor.execute(input, CONTENT_TYPE.toString())).thenReturn(result);
+        when(executor.execute(any(ClientRequest.class))).thenReturn(result);
         Object executionResult = endpoint.execute(input, CONTENT_TYPE);
         assertAll(
                 () -> assertEquals(result, executionResult)

@@ -3,6 +3,7 @@ package org.kgrid.activator.domain;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
+import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
@@ -159,7 +160,8 @@ public class Endpoint implements Comparable<Endpoint> {
         }
 
         String contentTypeString = (null == contentType) ? "" : contentType.toString();
-        return this.executor.execute(inputs, contentTypeString);
+        ClientRequest req = new ClientRequest(inputs, contentTypeString);
+        return this.executor.execute(req);
     }
 
     @Override
