@@ -78,7 +78,7 @@ public class RequestControllerTest {
     @Test
     @DisplayName("ExecuteEndpointPathVersion gets default endpoint")
     public void testExecuteEndpointPathVersion_GetsDefaultEndpoint() {
-        requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+        requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
         verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
@@ -86,14 +86,14 @@ public class RequestControllerTest {
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MINIMAL() {
         headers.setAccept(List.of(ACCEPT_JSON_MINIMAL.getValue()));
-        Object result = requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+        Object result = requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
         assertEquals(OUTPUT, result);
     }
 
     @Test
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MAXIMAL() {
-        EndPointResult endPointResult = (EndPointResult) requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+        EndPointResult endPointResult = (EndPointResult) requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
         assertEquals(OUTPUT, endPointResult.getResult());
     }
 
@@ -102,7 +102,7 @@ public class RequestControllerTest {
     public void testExecuteEndpointPathVersion_ThrowsIfNullExecutorIsReturned() {
         when(endpoint.getExecutor()).thenReturn(null);
         Exception ex = assertThrows(ActivatorEndpointNotFoundException.class,
-                () -> requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers));
+                () -> requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest));
         assertAll(
                 () -> assertEquals("No executor found for " + endpoint.getId(), ex.getMessage())
         );
@@ -113,7 +113,7 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfUnsupportedContentType() {
         when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(false);
         ActivatorUnsupportedMediaTypeException activatorException = assertThrows(ActivatorUnsupportedMediaTypeException.class, () -> {
-            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
         });
         assertEquals(String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
                 endpoint.getId(), CONTENT_TYPE, endpoint.getSupportedContentTypes()), activatorException.getMessage());
@@ -129,7 +129,7 @@ public class RequestControllerTest {
         when(endpoint.getId()).thenReturn(JS_ENDPOINT_URI);
 
         ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers);
+            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
         });
         assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
                 JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
@@ -138,7 +138,7 @@ public class RequestControllerTest {
     @Test
     @DisplayName("GetResourceEndpoint gets default endpoint")
     public void testGetResourceEndpoint_GetsDefaultEndpoint() {
-        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers);
+        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
         verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
