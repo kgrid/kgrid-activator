@@ -9,7 +9,6 @@ import java.util.List;
 import org.kgrid.adapter.api.ActivationContext;
 import org.kgrid.adapter.api.Adapter;
 import org.kgrid.adapter.api.Executor;
-import org.kgrid.adapter.api.RequestHandlingExecutor;
 
 public class MockAdapter implements Adapter {
 
