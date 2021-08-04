@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.kgrid.activator.domain.EndPointResult;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.AdapterResponse;
 import org.kgrid.adapter.api.ClientRequest;
@@ -17,11 +16,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.kgrid.activator.constants.CustomHeaders.ACCEPT_JSON_MINIMAL;
@@ -49,15 +45,12 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestBody Object inputs,
-            @RequestHeader HttpHeaders headers,
-            HttpServletRequest request) {
-        ClientRequestBuilder clientRequestBuilder = new ClientRequestBuilder();
-        ClientRequest clientRequest = clientRequestBuilder
-                .body(inputs)
-                .headers(headers.toSingleValueMap())
-                .url(URI.create(request.getRequestURL().toString()))
-                .httpMethod(request.getMethod())
+            RequestEntity<Object> request) {
+        ClientRequest clientRequest = new ClientRequestBuilder()
+                .body(request.getBody())
+                .headers(request.getHeaders())
+                .url(request.getUrl())
+                .httpMethod(request.getMethod().toString())
                 .build();
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return executeEndpoint(ep, clientRequest);
@@ -65,22 +58,20 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @PostMapping(
             value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json;profile=\"minimal\""})
+            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json;profile=\"minimal\""}
+    )
     @ResponseStatus(HttpStatus.OK)
     public Object executeEndpointPathVersion(
             @PathVariable String naan,
             @PathVariable String name,
             @PathVariable String apiVersion,
             @PathVariable String endpoint,
-            @RequestBody Object inputs,
-            @RequestHeader HttpHeaders headers,
-            HttpServletRequest request) {
-        ClientRequestBuilder clientRequestBuilder = new ClientRequestBuilder();
-        ClientRequest clientRequest = clientRequestBuilder
-                .body(inputs)
-                .headers(headers.toSingleValueMap())
-                .url(URI.create(request.getRequestURL().toString()))
-                .httpMethod(request.getMethod())
+            RequestEntity<Object> request) {
+        ClientRequest clientRequest = new ClientRequestBuilder()
+                .body(request.getBody())
+                .headers(request.getHeaders())
+                .url(request.getUrl())
+                .httpMethod(request.getMethod().toString())
                 .build();
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return executeEndpoint(ep, clientRequest);
@@ -94,13 +85,11 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestHeader HttpHeaders headers,
-            HttpServletRequest request) {
-        ClientRequestBuilder clientRequestBuilder = new ClientRequestBuilder();
-        ClientRequest clientRequest = clientRequestBuilder
-                .headers(headers.toSingleValueMap())
-                .url(URI.create(request.getRequestURL().toString()))
-                .httpMethod(request.getMethod())
+            RequestEntity<Object> request) {
+        ClientRequest clientRequest = new ClientRequestBuilder()
+                .headers(request.getHeaders())
+                .url(request.getUrl())
+                .httpMethod(request.getMethod().toString())
                 .build();
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
         return executeEndpoint(ep, clientRequest);
@@ -112,22 +101,19 @@ public class RequestController extends ActivatorExceptionHandler {
             @PathVariable String name,
             @RequestParam(name = "v", required = false) String apiVersion,
             @PathVariable String endpoint,
-            @RequestHeader HttpHeaders headers,
-            HttpServletRequest request) {
-        String artifactName = StringUtils.substringAfterLast(request.getRequestURI().substring(1), endpoint + "/");
-        ClientRequestBuilder clientRequestBuilder = new ClientRequestBuilder();
-        ClientRequest clientRequest = clientRequestBuilder
+            RequestEntity<Object> request) {
+        String artifactName = StringUtils.substringAfterLast(
+                request.getUrl().getPath().substring(1), endpoint + "/");
+        ClientRequest clientRequest = new ClientRequestBuilder()
                 .body(artifactName)
-                .headers(headers.toSingleValueMap())
-                .url(URI.create(request.getRequestURL().toString()))
-                .httpMethod(request.getMethod())
+                .headers(request.getHeaders())
+                .url(request.getUrl())
+                .httpMethod(request.getMethod().toString())
                 .build();
 
         HttpHeaders responseHeaders = new HttpHeaders();
         final String contentType = getContentType(artifactName);
-        if (!isValidAcceptType(headers, contentType)) {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-        }
+
         responseHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
         responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(artifactName));
 
@@ -136,18 +122,6 @@ public class RequestController extends ActivatorExceptionHandler {
         return new ResponseEntity<>(new InputStreamResource(
                 (InputStream) executionResult.getResult()),
                 responseHeaders, HttpStatus.OK);
-    }
-
-    private boolean isValidAcceptType(HttpHeaders headers, String contentType) {
-        if (!headers.containsKey("accept")) {
-            return true;
-        }
-        for (MediaType acceptType : headers.getAccept()) {
-            if (acceptType.isCompatibleWith(MediaType.parseMediaType(contentType))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Object executeEndpoint(Endpoint endpoint, ClientRequest clientRequest) {
@@ -159,12 +133,7 @@ public class RequestController extends ActivatorExceptionHandler {
                         versions.stream().map(Endpoint::getApiVersion).collect(Collectors.joining(",")));
             }
         }
-        if(clientRequest.getHeaders().containsKey("content-type")){
-            MediaType contentType = MediaType.valueOf(clientRequest.getHeaders().get("content-type"));
-            if (clientRequest.getHttpMethod().equals(HttpMethod.POST.name())) {
-                validateContentType(contentType, Objects.requireNonNull(endpoint));
-            }
-        }
+
         return getExecutionResult(endpoint, clientRequest);
     }
 
@@ -175,19 +144,11 @@ public class RequestController extends ActivatorExceptionHandler {
         }
 
         Object result = executor.execute(clientRequest);
-        if (clientRequest.getHeaders().get("accept").contains(ACCEPT_JSON_MINIMAL.getValue().toString())) {
+        if (clientRequest.getHeaders().allValues("accept").contains(ACCEPT_JSON_MINIMAL.getValue().toString())) {
             return result;
         }
         AdapterResponse<Object> response = new AdapterResponse<>(result, null, endpoint.getMetadata());
         return new EndPointResult<>(clientRequest, response);
-    }
-
-    private void validateContentType(MediaType contentType, Endpoint endpoint) {
-        if (!endpoint.isSupportedContentType(contentType)) {
-            throw new ActivatorUnsupportedMediaTypeException(
-                    String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
-                            endpoint.getId(), contentType, endpoint.getSupportedContentTypes()));
-        }
     }
 
     private String getContentType(String artifactName) {

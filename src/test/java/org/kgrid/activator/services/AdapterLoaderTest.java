@@ -5,10 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.domain.Endpoint;
-import org.kgrid.adapter.api.ActivationContext;
-import org.kgrid.adapter.api.Adapter;
-import org.kgrid.adapter.api.ClientRequest;
-import org.kgrid.adapter.api.Executor;
+import org.kgrid.adapter.api.*;
 import org.kgrid.mock.adapter.MockAdapter;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.mockito.*;
@@ -111,7 +108,7 @@ public class AdapterLoaderTest {
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequest(null, null, null)));
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()));
     }
 
     @Test

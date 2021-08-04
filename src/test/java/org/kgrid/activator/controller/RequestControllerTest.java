@@ -7,22 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kgrid.activator.domain.EndPointResult;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.activator.exceptions.ActivatorUnsupportedMediaTypeException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -48,10 +42,10 @@ public class RequestControllerTest {
     private final String RESOURCE_NAME = "file.csv";
     private final String RESOURCE_SLUG = "/source/" + RESOURCE_NAME;
     private final URI FULL_RESOURCE_URI = URI.create(JS_ENDPOINT_URI + RESOURCE_SLUG);
-    private final InputStream resourceInputStream = Mockito.mock(InputStream.class);
+    private final InputStream resourceInputStream = mock(InputStream.class);
     private final HttpHeaders headers = new HttpHeaders();
-    private final Endpoint endpoint = Mockito.mock(Endpoint.class);
-    private final HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
+    private final Endpoint endpoint = mock(Endpoint.class);
+    private final RequestEntity requestEntity = mock(RequestEntity.class);
 
     @BeforeEach
     public void setup() throws IOException {
@@ -59,7 +53,8 @@ public class RequestControllerTest {
         ArrayList<String> contentTypes = new ArrayList<>();
         contentTypes.add(CONTENT_TYPE.toString());
         contentTypes.add(MediaType.IMAGE_GIF.toString());
-        lenient().when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME)).thenReturn(endpoint);
+        lenient().when(activationService.getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME))
+                .thenReturn(endpoint);
         lenient().when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
@@ -71,14 +66,17 @@ public class RequestControllerTest {
             }
         });
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
-        when(servletRequest.getRequestURI()).thenReturn(FULL_RESOURCE_URI.toString());
+        when(requestEntity.getUrl()).thenReturn(FULL_RESOURCE_URI);
+        when(requestEntity.getHeaders()).thenReturn(headers);
+        when(requestEntity.getMethod()).thenReturn(HttpMethod.POST);
         when(resourceInputStream.readAllBytes()).thenReturn(OUTPUT.getBytes());
     }
 
     @Test
     @DisplayName("ExecuteEndpointPathVersion gets default endpoint")
     public void testExecuteEndpointPathVersion_GetsDefaultEndpoint() {
-        requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
+        requestController.executeEndpointPathVersion(
+                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
@@ -86,14 +84,16 @@ public class RequestControllerTest {
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MINIMAL() {
         headers.setAccept(List.of(ACCEPT_JSON_MINIMAL.getValue()));
-        Object result = requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
+        Object result = requestController.executeEndpointPathVersion(
+                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         assertEquals(OUTPUT, result);
     }
 
     @Test
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MAXIMAL() {
-        EndPointResult endPointResult = (EndPointResult) requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
+        EndPointResult endPointResult = (EndPointResult) requestController.executeEndpointPathVersion(
+                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         assertEquals(OUTPUT, endPointResult.getResult());
     }
 
@@ -102,21 +102,11 @@ public class RequestControllerTest {
     public void testExecuteEndpointPathVersion_ThrowsIfNullExecutorIsReturned() {
         when(endpoint.getExecutor()).thenReturn(null);
         Exception ex = assertThrows(ActivatorEndpointNotFoundException.class,
-                () -> requestController.executeEndpointPathVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest));
+                () -> requestController.executeEndpointPathVersion(
+                        JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity));
         assertAll(
                 () -> assertEquals("No executor found for " + endpoint.getId(), ex.getMessage())
         );
-    }
-
-    @Test
-    @DisplayName("Execute endpoint unsupported content type throws")
-    public void testExecuteEndpoint_ThrowsIfUnsupportedContentType() {
-        when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(false);
-        ActivatorUnsupportedMediaTypeException activatorException = assertThrows(ActivatorUnsupportedMediaTypeException.class, () -> {
-            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
-        });
-        assertEquals(String.format("Endpoint %s does not support media type %s. Supported Content Types: %s",
-                endpoint.getId(), CONTENT_TYPE, endpoint.getSupportedContentTypes()), activatorException.getMessage());
     }
 
     @Test
@@ -128,8 +118,10 @@ public class RequestControllerTest {
         when(endpoint.isActive()).thenReturn(false);
         when(endpoint.getId()).thenReturn(JS_ENDPOINT_URI);
 
-        ActivatorEndpointNotFoundException activatorException = assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpointQueryVersion(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, INPUT, headers, servletRequest);
+        ActivatorEndpointNotFoundException activatorException =
+                assertThrows(ActivatorEndpointNotFoundException.class, () -> {
+            requestController.executeEndpointQueryVersion(
+                    JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         });
         assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
                 JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
@@ -138,7 +130,7 @@ public class RequestControllerTest {
     @Test
     @DisplayName("GetResourceEndpoint gets default endpoint")
     public void testGetResourceEndpoint_GetsDefaultEndpoint() {
-        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
+        requestController.getResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
@@ -151,7 +143,7 @@ public class RequestControllerTest {
                 return resourceInputStream;
             }
         });
-        requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
+        requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         verify(activationService).getDefaultEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME);
     }
 
@@ -166,19 +158,8 @@ public class RequestControllerTest {
                 return resourceInputStream;
             }
         });
-        InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest).getBody();
+        InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(
+                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity).getBody();
         assertEquals(OUTPUT, new String(result.getInputStream().readAllBytes()));
-    }
-
-    @Test
-    @DisplayName("Resource endpoint invalid accept type")
-    public void testExecuteResourceEndpoint_InvalidAcceptType() {
-        when(fileTypeMap.getContentType(RESOURCE_SLUG.substring(1))).thenReturn("text/csv");
-        headers.remove("Content-Type");
-        headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-        ResponseEntity<Object> response = requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, headers, servletRequest);
-        assertAll(
-                () -> assertEquals(new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE), response)
-        );
     }
 }

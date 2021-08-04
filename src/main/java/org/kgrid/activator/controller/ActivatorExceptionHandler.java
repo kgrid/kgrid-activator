@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
@@ -85,6 +86,13 @@ public abstract class ActivatorExceptionHandler {
                                                                        WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Error", HttpStatus.INTERNAL_SERVER_ERROR),
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMediaTypeNotSupportedExceptions(Exception e,
+                                                                                      WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http MediaType not supported", HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
