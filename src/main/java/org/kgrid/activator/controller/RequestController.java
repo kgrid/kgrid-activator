@@ -38,7 +38,7 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @PostMapping(
             value = {"/{naan}/{name}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json;profile=\"minimal\""})
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Object executeEndpointQueryVersion(
             @PathVariable String naan,
@@ -58,7 +58,7 @@ public class RequestController extends ActivatorExceptionHandler {
 
     @PostMapping(
             value = {"/{naan}/{name}/{apiVersion}/{endpoint}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE, "application/json;profile=\"minimal\""}
+            produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @ResponseStatus(HttpStatus.OK)
     public Object executeEndpointPathVersion(
