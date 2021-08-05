@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.kgrid.activator.constants.CustomHeaders.ACCEPT_JSON_MINIMAL;
 import static org.kgrid.activator.testUtilities.KoCreationTestHelper.*;
 import static org.mockito.Mockito.*;
 
@@ -83,17 +82,17 @@ public class RequestControllerTest {
     @Test
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MINIMAL() {
-        headers.setAccept(List.of(ACCEPT_JSON_MINIMAL.getValue()));
-        Object result = requestController.executeEndpointPathVersion(
+        headers.setAccept(List.of(MediaType.valueOf("application/json;profile=\"minimal\"")));
+        ResponseEntity result = requestController.executeEndpointPathVersion(
                 JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
-        assertEquals(OUTPUT, result);
+        assertEquals(OUTPUT, result.getBody());
     }
 
     @Test
     @DisplayName("ExecuteEndpointPathVersion returns result")
     public void testExecuteEndpointPathVersion_ReturnsResult_MAXIMAL() {
         EndPointResult endPointResult = (EndPointResult) requestController.executeEndpointPathVersion(
-                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
+                JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity).getBody();
         assertEquals(OUTPUT, endPointResult.getResult());
     }
 
@@ -114,7 +113,6 @@ public class RequestControllerTest {
     public void testExecuteEndpoint_ThrowsIfEndpointIsNotActive() {
         ArrayList<Endpoint> versions = new ArrayList<>();
         versions.add(endpoint);
-        when(activationService.getAllVersions(JS_NAAN, JS_NAME, JS_ENDPOINT_NAME)).thenReturn(versions);
         when(endpoint.isActive()).thenReturn(false);
         when(endpoint.getId()).thenReturn(JS_ENDPOINT_URI);
 
@@ -123,7 +121,7 @@ public class RequestControllerTest {
             requestController.executeEndpointQueryVersion(
                     JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
         });
-        assertEquals(String.format("No active endpoint found for %s Try one of these available versions: %s",
+        assertEquals(String.format("No executor found for naan/name/jsApiVersion/endpoint",
                 JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
     }
 
