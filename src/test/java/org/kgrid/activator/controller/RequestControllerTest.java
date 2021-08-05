@@ -57,7 +57,6 @@ public class RequestControllerTest {
         lenient().when(activationService.getEndpoint(JS_ENDPOINT_URI)).thenReturn(endpoint);
         when(endpoint.isActive()).thenReturn(true);
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
-        when(endpoint.isSupportedContentType(CONTENT_TYPE)).thenReturn(true);
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
             public Object execute(ClientRequest request) {

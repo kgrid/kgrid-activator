@@ -141,36 +141,6 @@ public class Endpoint implements Comparable<Endpoint> {
         return supportedTypes;
     }
 
-    public boolean isSupportedContentType(MediaType contentType) {
-        if (null == contentType) {
-            return false;
-        }
-        final JsonNode contentTypes = this.getService()
-                .at(String.format("/paths/~1%s/post/requestBody/content", endpointName));
-        AtomicBoolean matches = new AtomicBoolean(false);
-        contentTypes.fieldNames().forEachRemaining(key -> {
-            if (contentType.toString().equals(key)) {
-                matches.set(true);
-            }
-        });
-        return matches.get();
-    }
-
-    @Deprecated
-    public Object execute(Object inputs, MediaType contentType) {
-
-        if (null == executor) {
-            throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
-        }
-
-        String contentTypeString = (null == contentType) ? "" : contentType.toString();
-        ClientRequest req = new ClientRequestBuilder()
-                .body(inputs)
-                .headers(Map.of("content-type", List.of(contentTypeString)))
-                .build();
-        return this.executor.execute(req);
-    }
-
     @Override
     public int compareTo(Endpoint endpoint) {
         return endpoint.getId().compareTo(this.getId());
