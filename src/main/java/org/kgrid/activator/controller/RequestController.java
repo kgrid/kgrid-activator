@@ -5,7 +5,6 @@ import org.kgrid.activator.domain.EndPointResult;
 import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
-import org.kgrid.adapter.api.AdapterResponse;
 import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.ClientRequestBuilder;
 import org.kgrid.adapter.api.Executor;
@@ -118,8 +117,10 @@ public class RequestController extends ActivatorExceptionHandler {
                 Objects.equals(mediaType.getParameter(PROFILE.getValue()), PROFILE_MINIMAL.getValue()))) {
             return result;
         }
-        AdapterResponse<Object> response = new AdapterResponse<>(result, null, endpoint.getMetadata());
-        return new EndPointResult<>(clientRequest, response);
+        EndPointResult<Object> endPointResult = new EndPointResult<>(result);
+        endPointResult.getInfo().put("endpoint", endpoint.getMetadata());
+        endPointResult.getInfo().put("inputs", clientRequest.getBody());
+        return endPointResult;
     }
 
     private String getContentType(String artifactName) {
