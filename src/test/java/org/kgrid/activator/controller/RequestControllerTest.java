@@ -61,7 +61,7 @@ public class RequestControllerTest {
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
             public ExecutorResponse execute(ClientRequest request) {
-                return new ExecutorResponse(OUTPUT, null);
+                return new ExecutorResponse(OUTPUT, null, request);
             }
         });
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
@@ -138,7 +138,7 @@ public class RequestControllerTest {
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
             public ExecutorResponse execute(ClientRequest request) {
-                return new ExecutorResponse(resourceInputStream, null);
+                return new ExecutorResponse(resourceInputStream, null, request);
             }
         });
         requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
@@ -153,7 +153,7 @@ public class RequestControllerTest {
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
             public ExecutorResponse execute(ClientRequest request) {
-                return new ExecutorResponse(resourceInputStream, null);
+                return new ExecutorResponse(resourceInputStream, null, request);
             }
         });
         InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(

@@ -41,8 +41,8 @@ class AdapterActivationContextTest {
     public void setup() {
         jsEndpoint.setExecutor(new Executor() {
             @Override
-            public ExecutorResponse execute(ClientRequest r) {
-                return new ExecutorResponse(EXECUTOR_RESULT, null);
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(EXECUTOR_RESULT, null, request);
             }
         });
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
