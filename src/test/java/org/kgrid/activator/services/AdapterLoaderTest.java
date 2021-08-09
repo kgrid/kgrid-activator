@@ -108,7 +108,7 @@ public class AdapterLoaderTest {
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()).getBody());
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequest.Builder().build()).getBody());
     }
 
     @Test

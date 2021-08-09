@@ -6,7 +6,6 @@ import org.kgrid.activator.domain.Endpoint;
 import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ClientRequest;
-import org.kgrid.adapter.api.ClientRequestBuilder;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.adapter.api.ExecutorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,7 @@ public class RequestController extends ActivatorExceptionHandler {
             throw new ActivatorEndpointNotFoundException("No executor found for " + endpoint.getId());
         }
 
-        ClientRequest clientRequest = new ClientRequestBuilder()
+        ClientRequest clientRequest = new ClientRequest.Builder()
                 .body(request.getBody())
                 .headers(request.getHeaders())
                 .url(request.getUrl())

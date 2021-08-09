@@ -2,21 +2,14 @@ package org.kgrid.activator.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
-import org.kgrid.adapter.api.ClientRequest;
-import org.kgrid.adapter.api.ClientRequestBuilder;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
-import org.springframework.http.MediaType;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Endpoint implements Comparable<Endpoint> {
 
