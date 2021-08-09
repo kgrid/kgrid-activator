@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.ClientRequestBuilder;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.adapter.api.ExecutorResponse;
 import org.kgrid.shelf.repository.CompoundDigitalObjectStore;
 import org.springframework.core.env.Environment;
 
@@ -40,8 +42,8 @@ class AdapterActivationContextTest {
     public void setup() {
         jsEndpoint.setExecutor(new Executor() {
             @Override
-            public Object execute(ClientRequest r) {
-                return EXECUTOR_RESULT;
+            public ExecutorResponse execute(ClientRequest r) {
+                return new ExecutorResponse(EXECUTOR_RESULT, null);
             }
         });
         endpoints.put(JS_ENDPOINT_URI, jsEndpoint);
@@ -54,20 +56,21 @@ class AdapterActivationContextTest {
     public void getExecutorReturnsExecutor() {
         Executor executor = adapterActivationContext.getExecutor(JS_ENDPOINT_ID);
         assertEquals(jsEndpoint.getExecutor(), executor);
-        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()));
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()).getBody());
     }
 
     @Test
     @DisplayName("Get executor throws AdapterException for missing endpoint")
     public void getExecutorThrowsAdapterExceptionForMissingEndpoint() {
         when(activationService.getEndpoint(URI.create("a/b/c")))
-            .thenThrow(new ActivatorEndpointNotFoundException(("seriously?")));
+                .thenThrow(new ActivatorEndpointNotFoundException(("seriously?")));
         ActivatorEndpointNotFoundException e =
-            assertThrows(ActivatorEndpointNotFoundException.class,
-            () -> adapterActivationContext.getExecutor("a/b/c")
-        );
+                assertThrows(ActivatorEndpointNotFoundException.class,
+                        () -> adapterActivationContext.getExecutor("a/b/c")
+                );
         assertTrue(e.getMessage().startsWith("seriously?"));
     }
+
     @Test
     @DisplayName("Get executor returns for missing executor")
     public void getExecutorReturnsNullForMissingExecutor() {

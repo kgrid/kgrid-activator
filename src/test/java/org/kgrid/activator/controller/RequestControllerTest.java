@@ -10,6 +10,7 @@ import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.adapter.api.ExecutorResponse;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,8 +60,8 @@ public class RequestControllerTest {
         when(endpoint.getApiVersion()).thenReturn(JS_API_VERSION);
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
-            public Object execute(ClientRequest request) {
-                return OUTPUT;
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(OUTPUT, null);
             }
         });
         when(endpoint.getSupportedContentTypes()).thenReturn(contentTypes);
@@ -117,9 +118,9 @@ public class RequestControllerTest {
 
         ActivatorEndpointNotFoundException activatorException =
                 assertThrows(ActivatorEndpointNotFoundException.class, () -> {
-            requestController.executeEndpointQueryVersion(
-                    JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
-        });
+                    requestController.executeEndpointQueryVersion(
+                            JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
+                });
         assertEquals(String.format("No executor found for naan/name/jsApiVersion/endpoint",
                 JS_ENDPOINT_ID, JS_API_VERSION), activatorException.getMessage());
     }
@@ -136,8 +137,8 @@ public class RequestControllerTest {
     public void testExecuteResourceEndpoint_GetsDefaultEndpoint() {
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
-            public Object execute(ClientRequest request) {
-                return resourceInputStream;
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(resourceInputStream, null);
             }
         });
         requestController.executeResourceEndpoint(JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity);
@@ -151,8 +152,8 @@ public class RequestControllerTest {
         when(fileTypeMap.getContentType(RESOURCE_SLUG.substring(1))).thenReturn("text/csv");
         when(endpoint.getExecutor()).thenReturn(new Executor() {
             @Override
-            public Object execute(ClientRequest request) {
-                return resourceInputStream;
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(resourceInputStream, null);
             }
         });
         InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(

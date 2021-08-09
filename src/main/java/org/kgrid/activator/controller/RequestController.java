@@ -8,6 +8,7 @@ import org.kgrid.activator.services.ActivationService;
 import org.kgrid.adapter.api.ClientRequest;
 import org.kgrid.adapter.api.ClientRequestBuilder;
 import org.kgrid.adapter.api.Executor;
+import org.kgrid.adapter.api.ExecutorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -112,12 +113,12 @@ public class RequestController extends ActivatorExceptionHandler {
                 .url(request.getUrl())
                 .httpMethod(request.getMethod().toString())
                 .build();
-        Object result = executor.execute(clientRequest);
+        ExecutorResponse executorResult = executor.execute(clientRequest);
         if (request.getHeaders().getAccept().stream().anyMatch(mediaType ->
                 Objects.equals(mediaType.getParameter(PROFILE.getValue()), PROFILE_MINIMAL.getValue()))) {
-            return result;
+            return executorResult.getBody();
         }
-        EndPointResult<Object> endPointResult = new EndPointResult<>(result);
+        EndPointResult<Object> endPointResult = new EndPointResult<>(executorResult.getBody());
         endPointResult.getInfo().put("endpoint", endpoint.getMetadata());
         endPointResult.getInfo().put("inputs", clientRequest.getBody());
         return endPointResult;

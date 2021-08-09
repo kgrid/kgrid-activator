@@ -61,8 +61,8 @@ public class AdapterLoaderTest {
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
         requireNonNull(jsEndpoint).setExecutor(new Executor() {
             @Override
-            public Object execute(ClientRequest r) {
-                return EXECUTOR_RESULT;
+            public ExecutorResponse execute(ClientRequest r) {
+                return new ExecutorResponse(EXECUTOR_RESULT, null);
             }
         });
 
@@ -76,7 +76,7 @@ public class AdapterLoaderTest {
         List<Adapter> adapters = adapterLoader.loadAdapters();
         adapterLoader.initializeAdapters(adapters);
         assertAll(
-                () -> verify(beanFactory, times(5)).autowireBean(any()),
+                () -> verify(beanFactory, times(4)).autowireBean(any()),
                 () -> assertNotNull(adapters),
                 () -> assertEquals("UP", adapters.get(0).status())
         );
@@ -108,7 +108,7 @@ public class AdapterLoaderTest {
     public void loadAndInitialize_SetsExecutorOnActivationContext() {
         ActivationContext activationContext = loadAndInitializeAndGetActivationContext();
         Executor executor = activationContext.getExecutor(JS_ENDPOINT_URI.toString());
-        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()));
+        assertEquals(EXECUTOR_RESULT, executor.execute(new ClientRequestBuilder().build()).getBody());
     }
 
     @Test
