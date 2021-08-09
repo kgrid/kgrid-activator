@@ -61,8 +61,8 @@ public class AdapterLoaderTest {
         Endpoint jsEndpoint = getEndpointForEngine(JS_ENGINE);
         requireNonNull(jsEndpoint).setExecutor(new Executor() {
             @Override
-            public ExecutorResponse execute(ClientRequest r) {
-                return new ExecutorResponse(EXECUTOR_RESULT, null);
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(EXECUTOR_RESULT, null, request);
             }
         });
 
