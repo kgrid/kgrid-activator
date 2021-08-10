@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.InputStream;
@@ -59,8 +60,7 @@ public class RequestController extends ActivatorExceptionHandler {
             RequestEntity<Object> request) {
 
         Endpoint ep = activationService.getDefaultEndpoint(naan, name, apiVersion, endpoint);
-        ResponseEntity<Object> resp = new ResponseEntity<>(getExecutionResult(ep, request), HttpStatus.OK);
-        return resp;
+        return new ResponseEntity<>(getExecutionResult(ep, request), HttpStatus.OK);
     }
 
     @GetMapping(
@@ -89,7 +89,9 @@ public class RequestController extends ActivatorExceptionHandler {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         final String contentType = getContentType(artifactName);
-
+        if(request.getHeaders().getAccept().size() > 0 && !request.getHeaders().getAccept().contains(MediaType.parseMediaType(contentType))) {
+            throw new NotAcceptableStatusException("Content type of requested resource is " + contentType);
+        }
         responseHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
         responseHeaders.add(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(artifactName));
 
@@ -113,7 +115,7 @@ public class RequestController extends ActivatorExceptionHandler {
                 .httpMethod(request.getMethod().toString())
                 .build();
         ExecutorResponse executorResult = executor.execute(clientRequest);
-        if (request.getHeaders().getAccept().stream().anyMatch(mediaType ->
+        if (request.getMethod().equals(HttpMethod.POST) && request.getHeaders().getAccept().stream().anyMatch(mediaType ->
                 Objects.equals(mediaType.getParameter(PROFILE.getValue()), PROFILE_MINIMAL.getValue()))) {
             return executorResult.getBody();
         }

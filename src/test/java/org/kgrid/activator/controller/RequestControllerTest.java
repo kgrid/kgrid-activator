@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.IOException;
@@ -159,5 +160,25 @@ public class RequestControllerTest {
         InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(
                 JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity).getBody();
         assertEquals(OUTPUT, new String(result.getInputStream().readAllBytes()));
+    }
+
+    @Test
+    @DisplayName("ExecuteResourceEndpoint throws error when given wrong accept type")
+    public void testExecuteResourceEndpoint_ThrowsNotAcceptable() throws IOException {
+        headers.setAccept(List.of(MediaType.valueOf("text/csv")));
+        String requestedType = "text/plain";
+        when(fileTypeMap.getContentType(RESOURCE_SLUG.substring(1))).thenReturn(requestedType);
+        when(endpoint.getExecutor()).thenReturn(new Executor() {
+            @Override
+            public ExecutorResponse execute(ClientRequest request) {
+                return new ExecutorResponse(resourceInputStream, null, request);
+            }
+        });
+
+        NotAcceptableStatusException ex = assertThrows(NotAcceptableStatusException.class, () -> {
+            InputStreamResource result = (InputStreamResource) requestController.executeResourceEndpoint(
+                    JS_NAAN, JS_NAME, JS_API_VERSION, JS_ENDPOINT_NAME, requestEntity).getBody();});
+        assertEquals(String.format("406 NOT_ACCEPTABLE \"Content type of requested resource is %s\"",
+                requestedType), ex.getMessage());
     }
 }

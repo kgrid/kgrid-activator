@@ -16,6 +16,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -100,6 +101,13 @@ public abstract class ActivatorExceptionHandler {
                                                                        WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http Message Not Readable", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAcceptableStatusException.class)
+    public ResponseEntity<Map<String, String>> handleMediaTypeNotAcceptableExceptions(Exception e,
+                                                                                         WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http MediaType not acceptable", HttpStatus.NOT_ACCEPTABLE),
+                HttpStatus.NOT_ACCEPTABLE);
     }
 
     private Map<String, String> generateErrorMapAndLog(WebRequest request, Exception e, String title,
