@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -87,11 +89,25 @@ public abstract class ActivatorExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMediaTypeNotSupportedExceptions(Exception e,
+                                                                                      WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http MediaType not supported", HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableExceptions(Exception e,
                                                                        WebRequest request) {
         return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http Message Not Readable", HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAcceptableStatusException.class)
+    public ResponseEntity<Map<String, String>> handleMediaTypeNotAcceptableExceptions(Exception e,
+                                                                                         WebRequest request) {
+        return new ResponseEntity<>(generateErrorMapAndLog(request, e, "Http MediaType not acceptable", HttpStatus.NOT_ACCEPTABLE),
+                HttpStatus.NOT_ACCEPTABLE);
     }
 
     private Map<String, String> generateErrorMapAndLog(WebRequest request, Exception e, String title,

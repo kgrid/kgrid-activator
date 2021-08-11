@@ -2,17 +2,14 @@ package org.kgrid.activator.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.kgrid.activator.constants.EndpointStatus;
-import org.kgrid.activator.exceptions.ActivatorEndpointNotFoundException;
 import org.kgrid.adapter.api.Executor;
 import org.kgrid.shelf.domain.ArkId;
 import org.kgrid.shelf.domain.KnowledgeObjectWrapper;
-import org.springframework.http.MediaType;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Endpoint implements Comparable<Endpoint> {
 
@@ -135,31 +132,6 @@ public class Endpoint implements Comparable<Endpoint> {
         this.getService().at("/paths").get("/" + this.getEndpointName())
                 .get("post").get("requestBody").get("content").fieldNames().forEachRemaining(supportedTypes::add);
         return supportedTypes;
-    }
-
-    public boolean isSupportedContentType(MediaType contentType) {
-        if (null == contentType) {
-            return false;
-        }
-        final JsonNode contentTypes = this.getService()
-                .at(String.format("/paths/~1%s/post/requestBody/content", endpointName));
-        AtomicBoolean matches = new AtomicBoolean(false);
-        contentTypes.fieldNames().forEachRemaining(key -> {
-            if (contentType.toString().equals(key)) {
-                matches.set(true);
-            }
-        });
-        return matches.get();
-    }
-
-    public Object execute(Object inputs, MediaType contentType) {
-
-        if (null == executor) {
-            throw new ActivatorEndpointNotFoundException("No executor found for " + this.getId());
-        }
-
-        String contentTypeString = (null == contentType) ? "" : contentType.toString();
-        return this.executor.execute(inputs, contentTypeString);
     }
 
     @Override

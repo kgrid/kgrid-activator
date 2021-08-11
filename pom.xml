@@ -75,6 +75,11 @@
         <!-- kgrid specific -->
         <dependency>
             <groupId>org.kgrid</groupId>
+            <artifactId>adapter-api</artifactId>
+            <version>1.1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kgrid</groupId>
             <artifactId>shelf-api</artifactId>
             <version>3.1.7</version>
         </dependency>
@@ -86,12 +91,12 @@
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>javascript-v8-adapter</artifactId>
-            <version>0.3.0</version>
+            <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.kgrid</groupId>
             <artifactId>resource-adapter</artifactId>
-            <version>0.1.4</version>
+            <version>0.1.5-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
