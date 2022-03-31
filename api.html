@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Activator API | KGrid Activator</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="preload" href="/kgrid-activator/assets/css/0.styles.e4056d04.css" as="style"><link rel="preload" href="/kgrid-activator/assets/js/app.d7df60d8.js" as="script"><link rel="preload" href="/kgrid-activator/assets/js/3.1df17682.js" as="script"><link rel="prefetch" href="/kgrid-activator/assets/js/2.854dcf62.js"><link rel="prefetch" href="/kgrid-activator/assets/js/4.633c6510.js"><link rel="prefetch" href="/kgrid-activator/assets/js/5.b10e4367.js"><link rel="prefetch" href="/kgrid-activator/assets/js/6.7f200d90.js"><link rel="prefetch" href="/kgrid-activator/assets/js/7.52ff7d5f.js">
+    <link rel="stylesheet" href="/kgrid-activator/assets/css/0.styles.e4056d04.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/kgrid-activator/" class="home-link router-link-active"><!----> <span class="site-name">KGrid Activator</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/kgrid-activator/" class="nav-link">Guide</a></div><div class="nav-item"><a href="/kgrid-activator/configuration.html" class="nav-link">Configuration</a></div><div class="nav-item"><a href="/kgrid-activator/api.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">API</a></div><div class="nav-item"><a href="/kgrid-activator/containers.html" class="nav-link">Containers</a></div> <a href="https://github.com/kgrid/kgrid-activator" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/kgrid-activator/" class="nav-link">Guide</a></div><div class="nav-item"><a href="/kgrid-activator/configuration.html" class="nav-link">Configuration</a></div><div class="nav-item"><a href="/kgrid-activator/api.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">API</a></div><div class="nav-item"><a href="/kgrid-activator/containers.html" class="nav-link">Containers</a></div> <a href="https://github.com/kgrid/kgrid-activator" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><div class="sidebar-group first"><p class="sidebar-heading open"><span>Activator API</span> <!----></p> <ul class="sidebar-group-items"><li><a href="/kgrid-activator/api.html#executing-ko-endpoints-request-api" class="sidebar-link">Executing KO Endpoints (Request API)</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#post-naan-name-apiversion-endpoint" class="sidebar-link">POST /{naan}/{name}/{apiVersion}/{endpoint}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#post-naan-name-endpoint-v-apiversion" class="sidebar-link">POST /{naan}/{name}/{endpoint}?v={apiVersion}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#post-naan-name-endpoint" class="sidebar-link">POST /{naan}/{name}/{endpoint}</a></li></ul></li><li><a href="/kgrid-activator/api.html#loading-and-activating-kos-activation-api" class="sidebar-link">Loading and Activating KOs (Activation API)</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-activation-refresh" class="sidebar-link">GET /actuator/activation/refresh</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-activation-refresh-engine" class="sidebar-link">GET /actuator/activation/refresh/{engine}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-activation-reload" class="sidebar-link">GET /actuator/activation/reload</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-activation-reload-naan-name-v-version" class="sidebar-link">GET /actuator/activation/reload/{naan}/{name}/?v={version}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-activation-reload-naan-name-version" class="sidebar-link">GET /actuator/activation/reload/{naan}/{name}/{version}</a></li></ul></li><li><a href="/kgrid-activator/api.html#finding-info-about-endpoints-endpoint-resource-api" class="sidebar-link">Finding Info About Endpoints (Endpoint Resource API)</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-endpoints" class="sidebar-link">GET /endpoints</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-endpoints-engine" class="sidebar-link">GET /endpoints/{engine}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-endpoints-naan-name-endpoint" class="sidebar-link">GET /endpoints/{naan}/{name}/{endpoint}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-endpoints-naan-name-endpoint-v-apiversion" class="sidebar-link">GET /endpoints/{naan}/{name}/{endpoint}?v={apiVersion}</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-endpoints-naan-name-apiversion-endpointname" class="sidebar-link">GET /endpoints/{naan}/{name}/{apiVersion}/{endpointName}</a></li></ul></li><li><a href="/kgrid-activator/api.html#health-and-info-api" class="sidebar-link">Health and Info API</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-health-required" class="sidebar-link">GET /actuator/health (Required)</a></li><li class="sidebar-sub-header"><a href="/kgrid-activator/api.html#get-actuator-info-optional" class="sidebar-link">GET /actuator/info (Optional)</a></li></ul></li><li><a href="/kgrid-activator/api.html#proposed-api-changes" class="sidebar-link">Proposed API Changes</a><ul class="sidebar-sub-headers"></ul></li></ul></div></li></ul> </div> <div class="page"> <div class="content"><h1 id="activator-api"><a href="#activator-api" class="header-anchor">#</a> Activator API</h1> <p>Various APIs implemented by the Activator for managing and using endpoint services packed as Knowledge Objects. The Activator also uses the <a href="https://kgrid.org/kgrid-shelf/api.html" target="_blank" rel="noopener noreferrer">Shelf API<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> to manage loading and providing access to KOs themselves.
+It should be noted that some endpoints are secured by default, unless running in dev mode, which can be set using <a href="/kgrid-activator/configuration.html#springprofilesactive"><code>spring.profiles.active=dev</code></a> when starting the activator.</p> <h2 id="executing-ko-endpoints-request-api"><a href="#executing-ko-endpoints-request-api" class="header-anchor">#</a> Executing KO Endpoints (Request API)</h2> <p>The Request API exposes the <em>micro</em>-API for the services provided by each KO in the service description.</p> <h3 id="post-naan-name-apiversion-endpoint"><a href="#post-naan-name-apiversion-endpoint" class="header-anchor">#</a> <code>POST /{naan}/{name}/{apiVersion}/{endpoint}</code></h3> <ul><li>Execute the payload of a particular version of an endpoint</li> <li>Secured by default: No</li> <li>Headers<div class="language- extra-class"><pre class="language-text"><code>Accept: not required, if provided must match the media-type for the path in the OpenAPI document for the endpoint.
+Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+</code></pre></div></li> <li>Request Body<div class="language-text extra-class"><pre class="language-text"><code>{&quot;name&quot;:&quot;Mario&quot;} (*This depends on the inputs for the endpoint payload)
+</code></pre></div></li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request POST <span class="token string">'http://localhost:8080/js/simple/1.0/welcome'</span> <span class="token punctuation">\</span>
+--header <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+--data-raw <span class="token string">'{
+&quot;name&quot;: &quot;Mario&quot;
+}'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;result&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Welcome to Knowledge Grid, Mario&quot;</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;info&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+	  <span class="token property">&quot;ko&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		  <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;koio:KnowledgeObject&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;identifier&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ark:/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token string">&quot;v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;description&quot;</span><span class="token operator">:</span> <span class="token string">&quot;An example of simple Knowledge Object&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;keywords&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;Hello&quot;</span><span class="token punctuation">,</span>
+		  	<span class="token string">&quot;example&quot;</span>
+		  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;service.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasDeploymentSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;deployment.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasPayload&quot;</span><span class="token operator">:</span> <span class="token string">&quot;src/index.js&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span>
+		  <span class="token punctuation">]</span>
+	  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+	  <span class="token property">&quot;inputs&quot;</span><span class="token operator">:</span> <span class="token string">&quot;{\n\t\&quot;name\&quot;: \&quot;Mario\&quot;\n}&quot;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li> <li>Errors
+<ul><li>404:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;404 Not Found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/missing&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint not found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:18:26 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;No active endpoints found for js/simple/missing&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>415: If the Content-Type header does not match what the KO has described in the service description<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;415 Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:20:18 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>500: (Could depend on the adapter used for execution)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;500 Internal Server Error&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;General Adapter Exception&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:23:16 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Code execution error: SyntaxError: Unexpected token b in JSON at position 11&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li></ul> <h3 id="post-naan-name-endpoint-v-apiversion"><a href="#post-naan-name-endpoint-v-apiversion" class="header-anchor">#</a> <code>POST /{naan}/{name}/{endpoint}?v={apiVersion}</code></h3> <ul><li>Execute the payload of a particular version of an endpoint using a query parameter</li> <li>Secured by default: No</li> <li>Headers<div class="language- extra-class"><pre class="language-text"><code>Accept: not required, if provided must match the OpenAPI document for the endpoint.
+Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+</code></pre></div></li> <li>Request Body<div class="language-text extra-class"><pre class="language-text"><code>{&quot;name&quot;:&quot;Mario&quot;} (*This depends on the inputs for the endpoint payload)
+</code></pre></div></li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request POST <span class="token string">'http://localhost:8080/js/simple/welcome?v=1.0'</span> <span class="token punctuation">\</span>
+--header <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+--data-raw <span class="token string">'{
+&quot;name&quot;: &quot;Mario&quot;
+}'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO.<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;result&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Welcome to Knowledge Grid, Mario&quot;</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;info&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+	  <span class="token property">&quot;ko&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		  <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;koio:KnowledgeObject&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;identifier&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ark:/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token string">&quot;v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;description&quot;</span><span class="token operator">:</span> <span class="token string">&quot;An example of simple Knowledge Object&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;keywords&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;Hello&quot;</span><span class="token punctuation">,</span>
+		  	<span class="token string">&quot;example&quot;</span>
+		  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;service.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasDeploymentSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;deployment.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasPayload&quot;</span><span class="token operator">:</span> <span class="token string">&quot;src/index.js&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span>
+		  <span class="token punctuation">]</span>
+	  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+	  <span class="token property">&quot;inputs&quot;</span><span class="token operator">:</span> <span class="token string">&quot;{\n\t\&quot;name\&quot;: \&quot;Mario\&quot;\n}&quot;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li> <li>Errors
+<ul><li>404:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;404 Not Found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/missing&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint not found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:18:26 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;No active endpoints found for js/simple/missing&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>415: If the Content-Type header does not match what the KO has described in the service description<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;415 Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:20:18 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>500: (Could depend on the adapter used for execution)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;500 Internal Server Error&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;General Adapter Exception&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:23:16 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Code execution error: SyntaxError: Unexpected token b in JSON at position 11&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li></ul> <h3 id="post-naan-name-endpoint"><a href="#post-naan-name-endpoint" class="header-anchor">#</a> <code>POST /{naan}/{name}/{endpoint}</code></h3> <ul><li>Execute the payload of the default version of an endpoint
+<ul><li>Default Version: If the endpoint version is not supplied in the above request, this particular activator has a concept of 'default version', where it will use the first endpoint it finds that matches the naan, name, and endpoint name. This is an implementation detail, and is not enforced.</li></ul></li> <li>Secured by default: No</li> <li>Headers<div class="language- extra-class"><pre class="language-text"><code>Accept: not required, if provided must match the OpenAPI document for the endpoint.
+Content-type: required, and must be one of the types in the OpenAPI document for the endpoint.
+</code></pre></div></li> <li>Request Body<div class="language-text extra-class"><pre class="language-text"><code>{&quot;name&quot;:&quot;Mario&quot;} (*This depends on the inputs for the endpoint payload)
+</code></pre></div></li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request POST <span class="token string">'http://localhost:8080/js/simple/welcome'</span> <span class="token punctuation">\</span>
+--header <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+--data-raw <span class="token string">'{
+&quot;name&quot;: &quot;Mario&quot;
+}'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200: Will return the result of execution wrapped in a json object along with debug info containing the metadata for the KO<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;result&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Welcome to Knowledge Grid, Mario&quot;</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;info&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+	  <span class="token property">&quot;ko&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		  <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;koio:KnowledgeObject&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;identifier&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ark:/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;version&quot;</span><span class="token operator">:</span> <span class="token string">&quot;v1.0&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;description&quot;</span><span class="token operator">:</span> <span class="token string">&quot;An example of simple Knowledge Object&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;keywords&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;Hello&quot;</span><span class="token punctuation">,</span>
+		  	<span class="token string">&quot;example&quot;</span>
+		  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;service.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasDeploymentSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;deployment.yaml&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;hasPayload&quot;</span><span class="token operator">:</span> <span class="token string">&quot;src/index.js&quot;</span><span class="token punctuation">,</span>
+		  <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+		  	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span>
+		  <span class="token punctuation">]</span>
+	  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+	  <span class="token property">&quot;inputs&quot;</span><span class="token operator">:</span> <span class="token string">&quot;{\n\t\&quot;name\&quot;: \&quot;Mario\&quot;\n}&quot;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li> <li>Errors
+<ul><li>404:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;404 Not Found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/missing&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint not found&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:18:26 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;No active endpoints found for js/simple/missing&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>415: If the Content-Type header does not match what the KO has described in the service description<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;415 Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Unsupported Media Type&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:20:18 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Endpoint js/simple/1.0/welcome does not support media type text/plain. Supported Content Types: [application/json]&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>500: (Could depend on the adapter used for execution)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+    <span class="token property">&quot;Status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;500 Internal Server Error&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Instance&quot;</span><span class="token operator">:</span> <span class="token string">&quot;uri=/js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;General Adapter Exception&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Time&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Wed Feb 24 16:23:16 EST 2021&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;Detail&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Code execution error: SyntaxError: Unexpected token b in JSON at position 11&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li></ul> <h2 id="loading-and-activating-kos-activation-api"><a href="#loading-and-activating-kos-activation-api" class="header-anchor">#</a> Loading and Activating KOs (Activation API)</h2> <ul><li><p>The Activator's tools for loading, activating, and refreshing KOs hosted on the shelf.</p> <ul><li>Once a KO has been activated, any activated endpoints will remain functional even if the KO is deleted from the shelf, unless or until the activation state is refreshed (using <code>/actuator/refresh</code> or <code>/actuator/refresh/{naan}/{name}</code>).</li> <li>Likewise, new KOs added to the shelf will <em>NOT</em> be activated unless or until the activation state is refreshed (using <code>/actuator/refresh</code> or <code>/actuator/refresh/{naan}/{name}</code>).</li> <li>On reload (using <code>/actuator/reload</code> or <code>/actuator/reload/{naan}/{name}/{version}</code>) all endpoints for the reloaded KOs are also activated.</li></ul></li></ul> <h3 id="get-actuator-activation-refresh"><a href="#get-actuator-activation-refresh" class="header-anchor">#</a> <code>GET /actuator/activation/refresh</code></h3> <ul><li>All currently loaded endpoints (activated or not) are reactivated and replaced.
+<ul><li>KOs are not reloaded from the shelf.</li> <li>Newly added KOs may have to be reloaded using the <code>reload</code> endpoint below.</li></ul></li> <li>Secured by default: Yes</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/activation/refresh'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>303: Redirects to <code>/endpoints</code></li></ul></li></ul> <h3 id="get-actuator-activation-refresh-engine"><a href="#get-actuator-activation-refresh-engine" class="header-anchor">#</a> <code>GET /actuator/activation/refresh/{engine}</code></h3> <ul><li>All currently loaded endpoints for a particular runtime (activated or not) are reactivated and replaced.</li> <li>Secured by default: Yes</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/activation/refresh/python'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>303: Redirects to <code>/endpoints</code></li></ul></li></ul> <h3 id="get-actuator-activation-reload"><a href="#get-actuator-activation-reload" class="header-anchor">#</a> <code>GET /actuator/activation/reload</code></h3> <ul><li>This will discard the endpoints for every KO, reload every KO from the shelf, and then activate all endpoints.</li> <li>Secured by default: Yes</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/activation/reload'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>303: Redirects to <code>/endpoints</code></li></ul></li></ul> <h3 id="get-actuator-activation-reload-naan-name-v-version"><a href="#get-actuator-activation-reload-naan-name-v-version" class="header-anchor">#</a> <code>GET /actuator/activation/reload/{naan}/{name}/?v={version}</code></h3> <ul><li>This will discard the endpoints for the specified KO, reload it from the shelf, and then activate its endpoints.</li> <li>Secured by default: Yes</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/activation/reload/js/simple/?v=v1.0'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>303: Redirects to <code>/endpoints</code></li></ul></li></ul> <h3 id="get-actuator-activation-reload-naan-name-version"><a href="#get-actuator-activation-reload-naan-name-version" class="header-anchor">#</a> <code>GET /actuator/activation/reload/{naan}/{name}/{version}</code></h3> <ul><li>This will discard the endpoints for the specified KO, reload it from the shelf, and then activate its endpoints.</li> <li>Secured by default: Yes</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/activation/reload/js/simple/v1.0'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>303: Redirects to <code>/endpoints</code></li></ul></li></ul> <h2 id="finding-info-about-endpoints-endpoint-resource-api"><a href="#finding-info-about-endpoints-endpoint-resource-api" class="header-anchor">#</a> Finding Info About Endpoints (Endpoint Resource API)</h2> <ul><li>The Activator's method of retrieving representations of endpoints as resources</li></ul> <h3 id="get-endpoints"><a href="#get-endpoints" class="header-anchor">#</a> <code>GET /endpoints</code></h3> <ul><li>Returns an array of all currently loaded endpoints, whether they are activated or not.</li> <li>Secured by default: No</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/endpoints'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+	     <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;javascript&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+	     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div></li></ul></li></ul> <h3 id="get-endpoints-engine"><a href="#get-endpoints-engine" class="header-anchor">#</a> <code>GET /endpoints/{engine}</code></h3> <ul><li>Returns an array of all currently loaded endpoints for a particular runtime, whether they are activated or not.</li> <li>Secured by default: No</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/endpoints/node'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+	     <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/node/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/node/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;node&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;node/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+	     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div></li></ul></li></ul> <h3 id="get-endpoints-naan-name-endpoint"><a href="#get-endpoints-naan-name-endpoint" class="header-anchor">#</a> <code>GET /endpoints/{naan}/{name}/{endpoint}</code></h3> <ul><li>Returns an array of json representations of every api version of a particular endpoint.</li> <li>Secured by default: No</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/endpoints/js/simple/welcome'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+	     <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;javascript&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+	     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+	     <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/js/simple/v2/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v2/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;javascript&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v2&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/2.0.1/welcome&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+	     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div></li></ul></li></ul> <h3 id="get-endpoints-naan-name-endpoint-v-apiversion"><a href="#get-endpoints-naan-name-endpoint-v-apiversion" class="header-anchor">#</a> <code>GET /endpoints/{naan}/{name}/{endpoint}?v={apiVersion}</code></h3> <ul><li>Returns an array of json representations of a particular api version of a particular endpoint.</li> <li>Secured by default: No</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/endpoints/js/simple/welcome?v=v1.0'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+	     <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;javascript&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+	     <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+	     	<span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+	     <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div></li></ul></li></ul> <h3 id="get-endpoints-naan-name-apiversion-endpointname"><a href="#get-endpoints-naan-name-apiversion-endpointname" class="header-anchor">#</a> <code>GET /endpoints/{naan}/{name}/{apiVersion}/{endpointName}</code></h3> <ul><li>Returns a json representation of a particular api version of a particular endpoint.</li> <li>Secured by default: No</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/endpoints/js/simple/v1.0/welcome'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200:<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+         <span class="token property">&quot;title&quot;</span><span class="token operator">:</span> <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;swaggerLink&quot;</span><span class="token operator">:</span> <span class="token string">&quot;https://editor.swagger.io?url=http://localhost:8080/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;hasServiceSpecification&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0/service.yaml&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;activated&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2021-02-25T16:30:44.804575&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ACTIVATED&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;engine&quot;</span><span class="token operator">:</span> <span class="token string">&quot;javascript&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;knowledgeObject&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/kos/js/simple/v1.0&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;@id&quot;</span><span class="token operator">:</span> <span class="token string">&quot;js/simple/1.0/welcome&quot;</span><span class="token punctuation">,</span>
+         <span class="token property">&quot;@context&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token string">&quot;http://kgrid.org/koio/contexts/knowledgeobject.jsonld&quot;</span><span class="token punctuation">,</span>
+            <span class="token string">&quot;http://kgrid.org/koio/contexts/implementation.jsonld&quot;</span>
+         <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li></ul> <h2 id="health-and-info-api"><a href="#health-and-info-api" class="header-anchor">#</a> Health and Info API</h2> <p>Activators <conform>should</conform> provide application and health information via <code>/actuator/health</code> and <code>/actuator/info</code> endpoints.</p> <h3 id="get-actuator-health-required"><a href="#get-actuator-health-required" class="header-anchor">#</a> <code>GET /actuator/health</code> (Required)</h3> <ul><li>The Activator's portal into its health, as well as the status of its components and adapters
+<ul><li>We suggest following the conventions in the <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-health" target="_blank" rel="noopener noreferrer">Spring Boot production health information guidelines<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>.</li> <li>The <code>/actuator/health</code> endpoint <conform>should</conform>  indicate the status of individual components (adapters, shelf cdo store, runtimes, KOs and their activation status) to aid monitoring in troubleshooting Activator deployments.</li> <li>The health endpoint <conform>must</conform> provide a `{ &quot;status&quot;: &quot;&lt;UP|DOWN&gt;&quot; } response at a minimum.</li> <li>An Activator implementation <conform>may</conform> use additional statuses as needed which can be documented for deployers, etc.</li> <li>Health information <conform>should</conform> focus on details that help understand why the Activator, or a component is <code>up</code> or <code>down</code>.</li> <li>By default, the actuator health indicator only exposes the top level status: <code>status: UP</code> unless the user is logged in, or the <code>dev</code> spring profile environment variable is active. <code>SPRING_PROFILES_ACTIVE=DEV</code></li></ul></li> <li>Secured by default: Yes (More info is returned on login)</li> <li>Curl Command<div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">curl</span> --location --request GET <span class="token string">'http://localhost:8080/actuator/health'</span>
+</code></pre></div></li> <li>Responses
+<ul><li>200: (When activator and adapter are both UP)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;components&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;activationService&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span>
+      <span class="token property">&quot;details&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">&quot;kos&quot;</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;endpoints&quot;</span><span class="token operator">:</span> <span class="token number">0</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;org.kgrid.adapter.javascript.JavascriptAdapter&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span>
+      <span class="token property">&quot;details&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">&quot;type&quot;</span><span class="token operator">:</span> <span class="token string">&quot;JAVASCRIPT&quot;</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;created&quot;</span><span class="token operator">:</span> <span class="token string">&quot;2020-06-18T18:07:52.492425Z&quot;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    ...
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>200: (When an adapter is DOWN)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;components&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;activationService&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;UP&quot;</span><span class="token punctuation">,</span>
+      <span class="token property">&quot;details&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">&quot;kos&quot;</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token property">&quot;endpoints&quot;</span><span class="token operator">:</span> <span class="token number">0</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;org.kgrid.adapter.javascript.JavascriptAdapter&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;DOWN&quot;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    ...
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>200: (When Activator is DOWN)<div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;status&quot;</span><span class="token operator">:</span> <span class="token string">&quot;DOWN&quot;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li></ul></li></ul> <h3 id="get-actuator-info-optional"><a href="#get-actuator-info-optional" class="header-anchor">#</a> <code>GET /actuator/info</code> (Optional)</h3> <ul><li>Secured by default: Yes</li> <li>An optional endpoint where extended information <conform>may</conform> be made available.
+<ul><li>See <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-application-info" target="_blank" rel="noopener noreferrer">Spring Boot application health information guidelines<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>
+for examples of suitable patterns which can be implemented in many frameworks and languages.</li> <li>We suggest that implementations provide things like a list of adapters and runtimes currently deployed,
+as well as counts or lists of KOs available to the Activator, endpoints activated, perhaps total
+requests, uptime, build information, key environment variables, etc.</li> <li>Be careful not to expose sensitive information. The <code>/actuator/health</code> and <code>/actuator/info</code> endpoints
+<conform>should</conform> be secured
+(e.g. with OAuth 2.0 Bearer Tokens).</li> <li>The <code>/actuator/info</code> endpoint <conform>should</conform> return a map of information sets in JSON or YAML.</li></ul></li></ul> <h2 id="proposed-api-changes"><a href="#proposed-api-changes" class="header-anchor">#</a> Proposed API Changes</h2> <ul><li>Endpoint execution will return KO output and link to provenance, tracing, etc.
+`GET /endpoints/{naan}/{name}</li></ul></div> <div class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated: </span> <span class="time">6/3/2021, 2:16:56 PM</span></div></div> <!----> </div> <!----></div></div>
+    <script src="/kgrid-activator/assets/js/app.d7df60d8.js" defer></script><script src="/kgrid-activator/assets/js/3.1df17682.js" defer></script>
+  </body>
+</html>
